@@ -248,7 +248,7 @@ export default function WorksiteDetail() {
         </div>
       )}
 
-      <div className="flex gap-1 overflow-x-auto border-b border-slate-200">
+      <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-slate-200">
         {TABS.map(([k, l]) => (
           <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
         ))}
