@@ -17,6 +17,8 @@ export default function InviteDialog({
   onOpenChange,
   onCreated,
   hostUserId,
+  defaultAccessLevel = "responsabile",
+  defaultEmployeeId = "",
 }) {
   const { toast } = useToast();
   const [accessLevel, setAccessLevel] = useState("responsabile");
@@ -29,6 +31,9 @@ export default function InviteDialog({
 
   useEffect(() => {
     if (open) {
+      // Aperto dalla scheda di un dipendente: operaio già collegato.
+      setAccessLevel(defaultAccessLevel);
+      setEmployeeId(defaultEmployeeId);
       db.Employee.list("-created_date", 200).then(setEmployees).catch(() => {});
     }
   }, [open]);

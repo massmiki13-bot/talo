@@ -54,7 +54,7 @@
     },
     "costo_orario": {
       "type": "number",
-      "title": "Costo Orario (\u20ac)"
+      "title": "Costo Orario (€)"
     },
     "note": {
       "type": "string",
@@ -67,6 +67,86 @@
     "branch_nome": {
       "type": "string",
       "title": "Nome Sede"
+    },
+    "foto_url": {
+      "type": "string",
+      "title": "Foto"
+    },
+    "matricola": {
+      "type": "string",
+      "title": "Matricola"
+    },
+    "cellulare": {
+      "type": "string",
+      "title": "Cellulare"
+    },
+    "nazionalita": {
+      "type": "string",
+      "title": "Nazionalità"
+    },
+    "permesso_soggiorno_scadenza": {
+      "type": "string",
+      "title": "Scadenza permesso di soggiorno"
+    },
+    "livello": {
+      "type": "string",
+      "title": "Livello"
+    },
+    "qualifica": {
+      "type": "string",
+      "title": "Qualifica"
+    },
+    "ccnl": {
+      "type": "string",
+      "title": "CCNL"
+    },
+    "data_fine_contratto": {
+      "type": "string",
+      "title": "Fine contratto"
+    },
+    "ore_settimanali": {
+      "type": "number",
+      "title": "Ore settimanali",
+      "default": 40
+    },
+    "iban": {
+      "type": "string",
+      "title": "IBAN"
+    },
+    "patenti": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Patenti e abilitazioni"
+    },
+    "taglie": {
+      "type": "object",
+      "title": "Taglie DPI"
+    },
+    "contatto_emergenza": {
+      "type": "object",
+      "title": "Contatto di emergenza"
+    },
+    "dpi_consegnati": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "DPI consegnati"
+    },
+    "stato": {
+      "type": "string",
+      "enum": [
+        "attivo",
+        "cessato"
+      ],
+      "title": "Stato",
+      "default": "attivo"
+    },
+    "data_cessazione": {
+      "type": "string",
+      "title": "Data cessazione"
     }
   },
   "required": [

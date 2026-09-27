@@ -1,440 +1,492 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { api, db } from "@/lib/db";
+import React, { useState, useEffect, useMemo } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Upload, Trash2, FileText, AlertTriangle, ScanLine, Bell, Loader2, Pencil, Eye, FileDown } from "lucide-react";
-import { readDocumentWithAi } from "@/utils/documentAi";
+import {
+  ArrowLeft, Pencil, Phone, Mail, MessageCircle, IdCard, GraduationCap, Stethoscope, HardHat, Clock, ShieldCheck, AlertTriangle,
+  CheckCircle2, MoreHorizontal, UserMinus, UserCheck, Plus, Trash2, FileDown, Loader2, Smartphone, Briefcase,
+} from "lucide-react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import EmptyState from "@/components/shared/EmptyState";
-import AiDocumentReader from "@/components/shared/AiDocumentReader";
-import AiWarning from "@/components/shared/AiWarning";
-import { deleteRemindersForDoc, createDocumentReminder, getExpirationStatus } from "@/utils/expirationReminders";
-import CreateReminderButton from "@/components/shared/CreateReminderButton";
-import EditDocumentDialog from "@/components/shared/EditDocumentDialog";
-import DocumentPreviewDialog, { downloadAsPdf } from "@/components/shared/DocumentPreviewDialog";
+import EmployeeForm from "@/components/employees/EmployeeForm";
+import EmployeeDocuments from "@/components/employees/EmployeeDocuments";
+import TrainingDialog from "@/components/employees/TrainingDialog";
+import InviteDialog from "@/components/collaborators/InviteDialog";
+import { useAuth } from "@/lib/AuthContext";
+import { getAccessContext } from "@/lib/accessScope";
+import { CORSI, DPI_ARTICOLI, compliance, COMPLIANCE_STYLE, fullName, initials, seniority } from "@/lib/employees";
+import { ATTENDANCE_STATES } from "@/utils/attendanceStates";
+import { generateBadgePdf, generateDpiPdf, downloadBlob } from "@/utils/employeePdf";
+import { phoneHref, whatsappHref, fmtEur } from "@/lib/contacts";
 
-const docTypes = [
-  { value: "contratto", label: "Contratto" },
-  { value: "corso", label: "Corso" },
-  { value: "visita_medica", label: "Visita Medica" },
-  { value: "documento_identita", label: "Documento d'Identità" },
-  { value: "altro", label: "Altro" },
-];
+const fmtDate = (d) => (d ? new Date(d).toLocaleDateString("it-IT") : "—");
+const MONTHS = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
-const emptyDoc = { titolo: "", tipo: "altro", tipo_altro: "", descrizione: "", file_url: "", data_emissione: "", data_scadenza: "", scadenza_mode: "nessuna", anticipo: "0", ripetizione: "nessuna" };
+function Card({ icon: Icon, title, action, children }) {
+  return (
+    <section className="bg-white rounded-xl border border-slate-200">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
+        <Icon className="w-4 h-4 text-slate-500" />
+        <h3 className="text-sm font-semibold text-slate-800 flex-1">{title}</h3>
+        {action}
+      </div>
+      <div className="p-4">{children}</div>
+    </section>
+  );
+}
+
+function Info({ label, value }) {
+  if (!value && value !== 0) return null;
+  return <div><dt className="text-xs text-slate-500">{label}</dt><dd className="text-sm text-slate-900 break-words">{value}</dd></div>;
+}
 
 export default function EmployeeDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const access = getAccessContext();
+  const readOnly = !access.isHost && access.accessLevel === "operaio";
+
   const [employee, setEmployee] = useState(null);
   const [docs, setDocs] = useState([]);
+  const [attendance, setAttendance] = useState([]);
+  const [worksites, setWorksites] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [collab, setCollab] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState(emptyDoc);
-  const [uploading, setUploading] = useState(false);
-  const [readerOpen, setReaderOpen] = useState(false);
-  const [readerFileUrl, setReaderFileUrl] = useState("");
-  const [readingDate, setReadingDate] = useState(false);
-  const [editDoc, setEditDoc] = useState(null);
-  const [previewDoc, setPreviewDoc] = useState(null);
-  const [downloadingId, setDownloadingId] = useState(null);
-  const { toast } = useToast();
+  const [tab, setTab] = useState("panoramica");
+  const [editOpen, setEditOpen] = useState(false);
+  const [training, setTraining] = useState(null); // { kind, preset }
+  const [dpiOpen, setDpiOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [busy, setBusy] = useState(null);
+  const [month, setMonth] = useState(() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; });
+  const highlightDocId = new URLSearchParams(window.location.search).get("doc");
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const docId = urlParams.get("doc");
-    load(docId);
-  }, [id]);
-
-  const load = async (highlightDocId) => {
+  const load = async () => {
     try {
-      const [emp, documents] = await Promise.all([
+      const [emp, documents, att, sites, profs, collabs] = await Promise.all([
         db.Employee.get(id),
-        db.EmployeeDocument.filter({ dipendente_id: id }),
+        db.EmployeeDocument.filter({ dipendente_id: id }, "-data_emissione"),
+        db.DailyAttendance.filter({ "presenze.dipendente_id": id }, "-data", 1000).catch(() => []),
+        db.Worksite.list("-created_date", 1000).catch(() => []),
+        db.CompanyProfile.list().catch(() => []),
+        readOnly ? Promise.resolve([]) : db.Collaborator.filter({ employee_id: id }).catch(() => []),
       ]);
       setEmployee(emp);
       setDocs(documents);
-      if (highlightDocId) {
-        const doc = documents.find(d => d.id === highlightDocId);
-        if (doc) setEditDoc(doc);
-      }
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
-  };
-
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const { file_url } = await api.integrations.Core.UploadFile({ file });
-      setForm(prev => ({ ...prev, file_url }));
-    } catch (err) {
-      toast({ title: "Errore upload", variant: "destructive" });
-    } finally { setUploading(false); }
-  };
-
-  const handleSave = async (withReminder = false) => {
-    try {
-      const created = await db.EmployeeDocument.create({ ...form, data_scadenza: form.data_scadenza || null, dipendente_id: id });
-      if (withReminder && form.data_scadenza) {
-        const tipoLabel = form.tipo === "altro" ? (form.tipo_altro || "Altro") : (docTypes.find(t => t.value === form.tipo)?.label || form.tipo);
-        const personName = `${employee.nome} ${employee.cognome}`;
-        await createDocumentReminder(form.titolo, form.data_scadenza, created.id, "EmployeeDocument", tipoLabel, personName, Number(form.anticipo) || 0, form.ripetizione || "nessuna");
-      }
-      setDialogOpen(false);
-      setForm(emptyDoc);
-      load();
-      toast({
-        title: withReminder ? "Documento e promemoria creati" : "Documento aggiunto",
-        description: withReminder ? "Promemoria visibile in Attivi e nel Calendario." : undefined,
-        duration: withReminder ? 5000 : 2000,
-      });
-    } catch (e) {
-      toast({ title: "Errore", variant: "destructive" });
-    }
-  };
-
-  const handleDeleteDoc = async (docId) => {
-    if (!confirm("Eliminare questo documento?")) return;
-    try {
-      await deleteRemindersForDoc(docId);
-      await db.EmployeeDocument.delete(docId);
-    } catch (e) {
-      console.error(e);
+      setAttendance(att);
+      setWorksites(sites);
+      setProfile(profs[0] || null);
+      setCollab(collabs.find((c) => c.status !== "revoked") || null);
+      if (highlightDocId) setTab("documenti");
+    } catch {
+      toast({ title: "Dipendente non trovato", variant: "destructive" });
+      navigate(readOnly ? "/" : "/dipendenti");
     } finally {
-      load();
+      setLoading(false);
     }
   };
+  useEffect(() => { load(); }, [id]);
 
-  const openReader = (fileUrl) => {
-    setReaderFileUrl(fileUrl);
-    setReaderOpen(true);
-  };
+  const status = useMemo(() => (employee ? compliance(employee, docs) : null), [employee, docs]);
 
-  const handleDownloadPdf = async (doc) => {
-    setDownloadingId(doc.id);
-    try {
-      await downloadAsPdf(doc.file_url, doc.titolo);
-      toast({ title: "Download avviato", className: "bg-green-600 text-white" });
-    } catch (e) {
-      toast({ title: "Errore download", variant: "destructive" });
-    } finally {
-      setDownloadingId(null);
-    }
-  };
-
-  const handleReaderConfirm = async (extracted) => {
-    setForm(prev => ({
-      ...prev,
-      titolo: extracted.titolo || prev.titolo,
-      tipo: extracted.tipo || prev.tipo,
-      descrizione: extracted.descrizione || prev.descrizione,
-      data_emissione: extracted.data_emissione || prev.data_emissione,
-      data_scadenza: extracted.data_scadenza || prev.data_scadenza,
-      scadenza_mode: extracted.data_scadenza ? "ia" : prev.scadenza_mode,
-    }));
-    toast({ title: "Dati estratti — verifica prima di salvare" });
-  };
-
-  const handleReadWithAi = async () => {
-    if (!form.file_url) {
-      toast({ title: "Carica prima un file", description: "Serve un documento per la lettura IA" });
-      return;
-    }
-    setForm(prev => ({ ...prev, scadenza_mode: "ia" }));
-    setReadingDate(true);
-    try {
-      const extracted = await readDocumentWithAi(form.file_url);
-      setForm(prev => ({
-        ...prev,
-        tipo: extracted.tipo || prev.tipo,
-        tipo_altro: extracted.tipo_altro || prev.tipo_altro,
-        data_emissione: extracted.data_emissione || prev.data_emissione,
-        data_scadenza: extracted.data_scadenza || prev.data_scadenza,
-        descrizione: extracted.descrizione || prev.descrizione,
-        titolo: prev.titolo || extracted.descrizione || "",
-        scadenza_mode: extracted.data_scadenza ? "ia" : prev.scadenza_mode,
-      }));
-      if (!extracted.data_scadenza) {
-        toast({ title: "Nessuna scadenza trovata", description: "L'IA non ha rilevato una data di scadenza. Inseriscila manualmente se necessario." });
+  // Presenze del dipendente: riepilogo del mese scelto e dell'anno.
+  const hours = useMemo(() => {
+    const siteName = new Map(worksites.map((w) => [w.id, w.nome]));
+    const month0 = { ore: 0, giorni: 0, stati: {}, cantieri: {} };
+    const perMonth = Array.from({ length: 12 }, () => ({ ore: 0, giorni: 0 }));
+    for (const a of attendance) {
+      const d = new Date(a.data);
+      for (const p of a.presenze || []) {
+        if (p.dipendente_id !== id) continue;
+        const stato = p.stato || "presente";
+        const counts = ATTENDANCE_STATES[stato]?.countsAsHours ?? true;
+        if (d.getFullYear() === month.y) {
+          if (counts) { perMonth[d.getMonth()].ore += Number(p.ore) || 0; perMonth[d.getMonth()].giorni += 1; }
+        }
+        if (d.getFullYear() === month.y && d.getMonth() === month.m) {
+          month0.stati[stato] = (month0.stati[stato] || 0) + 1;
+          if (counts) {
+            month0.ore += Number(p.ore) || 0;
+            month0.giorni += 1;
+            const cid = p.cantiere_id || a.cantiere_id;
+            const name = siteName.get(cid) || a.cantiere_nome || "Senza cantiere";
+            month0.cantieri[name] = (month0.cantieri[name] || 0) + (Number(p.ore) || 0);
+          }
+        }
       }
-    } catch (e) {
-      toast({ title: "Errore lettura IA", variant: "destructive" });
-    } finally {
-      setReadingDate(false);
     }
-  };
+    return { month: month0, perMonth, anno: perMonth.reduce((s, x) => s + x.ore, 0) };
+  }, [attendance, worksites, month, id]);
+
+  const sitesWorked = useMemo(() => {
+    const ids = new Set();
+    for (const a of attendance) for (const p of a.presenze || []) if (p.dipendente_id === id) ids.add(p.cantiere_id || a.cantiere_id);
+    return worksites.filter((w) => ids.has(w.id));
+  }, [attendance, worksites, id]);
 
   if (loading) return <LoadingSpinner />;
-  if (!employee) return <div className="text-center py-16 text-slate-500">Dipendente non trovato</div>;
+  if (!employee) return null;
 
-  const isExpired = (date) => getExpirationStatus(date) === "expired";
-  const isExpiringSoon = (date) => getExpirationStatus(date) === "expiring_soon";
+  const st = COMPLIANCE_STYLE[status.livello];
+  const phone = employee.cellulare || employee.telefono;
+  const cessato = employee.stato === "cessato";
+  const courses = docs.filter((d) => d.tipo === "corso");
+  const visits = docs.filter((d) => d.tipo === "visita_medica");
+  const dpi = employee.dpi_consegnati || [];
+
+  const badge = async () => {
+    setBusy("badge");
+    try { downloadBlob(await generateBadgePdf(employee, profile), `Tesserino_${employee.cognome || ""}_${employee.nome || ""}.pdf`); }
+    finally { setBusy(null); }
+  };
+  const dpiPdf = async (items = dpi) => {
+    setBusy("dpi");
+    try { downloadBlob(await generateDpiPdf(employee, profile, items), `Consegna_DPI_${employee.cognome || ""}.pdf`); }
+    finally { setBusy(null); }
+  };
+
+  const setCessato = async (value) => {
+    const data_cessazione = value ? new Date().toISOString().slice(0, 10) : null;
+    if (value && !confirm(`Segnare ${fullName(employee)} come cessato? Resterà in archivio con tutti i documenti.`)) return;
+    const saved = await db.Employee.update(id, { stato: value ? "cessato" : "attivo", data_cessazione });
+    setEmployee(saved);
+    toast({ title: value ? "Dipendente archiviato" : "Dipendente riattivato" });
+  };
+
+  const removeDpi = async (i) => {
+    const saved = await db.Employee.update(id, { dpi_consegnati: dpi.filter((_, j) => j !== i) });
+    setEmployee(saved);
+  };
+
+  const TABS = [
+    ["panoramica", "Panoramica"],
+    ["sicurezza", `Formazione e visite${status.problemi.length ? ` (${status.problemi.length})` : ""}`],
+    ["dpi", `DPI (${dpi.length})`],
+    ["ore", "Ore e cantieri"],
+    ["documenti", `Documenti (${docs.length})`],
+  ];
 
   return (
-    <div>
-      <Link to="/dipendenti" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Torna ai dipendenti
-      </Link>
+    <div className="space-y-4">
+      {!readOnly && <Link to="/dipendenti" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800"><ArrowLeft className="w-4 h-4" /> Dipendenti</Link>}
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">{employee.nome} {employee.cognome}</h1>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-          {[
-            { label: "Ruolo", value: employee.ruolo },
-            { label: "Telefono", value: employee.telefono },
-            { label: "Email", value: employee.email },
-            { label: "CF", value: employee.codice_fiscale },
-            { label: "Data Assunzione", value: employee.data_assunzione ? new Date(employee.data_assunzione).toLocaleDateString("it-IT") : null },
-            { label: "Tipo Contratto", value: employee.tipo_contratto },
-            { label: "Costo Orario", value: employee.costo_orario ? `€ ${employee.costo_orario.toFixed(2)}/h` : null },
-          ].filter(f => f.value).map(f => (
-            <div key={f.label}>
-              <p className="text-xs text-slate-500">{f.label}</p>
-              <p className="text-sm font-medium text-slate-900">{f.value}</p>
-            </div>
-          ))}
+      {/* Intestazione */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row gap-4">
+        {employee.foto_url
+          ? <img src={employee.foto_url} alt={fullName(employee)} className="w-20 h-20 rounded-full object-cover border border-slate-200 shrink-0" />
+          : <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center text-2xl font-semibold text-slate-600 shrink-0">{initials(employee)}</div>}
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{fullName(employee)}</h1>
+            {cessato
+              ? <span className="text-xs font-semibold rounded-full bg-slate-200 text-slate-700 px-2 py-0.5">Cessato il {fmtDate(employee.data_cessazione)}</span>
+              : <span className={`inline-flex items-center gap-1.5 text-xs font-semibold rounded-full border px-2 py-0.5 ${st.badge}`}><span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />{st.label}</span>}
+          </div>
+          <p className="text-sm text-slate-600 mt-0.5">
+            {[employee.ruolo, employee.qualifica, employee.livello].filter(Boolean).join(" · ") || "Mansione non indicata"}
+            {employee.data_assunzione && ` · in azienda da ${seniority(employee.data_assunzione)}`}
+          </p>
+          <div className="flex flex-wrap gap-2 mt-3">
+            {phone && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={phoneHref(phone)}><Phone className="w-4 h-4" /> Chiama</a></Button>}
+            {employee.cellulare && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={whatsappHref(employee.cellulare)} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" /> WhatsApp</a></Button>}
+            {employee.email && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={`mailto:${employee.email}`}><Mail className="w-4 h-4" /> Email</a></Button>}
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={badge} disabled={busy === "badge"}>{busy === "badge" ? <Loader2 className="w-4 h-4 animate-spin" /> : <IdCard className="w-4 h-4" />} Tesserino</Button>
+          </div>
         </div>
+        {!readOnly && (
+          <div className="flex sm:flex-col gap-2 sm:items-end">
+            <Button size="sm" className="gap-1.5" onClick={() => setEditOpen(true)}><Pencil className="w-4 h-4" /> Modifica</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild><Button variant="outline" size="sm" className="gap-1.5"><MoreHorizontal className="w-4 h-4" /> Altro</Button></DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {!collab && <DropdownMenuItem onClick={() => setInviteOpen(true)}><Smartphone className="w-4 h-4 mr-2" /> Invita all'app</DropdownMenuItem>}
+                <DropdownMenuItem onClick={() => setTraining({ kind: "corso" })}><GraduationCap className="w-4 h-4 mr-2" /> Registra corso</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTraining({ kind: "visita_medica" })}><Stethoscope className="w-4 h-4 mr-2" /> Registra visita medica</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setDpiOpen(true)}><HardHat className="w-4 h-4 mr-2" /> Consegna DPI</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {cessato
+                  ? <DropdownMenuItem onClick={() => setCessato(false)}><UserCheck className="w-4 h-4 mr-2" /> Riattiva</DropdownMenuItem>
+                  : <DropdownMenuItem onClick={() => setCessato(true)} className="text-red-600 focus:text-red-700"><UserMinus className="w-4 h-4 mr-2" /> Segna come cessato</DropdownMenuItem>}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
 
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-slate-900">Documenti</h2>
-        <Button onClick={() => { setForm(emptyDoc); setDialogOpen(true); }} className="bg-blue-600 hover:bg-blue-700 gap-2">
-          <Upload className="w-4 h-4" /> Carica Documento
-        </Button>
-      </div>
-
-      {docs.length === 0 ? (
-        <EmptyState icon={FileText} title="Nessun documento" description="Carica il primo documento per questo dipendente" />
-      ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>
-                <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Titolo</th>
-                <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Tipo</th>
-                <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3 hidden md:table-cell">Scadenza</th>
-                <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">Azioni</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {docs.map(doc => (
-                <tr key={doc.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 text-sm font-medium text-slate-900">
-                    {doc.file_url ? (
-                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{doc.titolo}</a>
-                    ) : doc.titolo}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{docTypes.find(t => t.value === doc.tipo)?.label || doc.tipo}</td>
-                  <td className="px-4 py-3 text-sm hidden md:table-cell">
-                    {doc.data_scadenza ? (
-                      <div className="space-y-1.5">
-                        <span className={`flex items-center gap-1 ${isExpired(doc.data_scadenza) ? "text-red-600" : isExpiringSoon(doc.data_scadenza) ? "text-amber-600" : "text-slate-600"}`}>
-                          {(isExpired(doc.data_scadenza) || isExpiringSoon(doc.data_scadenza)) && <AlertTriangle className="w-3 h-3" />}
-                          {new Date(doc.data_scadenza).toLocaleDateString("it-IT")}
-                        </span>
-                        <CreateReminderButton
-                          docTitle={doc.titolo}
-                          scadenzaDate={doc.data_scadenza}
-                          docId={doc.id}
-                          docType="EmployeeDocument"
-                          docTypeLabel={docTypes.find(t => t.value === doc.tipo)?.label || doc.tipo}
-                          personName={`${employee.nome} ${employee.cognome}`}
-                        />
-                      </div>
-                    ) : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => setEditDoc(doc)} className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-blue-600" title="Modifica documento">
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      {doc.file_url && (
-                        <>
-                          <button onClick={() => openReader(doc.file_url)} className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-blue-600" title="Leggi con IA">
-                            <ScanLine className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => setPreviewDoc(doc)} className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-400 hover:text-indigo-600" title="Anteprima">
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => handleDownloadPdf(doc)} disabled={downloadingId === doc.id} className="p-1.5 rounded-lg hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 disabled:opacity-50" title="Scarica PDF">
-                            {downloadingId === doc.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-                          </button>
-                        </>
-                      )}
-                      <button onClick={() => handleDeleteDoc(doc.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {!cessato && status.problemi.length > 0 && (
+        <div className={`rounded-xl border p-4 ${status.livello === "critico" ? "border-red-200 bg-red-50" : "border-amber-200 bg-amber-50"}`}>
+          <p className={`text-sm font-semibold flex items-center gap-2 ${status.livello === "critico" ? "text-red-800" : "text-amber-900"}`}><AlertTriangle className="w-4 h-4" /> Da sistemare per la sicurezza</p>
+          <ul className="mt-1.5 text-sm text-slate-800 list-disc pl-6 space-y-0.5">{status.problemi.map((p, i) => <li key={i}>{p.testo}</li>)}</ul>
+          {!readOnly && <Button size="sm" variant="outline" className="mt-2 bg-white" onClick={() => setTab("sicurezza")}>Vai a formazione e visite</Button>}
         </div>
       )}
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Carica Documento</DialogTitle></DialogHeader>
-          <div className="space-y-4 mt-4">
-            <div><Label>Titolo</Label><Input value={form.titolo} onChange={e => setForm({ ...form, titolo: e.target.value })} /></div>
-            <div>
-              <Label>Tipo</Label>
-              <Select value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{docTypes.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
-              </Select>
-              {form.tipo === "altro" && (
-                <Input
-                  value={form.tipo_altro || ""}
-                  onChange={e => setForm({ ...form, tipo_altro: e.target.value })}
-                  placeholder="Specifica il tipo di documento..."
-                  className="mt-1.5"
-                />
-              )}
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>Data Emissione</Label><Input type="date" value={form.data_emissione} onChange={e => setForm({ ...form, data_emissione: e.target.value })} /></div>
-            </div>
+      <div className="flex gap-1 overflow-x-auto border-b border-slate-200">
+        {TABS.map(([k, l]) => (
+          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
+        ))}
+      </div>
 
-            {/* Scadenza — tre opzioni coerenti con AIAssistant */}
-            <div className="border-t border-slate-100 pt-3">
-              <Label className="text-xs font-medium text-slate-600">Data scadenza</Label>
-              <div className="flex flex-wrap gap-1.5 mt-1.5">
-                <button
-                  type="button"
-                  onClick={() => setForm(prev => ({ ...prev, scadenza_mode: "manuale" }))}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "manuale" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
-                >Manuale</button>
-                <button
-                  type="button"
-                  onClick={handleReadWithAi}
-                  disabled={readingDate}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${form.scadenza_mode === "ia" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"} disabled:opacity-60`}
-                >
-                  {readingDate && <Loader2 className="w-3 h-3 animate-spin" />}
-                  Lettura IA
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setForm(prev => ({ ...prev, scadenza_mode: "nessuna", data_scadenza: "" }))}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "nessuna" ? "bg-slate-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
-                >Nessuna scadenza</button>
+      {tab === "panoramica" && (
+        <div className="grid lg:grid-cols-2 gap-4">
+          <Card icon={IdCard} title="Anagrafica">
+            <dl className="grid grid-cols-2 gap-3">
+              <Info label="Codice fiscale" value={employee.codice_fiscale} />
+              <Info label="Matricola" value={employee.matricola} />
+              <Info label="Nato il" value={employee.data_nascita && `${fmtDate(employee.data_nascita)}${employee.luogo_nascita ? ` a ${employee.luogo_nascita}` : ""}`} />
+              <Info label="Nazionalità" value={employee.nazionalita} />
+              <Info label="Permesso di soggiorno" value={employee.permesso_soggiorno_scadenza && `scade il ${fmtDate(employee.permesso_soggiorno_scadenza)}`} />
+              <Info label="Residenza" value={employee.indirizzo} />
+              <Info label="Cellulare" value={employee.cellulare} />
+              <Info label="Telefono" value={employee.telefono} />
+              <Info label="Email" value={employee.email} />
+            </dl>
+          </Card>
+          <Card icon={Briefcase} title="Contratto">
+            <dl className="grid grid-cols-2 gap-3">
+              <Info label="Tipo" value={employee.tipo_contratto} />
+              <Info label="CCNL" value={employee.ccnl} />
+              <Info label="Assunto il" value={employee.data_assunzione && fmtDate(employee.data_assunzione)} />
+              <Info label="Fine contratto" value={employee.data_fine_contratto && fmtDate(employee.data_fine_contratto)} />
+              <Info label="Ore settimanali" value={employee.ore_settimanali} />
+              {!readOnly && <Info label="Costo orario aziendale" value={employee.costo_orario ? `${fmtEur(employee.costo_orario)}/h` : null} />}
+              {!readOnly && <Info label="IBAN" value={employee.iban} />}
+            </dl>
+          </Card>
+          <Card icon={ShieldCheck} title="Abilitazioni e taglie">
+            <dl className="grid grid-cols-2 gap-3">
+              <Info label="Patenti e abilitazioni" value={(employee.patenti || []).join(", ")} />
+              <Info label="Taglie" value={Object.entries(employee.taglie || {}).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(" · ")} />
+            </dl>
+            {!(employee.patenti || []).length && !Object.values(employee.taglie || {}).some(Boolean) && <p className="text-sm text-slate-500">Nessuna informazione.</p>}
+          </Card>
+          <Card icon={Phone} title="Contatto di emergenza">
+            {employee.contatto_emergenza?.nome || employee.contatto_emergenza?.telefono ? (
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-900">{employee.contatto_emergenza.nome} {employee.contatto_emergenza.relazione && <span className="text-slate-500 font-normal">· {employee.contatto_emergenza.relazione}</span>}</p>
+                  <p className="text-sm text-slate-600">{employee.contatto_emergenza.telefono}</p>
+                </div>
+                {employee.contatto_emergenza.telefono && <Button asChild size="sm" variant="outline"><a href={phoneHref(employee.contatto_emergenza.telefono)}><Phone className="w-4 h-4" /></a></Button>}
               </div>
-
-              {(form.scadenza_mode === "manuale" || form.scadenza_mode === "ia") && (
-                <div className="mt-2">
-                  <Input
-                    type="date"
-                    value={form.data_scadenza || ""}
-                    onChange={e => setForm(prev => ({ ...prev, data_scadenza: e.target.value }))}
-                  />
-                  {form.scadenza_mode === "ia" && form.data_scadenza && (
-                    <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-                      <AlertTriangle className="w-3 h-3" />
-                      Data rilevata dall'IA — verifica e correggi se necessario.
-                    </p>
-                  )}
-                  {form.scadenza_mode === "ia" && !form.data_scadenza && !readingDate && (
-                    <p className="text-xs text-slate-400 mt-1">L'IA non ha trovato una scadenza. Inseriscila manualmente sopra.</p>
-                  )}
-                  {form.scadenza_mode === "manuale" && (
-                    <p className="text-xs text-slate-400 mt-1">Inserisci la data di scadenza manualmente.</p>
-                  )}
+            ) : <p className="text-sm text-slate-500">Non indicato.</p>}
+          </Card>
+          {!readOnly && (
+            <Card icon={Smartphone} title="Accesso all'app">
+              {collab ? (
+                <p className="text-sm text-slate-700 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Collegato come <strong>{collab.access_level === "operaio" ? "operaio" : "responsabile"}</strong> ({collab.email})</p>
+              ) : (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <p className="text-sm text-slate-600 flex-1">Con l'accesso vede solo le sue ore, i suoi documenti e le sue scadenze.</p>
+                  <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)}>Invita all'app</Button>
                 </div>
               )}
+            </Card>
+          )}
+          {employee.note && <Card icon={Pencil} title="Note"><p className="text-sm text-slate-700 whitespace-pre-wrap">{employee.note}</p></Card>}
+        </div>
+      )}
 
-              {form.scadenza_mode === "nessuna" && (
-                <p className="text-xs text-slate-400 mt-2">Il documento non ha scadenza — nessun promemoria verrà creato.</p>
-              )}
-            </div>
-            <div>
-              <Label>File</Label>
-              <Input type="file" accept="image/*,application/pdf" onChange={handleFileUpload} disabled={uploading} />
-              {uploading && <p className="text-xs text-slate-500 mt-1">Caricamento...</p>}
-              {form.file_url && (
-                <div className="flex items-center gap-2 mt-2">
-                  <p className="text-xs text-emerald-600">File caricato ✓</p>
-                  <Button size="sm" variant="outline" onClick={() => openReader(form.file_url)} className="h-7 text-xs gap-1">
-                    <ScanLine className="w-3 h-3" /> Leggi con IA
-                  </Button>
-                </div>
-              )}
-            </div>
+      {tab === "sicurezza" && (
+        <div className="grid lg:grid-cols-2 gap-4">
+          <Card icon={GraduationCap} title="Formazione" action={!readOnly && <Button size="sm" variant="outline" className="gap-1" onClick={() => setTraining({ kind: "corso" })}><Plus className="w-4 h-4" /> Corso</Button>}>
+            <ul className="divide-y divide-slate-100">
+              {CORSI.filter((c) => c.obbligatorio || courses.some((d) => d.corso_codice === c.codice)).map((c) => {
+                const list = courses.filter((d) => d.corso_codice === c.codice).sort((a, b) => String(b.data_emissione).localeCompare(String(a.data_emissione)));
+                const last = list[0];
+                const exp = last?.data_scadenza ? new Date(last.data_scadenza) : null;
+                const days = exp ? Math.ceil((exp - new Date(new Date().toDateString())) / 86_400_000) : null;
+                return (
+                  <li key={c.codice} className="py-2.5 flex items-center gap-3">
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${!last ? "bg-red-500" : days !== null && days < 0 ? "bg-red-500" : days !== null && days <= 30 ? "bg-amber-500" : "bg-emerald-500"}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-slate-900">{c.nome}</p>
+                      <p className="text-xs text-slate-500">{last ? `Attestato del ${fmtDate(last.data_emissione)}${exp ? ` · ${days < 0 ? "scaduto il" : "scade il"} ${fmtDate(last.data_scadenza)}` : " · senza scadenza"}` : "Non registrato"}</p>
+                    </div>
+                    {!readOnly && (!last || (days !== null && days <= 30)) && <Button size="sm" variant="outline" onClick={() => setTraining({ kind: "corso", preset: c.codice })}>{last ? "Rinnova" : "Registra"}</Button>}
+                  </li>
+                );
+              })}
+              {courses.filter((d) => !CORSI.some((c) => c.codice === d.corso_codice && c.codice !== "altro")).map((d) => (
+                <li key={d.id} className="py-2.5 flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full shrink-0 bg-slate-400" />
+                  <div className="flex-1 min-w-0"><p className="text-sm text-slate-900">{d.titolo}</p><p className="text-xs text-slate-500">{fmtDate(d.data_emissione)}{d.data_scadenza && ` · scade il ${fmtDate(d.data_scadenza)}`}</p></div>
+                </li>
+              ))}
+            </ul>
+          </Card>
+          <Card icon={Stethoscope} title="Visite mediche" action={!readOnly && <Button size="sm" variant="outline" className="gap-1" onClick={() => setTraining({ kind: "visita_medica" })}><Plus className="w-4 h-4" /> Visita</Button>}>
+            {visits.length ? (
+              <ul className="divide-y divide-slate-100">
+                {[...visits].sort((a, b) => String(b.data_emissione).localeCompare(String(a.data_emissione))).map((v, i) => (
+                  <li key={v.id} className={`py-2.5 ${i > 0 ? "opacity-60" : ""}`}>
+                    <p className="text-sm text-slate-900">{fmtDate(v.data_emissione)} · {v.esito || v.descrizione || "Visita"}</p>
+                    <p className="text-xs text-slate-500">{[v.ente && `Dott. ${v.ente}`, v.data_scadenza && `prossima entro il ${fmtDate(v.data_scadenza)}`].filter(Boolean).join(" · ")}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="text-sm text-slate-500">Nessuna visita registrata. La visita di idoneità è obbligatoria prima di adibire il lavoratore alla mansione.</p>}
+          </Card>
+          {status.prossima && (
+            <p className="text-sm text-slate-600 lg:col-span-2">Prossima scadenza: <strong>{status.prossima.titolo}</strong> il {fmtDate(status.prossima.data)}.</p>
+          )}
+        </div>
+      )}
 
-            {/* Anticipo + ripetizione — coerente con AIAssistant */}
-            {form.data_scadenza && (
-              <div className="border-t border-slate-100 pt-3 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Bell className="w-3.5 h-3.5 text-blue-600" />
-                  <span className="text-xs font-medium text-slate-600">Avvisa con anticipo</span>
-                </div>
-                <Select value={form.anticipo || "0"} onValueChange={v => setForm({ ...form, anticipo: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">Nessun preavviso (solo alla scadenza)</SelectItem>
-                    <SelectItem value="7">1 settimana prima</SelectItem>
-                    <SelectItem value="14">2 settimane prima</SelectItem>
-                    <SelectItem value="30">1 mese prima</SelectItem>
-                    <SelectItem value="60">2 mesi prima</SelectItem>
-                    <SelectItem value="90">3 mesi prima</SelectItem>
-                  </SelectContent>
-                </Select>
-                {Number(form.anticipo) > 0 && (
-                  <div>
-                    <Label className="text-xs">Ripeti avviso</Label>
-                    <Select value={form.ripetizione || "nessuna"} onValueChange={v => setForm({ ...form, ripetizione: v })}>
-                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="nessuna">Una volta sola</SelectItem>
-                        <SelectItem value="giornaliera">Ogni giorno fino alla scadenza</SelectItem>
-                        <SelectItem value="settimanale">Ogni settimana fino alla scadenza</SelectItem>
-                        <SelectItem value="mensile">Ogni mese fino alla scadenza</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
+      {tab === "dpi" && (
+        <Card icon={HardHat} title="Dispositivi di protezione consegnati" action={!readOnly && (
+          <div className="flex gap-2">
+            {dpi.length > 0 && <Button size="sm" variant="outline" className="gap-1" onClick={() => dpiPdf()} disabled={busy === "dpi"}>{busy === "dpi" ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} Verbale</Button>}
+            <Button size="sm" className="gap-1" onClick={() => setDpiOpen(true)}><Plus className="w-4 h-4" /> Consegna</Button>
+          </div>
+        )}>
+          {dpi.length ? (
+            <table className="w-full text-sm">
+              <thead><tr className="text-left text-xs text-slate-500 border-b border-slate-100"><th className="py-2">Dispositivo</th><th className="py-2">Taglia</th><th className="py-2">Q.tà</th><th className="py-2">Consegnato il</th><th /></tr></thead>
+              <tbody className="divide-y divide-slate-100">
+                {[...dpi].map((d, i) => ({ ...d, i })).sort((a, b) => String(b.data_consegna).localeCompare(String(a.data_consegna))).map((d) => (
+                  <tr key={d.i}>
+                    <td className="py-2 text-slate-900">{d.articolo}</td><td className="py-2">{d.taglia || "—"}</td><td className="py-2">{d.quantita || 1}</td><td className="py-2">{fmtDate(d.data_consegna)}</td>
+                    <td className="py-2 text-right">{!readOnly && <button aria-label="Elimina" onClick={() => removeDpi(d.i)} className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : <p className="text-sm text-slate-500">Nessun DPI registrato. Ogni consegna va documentata con il verbale firmato dal lavoratore.</p>}
+        </Card>
+      )}
+
+      {tab === "ore" && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={String(month.m)} onValueChange={(v) => setMonth((x) => ({ ...x, m: Number(v) }))}>
+              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>{MONTHS.map((m, i) => <SelectItem key={i} value={String(i)}>{m}</SelectItem>)}</SelectContent>
+            </Select>
+            <Select value={String(month.y)} onValueChange={(v) => setMonth((x) => ({ ...x, y: Number(v) }))}>
+              <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+              <SelectContent>{[0, 1, 2].map((d) => new Date().getFullYear() - d).map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent>
+            </Select>
+            <Link to="/presenze" className="text-sm text-blue-700 hover:underline ml-auto">Apri le presenze</Link>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              ["Ore lavorate", `${hours.month.ore.toLocaleString("it-IT")} h`],
+              ["Giorni di presenza", hours.month.giorni],
+              ["Ferie · permessi", `${hours.month.stati.ferie || 0} · ${hours.month.stati.permesso || 0}`],
+              [readOnly ? "Malattia · assenze" : "Costo del mese", readOnly ? `${hours.month.stati.malattia || 0} · ${hours.month.stati.assente || 0}` : employee.costo_orario ? fmtEur(hours.month.ore * employee.costo_orario) : "—"],
+            ].map(([l, v]) => (
+              <div key={l} className="bg-white rounded-xl border border-slate-200 p-3.5"><p className="text-xs text-slate-500">{l}</p><p className="text-lg font-bold text-slate-900 tabular-nums">{v}</p></div>
+            ))}
+          </div>
+          <div className="grid lg:grid-cols-2 gap-4">
+            <Card icon={Briefcase} title={`Cantieri a ${MONTHS[month.m].toLowerCase()}`}>
+              {Object.keys(hours.month.cantieri).length ? (
+                <ul className="space-y-2">
+                  {Object.entries(hours.month.cantieri).sort((a, b) => b[1] - a[1]).map(([name, ore]) => (
+                    <li key={name}>
+                      <div className="flex justify-between text-sm"><span className="text-slate-800 truncate pr-2">{name}</span><span className="tabular-nums text-slate-700">{ore} h</span></div>
+                      <div className="h-1.5 rounded-full bg-slate-100 mt-1"><div className="h-1.5 rounded-full bg-blue-600" style={{ width: `${Math.min(100, (ore / Math.max(1, hours.month.ore)) * 100)}%` }} /></div>
+                    </li>
+                  ))}
+                </ul>
+              ) : <p className="text-sm text-slate-500">Nessuna ora registrata nel mese.</p>}
+            </Card>
+            <Card icon={Clock} title={`Anno ${month.y} · ${hours.anno.toLocaleString("it-IT")} ore`}>
+              <div className="flex items-end gap-1 h-28" role="img" aria-label="Ore per mese">
+                {hours.perMonth.map((x, i) => {
+                  const max = Math.max(1, ...hours.perMonth.map((p) => p.ore));
+                  return (
+                    <button key={i} onClick={() => setMonth((m) => ({ ...m, m: i }))} className="flex-1 flex flex-col items-center gap-1 group" title={`${MONTHS[i]}: ${x.ore} h`}>
+                      <div className={`w-full rounded-t ${i === month.m ? "bg-blue-600" : "bg-slate-300 group-hover:bg-slate-400"}`} style={{ height: `${(x.ore / max) * 88}px` }} />
+                      <span className="text-[10px] text-slate-500">{MONTHS[i][0]}</span>
+                    </button>
+                  );
+                })}
               </div>
-            )}
+            </Card>
           </div>
-          <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Annulla</Button>
-            {form.data_scadenza ? (
-              <>
-                <Button onClick={() => handleSave(false)} variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50" disabled={!form.titolo}>Salva</Button>
-                <Button onClick={() => handleSave(true)} className="bg-blue-600 hover:bg-blue-700 gap-1.5" disabled={!form.titolo}>
-                  <Bell className="w-4 h-4" /> Salva e aggiungi al promemoria
-                </Button>
-              </>
-            ) : (
-              <Button onClick={() => handleSave(false)} className="bg-blue-600 hover:bg-blue-700" disabled={!form.titolo}>Salva</Button>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+          {sitesWorked.length > 0 && (
+            <p className="text-sm text-slate-600">Ha lavorato su {sitesWorked.length} {sitesWorked.length === 1 ? "cantiere" : "cantieri"}: {sitesWorked.map((w, i) => <span key={w.id}>{i > 0 && ", "}<Link to={`/lavori/${w.id}`} className="text-blue-700 hover:underline">{w.nome}</Link></span>)}.</p>
+          )}
+        </div>
+      )}
 
-      <AiDocumentReader open={readerOpen} onOpenChange={setReaderOpen} fileUrl={readerFileUrl} onConfirm={handleReaderConfirm} />
+      {tab === "documenti" && <EmployeeDocuments employee={employee} docs={docs} onChanged={load} highlightDocId={highlightDocId} readOnly={readOnly} />}
 
-      <EditDocumentDialog
-        open={!!editDoc}
-        onOpenChange={(open) => !open && setEditDoc(null)}
-        doc={editDoc}
-        employeeName={employee ? `${employee.nome} ${employee.cognome}` : ""}
-        onUpdated={load}
-      />
-
-      <DocumentPreviewDialog
-        open={!!previewDoc}
-        onOpenChange={(open) => !open && setPreviewDoc(null)}
-        fileUrl={previewDoc?.file_url}
-        titolo={previewDoc?.titolo}
-      />
+      <EmployeeForm open={editOpen} onOpenChange={setEditOpen} employee={employee} onSaved={(e) => e && setEmployee(e)} />
+      <TrainingDialog open={!!training} onOpenChange={(v) => { if (!v) setTraining(null); }} employee={employee} kind={training?.kind} preset={training?.preset} onSaved={load} />
+      <DpiDialog open={dpiOpen} onOpenChange={setDpiOpen} employee={employee}
+        onSaved={async (items, print) => {
+          const saved = await db.Employee.update(id, { dpi_consegnati: [...dpi, ...items] });
+          setEmployee(saved);
+          toast({ title: "Consegna registrata" });
+          if (print) await dpiPdf(items);
+        }} />
+      <InviteDialog open={inviteOpen} onOpenChange={(v) => { setInviteOpen(v); if (!v) load(); }} hostUserId={user?.id} defaultAccessLevel="operaio" defaultEmployeeId={id} onCreated={load} />
     </div>
+  );
+}
+
+function DpiDialog({ open, onOpenChange, employee, onSaved }) {
+  const [rows, setRows] = useState([]);
+  const [saving, setSaving] = useState(false);
+  const today = new Date().toISOString().slice(0, 10);
+  const sizeFor = (a) => {
+    const t = employee?.taglie || {};
+    if (/scarpe/i.test(a)) return t.scarpe || "";
+    if (/pantaloni/i.test(a)) return t.pantaloni || "";
+    if (/giacca|gilet|tuta/i.test(a)) return t.giacca || "";
+    if (/guanti/i.test(a)) return t.guanti || "";
+    return "";
+  };
+  useEffect(() => { if (open) setRows([]); }, [open]);
+  const toggle = (a) => setRows((r) => (r.some((x) => x.articolo === a) ? r.filter((x) => x.articolo !== a) : [...r, { articolo: a, taglia: sizeFor(a), quantita: 1, data_consegna: today }]));
+
+  const save = async (print) => {
+    setSaving(true);
+    try { await onSaved(rows, print); onOpenChange(false); } finally { setSaving(false); }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Consegna DPI</DialogTitle>
+          <DialogDescription>Seleziona i dispositivi consegnati. Le taglie arrivano dalla scheda del dipendente.</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-wrap gap-1.5">
+          {DPI_ARTICOLI.map((a) => (
+            <button key={a} type="button" onClick={() => toggle(a)}
+              className={`rounded-full border px-2.5 py-1 text-xs ${rows.some((x) => x.articolo === a) ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>{a}</button>
+          ))}
+        </div>
+        {rows.length > 0 && (
+          <div className="space-y-2">
+            {rows.map((r, i) => (
+              <div key={r.articolo} className="grid grid-cols-[1fr_70px_60px_130px] gap-2 items-center">
+                <span className="text-sm text-slate-800 truncate">{r.articolo}</span>
+                <Input aria-label="Taglia" placeholder="Taglia" value={r.taglia} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, taglia: e.target.value } : y)))} className="h-8" />
+                <Input aria-label="Quantità" type="number" min="1" value={r.quantita} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, quantita: Number(e.target.value) || 1 } : y)))} className="h-8" />
+                <Input aria-label="Data consegna" type="date" value={r.data_consegna} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, data_consegna: e.target.value } : y)))} className="h-8" />
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
+          <Button variant="outline" onClick={() => save(false)} disabled={!rows.length || saving}>Registra</Button>
+          <Button onClick={() => save(true)} disabled={!rows.length || saving} className="gap-1.5">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} Registra e stampa verbale</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

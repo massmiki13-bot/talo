@@ -54,6 +54,22 @@
     "ripeti_promemoria_custom": {
       "type": "boolean",
       "title": "Ripeti Promemoria (personalizzato)"
+    },
+    "corso_codice": {
+      "type": "string",
+      "title": "Corso (catalogo)"
+    },
+    "ente": {
+      "type": "string",
+      "title": "Ente / medico"
+    },
+    "ore_corso": {
+      "type": "number",
+      "title": "Durata corso (ore)"
+    },
+    "esito": {
+      "type": "string",
+      "title": "Esito / giudizio"
     }
   },
   "required": [
