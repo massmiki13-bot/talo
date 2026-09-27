@@ -1,353 +1,485 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { Bell, Check, Trash2, AlertTriangle, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Bell, Check, Trash2, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, Repeat, Sparkles, Loader2, AlarmClockOff, MoreHorizontal,
+  Pencil, ExternalLink, Search, ListTodo, CheckCircle2, AlertTriangle, MapPin, RotateCcw, Plus,
+} from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
-import EmptyState from "@/components/shared/EmptyState";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import {
+  REMINDER_TYPES, PRIORITIES, RECURRENCES, ANTICIPI, BUCKETS, reminderType, iso, todayIso, parseIso, addDays, nextOccurrence, bucketOf, fmtDay,
+  linkFor, LINK_LABEL, parseQuickReminder,
+} from "@/lib/reminders";
 
-const tipi = [
-  { value: "appuntamento", label: "Appuntamento" },
-  { value: "scadenza_documento", label: "Scadenza Documento" },
-  { value: "scadenza_contratto", label: "Scadenza Contratto" },
-  { value: "altro", label: "Altro" },
-];
-
-const ANTICIPO_OPTIONS = [
-  { value: "0", label: "Nessun anticipo" },
-  { value: "7", label: "1 settimana prima" },
-  { value: "14", label: "2 settimane prima" },
-  { value: "30", label: "1 mese prima" },
-  { value: "60", label: "2 mesi prima" },
-];
-
-const RIPETIZIONE_OPTIONS = [
-  { value: "nessuna", label: "Nessuna (solo alla scadenza)" },
-  { value: "giorno", label: "Ogni giorno" },
-  { value: "settimana", label: "Ogni settimana" },
-  { value: "mese", label: "Ogni mese" },
-];
-
-const emptyReminder = { titolo: "", descrizione: "", data: "", ora: "", tipo: "altro", anticipo: "0", ripetizione: "nessuna" };
+const empty = () => ({ titolo: "", descrizione: "", data: todayIso(), ora: "", tipo: "altro", priorita: "normale", ricorrenza: "nessuna", luogo: "", anticipo: "0" });
+const PRIO_RANK = { alta: 0, normale: 1, bassa: 2 };
+const byWhen = (a, b) => a.data.localeCompare(b.data) || (PRIO_RANK[a.priorita] ?? 1) - (PRIO_RANK[b.priorita] ?? 1) || String(a.ora || "99").localeCompare(String(b.ora || "99"));
 
 export default function Reminders() {
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [reminders, setReminders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState(emptyReminder);
-  const [filter, setFilter] = useState("attivi");
-  const [viewMode, setViewMode] = useState("list");
-  const [selectedMonth, setSelectedMonth] = useState(new Date());
-  const [dayDetail, setDayDetail] = useState(null);
-  const { toast } = useToast();
+  const [tab, setTab] = useState("agenda"); // agenda | calendario | completati
+  const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [prioFilter, setPrioFilter] = useState("all");
+  const [editing, setEditing] = useState(null); // form + id opzionale
+  const [quick, setQuick] = useState("");
+  const [quickBusy, setQuickBusy] = useState(false);
+  const [month, setMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
+  const [dayOpen, setDayOpen] = useState(null);
+
+  const load = useCallback(async () => {
+    try { setReminders(await db.Reminder.list("data", 2000)); } catch (e) { console.error(e); }
+    finally { setLoading(false); }
+  }, []);
 
   useEffect(() => {
     load();
-    const unsubscribe = db.Reminder.subscribe(() => load());
-    return () => { try { unsubscribe && unsubscribe(); } catch (_) {} };
-  }, []);
+    const unsub = db.Reminder.subscribe(() => load());
+    return () => { try { unsub && unsub(); } catch { /* ignore */ } };
+  }, [load]);
 
-  const load = async () => {
-    try { setReminders(await db.Reminder.list("data")); } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+  const today = todayIso();
+  const q = query.trim().toLowerCase();
+  const matches = (r) =>
+    (typeFilter === "all" || r.tipo === typeFilter) &&
+    (prioFilter === "all" || (r.priorita || "normale") === prioFilter) &&
+    (!q || [r.titolo, r.descrizione, r.luogo].some((v) => String(v || "").toLowerCase().includes(q)));
+
+  const main = useMemo(() => reminders.filter((r) => !r.is_preavviso && r.data), [reminders]);
+  // Gli avvisi anticipati compaiono solo quando è arrivato il loro giorno.
+  const dueNotices = useMemo(() => reminders.filter((r) => r.is_preavviso && !r.completato && r.data && r.data <= today), [reminders, today]);
+
+  const stats = useMemo(() => {
+    const s = { overdue: 0, today: 0, week: 0, done30: 0 };
+    const from = addDays(today, -30);
+    for (const r of main) {
+      const b = bucketOf(r, today);
+      if (b === "overdue") s.overdue++;
+      if (b === "today") s.today++;
+      if (["today", "tomorrow", "week"].includes(b)) s.week++;
+      if (r.completato && (r.completato_il || r.updated_date || "").slice(0, 10) >= from) s.done30++;
+    }
+    return s;
+  }, [main, today]);
+
+  const grouped = useMemo(() => {
+    const g = Object.fromEntries(BUCKETS.map((b) => [b.key, []]));
+    for (const r of main.filter((x) => !x.completato && matches(x))) g[bucketOf(r, today)]?.push(r);
+    for (const k in g) g[k].sort(byWhen);
+    return g;
+  }, [main, today, q, typeFilter, prioFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const completed = useMemo(() => main.filter((r) => r.completato && matches(r))
+    .sort((a, b) => String(b.completato_il || b.data).localeCompare(String(a.completato_il || a.data))), [main, q, typeFilter, prioFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ─── Azioni ───
+  const siblingsOf = (r) => reminders.filter((x) => x.is_preavviso && x.id !== r.id && (x.principale_id === r.id || (r.riferimento_id && x.riferimento_id === r.riferimento_id)));
+
+  const complete = async (r) => {
+    try {
+      const done = !r.completato;
+      await db.Reminder.update(r.id, { completato: done, completato_il: done ? new Date().toISOString() : null });
+      if (done) {
+        const sib = siblingsOf(r).filter((x) => !x.completato);
+        if (sib.length) await db.Reminder.bulkUpdate(sib.map((x) => ({ id: x.id, completato: true })));
+        const next = r.ricorrenza && r.ricorrenza !== "nessuna" ? nextOccurrence(r.data, r.ricorrenza) : null;
+        if (next) {
+          const { id, created_date, updated_date, created_by_id, completato_il, posticipato, ...rest } = r; // eslint-disable-line no-unused-vars
+          await db.Reminder.create({ ...rest, data: next, completato: false });
+          toast({ title: "Completato", description: `Il prossimo è stato fissato per ${fmtDay(next)}.` });
+        } else toast({ title: "Completato" });
+      } else toast({ title: "Riaperto" });
+      load();
+    } catch (e) { toast({ title: "Errore", variant: "destructive" }); }
   };
 
-  const handleSave = async () => {
-    try {
-      // Create the main reminder on the target date (the actual deadline)
-      await db.Reminder.create({
-        titolo: form.titolo,
-        descrizione: form.descrizione,
-        data: form.data,
-        ora: form.ora || undefined,
-        tipo: form.tipo,
-        completato: false,
-        is_preavviso: false,
-      });
+  const completeNotice = async (n) => { await db.Reminder.update(n.id, { completato: true }); load(); };
 
-      // If anticipo is set, also create a pre-notification (marked as preavviso)
-      const anticipoDays = Number(form.anticipo) || 0;
-      if (anticipoDays > 0) {
-        const scadenza = new Date(form.data);
-        const notifDate = new Date(scadenza);
-        notifDate.setDate(notifDate.getDate() - anticipoDays);
-        const oggi = new Date(new Date().toISOString().slice(0, 10));
-        if (notifDate >= oggi && notifDate < scadenza) {
+  const snooze = async (r, days, label) => {
+    const base = r.data < today ? today : r.data;
+    let target = addDays(base, days);
+    if (days === "monday") { const d = parseIso(today); d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7)); target = iso(d); }
+    await db.Reminder.update(r.id, { data: target, posticipato: (r.posticipato || 0) + 1 });
+    toast({ title: "Posticipato", description: `${label}: ${fmtDay(target)}` });
+    load();
+  };
+
+  const remove = async (r) => {
+    if (!confirm(`Eliminare "${r.titolo}"?`)) return;
+    try {
+      for (const s of siblingsOf(r)) await db.Reminder.delete(s.id);
+      await db.Reminder.delete(r.id);
+      toast({ title: "Promemoria eliminato" });
+      load();
+    } catch (e) { toast({ title: "Errore", variant: "destructive" }); }
+  };
+
+  const openLink = async (r) => {
+    const url = linkFor(r);
+    if (url) return navigate(url);
+    if (r.riferimento_tipo === "EmployeeDocument") {
+      const d = await db.EmployeeDocument.get(r.riferimento_id).catch(() => null);
+      if (d?.dipendente_id) return navigate(`/dipendenti/${d.dipendente_id}`);
+    }
+    toast({ title: "Il record collegato non è più disponibile" });
+  };
+
+  const save = async (form) => {
+    const payload = {
+      titolo: form.titolo.trim(), descrizione: form.descrizione || "", data: form.data, ora: form.ora || "", tipo: form.tipo,
+      priorita: form.priorita || "normale", ricorrenza: form.ricorrenza || "nessuna", luogo: form.luogo || "",
+    };
+    try {
+      let rec;
+      if (form.id) {
+        rec = await db.Reminder.update(form.id, payload);
+        // gli avvisi anticipati seguono la nuova data
+        const own = reminders.filter((x) => x.is_preavviso && x.principale_id === form.id);
+        for (const o of own) await db.Reminder.delete(o.id);
+      } else {
+        rec = await db.Reminder.create({ ...payload, completato: false, is_preavviso: false });
+      }
+      const days = Number(form.anticipo) || 0;
+      if (days > 0) {
+        const when = addDays(payload.data, -days);
+        if (when >= today && when < payload.data) {
           await db.Reminder.create({
-            titolo: `${form.titolo} (tra ${anticipoDays} giorni)`,
-            descrizione: form.descrizione,
-            data: notifDate.toISOString().slice(0, 10),
-            ora: form.ora || undefined,
-            tipo: form.tipo,
-            completato: false,
-            is_preavviso: true,
+            ...payload, titolo: `${payload.titolo} (tra ${days} ${days === 1 ? "giorno" : "giorni"})`, data: when, ricorrenza: "nessuna",
+            completato: false, is_preavviso: true, principale_id: rec.id, anticipo_giorni: days,
           });
         }
       }
-
-      setDialogOpen(false);
-      setForm(emptyReminder);
+      setEditing(null);
+      toast({ title: form.id ? "Promemoria aggiornato" : "Promemoria creato", description: `${fmtDay(payload.data)}${payload.ora ? ` alle ${payload.ora}` : ""}` });
       load();
-      toast({ title: "✓ Promemoria creato", description: "Visibile in Attivi e nel Calendario.", duration: 4000 });
     } catch (e) {
-      toast({ title: "Errore", variant: "destructive" });
+      console.error(e);
+      toast({ title: "Salvataggio non riuscito", variant: "destructive" });
     }
   };
 
-  const toggleComplete = async (r) => {
-    await db.Reminder.update(r.id, { completato: !r.completato });
-    load();
-    toast({ title: r.completato ? "Riaperto" : "Completato" });
+  const quickAdd = async (e) => {
+    e.preventDefault();
+    const text = quick.trim();
+    if (!text) return;
+    setQuickBusy(true);
+    try {
+      const parsed = await parseQuickReminder(text);
+      setEditing({ ...empty(), ...parsed });
+      setQuick("");
+    } catch (err) {
+      // senza IA si apre comunque il modulo con il testo come titolo
+      setEditing({ ...empty(), titolo: text });
+    } finally { setQuickBusy(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Eliminare?")) return;
-    await db.Reminder.delete(id);
-    load();
+  const openEdit = (r) => {
+    const own = reminders.find((x) => x.is_preavviso && x.principale_id === r.id);
+    setEditing({ ...empty(), ...r, ora: r.ora || "", luogo: r.luogo || "", priorita: r.priorita || "normale", ricorrenza: r.ricorrenza || "nessuna", anticipo: String(own?.anticipo_giorni || 0) });
   };
-
-  const openNew = () => { setForm(emptyReminder); setDialogOpen(true); };
-
-  // List view: only actual deadlines, not pre-notifications
-  const listReminders = reminders.filter(r => !r.is_preavviso);
-
-  const filtered = listReminders.filter(r => {
-    if (filter === "attivi") return !r.completato;
-    if (filter === "completati") return r.completato;
-    return true;
-  });
-
-  // Includes today: the expiration day itself is red
-  const isOverdue = (date) => date && new Date(date) <= new Date(new Date().toDateString());
-  const isExpiringSoon = (date) => {
-    if (!date) return false;
-    const diff = (new Date(date) - new Date(new Date().toDateString())) / (1000 * 60 * 60 * 24);
-    return diff >= 0 && diff <= 30;
-  };
-
-  // Calendar view
-  const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  const getFirstDayOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-
-  const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth(selectedMonth);
-    const firstDay = getFirstDayOfMonth(selectedMonth);
-    const adjustedFirst = firstDay === 0 ? 6 : firstDay - 1;
-    const days = [];
-    for (let i = 0; i < adjustedFirst; i++) days.push(null);
-    for (let i = 1; i <= daysInMonth; i++) days.push(i);
-
-    const monthStr = selectedMonth.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
-
-    const allDayReminders = (dateStr) => reminders.filter(r => r.data === dateStr);
-
-    return (
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
-        <div className="flex items-center justify-between mb-4">
-          <button onClick={() => setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1))} className="p-2.5 hover:bg-slate-100 rounded-lg text-slate-600"><ChevronLeft className="w-5 h-5" /></button>
-          <h3 className="text-base sm:text-lg font-semibold capitalize text-slate-900">{monthStr}</h3>
-          <button onClick={() => setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1))} className="p-2.5 hover:bg-slate-100 rounded-lg text-slate-600"><ChevronRight className="w-5 h-5" /></button>
-        </div>
-        <div className="flex items-center gap-4 mb-3 text-xs text-slate-500 flex-wrap">
-          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-red-200 border border-red-400"></span>Scadenza finale</span>
-          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-200 border border-amber-400"></span>Preavviso</span>
-          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-blue-100 border border-blue-300"></span>Oggi</span>
-        </div>
-        <div className="grid grid-cols-7 gap-1">
-          {["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"].map(d => (
-            <div key={d} className="text-center text-xs font-medium text-slate-500 py-2">{d}</div>
-          ))}
-          {days.map((day, i) => {
-            if (!day) return <div key={i} />;
-            const dateStr = `${selectedMonth.getFullYear()}-${String(selectedMonth.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-            const dayReminders = reminders.filter(r => r.data === dateStr && !r.completato);
-            const dayCompleted = reminders.filter(r => r.data === dateStr && r.completato);
-            const hasItems = dayReminders.length > 0 || dayCompleted.length > 0;
-            const isToday = dateStr === new Date().toISOString().slice(0, 10);
-            // Distinguish final deadlines from pre-notifications
-            const dayScadenze = dayReminders.filter(r => !r.is_preavviso);
-            const dayPreavvisi = dayReminders.filter(r => r.is_preavviso);
-            const hasScadenza = dayScadenze.length > 0;
-            const hasPreavviso = dayPreavvisi.length > 0;
-            const isOverdueDay = hasScadenza && isOverdue(dateStr);
-            const isExpiringSoonDay = hasScadenza && isExpiringSoon(dateStr) && !isOverdueDay;
-            return (
-              <button
-                key={i}
-                onClick={() => hasItems && setDayDetail({ dateStr, day, items: allDayReminders(dateStr) })}
-                className={`p-1 min-h-[60px] sm:min-h-[80px] rounded-lg text-left flex flex-col ${hasScadenza && isOverdueDay ? "border border-red-400 bg-red-50" : hasScadenza && isExpiringSoonDay ? "border border-red-300 bg-red-50/60" : hasScadenza ? "border border-red-200 bg-red-50/30" : hasPreavviso ? "border border-amber-300 bg-amber-50" : isToday ? "bg-blue-50 border border-blue-200" : "hover:bg-slate-50"} ${hasItems ? "cursor-pointer" : "cursor-default"}`}
-              >
-                <span className={`text-sm ${isToday && !hasScadenza ? "font-bold text-blue-600" : hasScadenza ? "font-bold text-red-700" : "text-slate-700"}`}>{day}</span>
-                {dayReminders.length > 0 && (
-                  <div className="mt-1 flex-1 space-y-0.5 overflow-hidden">
-                    {dayReminders.slice(0, 3).map(r => {
-                      const isPreavviso = r.is_preavviso;
-                      const isScadenza = r.tipo === "scadenza_documento" || r.tipo === "scadenza_contratto";
-                      return (
-                        <div key={r.id} className={`text-[10px] rounded px-1 py-0.5 truncate ${isPreavviso ? "bg-amber-200 text-amber-800 font-medium" : isScadenza ? "bg-red-200 text-red-800 font-semibold" : "bg-blue-100 text-blue-700"}`}>
-                          {isPreavviso ? "🔔 " : isScadenza ? "⛔ " : ""}{r.titolo}
-                        </div>
-                      );
-                    })}
-                    {dayReminders.length > 3 && <span className="text-[9px] text-slate-400">+{dayReminders.length - 3} altri</span>}
-                  </div>
-                )}
-                {dayCompleted.length > 0 && dayReminders.length === 0 && (
-                  <span className="text-[9px] text-emerald-500 mt-auto">{dayCompleted.length} completat{dayCompleted.length > 1 ? "i" : "o"}</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
-    };
 
   if (loading) return <LoadingSpinner />;
 
+  const rowProps = { onComplete: complete, onSnooze: snooze, onEdit: openEdit, onDelete: remove, onLink: openLink, today };
+  const openCount = BUCKETS.reduce((n, b) => n + grouped[b.key].length, 0);
+
   return (
     <div>
-      <PageHeader title="Promemoria" subtitle="Appuntamenti e scadenze" actionLabel="+ Nuovo" onAction={openNew}>
-        <div className="flex gap-2">
-          <Button variant={viewMode === "list" ? "default" : "outline"} size="sm" onClick={() => setViewMode("list")}>Lista</Button>
-          <Button variant={viewMode === "calendar" ? "default" : "outline"} size="sm" onClick={() => setViewMode("calendar")} className="gap-1"><Calendar className="w-4 h-4" />Calendario</Button>
+      <PageHeader title="Promemoria" subtitle="Scadenze, appuntamenti e cose da fare: tutto in un'agenda, con avvisi via email ogni mattina." actionLabel="Nuovo promemoria" onAction={() => setEditing(empty())} actionIcon={Plus} />
+
+      {/* Riepilogo */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <Stat icon={AlertTriangle} label="In ritardo" value={stats.overdue} tone={stats.overdue ? "text-red-600" : "text-slate-400"} />
+        <Stat icon={Bell} label="Oggi" value={stats.today} tone="text-blue-600" />
+        <Stat icon={CalendarIcon} label="Prossimi 7 giorni" value={stats.week} tone="text-slate-700" />
+        <Stat icon={CheckCircle2} label="Completati (30 gg)" value={stats.done30} tone="text-emerald-600" />
+      </div>
+
+      {/* Inserimento rapido */}
+      <form onSubmit={quickAdd} className="bg-white rounded-xl border border-slate-200 p-2 flex items-center gap-2 mb-4">
+        <Sparkles className="w-4 h-4 text-blue-600 ml-2 shrink-0" />
+        <Input value={quick} onChange={(e) => setQuick(e.target.value)} placeholder='Scrivi come parli: "chiamare Bianchi venerdì alle 10", "pagare F24 il 16 ogni mese"…' className="border-0 shadow-none focus-visible:ring-0 h-9" />
+        <Button type="submit" disabled={!quick.trim() || quickBusy} className="bg-blue-600 hover:bg-blue-700 shrink-0 gap-1.5">
+          {quickBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}<span className="hidden sm:inline">Aggiungi</span>
+        </Button>
+      </form>
+
+      {/* Strumenti */}
+      <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
+        <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit">
+          {[["agenda", "Agenda", ListTodo], ["calendario", "Calendario", CalendarIcon], ["completati", "Completati", CheckCircle2]].map(([k, l, I]) => (
+            <button key={k} onClick={() => setTab(k)} className={`flex items-center gap-1.5 px-3 h-8 rounded-md text-sm ${tab === k ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}><I className="w-4 h-4" /> {l}</button>
+          ))}
         </div>
-      </PageHeader>
+        <div className="flex flex-wrap gap-2 md:ml-auto">
+          <div className="relative flex-1 min-w-[160px]">
+            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cerca…" className="pl-8 h-9" />
+          </div>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="h-9 w-[170px]"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="all">Tutte le categorie</SelectItem>{REMINDER_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
+          </Select>
+          <Select value={prioFilter} onValueChange={setPrioFilter}>
+            <SelectTrigger className="h-9 w-[140px]"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="all">Ogni priorità</SelectItem>{PRIORITIES.map((p) => <SelectItem key={p.value} value={p.value}>Priorità {p.label.toLowerCase()}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+      </div>
 
-      {viewMode === "calendar" ? renderCalendar() : (
-        <>
-          <Tabs value={filter} onValueChange={setFilter} className="mb-4">
-            <TabsList>
-              <TabsTrigger value="attivi">Attivi</TabsTrigger>
-              <TabsTrigger value="completati">Completati</TabsTrigger>
-              <TabsTrigger value="tutti">Tutti</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          {filtered.length === 0 ? (
-            <EmptyState icon={Bell} title="Nessun promemoria" actionLabel="+ Nuovo" onAction={openNew} />
-          ) : (
-            <div className="space-y-2">
-              {filtered.map(r => (
-                <div key={r.id} className={`bg-white rounded-xl border p-4 flex items-center justify-between gap-2 ${isOverdue(r.data) && !r.completato ? "border-red-300 bg-red-50" : isExpiringSoon(r.data) && !r.completato ? "border-amber-300 bg-amber-50" : "border-slate-200"}`}>
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <button onClick={() => toggleComplete(r)} className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${r.completato ? "bg-emerald-500 border-emerald-500" : "border-slate-300 hover:border-blue-500"}`}>
-                      {r.completato && <Check className="w-3.5 h-3.5 text-white" />}
-                    </button>
-                    <div className="min-w-0">
-                      <p className={`text-sm font-medium ${r.completato ? "line-through text-slate-400" : "text-slate-900"}`}>{r.titolo}</p>
-                      {r.descrizione && <p className="text-xs text-slate-500 whitespace-pre-line line-clamp-2">{r.descrizione}</p>}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {isOverdue(r.data) && !r.completato && <AlertTriangle className="w-4 h-4 text-red-500" />}
-                    {isExpiringSoon(r.data) && !isOverdue(r.data) && !r.completato && <AlertTriangle className="w-4 h-4 text-amber-500" />}
-                    <span className={`text-xs whitespace-nowrap ${isOverdue(r.data) && !r.completato ? "text-red-600 font-medium" : isExpiringSoon(r.data) && !r.completato ? "text-amber-600 font-medium" : "text-slate-500"}`}>{new Date(r.data).toLocaleDateString("it-IT")}{r.ora ? ` ${r.ora}` : ""}</span>
-                    <button onClick={() => handleDelete(r.id)} className="p-2 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {tab === "agenda" && (
+        <div className="space-y-5">
+          {dueNotices.length > 0 && !q && typeFilter === "all" && (
+            <section className="rounded-xl border border-amber-200 bg-amber-50 p-3">
+              <p className="text-sm font-semibold text-amber-900 flex items-center gap-1.5 mb-2"><Bell className="w-4 h-4" /> Avvisi di scadenze in arrivo</p>
+              <ul className="space-y-1.5">
+                {dueNotices.sort(byWhen).map((n) => (
+                  <li key={n.id} className="flex items-center gap-2 text-sm">
+                    <span className="flex-1 min-w-0 truncate text-amber-950">{n.titolo}</span>
+                    {(linkFor(n) || n.riferimento_tipo === "EmployeeDocument") && <button onClick={() => openLink(n)} className="text-amber-900 underline underline-offset-2 shrink-0">Apri</button>}
+                    <button onClick={() => completeNotice(n)} className="text-amber-900 hover:text-amber-950 shrink-0 flex items-center gap-1"><Check className="w-4 h-4" /> Visto</button>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
-        </>
+          {openCount === 0 ? (
+            <div className="bg-white rounded-xl border border-dashed border-slate-300 py-14 text-center">
+              <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
+              <p className="mt-3 font-semibold text-slate-900">{q || typeFilter !== "all" || prioFilter !== "all" ? "Nessun promemoria con questi filtri" : "Tutto in ordine"}</p>
+              <p className="text-sm text-slate-500 mt-1">Nessun promemoria aperto. Aggiungine uno con la barra qui sopra.</p>
+            </div>
+          ) : BUCKETS.filter((b) => grouped[b.key].length).map((b) => (
+            <section key={b.key}>
+              <h2 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${b.tone}`}>{b.label}<span className="text-xs font-normal text-slate-500">{grouped[b.key].length}</span></h2>
+              <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+                {grouped[b.key].map((r) => <ReminderRow key={r.id} r={r} {...rowProps} showDate={b.key !== "today" && b.key !== "tomorrow"} />)}
+              </div>
+            </section>
+          ))}
+        </div>
       )}
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Nuovo Promemoria</DialogTitle></DialogHeader>
-          <div className="space-y-4 mt-4">
-            <div><Label>Titolo</Label><Input value={form.titolo} onChange={e => setForm({ ...form, titolo: e.target.value })} /></div>
-            <div><Label>Descrizione</Label><textarea value={form.descrizione} onChange={e => setForm({ ...form, descrizione: e.target.value })} className="w-full border border-slate-200 rounded-lg p-2 text-sm min-h-[60px]" /></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>Data</Label><Input type="date" value={form.data} onChange={e => setForm({ ...form, data: e.target.value })} /></div>
-              <div><Label>Ora</Label><Input type="time" value={form.ora} onChange={e => setForm({ ...form, ora: e.target.value })} /></div>
+      {tab === "completati" && (
+        completed.length === 0 ? (
+          <div className="bg-white rounded-xl border border-dashed border-slate-300 py-14 text-center text-sm text-slate-500">Nessun promemoria completato.</div>
+        ) : (
+          <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+            {completed.slice(0, 300).map((r) => <ReminderRow key={r.id} r={r} {...rowProps} showDate />)}
+          </div>
+        )
+      )}
+
+      {tab === "calendario" && (
+        <MonthCalendar month={month} setMonth={setMonth} reminders={main.filter(matches)} today={today} onDay={setDayOpen} onNew={(d) => setEditing({ ...empty(), data: d })} />
+      )}
+
+      {dayOpen && (
+        <Dialog open onOpenChange={(v) => !v && setDayOpen(null)}>
+          <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+            <DialogHeader><DialogTitle className="capitalize">{parseIso(dayOpen).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</DialogTitle></DialogHeader>
+            <div className="rounded-lg border border-slate-200 divide-y divide-slate-100">
+              {main.filter((r) => r.data === dayOpen && matches(r)).sort(byWhen).map((r) => <ReminderRow key={r.id} r={r} {...rowProps} />)}
+              {!main.some((r) => r.data === dayOpen && matches(r)) && <p className="p-4 text-sm text-slate-500">Niente in programma.</p>}
             </div>
+            <Button onClick={() => { setEditing({ ...empty(), data: dayOpen }); setDayOpen(null); }} className="bg-blue-600 hover:bg-blue-700 gap-1.5 w-fit"><Plus className="w-4 h-4" /> Aggiungi in questo giorno</Button>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {editing && <ReminderDialog initial={editing} onClose={() => setEditing(null)} onSave={save} />}
+    </div>
+  );
+}
+
+function Stat({ icon: Icon, label, value, tone }) {
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 p-3 flex items-center gap-3">
+      <Icon className={`w-5 h-5 ${tone}`} />
+      <div>
+        <p className="text-xl font-bold text-slate-900 tabular-nums leading-none">{value}</p>
+        <p className="text-xs text-slate-500 mt-1">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+function ReminderRow({ r, today, showDate, onComplete, onSnooze, onEdit, onDelete, onLink }) {
+  const t = reminderType(r.tipo);
+  const overdue = !r.completato && r.data < today;
+  const hasLink = !!(linkFor(r) || r.riferimento_tipo === "EmployeeDocument");
+  return (
+    <div className="flex items-start gap-3 px-3 py-2.5 group">
+      <button
+        onClick={() => onComplete(r)}
+        className={`mt-0.5 w-5 h-5 rounded-full border-2 grid place-items-center shrink-0 transition-colors ${r.completato ? "bg-emerald-600 border-emerald-600 text-white" : r.priorita === "alta" ? "border-red-500 hover:bg-red-50" : "border-slate-300 hover:border-emerald-600"}`}
+        aria-label={r.completato ? "Riapri" : "Segna come fatto"}
+      >
+        {r.completato && <Check className="w-3 h-3" />}
+      </button>
+      <div className="flex-1 min-w-0">
+        <p className={`text-sm font-medium ${r.completato ? "line-through text-slate-400" : "text-slate-900"}`}>
+          {r.priorita === "alta" && !r.completato && <span className="text-red-600 mr-1">!</span>}{r.titolo}
+        </p>
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1 text-xs text-slate-500">
+          {(showDate || overdue) && <span className={overdue ? "text-red-600 font-medium" : ""}>{fmtDay(r.data)}</span>}
+          {r.ora && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{r.ora}</span>}
+          <span className={`px-1.5 py-0.5 rounded ${t.color}`}>{t.label}</span>
+          {r.ricorrenza && r.ricorrenza !== "nessuna" && <span className="flex items-center gap-1"><Repeat className="w-3 h-3" />{RECURRENCES.find((x) => x.value === r.ricorrenza)?.label}</span>}
+          {r.luogo && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{r.luogo}</span>}
+          {r.posticipato > 0 && <span>posticipato {r.posticipato}×</span>}
+          {hasLink && <button onClick={() => onLink(r)} className="flex items-center gap-1 text-blue-700 hover:underline"><ExternalLink className="w-3 h-3" />{LINK_LABEL[r.riferimento_tipo] || "Apri"}</button>}
+        </div>
+        {r.descrizione && !r.completato && <p className="text-xs text-slate-500 mt-1 line-clamp-2 whitespace-pre-line">{r.descrizione}</p>}
+      </div>
+      <div className="flex items-center gap-0.5 shrink-0">
+        {!r.completato && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label="Posticipa" title="Posticipa"><AlarmClockOff className="w-4 h-4" /></button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Posticipa</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => onSnooze(r, 1, "Domani")}>Domani</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSnooze(r, 3, "Tra 3 giorni")}>Tra 3 giorni</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSnooze(r, "monday", "Lunedì prossimo")}>Lunedì prossimo</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSnooze(r, 7, "Tra una settimana")}>Tra una settimana</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSnooze(r, 30, "Tra un mese")}>Tra un mese</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label="Altre azioni"><MoreHorizontal className="w-4 h-4" /></button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit(r)}><Pencil className="w-4 h-4 mr-2" /> Modifica</DropdownMenuItem>
+            {r.completato && <DropdownMenuItem onClick={() => onComplete(r)}><RotateCcw className="w-4 h-4 mr-2" /> Riapri</DropdownMenuItem>}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => onDelete(r)} className="text-red-600"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
+
+function MonthCalendar({ month, setMonth, reminders, today, onDay, onNew }) {
+  const y = month.getFullYear(), m = month.getMonth();
+  const first = new Date(y, m, 1);
+  const offset = (first.getDay() + 6) % 7; // lunedì primo giorno
+  const days = new Date(y, m + 1, 0).getDate();
+  const cells = [...Array(offset).fill(null), ...Array.from({ length: days }, (_, i) => iso(new Date(y, m, i + 1)))];
+  while (cells.length % 7) cells.push(null);
+  const byDay = {};
+  for (const r of reminders) (byDay[r.data] ||= []).push(r);
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100">
+        <button onClick={() => setMonth(new Date(y, m - 1, 1))} className="p-1.5 rounded-md hover:bg-slate-100" aria-label="Mese precedente"><ChevronLeft className="w-5 h-5" /></button>
+        <div className="flex items-center gap-2">
+          <p className="font-semibold text-slate-900 capitalize">{month.toLocaleDateString("it-IT", { month: "long", year: "numeric" })}</p>
+          <button onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); }} className="text-xs text-blue-700 hover:underline">Oggi</button>
+        </div>
+        <button onClick={() => setMonth(new Date(y, m + 1, 1))} className="p-1.5 rounded-md hover:bg-slate-100" aria-label="Mese successivo"><ChevronRight className="w-5 h-5" /></button>
+      </div>
+      <div className="grid grid-cols-7 text-center text-xs font-medium text-slate-500 border-b border-slate-100">
+        {["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"].map((d) => <div key={d} className="py-1.5">{d}</div>)}
+      </div>
+      <div className="grid grid-cols-7">
+        {cells.map((d, i) => {
+          const list = d ? (byDay[d] || []).sort(byWhen) : [];
+          const open = list.filter((r) => !r.completato);
+          return (
+            <div
+              key={i}
+              onClick={() => d && (list.length ? onDay(d) : onNew(d))}
+              className={`min-h-[64px] sm:min-h-[96px] border-b border-r border-slate-100 p-1 ${d ? "cursor-pointer hover:bg-slate-50" : "bg-slate-50/50"}`}
+            >
+              {d && (
+                <>
+                  <span className={`inline-grid place-items-center w-6 h-6 text-xs rounded-full ${d === today ? "bg-blue-600 text-white font-semibold" : "text-slate-700"}`}>{Number(d.slice(8))}</span>
+                  <div className="hidden sm:block space-y-0.5 mt-0.5">
+                    {list.slice(0, 3).map((r) => (
+                      <p key={r.id} className={`text-[11px] leading-tight truncate px-1 py-0.5 rounded ${r.completato ? "line-through text-slate-400" : r.data < today ? "bg-red-50 text-red-700" : reminderType(r.tipo).color}`}>{r.ora ? `${r.ora} ` : ""}{r.titolo}</p>
+                    ))}
+                    {list.length > 3 && <p className="text-[11px] text-slate-500 px-1">+{list.length - 3} altri</p>}
+                  </div>
+                  {open.length > 0 && <div className="sm:hidden flex justify-center mt-1"><span className={`w-1.5 h-1.5 rounded-full ${d < today ? "bg-red-500" : "bg-blue-500"}`} /></div>}
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ReminderDialog({ initial, onClose, onSave }) {
+  const [f, setF] = useState(initial);
+  const [busy, setBusy] = useState(false);
+  const set = (k, v) => setF((x) => ({ ...x, [k]: v }));
+  const submit = async (e) => { e.preventDefault(); if (!f.titolo.trim() || !f.data) return; setBusy(true); await onSave(f); setBusy(false); };
+  return (
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader><DialogTitle>{f.id ? "Modifica promemoria" : "Nuovo promemoria"}</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <div><Label htmlFor="r-tit">Cosa</Label><Input id="r-tit" autoFocus value={f.titolo} onChange={(e) => set("titolo", e.target.value)} placeholder="es. Rinnovare polizza furgone" /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label htmlFor="r-data">Quando</Label><Input id="r-data" type="date" value={f.data} onChange={(e) => set("data", e.target.value)} /></div>
+            <div><Label htmlFor="r-ora">Ora (facoltativa)</Label><Input id="r-ora" type="time" value={f.ora} onChange={(e) => set("ora", e.target.value)} /></div>
             <div>
-              <Label>Tipo</Label>
-              <Select value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
+              <Label>Categoria</Label>
+              <Select value={f.tipo} onValueChange={(v) => set("tipo", v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {tipi.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
-                </SelectContent>
+                <SelectContent>{REMINDER_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Avvisa con anticipo</Label>
-                <Select value={form.anticipo} onValueChange={v => setForm({ ...form, anticipo: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {ANTICIPO_OPTIONS.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Ripeti notifica</Label>
-                <Select value={form.ripetizione} onValueChange={v => setForm({ ...form, ripetizione: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {RIPETIZIONE_OPTIONS.map(rp => <SelectItem key={rp.value} value={rp.value}>{rp.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <Label>Priorità</Label>
+              <Select value={f.priorita} onValueChange={(v) => set("priorita", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{PRIORITIES.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Si ripete</Label>
+              <Select value={f.ricorrenza} onValueChange={(v) => set("ricorrenza", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{RECURRENCES.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Avvisami anche</Label>
+              <Select value={f.anticipo} onValueChange={(v) => set("anticipo", v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{ANTICIPI.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent>
+              </Select>
             </div>
           </div>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Annulla</Button>
-            <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700" disabled={!form.titolo || !form.data}>Crea</Button>
+          <div><Label htmlFor="r-luogo">Luogo</Label><Input id="r-luogo" value={f.luogo} onChange={(e) => set("luogo", e.target.value)} placeholder="es. cantiere via Roma 12" /></div>
+          <div><Label htmlFor="r-note">Note</Label><Textarea id="r-note" rows={3} value={f.descrizione} onChange={(e) => set("descrizione", e.target.value)} /></div>
+          <p className="text-xs text-slate-500">Il giorno stabilito ricevi un'email di riepilogo al mattino e, con l'app aperta, una notifica (all'ora indicata, se c'è).</p>
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={onClose}>Annulla</Button>
+            <Button type="submit" disabled={!f.titolo.trim() || !f.data || busy} className="bg-blue-600 hover:bg-blue-700">{busy && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva</Button>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!dayDetail} onOpenChange={(open) => !open && setDayDetail(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{dayDetail ? new Date(dayDetail.dateStr).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" }) : ""}</DialogTitle>
-          </DialogHeader>
-          {dayDetail && dayDetail.items.length === 0 ? (
-            <p className="text-sm text-slate-500 py-4">Nessun promemoria per questo giorno.</p>
-          ) : (
-            <div className="space-y-2 mt-2 max-h-[60vh] overflow-y-auto">
-              {dayDetail?.items.map(r => {
-                const isScadenza = r.tipo === "scadenza_documento" || r.tipo === "scadenza_contratto";
-                const isPreavviso = r.is_preavviso;
-                const tipoLabel = tipi.find(t => t.value === r.tipo)?.label || r.tipo;
-                return (
-                  <div key={r.id} className={`rounded-lg border p-3 ${r.completato ? "border-emerald-200 bg-emerald-50/50" : isPreavviso ? "border-amber-300 bg-amber-50/60" : isScadenza && isOverdue(r.data) ? "border-red-300 bg-red-50/60" : isScadenza ? "border-red-200 bg-red-50/40" : "border-slate-200"}`}>
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          {isPreavviso ? <Bell className="w-4 h-4 text-amber-500 flex-shrink-0" /> : isScadenza ? <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" /> : null}
-                          <p className={`text-sm font-medium ${r.completato ? "line-through text-slate-400" : isPreavviso ? "text-amber-800" : isScadenza ? "text-red-800" : "text-slate-900"}`}>{r.titolo}</p>
-                        </div>
-                        {r.descrizione && <p className="text-xs text-slate-600 whitespace-pre-line mb-2">{r.descrizione}</p>}
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {isPreavviso ? <span className="text-[10px] bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded font-medium">🔔 Preavviso</span> : isScadenza ? <span className="text-[10px] bg-red-200 text-red-800 px-1.5 py-0.5 rounded font-medium">⛔ Scadenza finale</span> : <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">{tipoLabel}</span>}
-                          {r.ora && <span className="text-[10px] text-slate-500">ore {r.ora}</span>}
-                          {r.completato && <span className="text-[10px] text-emerald-600">Completato</span>}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <button onClick={() => { toggleComplete(r); setDayDetail(d => ({ ...d, items: d.items.map(x => x.id === r.id ? { ...x, completato: !x.completato } : x) })); }} className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${r.completato ? "bg-emerald-500 border-emerald-500" : "border-slate-300 hover:border-blue-500"}`}>
-                          {r.completato && <Check className="w-3.5 h-3.5 text-white" />}
-                        </button>
-                        <button onClick={() => { handleDelete(r.id); setDayDetail(d => ({ ...d, items: d.items.filter(x => x.id !== r.id) })); }} className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-    </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

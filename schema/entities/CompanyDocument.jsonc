@@ -19,7 +19,21 @@
         "permesso",
         "ddt",
         "collaudo",
-        "dico"
+        "dico",
+        "fattura",
+        "f24",
+        "estratto_conto",
+        "bilancio",
+        "busta_paga",
+        "contratto",
+        "preventivo",
+        "ordine",
+        "societario",
+        "dvr",
+        "verbale",
+        "planimetria",
+        "mezzo",
+        "scheda_tecnica"
       ],
       "title": "Tipo Documento"
     },
@@ -88,6 +102,53 @@
     "worksite_nome": {
       "type": "string",
       "title": "Nome lavoro"
+    },
+    "riassunto": {
+      "type": "string",
+      "title": "Riassunto"
+    },
+    "tag": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Etichette"
+    },
+    "numero": {
+      "type": "string",
+      "title": "Numero documento"
+    },
+    "importo": {
+      "type": "number",
+      "title": "Importo"
+    },
+    "emittente": {
+      "type": "string",
+      "title": "Emesso da"
+    },
+    "dimensione": {
+      "type": "number",
+      "title": "Dimensione (byte)"
+    },
+    "mime": {
+      "type": "string",
+      "title": "Tipo file"
+    },
+    "nome_file": {
+      "type": "string",
+      "title": "Nome del file"
+    },
+    "versioni": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Versioni precedenti"
+    },
+    "preferito": {
+      "type": "boolean",
+      "title": "Preferito",
+      "default": false
     }
   },
   "required": [

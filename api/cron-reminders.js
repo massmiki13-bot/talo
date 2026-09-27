@@ -49,10 +49,10 @@ export default async function cronReminders(req, res) {
       const subject = pre && due ? `Hai ${items.length} promemoria per oggi`
         : pre ? `${pre} ${pre === 1 ? "scadenza in arrivo" : "scadenze in arrivo"}`
         : `${due} ${due === 1 ? "scadenza oggi" : "scadenze oggi"}`;
-      const list = items.map((i) => `
+      const list = items.sort((a, b) => String(a.ora || "99").localeCompare(String(b.ora || "99"))).map((i) => `
         <li style="margin:0 0 10px">
           <strong style="color:${i.is_preavviso ? "#b45309" : "#b91c1c"}">${i.is_preavviso ? "AVVISO" : "SCADENZA"}</strong>
-          — ${escapeHtml(i.titolo)}${i.descrizione ? `<br><span style="color:#475569">${escapeHtml(i.descrizione)}</span>` : ""}
+          — ${i.ora ? `${escapeHtml(i.ora)} · ` : ""}${i.priorita === "alta" ? "<strong>[URGENTE]</strong> " : ""}${escapeHtml(i.titolo)}${i.luogo ? ` (${escapeHtml(i.luogo)})` : ""}${i.descrizione ? `<br><span style="color:#475569">${escapeHtml(i.descrizione)}</span>` : ""}
         </li>`).join("");
       const html = `
         <div style="font-family:Arial,sans-serif;font-size:14px;color:#0f172a;max-width:560px">

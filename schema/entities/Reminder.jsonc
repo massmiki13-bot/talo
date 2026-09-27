@@ -27,8 +27,15 @@
       "type": "string",
       "enum": [
         "appuntamento",
+        "chiamata",
         "scadenza_documento",
         "scadenza_contratto",
+        "scadenza_fiscale",
+        "incasso",
+        "pagamento",
+        "sollecito_preventivo",
+        "formazione",
+        "cantiere",
         "altro"
       ],
       "title": "Tipo"
@@ -50,6 +57,57 @@
     "riferimento_tipo": {
       "type": "string",
       "title": "Riferimento Tipo"
+    },
+    "priorita": {
+      "type": "string",
+      "enum": [
+        "alta",
+        "normale",
+        "bassa"
+      ],
+      "title": "Priorità",
+      "default": "normale"
+    },
+    "ricorrenza": {
+      "type": "string",
+      "enum": [
+        "nessuna",
+        "settimanale",
+        "mensile",
+        "trimestrale",
+        "annuale"
+      ],
+      "title": "Si ripete",
+      "default": "nessuna"
+    },
+    "assegnato_a": {
+      "type": "string",
+      "title": "Assegnato a (utente)"
+    },
+    "assegnato_nome": {
+      "type": "string",
+      "title": "Assegnato a"
+    },
+    "luogo": {
+      "type": "string",
+      "title": "Luogo"
+    },
+    "completato_il": {
+      "type": "string",
+      "title": "Completato il"
+    },
+    "posticipato": {
+      "type": "number",
+      "title": "Volte posticipato",
+      "default": 0
+    },
+    "principale_id": {
+      "type": "string",
+      "title": "Promemoria principale"
+    },
+    "anticipo_giorni": {
+      "type": "number",
+      "title": "Giorni di anticipo"
     }
   },
   "required": [

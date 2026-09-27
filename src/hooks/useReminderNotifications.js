@@ -33,7 +33,9 @@ export function useReminderNotifications() {
 
       try {
         const reminders = await db.Reminder.filter({ data: today }, "-created_date", 50);
-        const active = reminders.filter(r => !r.completato);
+        const now = new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
+        // con un orario, la notifica arriva solo da quell'ora in poi
+        const active = reminders.filter(r => !r.completato && (!r.ora || r.ora <= now));
 
         for (const r of active) {
           if (notifiedRef.current.has(r.id)) continue;
