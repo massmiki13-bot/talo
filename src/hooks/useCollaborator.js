@@ -49,6 +49,7 @@ export function useCollaborator(user) {
     if (accessLevel === "operaio") {
       // Operaio: only personal pages
       if (path === "/") return true;
+      if (path === "/presenze") return true;
       if (path === "/giornaliere") return true;
       if (path === "/ore-mensili") return true;
       if (path.startsWith("/dipendenti/")) {

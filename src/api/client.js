@@ -76,6 +76,8 @@ async function rpc(fn, params) {
   return data;
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function entityApi(entity) {
   const list = (filter = {}, sort = "-created_date", limit = null, skip = 0) =>
     rpc("entity_list", { p_entity: entity, p_filter: filter || {}, p_sort: sort || "-created_date", p_limit: limit ?? null, p_skip: skip || 0 })
@@ -84,7 +86,10 @@ function entityApi(entity) {
   return {
     list: (sort, limit, skip) => list({}, sort, limit, skip),
     filter: (filter, sort, limit, skip) => list(filter, sort, limit, skip),
-    get: (id) => rpc("entity_get", { p_entity: entity, p_id: id }),
+    get: (id) => {
+      if (!UUID_RE.test(String(id))) return Promise.reject(new ApiError("Record non trovato", 404));
+      return rpc("entity_get", { p_entity: entity, p_id: id });
+    },
     create: async (data) => {
       const rec = await rpc("entity_create", { p_entity: entity, p_data: withDefaults(entity, data) });
       notify(entity, "create", rec);

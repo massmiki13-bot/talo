@@ -7,7 +7,7 @@ import { isAllowedFileUrl } from "./_lib/mail.js";
 const API = "https://generativelanguage.googleapis.com/v1beta/models";
 // Dal più capace al più economico: se un modello non è disponibile o ha
 // esaurito la quota si passa al successivo.
-const MODELS = (process.env.GEMINI_MODELS || "gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite")
+const MODELS = (process.env.GEMINI_MODELS || "gemini-3.8-flash,gemini-3.7-flash,gemini-3.5-flash,gemini-3.5-flash-lite")
   .split(",").map((m) => m.trim()).filter(Boolean);
 
 const MAX_FILE_BYTES = 18 * 1024 * 1024;
