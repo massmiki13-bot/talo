@@ -10,7 +10,8 @@
       "type": "string",
       "enum": [
         "cliente",
-        "fornitore"
+        "fornitore",
+        "entrambi"
       ],
       "title": "Tipo"
     },
@@ -36,7 +37,7 @@
     },
     "citta": {
       "type": "string",
-      "title": "Citt\u00e0"
+      "title": "Città"
     },
     "cap": {
       "type": "string",
@@ -61,6 +62,78 @@
     "note": {
       "type": "string",
       "title": "Note"
+    },
+    "tipo_soggetto": {
+      "type": "string",
+      "enum": [
+        "privato",
+        "azienda",
+        "ente"
+      ],
+      "title": "Tipo soggetto",
+      "default": "azienda"
+    },
+    "cellulare": {
+      "type": "string",
+      "title": "Cellulare"
+    },
+    "sito_web": {
+      "type": "string",
+      "title": "Sito web"
+    },
+    "codice_sdi": {
+      "type": "string",
+      "title": "Codice destinatario SDI"
+    },
+    "iban": {
+      "type": "string",
+      "title": "IBAN"
+    },
+    "categorie": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Categorie"
+    },
+    "categoria_fornitore": {
+      "type": "string",
+      "title": "Categoria merceologica"
+    },
+    "referenti": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Referenti"
+    },
+    "indirizzi": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Sedi e indirizzi di cantiere"
+    },
+    "sconto_default": {
+      "type": "number",
+      "title": "Sconto abituale %"
+    },
+    "iva_default": {
+      "type": "number",
+      "title": "Aliquota IVA abituale %"
+    },
+    "pagamento_default": {
+      "type": "string",
+      "title": "Modalità di pagamento abituale"
+    },
+    "termini_pagamento_giorni": {
+      "type": "number",
+      "title": "Termini di pagamento (giorni)"
+    },
+    "archiviato": {
+      "type": "boolean",
+      "title": "Archiviato",
+      "default": false
     }
   },
   "required": [

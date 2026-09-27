@@ -1,80 +1,74 @@
-import LinkedEmails from "@/components/email/LinkedEmails";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import EmptyState from "@/components/shared/EmptyState";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import {
-  ArrowLeft, Pencil, FileText, Briefcase, Receipt, CreditCard,
-  Inbox, FolderOpen, Phone, Mail, MapPin, Building2, User, StickyNote, ChevronRight
+  ArrowLeft, Pencil, FileText, Briefcase, Phone, Mail, MapPin, MessageCircle, Plus, Navigation,
+  Inbox, FolderOpen, User, Users, StickyNote, ChevronRight, CreditCard, Receipt, ShieldCheck, Upload, Loader2, AlertTriangle, Globe,
 } from "lucide-react";
+import ContactForm from "@/components/contacts/ContactForm";
+import LinkedEmails from "@/components/email/LinkedEmails";
+import ComposeDialog from "@/components/email/ComposeDialog";
+import { createDocumentReminder, getExpirationStatus } from "@/utils/expirationReminders";
+import {
+  displayName, isCliente, isFornitore, TIPO_LABEL, SOGGETTO_LABEL, fullAddress, mapsUrl, phoneHref, whatsappHref, fmtEur, fmtDate,
+} from "@/lib/contacts";
 
 const QUOTE_STATO = {
-  in_attesa: { label: "In attesa", className: "bg-slate-100 text-slate-700" },
-  inviato: { label: "Inviato", className: "bg-blue-100 text-blue-700" },
-  approvato: { label: "Approvato", className: "bg-emerald-100 text-emerald-700" },
+  bozza: { label: "Bozza", className: "bg-slate-100 text-slate-700" },
+  in_attesa: { label: "In attesa", className: "bg-amber-100 text-amber-800" },
+  inviato: { label: "Inviato", className: "bg-blue-100 text-blue-800" },
+  visto: { label: "Visto", className: "bg-indigo-100 text-indigo-800" },
+  approvato: { label: "Accettato", className: "bg-emerald-100 text-emerald-800" },
   rifiutato: { label: "Rifiutato", className: "bg-red-100 text-red-700" },
-  scaduto: { label: "Scaduto", className: "bg-amber-100 text-amber-700" },
+  scaduto: { label: "Scaduto", className: "bg-slate-200 text-slate-700" },
 };
 const WORKSITE_STATO = {
   da_iniziare: { label: "Da iniziare", className: "bg-slate-100 text-slate-700" },
-  in_corso: { label: "In corso", className: "bg-blue-100 text-blue-700" },
-  finito: { label: "Finito", className: "bg-emerald-100 text-emerald-700" },
+  in_corso: { label: "In corso", className: "bg-blue-100 text-blue-800" },
+  finito: { label: "Finito", className: "bg-emerald-100 text-emerald-800" },
 };
-const DOC_TYPES = {
-  certificazione: "Certificazione", assicurazione: "Assicurazione",
-  durc: "DURC", visura: "Visura", altro: "Altro",
-};
-const PAYMENT_TIPO = { acconto: "Acconto", saldo: "Saldo" };
-const fmtDate = (d) => d ? new Date(d).toLocaleDateString("it-IT") : "—";
-const fmtEur = (n) => (n != null ? `€ ${Number(n).toLocaleString("it-IT", { minimumFractionDigits: 2 })}` : "—");
+const DOC_TYPES = { durc: "DURC", visura: "Visura camerale", certificazione: "Certificazione", assicurazione: "Assicurazione", altro: "Altro" };
 
-function sortByDate(arr, key = "data") {
-  return [...arr].sort((a, b) => {
-    const da = a[key] || a.created_date || "";
-    const db = b[key] || b.created_date || "";
-    return db.localeCompare(da);
-  });
-}
+const Badge = ({ className, children }) => <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${className}`}>{children}</span>;
 
-function SectionCard({ icon: Icon, title, count, children, emptyMsg }) {
+function Card({ icon: Icon, title, action, children, className = "" }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50">
+    <section className={`bg-white rounded-xl border border-slate-200 ${className}`}>
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
         <Icon className="w-4 h-4 text-slate-500" />
-        <h3 className="text-sm font-semibold text-slate-700">{title}</h3>
-        {count > 0 && <Badge variant="secondary" className="ml-auto">{count}</Badge>}
+        <h3 className="text-sm font-semibold text-slate-800 flex-1">{title}</h3>
+        {action}
       </div>
-      {count === 0 ? (
-        <p className="px-4 py-6 text-sm text-slate-400 text-center">{emptyMsg}</p>
-      ) : (
-        <div className="divide-y divide-slate-50">{children}</div>
-      )}
-    </div>
+      <div className="p-4">{children}</div>
+    </section>
   );
 }
 
-function ItemRow({ to, onClick, title, subtitle, right, rightSub, badge }) {
-  const content = (
-    <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer">
+function Row({ to, title, subtitle, right, rightSub, badge }) {
+  return (
+    <Link to={to} className="flex items-center gap-3 py-2.5 px-1 -mx-1 rounded hover:bg-slate-50">
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium text-slate-900 truncate">{title}</p>
-        {subtitle && <p className="text-xs text-slate-500 mt-0.5 truncate">{subtitle}</p>}
+        {subtitle && <p className="text-xs text-slate-500 truncate">{subtitle}</p>}
       </div>
-      <div className="flex flex-col items-end gap-1 flex-shrink-0">
+      <div className="text-right shrink-0">
         {badge}
-        {right && <span className="text-sm font-medium text-slate-700">{right}</span>}
-        {rightSub && <span className="text-xs text-slate-400">{rightSub}</span>}
+        {right && <p className="text-sm font-medium text-slate-800 tabular-nums">{right}</p>}
+        {rightSub && <p className="text-xs text-slate-500">{rightSub}</p>}
       </div>
-      <ChevronRight className="w-4 h-4 text-slate-300 flex-shrink-0" />
-    </div>
+      <ChevronRight className="w-4 h-4 text-slate-300 shrink-0" />
+    </Link>
   );
-  if (to) return <Link to={to} className="block">{content}</Link>;
-  return <div onClick={onClick} className="block">{content}</div>;
 }
+
+const Empty = ({ children }) => <p className="text-sm text-slate-500 py-2">{children}</p>;
 
 export default function ContactDetail() {
   const { id } = useParams();
@@ -82,215 +76,363 @@ export default function ContactDetail() {
   const { toast } = useToast();
   const [contact, setContact] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [quotes, setQuotes] = useState([]);
-  const [receivedQuotes, setReceivedQuotes] = useState([]);
-  const [worksites, setWorksites] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [payments, setPayments] = useState([]);
-  const [documents, setDocuments] = useState([]);
-
-  useEffect(() => { loadAll(); }, [id]);
+  const [data, setData] = useState({ quotes: [], received: [], worksites: [], payments: [], documents: [] });
+  const [editOpen, setEditOpen] = useState(false);
+  const [compose, setCompose] = useState(null);
+  const [docOpen, setDocOpen] = useState(false);
+  const [tab, setTab] = useState("panoramica");
 
   const loadAll = async () => {
     try {
       const c = await db.Contact.get(id);
-      if (!c) { toast({ title: "Contatto non trovato", variant: "destructive" }); navigate("/contatti"); return; }
       setContact(c);
-      const contactName = c.nome || c.nome_privato || "";
-      const [q, rq, ws, inv, pay, docs] = await Promise.all([
+      const name = displayName(c);
+      const [quotes, received, worksites, payments, documents] = await Promise.all([
         db.Quote.filter({ cliente_id: id }, "-data"),
-        db.ReceivedQuote.filter({ fornitore: contactName }, "-data").catch(() => []),
+        db.ReceivedQuote.filter({ fornitore: name }, "-data").catch(() => []),
         db.Worksite.filter({ cliente_id: id }, "-created_date"),
-        db.Invoice.filter({ cliente_id: id }, "-data").catch(() => []),
         db.WorksitePayment.filter({ cliente_id: id }, "-data").catch(() => []),
-        db.CompanyDocument.filter({ contatto_id: id }, "-created_date"),
+        db.CompanyDocument.filter({ contatto_id: id }, "-created_date").catch(() => []),
       ]);
-      setQuotes(q);
-      setReceivedQuotes(rq);
-      setWorksites(ws);
-      setInvoices(inv);
-      setPayments(pay);
-      setDocuments(docs);
-    } catch (e) {
-      console.error(e);
-      toast({ title: "Errore caricamento", variant: "destructive" });
-    } finally { setLoading(false); }
+      setData({ quotes, received, worksites, payments, documents });
+    } catch {
+      toast({ title: "Contatto non trovato", variant: "destructive" });
+      navigate("/contatti");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => { loadAll(); }, [id]);
+
+  const stats = useMemo(() => {
+    const { quotes, worksites, payments } = data;
+    const preventivato = quotes.reduce((s, q) => s + (Number(q.totale) || 0), 0);
+    const accettato = quotes.filter((q) => q.stato === "approvato").reduce((s, q) => s + (Number(q.totale) || 0), 0);
+    const lavori = worksites.reduce((s, w) => s + (Number(w.importo_totale) || 0), 0);
+    const incassato = payments.reduce((s, p) => s + (Number(p.importo) || 0), 0);
+    const base = Math.max(accettato, lavori);
+    const decisi = quotes.filter((q) => ["approvato", "rifiutato"].includes(q.stato));
+    return {
+      preventivato, accettato, incassato,
+      daIncassare: Math.max(0, base - incassato),
+      conversione: decisi.length ? Math.round((decisi.filter((q) => q.stato === "approvato").length / decisi.length) * 100) : null,
+    };
+  }, [data]);
+
+  const timeline = useMemo(() => {
+    const items = [
+      ...data.quotes.map((q) => ({ date: q.data || q.created_date, icon: FileText, to: `/preventivi/${q.id}`, title: `Preventivo ${q.numero || ""}`, sub: q.oggetto, right: fmtEur(q.totale), badge: QUOTE_STATO[q.stato] })),
+      ...data.worksites.map((w) => ({ date: w.created_date, icon: Briefcase, to: `/lavori/${w.id}`, title: `Lavoro: ${w.nome}`, sub: w.indirizzo, right: w.importo_totale ? fmtEur(w.importo_totale) : "", badge: WORKSITE_STATO[w.stato] })),
+      ...data.payments.map((p) => ({ date: p.data || p.created_date, icon: CreditCard, to: p.worksite_id ? `/lavori/${p.worksite_id}` : "#", title: `Pagamento ${p.tipo === "saldo" ? "saldo" : "acconto"}`, sub: p.worksite_nome, right: fmtEur(p.importo) })),
+      ...data.received.map((r) => ({ date: r.data || r.created_date, icon: Inbox, to: "/preventivi?tab=ricevuti", title: "Preventivo ricevuto", sub: r.descrizione, right: r.importo ? fmtEur(r.importo) : "" })),
+      ...data.documents.map((d) => ({ date: d.created_date, icon: FolderOpen, to: `/documenti-ditta?doc=${d.id}`, title: d.titolo, sub: DOC_TYPES[d.tipo] || "Documento", right: d.data_scadenza ? `scad. ${fmtDate(d.data_scadenza)}` : "" })),
+    ];
+    return items.sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+  }, [data]);
 
   if (loading) return <LoadingSpinner />;
   if (!contact) return null;
 
-  const displayName = contact.nome || contact.nome_privato || "Contatto";
-  const isFornitore = contact.tipo === "fornitore";
+  const name = displayName(contact);
+  const cliente = isCliente(contact);
+  const fornitore = isFornitore(contact);
+  const phone = contact.cellulare || contact.telefono;
+  const hasAddress = contact.indirizzo || contact.citta;
+  const expiringDocs = data.documents.filter((d) => getExpirationStatus(d.data_scadenza));
 
-  const totalQuotes = quotes.reduce((s, q) => s + (q.totale || 0), 0);
-  const totalPaid = payments.reduce((s, p) => s + (p.importo || 0), 0);
+  const emailTo = contact.email || contact.pec || contact.referenti?.find((r) => r.email)?.email || "";
 
-  const infoRows = [
-    { icon: Building2, label: "Ragione Sociale", value: contact.nome },
-    { icon: User, label: "Nome", value: contact.nome_privato },
-    { icon: MapPin, label: "Indirizzo", value: [contact.indirizzo, [contact.cap, contact.citta, contact.provincia].filter(Boolean).join(" ")].filter(Boolean).join(", ") },
-    { icon: Phone, label: "Telefono", value: contact.telefono },
-    { icon: Mail, label: "Email", value: contact.email },
-    { icon: Mail, label: "PEC", value: contact.pec },
-    { icon: FileText, label: "P.IVA", value: contact.partita_iva },
-    { icon: FileText, label: "Codice Fiscale", value: contact.codice_fiscale },
-  ].filter(r => r.value);
+  const info = [
+    { icon: User, label: SOGGETTO_LABEL[contact.tipo_soggetto] === "Privato" ? "Nome" : "Titolare / referente", value: contact.nome ? contact.nome_privato : null },
+    { icon: MapPin, label: "Indirizzo", value: hasAddress ? fullAddress(contact) : null, href: hasAddress ? mapsUrl(contact) : null },
+    { icon: Phone, label: "Telefono", value: contact.telefono, href: contact.telefono && phoneHref(contact.telefono) },
+    { icon: Phone, label: "Cellulare", value: contact.cellulare, href: contact.cellulare && phoneHref(contact.cellulare) },
+    { icon: Mail, label: "Email", value: contact.email, href: contact.email && `mailto:${contact.email}` },
+    { icon: ShieldCheck, label: "PEC", value: contact.pec },
+    { icon: FileText, label: "Partita IVA", value: contact.partita_iva },
+    { icon: FileText, label: "Codice fiscale", value: contact.codice_fiscale },
+    { icon: Receipt, label: "Codice SDI", value: contact.codice_sdi },
+    { icon: CreditCard, label: "IBAN", value: contact.iban },
+    { icon: Globe, label: "Sito web", value: contact.sito_web, href: contact.sito_web && (/^https?:/.test(contact.sito_web) ? contact.sito_web : `https://${contact.sito_web}`) },
+  ].filter((r) => r.value);
+
+  const conditions = [
+    ["Pagamento", contact.pagamento_default],
+    ["Termini", contact.termini_pagamento_giorni ? `${contact.termini_pagamento_giorni} giorni` : null],
+    ["Sconto abituale", contact.sconto_default ? `${contact.sconto_default}%` : null],
+    ["IVA abituale", contact.iva_default !== null && contact.iva_default !== undefined && contact.iva_default !== "" ? `${contact.iva_default}%` : null],
+  ].filter(([, v]) => v);
+
+  const TABS = [
+    ["panoramica", "Panoramica"],
+    ["attivita", `Attività (${timeline.length})`],
+    ...(cliente ? [["preventivi", `Preventivi (${data.quotes.length})`], ["lavori", `Lavori (${data.worksites.length})`]] : []),
+    ["documenti", `Documenti (${data.documents.length})`],
+    ["email", "Email"],
+  ];
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/contatti")} className="flex-shrink-0">
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
+      {/* Intestazione */}
+      <div className="flex items-start gap-2">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Indietro" className="shrink-0 -ml-2"><ArrowLeft className="w-5 h-5" /></Button>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-slate-900 truncate">{displayName}</h1>
-            <Badge className={isFornitore ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}>
-              {isFornitore ? "Fornitore" : "Cliente"}
-            </Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 break-words">{name}</h1>
+            <Badge className={fornitore && !cliente ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"}>{TIPO_LABEL[contact.tipo] || "Cliente"}</Badge>
+            {contact.archiviato && <Badge className="bg-slate-200 text-slate-700">Archiviato</Badge>}
+          </div>
+          <div className="flex flex-wrap gap-1 mt-1.5">
+            {SOGGETTO_LABEL[contact.tipo_soggetto] && <span className="text-xs text-slate-500 mr-1">{SOGGETTO_LABEL[contact.tipo_soggetto]}</span>}
+            {(contact.categorie || []).map((c) => <span key={c} className="text-[11px] rounded-full bg-slate-100 text-slate-700 px-2 py-0.5">{c}</span>)}
+            {contact.categoria_fornitore && <span className="text-[11px] rounded-full bg-amber-50 text-amber-800 px-2 py-0.5">{contact.categoria_fornitore}</span>}
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={() => navigate("/contatti")} className="gap-1.5 flex-shrink-0">
-          <Pencil className="w-3.5 h-3.5" /> Modifica
-        </Button>
+        <Button variant="outline" size="sm" className="gap-1.5 shrink-0" onClick={() => setEditOpen(true)}><Pencil className="w-4 h-4" /> Modifica</Button>
       </div>
 
-      {/* Riepilogo */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-white rounded-xl border border-slate-200 p-3">
-          <p className="text-xs text-slate-500">Preventivi</p>
-          <p className="text-lg font-bold text-slate-900">{quotes.length}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-3">
-          <p className="text-xs text-slate-500">Valore preventivi</p>
-          <p className="text-lg font-bold text-slate-900">{fmtEur(totalQuotes)}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-3">
-          <p className="text-xs text-slate-500">Cantieri</p>
-          <p className="text-lg font-bold text-slate-900">{worksites.length}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-3">
-          <p className="text-xs text-slate-500">Totale incassato</p>
-          <p className="text-lg font-bold text-emerald-600">{fmtEur(totalPaid)}</p>
-        </div>
+      {/* Azioni rapide */}
+      <div className="flex flex-wrap gap-2">
+        {phone && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={phoneHref(phone)}><Phone className="w-4 h-4" /> Chiama</a></Button>}
+        {contact.cellulare && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={whatsappHref(contact.cellulare)} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" /> WhatsApp</a></Button>}
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setCompose({ defaultTo: emailTo, templateVars: { cliente: name }, links: { contact_id: id } })}><Mail className="w-4 h-4" /> Scrivi email</Button>
+        {hasAddress && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={mapsUrl(contact)} target="_blank" rel="noopener noreferrer"><Navigation className="w-4 h-4" /> Indicazioni</a></Button>}
+        {cliente && <Button size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => navigate(`/preventivi/nuovo?cliente=${id}`)}><Plus className="w-4 h-4" /> Nuovo preventivo</Button>}
       </div>
 
-      {/* Anagrafica */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
-        <h3 className="text-sm font-semibold text-slate-700 mb-3">Anagrafica</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {infoRows.map((r, i) => (
-            <div key={i} className="flex items-start gap-2">
-              <r.icon className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-              <div className="min-w-0">
-                <p className="text-xs text-slate-400">{r.label}</p>
-                <p className="text-sm text-slate-700 break-words">{r.value}</p>
-              </div>
-            </div>
-          ))}
-          {infoRows.length === 0 && <p className="text-sm text-slate-400">Nessun dato anagrafico</p>}
+      {fornitore && expiringDocs.length > 0 && (
+        <div className="flex gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>{expiringDocs.map((d) => `${DOC_TYPES[d.tipo] || d.titolo} ${getExpirationStatus(d.data_scadenza) === "expired" ? "scaduto" : "in scadenza"} (${fmtDate(d.data_scadenza)})`).join(" · ")}</span>
         </div>
-        {contact.note && (
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-start gap-2">
-            <StickyNote className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-xs text-slate-400">Note</p>
-              <p className="text-sm text-slate-600 whitespace-pre-wrap">{contact.note}</p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Preventivi emessi */}
-      <SectionCard icon={FileText} title="Preventivi emessi" count={quotes.length} emptyMsg="Nessun preventivo emesso per questo cliente">
-        {sortByDate(quotes).map(q => {
-          const st = QUOTE_STATO[q.stato] || {};
-          return (
-            <ItemRow key={q.id} to={`/preventivi/${q.id}`}
-              title={q.numero ? `${q.numero}` : "Preventivo"}
-              subtitle={q.oggetto || "Senza oggetto"}
-              right={fmtEur(q.totale)}
-              rightSub={fmtDate(q.data)}
-              badge={st.label && <Badge className={st.className}>{st.label}</Badge>}
-            />
-          );
-        })}
-      </SectionCard>
-
-      {/* Preventivi ricevuti (solo fornitori) */}
-      {isFornitore && (
-        <SectionCard icon={Inbox} title="Preventivi ricevuti" count={receivedQuotes.length} emptyMsg="Nessun preventivo ricevuto da questo fornitore">
-          {sortByDate(receivedQuotes).map(rq => (
-            <ItemRow key={rq.id} to="/preventivi"
-              title={rq.descrizione || "Preventivo ricevuto"}
-              subtitle={rq.worksite_nome || ""}
-              right={fmtEur(rq.importo)}
-              rightSub={fmtDate(rq.data)}
-              badge={<Badge className="bg-slate-100 text-slate-600">{rq.stato || "ricevuto"}</Badge>}
-            />
-          ))}
-        </SectionCard>
       )}
 
-      {/* Lavori/Cantieri */}
-      <SectionCard icon={Briefcase} title="Lavori / Cantieri" count={worksites.length} emptyMsg="Nessun cantiere associato a questo cliente">
-        {sortByDate(worksites, "created_date").map(w => {
-          const st = WORKSITE_STATO[w.stato] || {};
-          return (
-            <ItemRow key={w.id} to={`/lavori/${w.id}`}
-              title={w.nome}
-              subtitle={w.indirizzo || ""}
-              right={fmtEur(w.importo_totale)}
-              rightSub={w.stato_pagamento === "saldato" ? "Saldato" : w.stato_pagamento === "parziale" ? "Pagamento parziale" : "Non pagato"}
-              badge={st.label && <Badge className={st.className}>{st.label}</Badge>}
-            />
-          );
-        })}
-      </SectionCard>
+      {/* Riepilogo economico */}
+      {cliente && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            ["Preventivato", fmtEur(stats.preventivato), `${data.quotes.length} preventivi`, "text-slate-900"],
+            ["Accettato", fmtEur(stats.accettato), stats.conversione !== null ? `${stats.conversione}% di conversione` : "—", "text-emerald-700"],
+            ["Incassato", fmtEur(stats.incassato), `${data.payments.length} pagamenti`, "text-slate-900"],
+            ["Da incassare", fmtEur(stats.daIncassare), `${data.worksites.length} lavori`, stats.daIncassare > 0 ? "text-red-700" : "text-slate-900"],
+          ].map(([label, value, sub, color]) => (
+            <div key={label} className="bg-white rounded-xl border border-slate-200 p-3.5">
+              <p className="text-xs text-slate-500">{label}</p>
+              <p className={`text-lg font-bold tabular-nums ${color}`}>{value}</p>
+              <p className="text-xs text-slate-500">{sub}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
-      {/* Fatture */}
-      <SectionCard icon={Receipt} title="Fatture" count={invoices.length} emptyMsg="Nessuna fattura per questo cliente">
-        {sortByDate(invoices).map(inv => (
-          <ItemRow key={inv.id} to="/preventivi"
-            title={inv.numero ? `${inv.numero}/${inv.anno || ""}` : "Fattura"}
-            subtitle={inv.oggetto || ""}
-            right={fmtEur(inv.totale)}
-            rightSub={fmtDate(inv.data)}
-            badge={<Badge className="bg-slate-100 text-slate-600">{inv.stato}</Badge>}
-          />
+      {/* Schede */}
+      <div className="flex gap-1 overflow-x-auto border-b border-slate-200">
+        {TABS.map(([k, l]) => (
+          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
         ))}
-      </SectionCard>
+      </div>
 
-      {/* Pagamenti */}
-      <SectionCard icon={CreditCard} title="Pagamenti ricevuti" count={payments.length} emptyMsg="Nessun pagamento registrato per questo cliente">
-        {sortByDate(payments).map(p => (
-          <ItemRow key={p.id} to={p.worksite_id ? `/lavori/${p.worksite_id}` : null}
-            title={p.worksite_nome || "Pagamento"}
-            subtitle={PAYMENT_TIPO[p.tipo] || p.tipo || ""}
-            right={fmtEur(p.importo)}
-            rightSub={fmtDate(p.data)}
-            badge={p.metodo && <Badge className="bg-slate-100 text-slate-600">{p.metodo}</Badge>}
-          />
-        ))}
-      </SectionCard>
+      {tab === "panoramica" && (
+        <div className="grid lg:grid-cols-2 gap-4">
+          <Card icon={FileText} title="Anagrafica">
+            {info.length ? (
+              <dl className="grid sm:grid-cols-2 gap-x-4 gap-y-3">
+                {info.map((r) => (
+                  <div key={r.label} className="flex gap-2 min-w-0">
+                    <r.icon className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                    <div className="min-w-0">
+                      <dt className="text-xs text-slate-500">{r.label}</dt>
+                      <dd className="text-sm text-slate-800 break-words">{r.href ? <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="text-blue-700 hover:underline">{r.value}</a> : r.value}</dd>
+                    </div>
+                  </div>
+                ))}
+              </dl>
+            ) : <Empty>Nessun dato anagrafico. <button className="text-blue-700 underline" onClick={() => setEditOpen(true)}>Completa la scheda</button></Empty>}
+          </Card>
 
-      {/* Documenti */}
-      <SectionCard icon={FolderOpen} title="Documenti collegati" count={documents.length} emptyMsg="Nessun documento collegato a questo cliente">
-        {documents.map(d => (
-          <ItemRow key={d.id} to={`/documenti-ditta?doc=${d.id}`}
-            title={d.titolo}
-            subtitle={DOC_TYPES[d.tipo] || d.tipo || ""}
-            rightSub={d.data_scadenza ? `Scad: ${fmtDate(d.data_scadenza)}` : fmtDate(d.data_emissione)}
-          />
-        ))}
-      </SectionCard>
+          <div className="space-y-4">
+            <Card icon={Users} title="Referenti">
+              {contact.referenti?.length ? (
+                <ul className="divide-y divide-slate-100">
+                  {contact.referenti.map((r, i) => (
+                    <li key={i} className="py-2 flex items-center gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-slate-900">{r.nome || "—"} {r.ruolo && <span className="text-xs font-normal text-slate-500">· {r.ruolo}</span>}</p>
+                        <p className="text-xs text-slate-500 truncate">{[r.telefono, r.email].filter(Boolean).join(" · ")}</p>
+                      </div>
+                      {r.telefono && <a href={phoneHref(r.telefono)} aria-label={`Chiama ${r.nome}`} className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Phone className="w-4 h-4" /></a>}
+                      {r.email && <button onClick={() => setCompose({ defaultTo: r.email, templateVars: { cliente: name }, links: { contact_id: id } })} aria-label={`Email a ${r.nome}`} className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Mail className="w-4 h-4" /></button>}
+                    </li>
+                  ))}
+                </ul>
+              ) : <Empty>Nessun referente.</Empty>}
+            </Card>
 
-      <LinkedEmails
-        field="contact_id"
-        id={contact.id}
-        composeDefaults={{ defaultTo: contact.email || contact.pec || "", templateVars: { cliente: displayName } }}
-      />
+            <Card icon={CreditCard} title="Condizioni commerciali">
+              {conditions.length ? (
+                <dl className="grid grid-cols-2 gap-3">
+                  {conditions.map(([k, v]) => <div key={k}><dt className="text-xs text-slate-500">{k}</dt><dd className="text-sm text-slate-800">{v}</dd></div>)}
+                </dl>
+              ) : <Empty>Nessuna condizione impostata: i preventivi useranno quelle standard.</Empty>}
+            </Card>
+
+            {contact.indirizzi?.length > 0 && (
+              <Card icon={MapPin} title="Sedi e cantieri">
+                <ul className="divide-y divide-slate-100">
+                  {contact.indirizzi.map((a, i) => (
+                    <li key={i} className="py-2 flex items-center gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-slate-900">{a.etichetta || "Indirizzo"}</p>
+                        <p className="text-xs text-slate-500">{fullAddress(a)}</p>
+                      </div>
+                      <a href={mapsUrl(a)} target="_blank" rel="noopener noreferrer" aria-label="Apri in Google Maps" className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Navigation className="w-4 h-4" /></a>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
+
+            {contact.note && (
+              <Card icon={StickyNote} title="Note"><p className="text-sm text-slate-700 whitespace-pre-wrap">{contact.note}</p></Card>
+            )}
+          </div>
+        </div>
+      )}
+
+      {tab === "attivita" && (
+        <Card icon={FileText} title="Cronologia">
+          {timeline.length ? (
+            <ol className="relative border-l border-slate-200 ml-2">
+              {timeline.map((t, i) => (
+                <li key={i} className="ml-4 py-2">
+                  <span className="absolute -left-[9px] mt-1.5 w-4 h-4 rounded-full bg-white border border-slate-300 flex items-center justify-center"><t.icon className="w-2.5 h-2.5 text-slate-500" /></span>
+                  <Link to={t.to} className="flex items-start gap-3 rounded hover:bg-slate-50 px-1 -mx-1">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-slate-900">{t.title} {t.badge && <Badge className={`${t.badge.className} ml-1`}>{t.badge.label}</Badge>}</p>
+                      <p className="text-xs text-slate-500 truncate">{[fmtDate(t.date), t.sub].filter(Boolean).join(" · ")}</p>
+                    </div>
+                    {t.right && <span className="text-sm text-slate-700 tabular-nums shrink-0">{t.right}</span>}
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          ) : <Empty>Ancora nessuna attività con questo contatto.</Empty>}
+        </Card>
+      )}
+
+      {tab === "preventivi" && (
+        <Card icon={FileText} title="Preventivi" action={<Button size="sm" variant="outline" className="gap-1" onClick={() => navigate(`/preventivi/nuovo?cliente=${id}`)}><Plus className="w-4 h-4" /> Nuovo</Button>}>
+          {data.quotes.length ? data.quotes.map((q) => (
+            <Row key={q.id} to={`/preventivi/${q.id}`} title={`${q.numero || "Preventivo"} · ${q.oggetto || "senza oggetto"}`} subtitle={fmtDate(q.data)}
+              right={fmtEur(q.totale)} badge={QUOTE_STATO[q.stato] && <Badge className={QUOTE_STATO[q.stato].className}>{QUOTE_STATO[q.stato].label}</Badge>} />
+          )) : <Empty>Nessun preventivo.</Empty>}
+        </Card>
+      )}
+
+      {tab === "lavori" && (
+        <Card icon={Briefcase} title="Lavori">
+          {data.worksites.length ? data.worksites.map((w) => (
+            <Row key={w.id} to={`/lavori/${w.id}`} title={w.nome} subtitle={w.indirizzo} right={w.importo_totale ? fmtEur(w.importo_totale) : null}
+              badge={WORKSITE_STATO[w.stato] && <Badge className={WORKSITE_STATO[w.stato].className}>{WORKSITE_STATO[w.stato].label}</Badge>} />
+          )) : <Empty>Nessun lavoro collegato.</Empty>}
+        </Card>
+      )}
+
+      {tab === "documenti" && (
+        <Card icon={FolderOpen} title="Documenti" action={<Button size="sm" variant="outline" className="gap-1" onClick={() => setDocOpen(true)}><Upload className="w-4 h-4" /> Aggiungi</Button>}>
+          {fornitore && <p className="text-xs text-slate-500 mb-2">DURC, visura e assicurazioni del fornitore: con la data di scadenza ricevi il promemoria per tempo.</p>}
+          {data.documents.length ? data.documents.map((d) => {
+            const st = getExpirationStatus(d.data_scadenza);
+            return (
+              <Row key={d.id} to={`/documenti-ditta?doc=${d.id}`} title={d.titolo} subtitle={DOC_TYPES[d.tipo] || "Documento"}
+                rightSub={d.data_scadenza ? `Scade il ${fmtDate(d.data_scadenza)}` : null}
+                badge={st && <Badge className={st === "expired" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}>{st === "expired" ? "Scaduto" : "In scadenza"}</Badge>} />
+            );
+          }) : <Empty>Nessun documento.</Empty>}
+          {data.received.length > 0 && (
+            <div className="mt-4">
+              <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Preventivi ricevuti</p>
+              {data.received.map((r) => <Row key={r.id} to="/preventivi?tab=ricevuti" title={r.descrizione || "Preventivo ricevuto"} subtitle={fmtDate(r.data)} right={r.importo ? fmtEur(r.importo) : null} />)}
+            </div>
+          )}
+        </Card>
+      )}
+
+      {tab === "email" && (
+        <LinkedEmails field="contact_id" id={id} composeDefaults={{ defaultTo: emailTo, templateVars: { cliente: name } }} />
+      )}
+
+      <ContactForm open={editOpen} onOpenChange={setEditOpen} contact={contact} onSaved={loadAll} />
+      <ComposeDialog open={!!compose} onOpenChange={(v) => { if (!v) setCompose(null); }} {...(compose || {})} />
+      <SupplierDocDialog open={docOpen} onOpenChange={setDocOpen} contact={contact} onSaved={loadAll} />
     </div>
+  );
+}
+
+function SupplierDocDialog({ open, onOpenChange, contact, onSaved }) {
+  const { toast } = useToast();
+  const [form, setForm] = useState({ tipo: "durc", titolo: "", data_emissione: "", data_scadenza: "" });
+  const [file, setFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (open) { setForm({ tipo: "durc", titolo: "", data_emissione: "", data_scadenza: "" }); setFile(null); }
+  }, [open]);
+
+  const save = async () => {
+    if (!file) return toast({ title: "Scegli il file", variant: "destructive" });
+    setSaving(true);
+    try {
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
+      const titolo = form.titolo.trim() || `${DOC_TYPES[form.tipo]} – ${displayName(contact)}`;
+      const created = await db.CompanyDocument.create({
+        tipo: form.tipo, titolo, file_url,
+        data_emissione: form.data_emissione || null,
+        data_scadenza: form.data_scadenza || null,
+        contatto_id: contact.id, contatto_nome: displayName(contact),
+      });
+      if (form.data_scadenza) {
+        const [profile] = await db.CompanyProfile.list();
+        await createDocumentReminder(titolo, form.data_scadenza, created.id, "CompanyDocument", DOC_TYPES[form.tipo], displayName(contact), profile?.giorni_preavviso_scadenza ?? 30);
+      }
+      toast({ title: "Documento salvato", description: form.data_scadenza ? "Promemoria di scadenza creato." : undefined });
+      onSaved?.();
+      onOpenChange(false);
+    } catch (e) {
+      toast({ title: e.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Nuovo documento</DialogTitle>
+          <DialogDescription>Collegato a {contact && displayName(contact)}.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <Label>Tipo</Label>
+            <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>{Object.entries(DOC_TYPES).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div><Label>Titolo (facoltativo)</Label><Input className="mt-1" value={form.titolo} onChange={(e) => setForm({ ...form, titolo: e.target.value })} placeholder={`${DOC_TYPES[form.tipo]} – ${contact ? displayName(contact) : ""}`} /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Emesso il</Label><Input type="date" className="mt-1" value={form.data_emissione} onChange={(e) => setForm({ ...form, data_emissione: e.target.value })} /></div>
+            <div><Label>Scade il</Label><Input type="date" className="mt-1" value={form.data_scadenza} onChange={(e) => setForm({ ...form, data_scadenza: e.target.value })} /></div>
+          </div>
+          <div><Label>File</Label><Input type="file" className="mt-1" onChange={(e) => setFile(e.target.files[0] || null)} /></div>
+          <div className="flex justify-end gap-2 pt-1">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
+            <Button onClick={save} disabled={saving}>{saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
