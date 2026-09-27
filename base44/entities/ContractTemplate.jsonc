@@ -1,0 +1,85 @@
+{
+  "name": "ContractTemplate",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "nome": {
+      "type": "string",
+      "title": "Nome Modello"
+    },
+    "tipo": {
+      "type": "string",
+      "title": "Tipo Contratto"
+    },
+    "contenuto": {
+      "type": "string",
+      "title": "Contenuto Template"
+    },
+    "campi_richiesti": {
+      "type": "array",
+      "title": "Campi Richiesti",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nome_campo": {
+            "type": "string"
+          },
+          "etichetta": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "nome",
+    "tipo"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

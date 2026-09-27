@@ -1,0 +1,108 @@
+{
+  "name": "ReceivedQuote",
+  "type": "object",
+  "properties": {
+    "fornitore": {
+      "type": "string",
+      "title": "Mittente/Fornitore"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "title": "Data"
+    },
+    "importo": {
+      "type": "number",
+      "title": "Importo"
+    },
+    "descrizione": {
+      "type": "string",
+      "title": "Descrizione"
+    },
+    "file_url": {
+      "type": "string",
+      "title": "File"
+    },
+    "file_tipo": {
+      "type": "string",
+      "enum": [
+        "image",
+        "pdf",
+        "document"
+      ],
+      "title": "Tipo File"
+    },
+    "worksite_id": {
+      "type": "string",
+      "title": "Cantiere Collegato"
+    },
+    "worksite_nome": {
+      "type": "string",
+      "title": "Nome Cantiere"
+    },
+    "stato": {
+      "type": "string",
+      "enum": [
+        "ricevuto",
+        "approvato",
+        "rifiutato"
+      ],
+      "title": "Stato",
+      "default": "ricevuto"
+    },
+    "file_firmato_url": {
+      "type": "string",
+      "title": "File Firmato/Timbrato"
+    },
+    "note": {
+      "type": "string",
+      "title": "Note"
+    }
+  },
+  "required": [
+    "fornitore",
+    "data",
+    "file_url"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

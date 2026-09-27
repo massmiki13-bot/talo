@@ -1,0 +1,100 @@
+{
+  "name": "Reminder",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "titolo": {
+      "type": "string",
+      "title": "Titolo"
+    },
+    "descrizione": {
+      "type": "string",
+      "title": "Descrizione"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "title": "Data"
+    },
+    "ora": {
+      "type": "string",
+      "title": "Ora"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "appuntamento",
+        "scadenza_documento",
+        "scadenza_contratto",
+        "altro"
+      ],
+      "title": "Tipo"
+    },
+    "completato": {
+      "type": "boolean",
+      "title": "Completato",
+      "default": false
+    },
+    "is_preavviso": {
+      "type": "boolean",
+      "title": "Preavviso",
+      "default": false
+    },
+    "riferimento_id": {
+      "type": "string",
+      "title": "Riferimento ID"
+    },
+    "riferimento_tipo": {
+      "type": "string",
+      "title": "Riferimento Tipo"
+    }
+  },
+  "required": [
+    "titolo",
+    "data"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

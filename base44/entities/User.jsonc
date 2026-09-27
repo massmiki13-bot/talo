@@ -1,0 +1,22 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "capocantiere",
+        "dipendente"
+      ],
+      "default": "admin"
+    },
+    "cantieri_assegnati": {
+      "type": "array",
+      "title": "Cantieri Assegnati",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

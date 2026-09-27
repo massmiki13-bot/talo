@@ -1,0 +1,147 @@
+{
+  "name": "Invoice",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "numero": {
+      "type": "string",
+      "title": "Numero Fattura"
+    },
+    "anno": {
+      "type": "number",
+      "title": "Anno"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "title": "Data"
+    },
+    "preventivo_id": {
+      "type": "string",
+      "title": "Preventivo Collegato"
+    },
+    "cliente_id": {
+      "type": "string",
+      "title": "Cliente"
+    },
+    "cliente_nome": {
+      "type": "string",
+      "title": "Nome Cliente"
+    },
+    "oggetto": {
+      "type": "string",
+      "title": "Oggetto"
+    },
+    "righe": {
+      "type": "array",
+      "title": "Righe",
+      "items": {
+        "type": "object",
+        "properties": {
+          "descrizione": {
+            "type": "string"
+          },
+          "unita_misura": {
+            "type": "string"
+          },
+          "quantita": {
+            "type": "number"
+          },
+          "prezzo_unitario": {
+            "type": "number"
+          },
+          "sconto": {
+            "type": "number"
+          },
+          "iva_percentuale": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "imponibile": {
+      "type": "number",
+      "title": "Imponibile"
+    },
+    "iva_totale": {
+      "type": "number",
+      "title": "IVA Totale"
+    },
+    "totale": {
+      "type": "number",
+      "title": "Totale"
+    },
+    "stato": {
+      "type": "string",
+      "enum": [
+        "bozza",
+        "emessa",
+        "inviata",
+        "pagata"
+      ],
+      "title": "Stato",
+      "default": "bozza"
+    },
+    "note": {
+      "type": "string",
+      "title": "Note"
+    },
+    "data_invio": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Invio"
+    },
+    "inviato_a": {
+      "type": "string",
+      "title": "Inviato a"
+    }
+  },
+  "required": [
+    "cliente_id",
+    "data"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

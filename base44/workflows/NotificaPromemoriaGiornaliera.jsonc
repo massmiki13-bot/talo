@@ -1,0 +1,44 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "notifica_promemoria_giornaliera",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_notifications": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "checkRemindersAndNotify"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Invia notifiche promemoria",
+            "description": "Email per scadenze di oggi"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Notifica Promemoria Giornaliera",
+  "description": "Invia email di notifica per promemoria e scadenze in arrivo oggi (scadenze documenti, contratti, preavvisi)",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "Europe/Rome",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

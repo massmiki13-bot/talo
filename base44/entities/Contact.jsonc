@@ -1,0 +1,110 @@
+{
+  "name": "Contact",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "cliente",
+        "fornitore"
+      ],
+      "title": "Tipo"
+    },
+    "nome": {
+      "type": "string",
+      "title": "Ragione Sociale"
+    },
+    "nome_privato": {
+      "type": "string",
+      "title": "Nome"
+    },
+    "partita_iva": {
+      "type": "string",
+      "title": "Partita IVA"
+    },
+    "codice_fiscale": {
+      "type": "string",
+      "title": "Codice Fiscale"
+    },
+    "indirizzo": {
+      "type": "string",
+      "title": "Indirizzo"
+    },
+    "citta": {
+      "type": "string",
+      "title": "Citt\u00e0"
+    },
+    "cap": {
+      "type": "string",
+      "title": "CAP"
+    },
+    "provincia": {
+      "type": "string",
+      "title": "Provincia"
+    },
+    "telefono": {
+      "type": "string",
+      "title": "Telefono"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email"
+    },
+    "pec": {
+      "type": "string",
+      "title": "PEC"
+    },
+    "note": {
+      "type": "string",
+      "title": "Note"
+    }
+  },
+  "required": [
+    "tipo"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

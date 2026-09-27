@@ -1,0 +1,107 @@
+{
+  "name": "Collaborator",
+  "type": "object",
+  "properties": {
+    "host_user_id": {
+      "type": "string",
+      "title": "Host User ID"
+    },
+    "collaborator_user_id": {
+      "type": "string",
+      "title": "Collaborator User ID"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email"
+    },
+    "display_name": {
+      "type": "string",
+      "title": "Nome Visualizzato"
+    },
+    "access_level": {
+      "type": "string",
+      "enum": [
+        "responsabile",
+        "operaio"
+      ],
+      "title": "Livello di Accesso",
+      "default": "responsabile"
+    },
+    "branch_ids": {
+      "type": "array",
+      "title": "Sedi Assegnate",
+      "items": {
+        "type": "string"
+      }
+    },
+    "employee_id": {
+      "type": "string",
+      "title": "Dipendente Collegato"
+    },
+    "permissions": {
+      "type": "array",
+      "title": "Permessi Moduli",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ],
+      "title": "Stato",
+      "default": "active"
+    }
+  },
+  "required": [
+    "host_user_id",
+    "collaborator_user_id",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.collaborator_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

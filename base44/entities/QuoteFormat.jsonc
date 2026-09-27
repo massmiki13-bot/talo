@@ -1,0 +1,114 @@
+{
+  "name": "QuoteFormat",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "title": "Nome Formato"
+    },
+    "file_url": {
+      "type": "string",
+      "title": "File Originale"
+    },
+    "tipo_file": {
+      "type": "string",
+      "enum": [
+        "image",
+        "pdf",
+        "excel",
+        "word"
+      ],
+      "title": "Tipo File Originale"
+    },
+    "descrizione": {
+      "type": "string",
+      "title": "Descrizione"
+    },
+    "struttura": {
+      "type": "object",
+      "title": "Struttura Ricreata",
+      "properties": {
+        "colonne": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "chiave": {
+                "type": "string"
+              },
+              "etichetta": {
+                "type": "string"
+              },
+              "visibile": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "intestazione_personalizzata": {
+          "type": "string"
+        },
+        "pie_pagina_personalizzato": {
+          "type": "string"
+        },
+        "note_layout": {
+          "type": "string"
+        }
+      }
+    },
+    "stato": {
+      "type": "string",
+      "enum": [
+        "bozza",
+        "corretto"
+      ],
+      "title": "Stato",
+      "default": "bozza"
+    }
+  },
+  "required": [
+    "nome",
+    "tipo_file"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

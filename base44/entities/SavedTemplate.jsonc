@@ -1,0 +1,106 @@
+{
+  "name": "SavedTemplate",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "nome": {
+      "type": "string",
+      "title": "Nome Modello"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "preventivo",
+        "contratto"
+      ],
+      "title": "Tipo Modello"
+    },
+    "oggetto": {
+      "type": "string",
+      "title": "Oggetto"
+    },
+    "righe": {
+      "type": "array",
+      "title": "Righe",
+      "items": {
+        "type": "object",
+        "properties": {
+          "descrizione": {
+            "type": "string"
+          },
+          "unita_misura": {
+            "type": "string"
+          },
+          "quantita": {
+            "type": "number"
+          },
+          "prezzo_unitario": {
+            "type": "number"
+          },
+          "sconto": {
+            "type": "number"
+          },
+          "iva_percentuale": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "title": "Note"
+    },
+    "validita_giorni": {
+      "type": "number",
+      "title": "Validit\u00e0 (giorni)"
+    }
+  },
+  "required": [
+    "nome",
+    "tipo"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

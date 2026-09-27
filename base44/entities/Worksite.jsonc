@@ -1,0 +1,127 @@
+{
+  "name": "Worksite",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "nome": {
+      "type": "string",
+      "title": "Nome"
+    },
+    "indirizzo": {
+      "type": "string",
+      "title": "Indirizzo"
+    },
+    "attivo": {
+      "type": "boolean",
+      "title": "Attivo",
+      "default": true
+    },
+    "stato": {
+      "type": "string",
+      "enum": [
+        "da_iniziare",
+        "in_corso",
+        "finito"
+      ],
+      "title": "Stato Lavoro",
+      "default": "da_iniziare"
+    },
+    "responsabile_id": {
+      "type": "string",
+      "title": "Responsabile"
+    },
+    "note": {
+      "type": "string",
+      "title": "Note"
+    },
+    "note_veloci": {
+      "type": "string",
+      "title": "Note Veloci"
+    },
+    "preventivo_id": {
+      "type": "string",
+      "title": "Preventivo Collegato"
+    },
+    "cliente_id": {
+      "type": "string",
+      "title": "Cliente"
+    },
+    "cliente_nome": {
+      "type": "string",
+      "title": "Nome Cliente"
+    },
+    "costo_manodopera_manuale": {
+      "type": "number",
+      "title": "Costo Manodopera (manuale, vuoto = automatico)"
+    },
+    "importo_totale": {
+      "type": "number",
+      "title": "Importo Totale Lavoro (contratto)"
+    },
+    "stato_pagamento": {
+      "type": "string",
+      "enum": [
+        "non_pagato",
+        "parziale",
+        "saldato"
+      ],
+      "title": "Stato Pagamento",
+      "default": "non_pagato"
+    },
+    "branch_id": {
+      "type": "string",
+      "title": "Sede"
+    },
+    "branch_nome": {
+      "type": "string",
+      "title": "Nome Sede"
+    }
+  },
+  "required": [
+    "nome"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

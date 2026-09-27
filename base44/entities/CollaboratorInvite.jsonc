@@ -1,0 +1,102 @@
+{
+  "name": "CollaboratorInvite",
+  "type": "object",
+  "properties": {
+    "host_user_id": {
+      "type": "string",
+      "title": "Host User ID"
+    },
+    "code": {
+      "type": "string",
+      "title": "Codice di Conferma"
+    },
+    "access_level": {
+      "type": "string",
+      "enum": [
+        "responsabile",
+        "operaio"
+      ],
+      "title": "Livello di Accesso",
+      "default": "responsabile"
+    },
+    "branch_ids": {
+      "type": "array",
+      "title": "Sedi Assegnate",
+      "items": {
+        "type": "string"
+      }
+    },
+    "employee_id": {
+      "type": "string",
+      "title": "Dipendente Collegato"
+    },
+    "permissions": {
+      "type": "array",
+      "title": "Permessi Concessi",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "used",
+        "expired"
+      ],
+      "title": "Stato",
+      "default": "pending"
+    },
+    "tentativi_falliti": {
+      "type": "number",
+      "title": "Tentativi Falliti",
+      "default": 0
+    }
+  },
+  "required": [
+    "host_user_id",
+    "code",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

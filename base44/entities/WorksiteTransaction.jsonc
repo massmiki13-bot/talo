@@ -1,0 +1,98 @@
+{
+  "name": "WorksiteTransaction",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "worksite_id": {
+      "type": "string",
+      "title": "Lavoro/Progetto"
+    },
+    "worksite_nome": {
+      "type": "string",
+      "title": "Nome Lavoro"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "entrata",
+        "uscita"
+      ],
+      "title": "Tipo"
+    },
+    "categoria": {
+      "type": "string",
+      "title": "Categoria"
+    },
+    "descrizione": {
+      "type": "string",
+      "title": "Descrizione"
+    },
+    "importo": {
+      "type": "number",
+      "title": "Importo"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "title": "Data"
+    },
+    "fornitore": {
+      "type": "string",
+      "title": "Fornitore"
+    },
+    "file_url": {
+      "type": "string",
+      "title": "Foto Documento"
+    }
+  },
+  "required": [
+    "worksite_id",
+    "tipo",
+    "importo",
+    "data"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

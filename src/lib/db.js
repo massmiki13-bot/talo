@@ -1,0 +1,37 @@
+import { base44 } from "@/api/base44Client";
+import { applyAccessScope } from "./accessScope";
+
+export { base44 };
+
+const UNSCOPED_ENTITIES = ["CompanyProfile", "User", "Collaborator", "CollaboratorInvite", "Branch"];
+
+function wrapEntity(entity, entityName) {
+  if (!entity) return entity;
+  const isScoped = !UNSCOPED_ENTITIES.includes(entityName);
+  const sf = (filter) => isScoped ? applyAccessScope(filter, entityName) : (filter || {});
+  return {
+    list: (sort, limit) => entity.filter(sf(), sort, limit),
+    filter: (filter, sort, limit) => entity.filter(sf(filter || {}), sort, limit),
+    create: (data) => entity.create(data),
+    bulkCreate: (data) => entity.bulkCreate(data),
+    get: (id) => entity.get(id),
+    update: (id, data) => entity.update(id, data),
+    delete: (id) => entity.delete(id),
+    deleteMany: (filter) => entity.deleteMany(sf(filter || {})),
+    updateMany: (filter, update) => entity.updateMany(sf(filter || {}), update),
+    bulkUpdate: (data) => entity.bulkUpdate(data),
+    subscribe: (cb) => entity.subscribe(cb),
+    schema: () => entity.schema(),
+  };
+}
+
+const cache = {};
+
+export const db = new Proxy({}, {
+  get(_, name) {
+    if (!cache[name]) {
+      cache[name] = wrapEntity(base44.entities[name], name);
+    }
+    return cache[name];
+  }
+});

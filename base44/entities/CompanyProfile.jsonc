@@ -1,0 +1,249 @@
+{
+  "name": "CompanyProfile",
+  "type": "object",
+  "properties": {
+    "ragione_sociale": {
+      "type": "string",
+      "title": "Ragione Sociale"
+    },
+    "settore": {
+      "type": "string",
+      "enum": [
+        "edilizia"
+      ],
+      "title": "Settore Attivit\u00e0",
+      "default": "edilizia"
+    },
+    "partita_iva": {
+      "type": "string",
+      "title": "Partita IVA"
+    },
+    "codice_fiscale": {
+      "type": "string",
+      "title": "Codice Fiscale"
+    },
+    "indirizzo": {
+      "type": "string",
+      "title": "Indirizzo"
+    },
+    "citta": {
+      "type": "string",
+      "title": "Citt\u00e0"
+    },
+    "cap": {
+      "type": "string",
+      "title": "CAP"
+    },
+    "provincia": {
+      "type": "string",
+      "title": "Provincia"
+    },
+    "telefono": {
+      "type": "string",
+      "title": "Telefono"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email Principale"
+    },
+    "emails_extra": {
+      "type": "array",
+      "title": "Email Aggiuntive",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pec": {
+      "type": "string",
+      "title": "PEC"
+    },
+    "sito_web": {
+      "type": "string",
+      "title": "Sito Web"
+    },
+    "iban": {
+      "type": "string",
+      "title": "IBAN"
+    },
+    "numero_rea": {
+      "type": "string",
+      "title": "Numero REA"
+    },
+    "codice_destinatario": {
+      "type": "string",
+      "title": "Codice di Fatturazione"
+    },
+    "logo_url": {
+      "type": "string",
+      "title": "Logo"
+    },
+    "firma_url": {
+      "type": "string",
+      "title": "Firma"
+    },
+    "timbro_url": {
+      "type": "string",
+      "title": "Timbro"
+    },
+    "colore_principale": {
+      "type": "string",
+      "title": "Colore Principale",
+      "default": "#1e40af"
+    },
+    "colore_secondario": {
+      "type": "string",
+      "title": "Colore Secondario"
+    },
+    "colore_terziario": {
+      "type": "string",
+      "title": "Colore Terziario"
+    },
+    "colore_quaternario": {
+      "type": "string",
+      "title": "Colore Quaternario"
+    },
+    "colore_menu": {
+      "type": "string",
+      "title": "Colore Menu Laterale",
+      "default": "#0f172a"
+    },
+    "colore_sfondo": {
+      "type": "string",
+      "title": "Colore Sfondo App",
+      "default": "#f8fafc"
+    },
+    "logo_posizione": {
+      "type": "string",
+      "enum": [
+        "alto_sinistra",
+        "alto_centro",
+        "alto_destra"
+      ],
+      "title": "Posizione Logo",
+      "default": "alto_sinistra"
+    },
+    "logo_larghezza": {
+      "type": "number",
+      "title": "Larghezza Logo (mm)",
+      "default": 35
+    },
+    "logo_altezza": {
+      "type": "number",
+      "title": "Altezza Logo (mm)",
+      "default": 18
+    },
+    "giorni_preavviso_scadenza": {
+      "type": "number",
+      "title": "Giorni Preavviso Scadenza",
+      "default": 30
+    },
+    "ripeti_promemoria": {
+      "type": "boolean",
+      "title": "Ripeti Promemoria",
+      "default": false
+    },
+    "numero_promemoria_ripetuti": {
+      "type": "number",
+      "title": "Numero Promemoria Ripetuti",
+      "default": 1
+    },
+    "logo_su_ogni_pagina": {
+      "type": "boolean",
+      "title": "Logo su Ogni Pagina",
+      "default": true
+    },
+    "termine_sezioni": {
+      "type": "string",
+      "title": "Nome per Sezioni/Lavori",
+      "default": "Cantiere"
+    },
+    "lingua": {
+      "type": "string",
+      "enum": [
+        "it",
+        "de",
+        "en",
+        "es"
+      ],
+      "title": "Lingua Interfaccia",
+      "default": "it"
+    },
+    "numerazione_tipo": {
+      "type": "string",
+      "enum": [
+        "progressiva",
+        "progressiva_anno",
+        "prefisso",
+        "codice"
+      ],
+      "title": "Tipo Numerazione Preventivi",
+      "default": "progressiva_anno"
+    },
+    "numerazione_prefisso": {
+      "type": "string",
+      "title": "Prefisso Numerazione",
+      "default": "PREV"
+    },
+    "numerazione_partenza": {
+      "type": "number",
+      "title": "Numero di Partenza (codice mascherato)",
+      "default": 1
+    },
+    "template_predefinito": {
+      "type": "string",
+      "enum": [
+        "classica",
+        "moderna",
+        "minimal",
+        "professionale",
+        "elegante"
+      ],
+      "title": "Modello Preventivo Predefinito",
+      "default": "classica"
+    }
+  },
+  "required": [
+    "ragione_sociale"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

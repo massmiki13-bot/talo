@@ -1,0 +1,96 @@
+{
+  "name": "GeneratedContract",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "template_id": {
+      "type": "string",
+      "title": "Template"
+    },
+    "tipo": {
+      "type": "string",
+      "title": "Tipo Contratto"
+    },
+    "titolo": {
+      "type": "string",
+      "title": "Titolo"
+    },
+    "dati_compilati": {
+      "type": "object",
+      "title": "Dati Compilati"
+    },
+    "contenuto_finale": {
+      "type": "string",
+      "title": "Contenuto Finale"
+    },
+    "data_creazione": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Creazione"
+    },
+    "controparte_nome": {
+      "type": "string",
+      "title": "Controparte"
+    },
+    "data_scadenza": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Scadenza"
+    },
+    "giorni_preavviso_custom": {
+      "type": "number",
+      "title": "Giorni Preavviso (personalizzato)"
+    },
+    "ripeti_promemoria_custom": {
+      "type": "boolean",
+      "title": "Ripeti Promemoria (personalizzato)"
+    }
+  },
+  "required": [
+    "titolo"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

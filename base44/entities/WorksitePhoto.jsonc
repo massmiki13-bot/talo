@@ -1,0 +1,82 @@
+{
+  "name": "WorksitePhoto",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "worksite_id": {
+      "type": "string",
+      "title": "Lavoro"
+    },
+    "foto_url": {
+      "type": "string",
+      "title": "Foto"
+    },
+    "fase": {
+      "type": "string",
+      "enum": [
+        "prima",
+        "durante",
+        "dopo"
+      ],
+      "title": "Fase",
+      "default": "durante"
+    },
+    "didascalia": {
+      "type": "string",
+      "title": "Didascalia"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "title": "Data"
+    }
+  },
+  "required": [
+    "worksite_id",
+    "foto_url"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

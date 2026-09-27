@@ -1,0 +1,117 @@
+{
+  "name": "Employee",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "nome": {
+      "type": "string",
+      "title": "Nome"
+    },
+    "cognome": {
+      "type": "string",
+      "title": "Cognome"
+    },
+    "codice_fiscale": {
+      "type": "string",
+      "title": "Codice Fiscale"
+    },
+    "data_nascita": {
+      "type": "string",
+      "format": "date",
+      "title": "Data di Nascita"
+    },
+    "luogo_nascita": {
+      "type": "string",
+      "title": "Luogo di Nascita"
+    },
+    "indirizzo": {
+      "type": "string",
+      "title": "Indirizzo"
+    },
+    "telefono": {
+      "type": "string",
+      "title": "Telefono"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email"
+    },
+    "ruolo": {
+      "type": "string",
+      "title": "Ruolo/Mansione"
+    },
+    "data_assunzione": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Assunzione"
+    },
+    "tipo_contratto": {
+      "type": "string",
+      "title": "Tipo Contratto"
+    },
+    "costo_orario": {
+      "type": "number",
+      "title": "Costo Orario (\u20ac)"
+    },
+    "note": {
+      "type": "string",
+      "title": "Note"
+    },
+    "branch_id": {
+      "type": "string",
+      "title": "Sede"
+    },
+    "branch_nome": {
+      "type": "string",
+      "title": "Nome Sede"
+    }
+  },
+  "required": [
+    "nome",
+    "cognome"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

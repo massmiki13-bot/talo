@@ -1,0 +1,104 @@
+{
+  "name": "EmployeeDocument",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "dipendente_id": {
+      "type": "string",
+      "title": "Dipendente"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "contratto",
+        "corso",
+        "visita_medica",
+        "documento_identita",
+        "altro"
+      ],
+      "title": "Tipo Documento"
+    },
+    "tipo_altro": {
+      "type": "string",
+      "title": "Tipo Documento (Altro)"
+    },
+    "titolo": {
+      "type": "string",
+      "title": "Titolo"
+    },
+    "descrizione": {
+      "type": "string",
+      "title": "Descrizione"
+    },
+    "file_url": {
+      "type": "string",
+      "title": "File"
+    },
+    "data_emissione": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Emissione"
+    },
+    "data_scadenza": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Scadenza"
+    },
+    "giorni_preavviso_custom": {
+      "type": "number",
+      "title": "Giorni Preavviso (personalizzato)"
+    },
+    "ripeti_promemoria_custom": {
+      "type": "boolean",
+      "title": "Ripeti Promemoria (personalizzato)"
+    }
+  },
+  "required": [
+    "dipendente_id",
+    "titolo"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

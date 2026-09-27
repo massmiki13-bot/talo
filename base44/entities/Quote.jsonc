@@ -1,0 +1,186 @@
+{
+  "name": "Quote",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "numero": {
+      "type": "string",
+      "title": "Numero Preventivo"
+    },
+    "anno": {
+      "type": "number",
+      "title": "Anno"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "title": "Data"
+    },
+    "cliente_id": {
+      "type": "string",
+      "title": "Cliente"
+    },
+    "cliente_nome": {
+      "type": "string",
+      "title": "Nome Cliente"
+    },
+    "oggetto": {
+      "type": "string",
+      "title": "Oggetto"
+    },
+    "righe": {
+      "type": "array",
+      "title": "Righe",
+      "items": {
+        "type": "object",
+        "properties": {
+          "descrizione": {
+            "type": "string"
+          },
+          "unita_misura": {
+            "type": "string"
+          },
+          "quantita": {
+            "type": "number"
+          },
+          "prezzo_unitario": {
+            "type": "number"
+          },
+          "sconto": {
+            "type": "number"
+          },
+          "iva_percentuale": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "imponibile": {
+      "type": "number",
+      "title": "Imponibile"
+    },
+    "iva_totale": {
+      "type": "number",
+      "title": "IVA Totale"
+    },
+    "totale": {
+      "type": "number",
+      "title": "Totale"
+    },
+    "stato": {
+      "type": "string",
+      "enum": [
+        "in_attesa",
+        "inviato",
+        "approvato",
+        "rifiutato",
+        "scaduto"
+      ],
+      "title": "Stato",
+      "default": "in_attesa"
+    },
+    "note": {
+      "type": "string",
+      "title": "Note"
+    },
+    "inviato_a": {
+      "type": "string",
+      "title": "Inviato a"
+    },
+    "data_invio": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Invio"
+    },
+    "validita_giorni": {
+      "type": "number",
+      "title": "Validit\u00e0 (giorni)",
+      "default": 30
+    },
+    "firma_cliente_url": {
+      "type": "string",
+      "title": "Firma Cliente"
+    },
+    "data_firma_cliente": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Firma Cliente"
+    },
+    "template_variante": {
+      "type": "string",
+      "enum": [
+        "classica",
+        "moderna",
+        "minimal",
+        "professionale",
+        "elegante"
+      ],
+      "title": "Modello Preventivo",
+      "default": "classica"
+    },
+    "worksite_id": {
+      "type": "string",
+      "title": "Lavoro Collegato"
+    },
+    "worksite_nome": {
+      "type": "string",
+      "title": "Nome Lavoro"
+    },
+    "branch_id": {
+      "type": "string",
+      "title": "Sede"
+    },
+    "branch_nome": {
+      "type": "string",
+      "title": "Nome Sede"
+    }
+  },
+  "required": [
+    "cliente_id",
+    "data"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

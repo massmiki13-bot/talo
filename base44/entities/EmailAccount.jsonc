@@ -1,0 +1,96 @@
+{
+  "name": "EmailAccount",
+  "type": "object",
+  "properties": {
+    "email_address": {
+      "type": "string",
+      "title": "Indirizzo Email"
+    },
+    "display_name": {
+      "type": "string",
+      "title": "Nome Mittente"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "gmail_oauth",
+        "outlook_oauth",
+        "smtp"
+      ],
+      "title": "Tipo Connessione",
+      "default": "smtp"
+    },
+    "smtp_host": {
+      "type": "string",
+      "title": "Server SMTP"
+    },
+    "smtp_port": {
+      "type": "number",
+      "title": "Porta SMTP",
+      "default": 587
+    },
+    "smtp_username": {
+      "type": "string",
+      "title": "Username SMTP"
+    },
+    "smtp_password": {
+      "type": "string",
+      "title": "Password per App"
+    },
+    "is_default": {
+      "type": "boolean",
+      "title": "Predefinito",
+      "default": false
+    },
+    "active": {
+      "type": "boolean",
+      "title": "Attivo",
+      "default": true
+    }
+  },
+  "required": [
+    "email_address",
+    "provider"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

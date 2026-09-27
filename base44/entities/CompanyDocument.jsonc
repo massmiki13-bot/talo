@@ -1,0 +1,123 @@
+{
+  "name": "CompanyDocument",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "certificazione",
+        "assicurazione",
+        "durc",
+        "visura",
+        "altro"
+      ],
+      "title": "Tipo Documento"
+    },
+    "titolo": {
+      "type": "string",
+      "title": "Titolo"
+    },
+    "descrizione": {
+      "type": "string",
+      "title": "Descrizione"
+    },
+    "file_url": {
+      "type": "string",
+      "title": "File"
+    },
+    "data_emissione": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Emissione"
+    },
+    "data_scadenza": {
+      "type": "string",
+      "format": "date",
+      "title": "Data Scadenza"
+    },
+    "giorni_preavviso_custom": {
+      "type": "number",
+      "title": "Giorni Preavviso (personalizzato)"
+    },
+    "ripeti_promemoria_custom": {
+      "type": "boolean",
+      "title": "Ripeti Promemoria (personalizzato)"
+    },
+    "dipendente_id": {
+      "type": "string",
+      "title": "Dipendente Collegato"
+    },
+    "dipendente_nome": {
+      "type": "string",
+      "title": "Nome Dipendente"
+    },
+    "contatto_id": {
+      "type": "string",
+      "title": "Cliente/Fornitore Collegato"
+    },
+    "contatto_nome": {
+      "type": "string",
+      "title": "Nome Cliente/Fornitore"
+    },
+    "cartella_id": {
+      "type": "string",
+      "title": "Cartella"
+    },
+    "cartella_nome": {
+      "type": "string",
+      "title": "Nome Cartella"
+    },
+    "contenuto_estratto": {
+      "type": "string",
+      "title": "Contenuto Estratto"
+    }
+  },
+  "required": [
+    "titolo"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

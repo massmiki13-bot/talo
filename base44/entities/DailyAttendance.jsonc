@@ -1,0 +1,112 @@
+{
+  "name": "DailyAttendance",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "title": "Azienda"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "title": "Data"
+    },
+    "cantiere_id": {
+      "type": "string",
+      "title": "Cantiere/Sezione"
+    },
+    "cantiere_nome": {
+      "type": "string",
+      "title": "Nome Cantiere"
+    },
+    "presenze": {
+      "type": "array",
+      "title": "Presenze",
+      "items": {
+        "type": "object",
+        "properties": {
+          "dipendente_id": {
+            "type": "string"
+          },
+          "dipendente_nome": {
+            "type": "string"
+          },
+          "stato": {
+            "type": "string",
+            "enum": [
+              "presente",
+              "ferie",
+              "permesso",
+              "assente",
+              "malattia"
+            ],
+            "default": "presente"
+          },
+          "ore": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "title": "Note Giornata"
+    },
+    "branch_id": {
+      "type": "string",
+      "title": "Sede"
+    },
+    "branch_nome": {
+      "type": "string",
+      "title": "Nome Sede"
+    }
+  },
+  "required": [
+    "data",
+    "cantiere_id"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
