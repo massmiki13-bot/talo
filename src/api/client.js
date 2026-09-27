@@ -210,6 +210,10 @@ const auth = {
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: appUrl("/reset-password") });
     if (error) throw new ApiError(error.message, 400, error);
   },
+  async verifyRecovery({ email, code }) {
+    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "recovery" });
+    if (error) throw new ApiError("Codice non valido o scaduto", 400, error);
+  },
   async resetPassword({ newPassword }) {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) throw new ApiError(error.message, 400, error);
