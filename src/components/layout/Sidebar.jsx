@@ -6,7 +6,7 @@ import {
   BarChart3, ChevronLeft, ChevronRight, LogOut, Briefcase, CalendarClock, UserCog,
   User, HardHat, Mail
 } from "lucide-react";
-import { base44 } from "@/lib/db";
+import { api } from "@/lib/db";
 
 export default function Sidebar({ onNavigate, isHost = true, accessLevel = "responsabile", permissions = [], employeeId = null }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -45,7 +45,7 @@ export default function Sidebar({ onNavigate, isHost = true, accessLevel = "resp
       );
 
   const handleLogout = () => {
-    base44.auth.logout("/login");
+    api.auth.logout("/login");
   };
 
   return (

@@ -1,4 +1,4 @@
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { formatEuro, hexToRgb, addImageSafe, addFooter } from "@/utils/pdfUtils";
 
 export async function exportWorksiteFolder(worksite, transactions, photos, laborCost, employees, attendance) {

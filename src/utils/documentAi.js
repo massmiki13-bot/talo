@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 
 /**
  * Reads a document via IA and extracts all relevant fields:
@@ -14,7 +14,7 @@ import { base44 } from "@/api/base44Client";
  * @returns {Promise<object>} - extracted fields
  */
 export async function readDocumentWithAi(fileUrl, context = {}) {
-  const result = await base44.integrations.Core.InvokeLLM({
+  const result = await api.integrations.Core.InvokeLLM({
     prompt: `Sei un assistente che aiuta a organizzare i documenti aziendali. Analizza questo documento caricato e determina:
 
 1. Tipo di documento (uno tra: contratto, visita_medica, documento_identita, corso, certificazione, assicurazione, durc, bolla, altro)

@@ -1,7 +1,7 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 import { applyAccessScope } from "./accessScope";
 
-export { base44 };
+export { api };
 
 const UNSCOPED_ENTITIES = ["CompanyProfile", "User", "Collaborator", "CollaboratorInvite", "Branch"];
 
@@ -30,7 +30,7 @@ const cache = {};
 export const db = new Proxy({}, {
   get(_, name) {
     if (!cache[name]) {
-      cache[name] = wrapEntity(base44.entities[name], name);
+      cache[name] = wrapEntity(api.entities[name], name);
     }
     return cache[name];
   }

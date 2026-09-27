@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { useToast } from "@/components/ui/use-toast";
 import { Camera, Trash2, Upload, Loader2 } from "lucide-react";
 
@@ -31,7 +31,7 @@ export default function WorksitePhotos({ worksiteId }) {
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
       await db.WorksitePhoto.create({
         worksite_id: worksiteId,
         foto_url: file_url,

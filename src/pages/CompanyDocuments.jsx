@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,7 +70,7 @@ export default function CompanyDocuments() {
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
       setForm(prev => ({ ...prev, file_url }));
     } catch (err) {
       toast({ title: "Errore upload", variant: "destructive" });

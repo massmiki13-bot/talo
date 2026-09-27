@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { useAuth } from "@/lib/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { PERMISSION_MODULES } from "@/lib/permissions";
@@ -24,7 +24,7 @@ export default function Collaborators() {
   const load = () => {
     if (!user?.id) return;
     setLoading(true);
-    base44.entities.Collaborator.filter(
+    api.entities.Collaborator.filter(
       { host_user_id: user.id, status: "active" },
       "-created_date"
     )
@@ -43,7 +43,7 @@ export default function Collaborators() {
     if (!confirm(`Revocare l'accesso a ${collab.display_name || collab.email}?`))
       return;
     try {
-      await base44.entities.Collaborator.update(collab.id, { status: "revoked" });
+      await api.entities.Collaborator.update(collab.id, { status: "revoked" });
       toast({ title: "Accesso revocato", className: "bg-green-600 text-white" });
       load();
     } catch (e) {

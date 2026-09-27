@@ -1,4 +1,4 @@
-import { db, base44 } from "@/lib/db";
+import { db, api } from "@/lib/db";
 import { getAccessContext } from "@/lib/accessScope";
 
 export async function searchPerson(nomePersona) {
@@ -43,7 +43,7 @@ export async function searchPerson(nomePersona) {
     };
   }
 
-  const matchResult = await base44.integrations.Core.InvokeLLM({
+  const matchResult = await api.integrations.Core.InvokeLLM({
     prompt: `Trova tutti i record collegati alla persona: "${nomePersona}".
     Dipendenti: ${JSON.stringify(employees.map(e => ({ id: e.id, nome: e.nome, cognome: e.cognome })))}
     Contratti generati: ${JSON.stringify(contracts.map(c => ({ id: c.id, titolo: c.titolo, controparte: c.controparte_nome, dati: c.dati_compilati })))}

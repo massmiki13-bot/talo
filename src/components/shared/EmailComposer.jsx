@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -134,7 +134,7 @@ export default function EmailComposer({ open, onOpenChange, defaultTo = "", defa
     try {
       const signature = buildSignature();
       const langInstruction = language !== "it" ? `Scrivi l'email in ${LANG_NAMES[language]}.` : "";
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Sei un assistente che scrive email professionali per un'impresa edile.
 Contesto: ${context}
 Spunto dell'utente: "${aiPrompt}"
@@ -156,7 +156,7 @@ Scrivi solo il corpo dell'email, pronto da inviare.`,
     setTranslating(true);
     try {
       const [mainBody, ...sigParts] = body.split("---");
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Traduci il seguente testo in ${LANG_NAMES[language]}, mantenendo il tono professionale e la formattazione. Non aggiungere commenti, restituisci solo il testo tradotto:\n\n${mainBody}`,
       });
       const sig = sigParts.length > 0 ? "---" + sigParts.join("---") : "";
@@ -188,7 +188,7 @@ Scrivi solo il corpo dell'email, pronto da inviare.`,
       if (attachment?.blob) {
         try {
           const file = new File([attachment.blob], attachment.filename || "documento.pdf", { type: "application/pdf" });
-          const result = await base44.integrations.Core.UploadFile({ file });
+          const result = await api.integrations.Core.UploadFile({ file });
           attachmentUrl = result.file_url;
           attachmentName = attachment.filename || "documento.pdf";
         } catch (e) {
@@ -198,7 +198,7 @@ Scrivi solo il corpo dell'email, pronto da inviare.`,
 
       if (isUsingConnectedAccount) {
         // Invia tramite l'account collegato (backend function) con allegato PDF
-        const response = await base44.functions.invoke("sendEmailFromAccount", {
+        const response = await api.functions.invoke("sendEmailFromAccount", {
           to, subject, body: htmlBody, from_email: from,
           attachment_url: attachmentUrl,
           attachment_name: attachmentName,
@@ -212,7 +212,7 @@ Scrivi solo il corpo dell'email, pronto da inviare.`,
         if (attachmentUrl) {
           emailBody += `<br/><br/><div style="font-size:12px; color:#475569;">Documento allegato: <strong>${escapeHtml(attachmentName)}</strong></div>`;
         }
-        await base44.integrations.Core.SendEmail({ to, subject, body: emailBody });
+        await api.integrations.Core.SendEmail({ to, subject, body: emailBody });
       }
 
       if (onSent) await onSent({ to, subject, body: htmlBody });

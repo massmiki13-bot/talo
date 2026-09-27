@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -400,7 +400,7 @@ export default function QuoteEditor() {
     if (!row.descrizione) return;
     setAiLoading(idx);
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Sei un esperto del settore edile italiano. Riscrivi questa voce di preventivo in linguaggio tecnico corretto e professionale. Voce originale: "${row.descrizione}". Rispondi solo con la descrizione riscritta, nient'altro.`,
       });
       updateRow(idx, "descrizione", result);

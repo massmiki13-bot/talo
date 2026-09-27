@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,7 @@ export default function AiDocumentReader({ open, onOpenChange, fileUrl, onConfir
   const readDocument = async () => {
     setLoading(true);
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Leggi questo documento e estrai le informazioni principali. Identifica:
 - Il tipo di documento (contratto, visita medica, certificato, assicurazione, DURC, corso, documento identità, etc.)
 - La data di scadenza se presente (formato YYYY-MM-DD, se non presente lascia vuoto)

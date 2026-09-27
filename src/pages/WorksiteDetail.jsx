@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -108,7 +108,7 @@ export default function WorksiteDetail() {
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
       setFileUrl(file_url);
     } catch (e) { toast({ title: "Errore upload", variant: "destructive" }); }
     finally { setUploading(false); }
@@ -119,7 +119,7 @@ export default function WorksiteDetail() {
     setAiLoading(true);
     setWorksiteMatch(null);
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Analizza questa foto di documento di spesa (bolla, scontrino, ricevuta).
         Estrai: importo totale (numero), data (formato YYYY-MM-DD), fornitore (nome).
         Se sul documento è indicato un indirizzo o un nome di cantiere/lavoro, estrailo.

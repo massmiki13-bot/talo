@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +31,7 @@ export default function AiDocumentCreator({ open, onOpenChange }) {
   const identifyDocument = async () => {
     setLoading(true);
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `L'utente ha bisogno di un documento e ha descritto: "${description}".
 Identifica il tipo di documento più appropriato tra: contratto di lavoro determinato, contratto di lavoro indeterminato, contratto di appalto, contratto di subappalto, lettera di assunzione, comunicazione variante, ricevuta, altro.
 Elenca i campi necessari da compilare (nome, cognome, codice fiscale, data, importo, etc.).
@@ -69,7 +69,7 @@ Rispondi in JSON con: tipo_documento (stringa descrittiva), campi (array di ogge
       const profile = profiles[0];
       const profileInfo = profile ? `Dati ditta: ${profile.ragione_sociale}, P.IVA ${profile.partita_iva}, sede ${profile.indirizzo} ${profile.citta}` : "";
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Genera un documento formale in italiano di tipo: "${docType}".
 Dati forniti dall'utente: ${JSON.stringify(fieldValues)}.
 ${profileInfo}

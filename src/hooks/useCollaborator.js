@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 import { PERMISSION_MODULES, HOST_ONLY_PATHS } from "@/lib/permissions";
 import { setAccessContext } from "@/lib/accessScope";
 
@@ -12,7 +12,7 @@ export function useCollaborator(user) {
       setLoading(false);
       return;
     }
-    base44.entities.Collaborator.filter(
+    api.entities.Collaborator.filter(
       { collaborator_user_id: user.id, status: "active" },
       "-created_date",
       1

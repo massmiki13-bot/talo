@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import SignaturePad from "@/components/shared/SignaturePad";
-import { base44 } from "@/lib/db";
+import { api } from "@/lib/db";
 import { Loader2, PenLine } from "lucide-react";
 
 export default function DrawSignatureDialog({ open, onOpenChange, currentSignature, onSaved }) {
@@ -24,7 +24,7 @@ export default function DrawSignatureDialog({ open, onOpenChange, currentSignatu
     try {
       const blob = dataUrlToBlob(drawn);
       const file = new File([blob], "firma.png", { type: "image/png" });
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
       onSaved(file_url);
       onOpenChange(false);
     } catch (e) {

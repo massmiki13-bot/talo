@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import {
   FileText, Clock, CheckCircle, AlertTriangle, TrendingDown,
   Bell, Calendar, ArrowRight, Wallet, Euro, AlertOctagon

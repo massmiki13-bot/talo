@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,9 @@ import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
+
+// Il login con Google si attiva dopo aver configurato il provider su Supabase.
+const GOOGLE_AUTH_ENABLED = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === "true";
 import { toast } from "@/components/ui/use-toast";
 
 export default function Register() {
@@ -22,16 +25,20 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (password.length < 8) {
+      setError("La password deve avere almeno 8 caratteri");
+      return;
+    }
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Le password non coincidono");
       return;
     }
     setLoading(true);
     try {
-      await base44.auth.register({ email, password });
+      await api.auth.register({ email, password });
       setShowOtp(true);
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError(err.message || "Registrazione non riuscita");
     } finally {
       setLoading(false);
     }
@@ -41,13 +48,13 @@ export default function Register() {
     setError("");
     setLoading(true);
     try {
-      const result = await base44.auth.verifyOtp({ email, otpCode });
+      const result = await api.auth.verifyOtp({ email, otpCode });
       if (result?.access_token) {
-        base44.auth.setToken(result.access_token);
+        api.auth.setToken(result.access_token);
       }
       window.location.href = "/";
     } catch (err) {
-      setError(err.message || "Invalid verification code");
+      setError(err.message || "Codice di verifica non valido");
     } finally {
       setLoading(false);
     }
@@ -56,26 +63,26 @@ export default function Register() {
   const handleResend = async () => {
     setError("");
     try {
-      await base44.auth.resendOtp(email);
+      await api.auth.resendOtp(email);
       toast({
-        title: "Code sent",
-        description: "Check your email for the new code.",
+        title: "Codice inviato",
+        description: "Controlla la posta: ti abbiamo inviato un nuovo codice.",
       });
     } catch (err) {
-      setError(err.message || "Failed to resend code");
+      setError(err.message || "Invio del codice non riuscito");
     }
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", "/");
+    api.auth.loginWithProvider("google", "/");
   };
 
   if (showOtp) {
     return (
       <AuthLayout
         icon={Mail}
-        title="Verify your email"
-        subtitle={`We sent a code to ${email}`}
+        title="Verifica la tua email"
+        subtitle={`Abbiamo inviato un codice a ${email}`}
       >
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
@@ -108,16 +115,16 @@ export default function Register() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Verifying...
+              Verifica in corso...
             </>
           ) : (
-            "Verify"
+            "Verifica"
           )}
         </Button>
         <p className="text-center text-sm text-muted-foreground mt-4">
-          Didn't receive the code?{" "}
+          Non hai ricevuto il codice?{" "}
           <button onClick={handleResend} className="text-primary font-medium hover:underline">
-            Resend
+            Invia di nuovo
           </button>
         </p>
       </AuthLayout>
@@ -127,24 +134,26 @@ export default function Register() {
   return (
     <AuthLayout
       icon={UserPlus}
-      title="Create your account"
-      subtitle="Sign up to get started"
+      title="Crea il tuo account"
+      subtitle="Registra la tua azienda su Talo"
       footer={
         <>
-          Already have an account?{" "}
+          Hai già un account?{" "}
           <Link to="/login" className="text-primary font-medium hover:underline">
-            Log in
+            Accedi
           </Link>
         </>
       }
     >
+      {GOOGLE_AUTH_ENABLED && (
+        <>
       <Button
         variant="outline"
         className="w-full h-12 text-sm font-medium mb-6"
         onClick={handleGoogle}
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
+        Continua con Google
       </Button>
 
       <div className="relative mb-6">
@@ -152,9 +161,11 @@ export default function Register() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
+          <span className="bg-card px-3 text-muted-foreground">oppure</span>
         </div>
       </div>
+        </>
+      )}
 
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
@@ -172,7 +183,7 @@ export default function Register() {
               type="email"
               autoComplete="email"
               autoFocus
-              placeholder="you@example.com"
+              placeholder="nome@azienda.it"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-10 h-12"
@@ -197,7 +208,7 @@ export default function Register() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="confirm">Confirm Password</Label>
+          <Label htmlFor="confirm">Conferma password</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -216,10 +227,10 @@ export default function Register() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Creating account...
+              Creazione account...
             </>
           ) : (
-            "Create account"
+            "Crea account"
           )}
         </Button>
       </form>

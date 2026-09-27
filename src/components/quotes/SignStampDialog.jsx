@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
@@ -202,7 +202,7 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
     try {
       const { blob, filename } = fileType === "pdf" ? await generateSignedPdf() : await generateSignedImage();
       setSignedBlob(blob);
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: new File([blob], filename, { type: blob.type }) });
+      const { file_url } = await api.integrations.Core.UploadFile({ file: new File([blob], filename, { type: blob.type }) });
       await db.ReceivedQuote.update(receivedQuote.id, { file_firmato_url: file_url, stato: "approvato" });
       setSignedUrl(file_url);
       toast({ title: "Documento firmato salvato" });

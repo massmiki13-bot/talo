@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { db, base44 } from "@/lib/db";
+import { db, api } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -88,7 +88,7 @@ export default function AiReorganizeDialog({ open, onOpenChange, documents, onAp
       })
       .join("\n");
 
-    const result = await base44.integrations.Core.InvokeLLM({
+    const result = await api.integrations.Core.InvokeLLM({
       prompt: `Sei un assistente che aiuta a organizzare i documenti aziendali in cartelle.
 
 Ecco ${docs.length} documenti da organizzare:

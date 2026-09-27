@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,7 +58,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
     setUploading(true);
     setAiSuggestion(null);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
       setFileUrl(file_url);
       setFileTipo(getFileType(file));
       extractAmount(file_url);
@@ -70,7 +70,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
   const extractAmount = async (url) => {
     setAiExtracting(true);
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Analizza il documento allegato (preventivo, offerta o fattura ricevuta). Estrai l'importo TOTALE finale del documento (iva inclusa). Se trovi più cifre, scegli quella etichettata come "Totale", "Totale fattura", "Importo a pagare", "Totale IVA inclusa" o simili. Restituisci SOLO l'importo numerico (senza simboli € o valuta), usando il punto come separatore decimale. Se non riesci a individuarlo con ragionevole certezza, restituisci null.`,
         file_urls: [url],
         response_json_schema: {

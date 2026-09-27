@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "@/lib/db";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,7 +60,7 @@ export default function EmailAccountsSettings({ profile }) {
   const verifyAccount = async (accountId) => {
     setVerifyStatus(prev => ({ ...prev, [accountId]: { loading: true } }));
     try {
-      const res = await base44.functions.invoke('verifyEmailConnection', { account_id: accountId });
+      const res = await api.functions.invoke('verifyEmailConnection', { account_id: accountId });
       setVerifyStatus(prev => ({ ...prev, [accountId]: { ...res.data, loading: false } }));
     } catch (e) {
       setVerifyStatus(prev => ({ ...prev, [accountId]: { connected: false, status: 'error', message: 'Errore verifica', loading: false } }));
@@ -164,13 +164,13 @@ export default function EmailAccountsSettings({ profile }) {
     const st = verifyStatus[a.id];
     if (st) return st.connected;
     // Fallback prima della verifica
-    if (a.provider === 'gmail_oauth') return true;
+    if (a.provider === 'gmail_oauth') return false; // vecchio collegamento Base44: va ricollegato via SMTP
     if (a.provider === 'smtp') return !!(a.smtp_host && a.smtp_password);
     return false;
   };
 
   const providerLabel = (a) => {
-    if (a.provider === 'gmail_oauth') return 'Gmail · OAuth sicuro';
+    if (a.provider === 'gmail_oauth') return 'Gmail · da ricollegare via SMTP';
     if (a.provider === 'smtp') return `SMTP · ${a.smtp_host || '—'}`;
     return 'Sconosciuto';
   };
@@ -304,7 +304,7 @@ export default function EmailAccountsSettings({ profile }) {
             <div className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">1</div>
             <div>
               <p className="text-sm font-medium text-slate-700">Scegli il tipo di collegamento</p>
-              <p className="text-xs text-slate-500 mt-0.5">Per <strong>Gmail</strong> scegli "OAuth sicuro": l'app chiede il permesso di invio con un tap, senza password. Per <strong>Aruba</strong>, <strong>Outlook</strong>, <strong>PEC</strong> o altri provider scegli SMTP con password per app.</p>
+              <p className="text-xs text-slate-500 mt-0.5">Scegli il preset del tuo provider (<strong>Gmail</strong>, <strong>Aruba</strong>, <strong>Outlook</strong>, <strong>PEC</strong>…): server e porta si compilano da soli. Serve solo una <strong>password per app</strong>.</p>
             </div>
           </div>
           <div className="flex gap-3">
@@ -346,8 +346,7 @@ export default function EmailAccountsSettings({ profile }) {
               <Select value={form.provider} onValueChange={handleProviderChange}>
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="smtp">SMTP con password per app (Aruba, Outlook, PEC, Libero, ecc.)</SelectItem>
-                  <SelectItem value="gmail_oauth">Gmail (OAuth sicuro — consenso con un tap)</SelectItem>
+                  <SelectItem value="smtp">SMTP con password per app (Gmail, Aruba, Outlook, PEC, Libero, ecc.)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

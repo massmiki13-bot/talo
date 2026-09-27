@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
+
+// Il login con Google si attiva dopo aver configurato il provider su Supabase.
+const GOOGLE_AUTH_ENABLED = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === "true";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -19,40 +22,44 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      await base44.auth.loginViaEmailPassword(email, password);
-      window.location.href = "/";
+      await api.auth.loginViaEmailPassword(email, password);
+      // Torna alla pagina richiesta prima del login (solo percorsi interni).
+      const from = new URLSearchParams(window.location.search).get("from");
+      window.location.href = from && from.startsWith("/") && !from.startsWith("//") ? from : "/";
     } catch (err) {
-      setError(err.message || "Invalid email or password");
+      setError(err.message || "Email o password non corretti");
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", "/");
+    api.auth.loginWithProvider("google", "/");
   };
 
   return (
     <AuthLayout
       icon={LogIn}
-      title="Welcome back"
-      subtitle="Log in to your account"
+      title="Bentornato"
+      subtitle="Accedi al tuo account"
       footer={
         <>
-          Don't have an account?{" "}
+          Non hai un account?{" "}
           <Link to="/register" className="text-primary font-medium hover:underline">
-            Create one
+            Registrati
           </Link>
         </>
       }
     >
+      {GOOGLE_AUTH_ENABLED && (
+        <>
       <Button
         variant="outline"
         className="w-full h-12 text-sm font-medium mb-6"
         onClick={handleGoogle}
       >
         <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
+        Continua con Google
       </Button>
 
       <div className="relative mb-6">
@@ -60,9 +67,11 @@ export default function Login() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
+          <span className="bg-card px-3 text-muted-foreground">oppure</span>
         </div>
       </div>
+        </>
+      )}
 
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
@@ -80,7 +89,7 @@ export default function Login() {
               type="email"
               autoComplete="email"
               autoFocus
-              placeholder="you@example.com"
+              placeholder="nome@azienda.it"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-10 h-12"
@@ -92,7 +101,7 @@ export default function Login() {
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
             <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-              Forgot password?
+              Password dimenticata?
             </Link>
           </div>
           <div className="relative">
@@ -113,10 +122,10 @@ export default function Login() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Logging in...
+              Accesso in corso...
             </>
           ) : (
-            "Log in"
+            "Accedi"
           )}
         </Button>
       </form>

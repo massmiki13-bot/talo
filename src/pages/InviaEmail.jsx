@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -120,7 +120,7 @@ export default function InviaEmail() {
     try {
       const signature = buildSignature();
       const langInstruction = language !== "it" ? `Scrivi l'email in ${LANG_NAMES[language]}.` : "";
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Sei un assistente che scrive email professionali per un'impresa.
 Contesto: ${subject}
 Spunto dell'utente: "${aiPrompt}"
@@ -142,7 +142,7 @@ Scrivi solo il corpo dell'email, pronto da inviare.`,
     setTranslating(true);
     try {
       const [mainBody, ...sigParts] = body.split("---");
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Traduci il seguente testo in ${LANG_NAMES[language]}, mantenendo il tono professionale e la formattazione. Non aggiungere commenti, restituisci solo il testo tradotto:\n\n${mainBody}`,
       });
       const sig = sigParts.length > 0 ? "---" + sigParts.join("---") : "";
@@ -167,7 +167,7 @@ Scrivi solo il corpo dell'email, pronto da inviare.`,
     setUploadingFile(true);
     try {
       for (const file of files) {
-        const result = await base44.integrations.Core.UploadFile({ file });
+        const result = await api.integrations.Core.UploadFile({ file });
         setAttachments(prev => [...prev, { url: result.file_url, name: file.name }]);
       }
       toast({ title: "File caricato", className: "bg-green-600 text-white" });
@@ -207,7 +207,7 @@ Scrivi solo il corpo dell'email, pronto da inviare.`,
         if (attachments.length > 0) {
           payload.attachments = attachments.map(a => ({ url: a.url, name: a.name }));
         }
-        const response = await base44.functions.invoke("sendEmailFromAccount", payload);
+        const response = await api.functions.invoke("sendEmailFromAccount", payload);
         if (response.data?.error) {
           throw new Error(response.data.error);
         }
@@ -217,7 +217,7 @@ Scrivi solo il corpo dell'email, pronto da inviare.`,
           const attList = attachments.map(a => `<strong>${escapeHtml(a.name)}</strong>`).join(", ");
           emailBody += `<br/><br/><div style="font-size:12px; color:#475569;">Documenti allegati: ${attList}</div>`;
         }
-        await base44.integrations.Core.SendEmail({ to, subject, body: emailBody });
+        await api.integrations.Core.SendEmail({ to, subject, body: emailBody });
       }
 
       setTo(""); setSubject(""); setBody(""); setAiPrompt(""); setAttachments([]);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -63,7 +63,7 @@ export default function AiDocumentOrganizer({ open, onOpenChange }) {
     try {
       const urls = [];
       for (const file of selected) {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        const { file_url } = await api.integrations.Core.UploadFile({ file });
         urls.push({ name: file.name, url: file_url });
       }
       setUploadedUrls(urls);
@@ -76,7 +76,7 @@ export default function AiDocumentOrganizer({ open, onOpenChange }) {
 
       const allResults = [];
       for (const item of urls) {
-        const result = await base44.integrations.Core.InvokeLLM({
+        const result = await api.integrations.Core.InvokeLLM({
           prompt: `Analizza questo documento e determina:
 1. Tipo di documento (uno tra: contratto, visita_medica, documento_identita, corso, certificazione, assicurazione, durc, bolla, altro)
 2. A chi è associato: un dipendente, un cliente, un lavoro/progetto, o la ditta stessa.

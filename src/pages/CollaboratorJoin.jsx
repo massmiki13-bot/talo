@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 import { useAuth } from "@/lib/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { PERMISSION_MODULES } from "@/lib/permissions";
@@ -22,8 +22,12 @@ export default function CollaboratorJoin() {
 
   useEffect(() => {
     if (!inviteId) return;
-    base44.entities.CollaboratorInvite.get(inviteId)
-      .then((inv) => setInvite(inv))
+    // Il codice non arriva mai al browser: la verifica è solo sul server.
+    api.functions.invoke("invite-info", { inviteId })
+      .then((res) => {
+        if (res.data?.error) throw new Error(res.data.error);
+        setInvite(res.data);
+      })
       .catch(() =>
         toast({ title: "Invito non valido", variant: "destructive" })
       )
@@ -32,13 +36,13 @@ export default function CollaboratorJoin() {
 
   const handleConfirm = async () => {
     if (!invite) return;
-    if (code.trim() !== invite.code) {
-      toast({ title: "Codice errato, riprova", variant: "destructive" });
+    if (!code.trim()) {
+      toast({ title: "Inserisci il codice ricevuto", variant: "destructive" });
       return;
     }
     setVerifying(true);
     try {
-      const response = await base44.functions.invoke("confirmCollaboratorInvite", {
+      const response = await api.functions.invoke("confirmCollaboratorInvite", {
         inviteId: invite.id,
         code: code.trim(),
       });
@@ -119,7 +123,7 @@ export default function CollaboratorJoin() {
             </div>
             <h1 className="text-xl font-bold text-slate-900">Conferma Invito</h1>
             <p className="text-sm text-slate-500 mt-1">
-              Inserisci il codice a 4 cifre comunicato dall'host per attivare il
+              Inserisci il codice a 6 cifre comunicato dall'host per attivare il
               tuo accesso.
             </p>
           </div>
@@ -163,14 +167,14 @@ export default function CollaboratorJoin() {
               }
               placeholder="••••"
               className="text-center text-2xl tracking-[0.5em] font-bold"
-              maxLength={4}
+              maxLength={6}
               onKeyDown={(e) => e.key === "Enter" && handleConfirm()}
             />
           </div>
 
           <Button
             onClick={handleConfirm}
-            disabled={verifying || code.length !== 4}
+            disabled={verifying || code.length !== 6}
             className="w-full mt-4"
           >
             {verifying ? (

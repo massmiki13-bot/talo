@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, base44 } from "@/lib/db";
+import { db, api } from "@/lib/db";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -121,7 +121,7 @@ export default function DocumentPickerDialog({ open, onOpenChange, onSelect, pro
 
       if (blob) {
         const file = new File([blob], filename, { type: "application/pdf" });
-        const result = await base44.integrations.Core.UploadFile({ file });
+        const result = await api.integrations.Core.UploadFile({ file });
         onSelect({ url: result.file_url, name: filename });
       }
     } catch (e) {

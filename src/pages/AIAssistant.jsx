@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -77,7 +77,7 @@ export default function AIAssistant() {
     try {
       const urls = [];
       for (const file of selected) {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        const { file_url } = await api.integrations.Core.UploadFile({ file });
         urls.push({ name: file.name, url: file_url });
       }
       setUploadedUrls(urls);
@@ -90,7 +90,7 @@ export default function AIAssistant() {
 
       const allResults = [];
       for (const item of urls) {
-        const result = await base44.integrations.Core.InvokeLLM({
+        const result = await api.integrations.Core.InvokeLLM({
           prompt: `Sei un assistente che aiuta a organizzare i documenti aziendali. Analizza questo documento caricato e determina:
 
 1. Tipo di documento (uno tra: contratto, visita_medica, documento_identita, corso, certificazione, assicurazione, durc, bolla, altro)

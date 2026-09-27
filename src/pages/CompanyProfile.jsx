@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,7 +55,7 @@ export default function CompanyProfile() {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
       handleChange(field, file_url);
       if (field === "logo_url" || field === "firma_url") {
         setLogoPrompt({ type: field === "logo_url" ? "logo" : "firma", url: file_url, field });

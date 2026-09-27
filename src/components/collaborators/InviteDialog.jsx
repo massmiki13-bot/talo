@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -44,8 +44,8 @@ export default function InviteDialog({
     }
     setGenerating(true);
     try {
-      const code = Math.floor(1000 + Math.random() * 9000).toString();
-      const result = await base44.entities.CollaboratorInvite.create({
+      const code = String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000));
+      const result = await api.entities.CollaboratorInvite.create({
         host_user_id: hostUserId,
         code,
         access_level: accessLevel,

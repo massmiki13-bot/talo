@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44, db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -37,7 +37,7 @@ export default function EditCollaboratorDialog({
     }
     setSaving(true);
     try {
-      await base44.entities.Collaborator.update(collaborator.id, {
+      await api.entities.Collaborator.update(collaborator.id, {
         access_level: accessLevel,
         employee_id: accessLevel === "operaio" ? employeeId : null,
         permissions: accessLevel === "responsabile" ? permissions : [],

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/lib/db";
+import { api } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,7 +51,7 @@ export default function QuoteImportDialog({ open, onOpenChange }) {
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file });
       setFileUrl(file_url);
     } catch (err) {
       toast({ title: "Errore upload", variant: "destructive" });
@@ -64,7 +64,7 @@ export default function QuoteImportDialog({ open, onOpenChange }) {
     if (!fileUrl) return;
     setAiLoading(true);
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await api.integrations.Core.InvokeLLM({
         prompt: `Sei un assistente che analizza preventivi commerciali italiani.
 Leggi il documento allegato (PDF, Word, Excel o foto di un preventivo).
 Estrai TUTTI i dati strutturati del preventivo:

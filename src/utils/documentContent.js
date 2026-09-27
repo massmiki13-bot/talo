@@ -1,11 +1,11 @@
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 
 /**
  * Extracts text content from a document file (PDF, image, etc.) using AI.
  * Returns extracted text truncated to 10000 chars to avoid oversized entity fields.
  */
 export async function extractDocumentText(fileUrl) {
-  const result = await base44.integrations.Core.InvokeLLM({
+  const result = await api.integrations.Core.InvokeLLM({
     prompt:
       "Estrai tutto il testo presente in questo documento, mantenendo l'ordine originale di lettura. " +
       "Restituisci ESCLUSIVAMENTE il testo estratto, senza commenti, spiegazioni o intestazioni. " +
