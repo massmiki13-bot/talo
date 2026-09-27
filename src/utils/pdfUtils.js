@@ -6,6 +6,7 @@ export function formatEuro(amount) {
     currency: "EUR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+    useGrouping: "always",
   }).format(amount || 0);
 }
 
@@ -27,7 +28,8 @@ export function hexToRgb(hex) {
 export function addImageSafe(doc, url, x, y, w, h) {
   if (!url) return;
   try {
-    const imgType = url.match(/\.(png)$/i) ? "PNG" : "JPEG";
+    // Le immagini arrivano come data URL (precaricate) o come indirizzo con estensione.
+    const imgType = /^data:image\/png/i.test(url) || /\.png(\?|$)/i.test(url) ? "PNG" : "JPEG";
     doc.addImage(url, imgType, x, y, w, h);
   } catch (e) {}
 }

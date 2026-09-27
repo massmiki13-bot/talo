@@ -242,6 +242,33 @@ await check("non invia email", async () => {
   assert(r.status === 403, JSON.stringify(r));
 });
 
+console.log("\nPreventivo online (link pubblico)");
+await check("il cliente vede il preventivo senza costi interni", async () => {
+  const token = "tok" + crypto.randomUUID().replace(/-/g, "");
+  await T.e("Quote").create({ numero: "PUB-1", cliente_nome: "Bianchi", stato: "inviato", validita_giorni: 30, data: new Date().toISOString().slice(0, 10), public_token: token,
+    righe: [{ tipo: "voce", descrizione: "Posa", quantita: 2, prezzo_unitario: 100, iva_percentuale: 22, costo_unitario: 60 }] });
+  const r = await fetch(`${BASE}/api/quote-public?t=${token}`);
+  const j = await r.json();
+  assert(r.status === 200 && j.quote.numero === "PUB-1", JSON.stringify(j).slice(0, 200));
+  assert(!JSON.stringify(j).includes("costo_unitario"), "costi interni esposti al cliente");
+  const [q] = await T.e("Quote").list({ numero: "PUB-1" });
+  assert(q.stato === "visto" && q.visto_il, "apertura del link non registrata");
+  const post = (body) => fetch(`${BASE}/api/quote-public`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, ...body }) });
+  assert((await post({ esito: "accetta", nome: "Mario" })).status === 400, "accettazione senza firma consentita");
+  assert((await post({ esito: "rifiuta", nome: "Mario Bianchi", commento: "Troppo caro" })).status === 200, "rifiuto non registrato");
+  const [q2] = await T.e("Quote").list({ numero: "PUB-1" });
+  assert(q2.stato === "rifiutato" && q2.risposta_cliente?.commento === "Troppo caro", JSON.stringify(q2.risposta_cliente));
+  assert((await post({ esito: "rifiuta", nome: "X" })).status === 409, "seconda risposta accettata");
+});
+await check("link inventato rifiutato", async () => {
+  const r = await fetch(`${BASE}/api/quote-public?t=inesistente0000000000000`);
+  assert(r.status === 404, `stato ${r.status}`);
+});
+await check("P.IVA da registro europeo", async () => {
+  const r = await T.api("vies", { partita_iva: "00488410010" });
+  assert(r.status === 200 && r.valid && /TIM/i.test(r.ragione_sociale) && r.cap === "20123", JSON.stringify(r));
+});
+
 console.log("\nFile");
 let fileUrl;
 await check("caricamento nella cartella dell'azienda", async () => {

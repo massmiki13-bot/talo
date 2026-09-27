@@ -30,9 +30,12 @@ export function generateQuoteWord(ctx) {
   const { profile, quote, righe, totals, selectedClient, unitOptions, calcRowTotal } = ctx;
 
   const rowsHtml = righe.map(r => {
+    // Capitoli e testi: una riga a tutta larghezza.
+    if (r.tipo === "capitolo") return `<tr><td colspan="7" style="font-weight:bold; text-transform:uppercase; background:#f1f5f9;">${escapeHtml(r.descrizione || "")}</td></tr>`;
+    if (r.tipo === "testo") return `<tr><td colspan="7">${escapeHtml(r.descrizione || "")}</td></tr>`;
     const um = unitOptions.find(u => u.value === r.unita_misura)?.label || r.unita_misura || "";
     return `<tr>
-      <td>${escapeHtml(r.descrizione || "")}</td>
+      <td>${r.opzionale ? "<em>[Opzionale – non incluso nel totale]</em> " : ""}${escapeHtml(r.descrizione || "")}</td>
       <td style="text-align:center;">${escapeHtml(um)}</td>
       <td style="text-align:right;">${formatNumber(r.quantita || 0, 2)}</td>
       <td style="text-align:right;">${formatEuro(r.prezzo_unitario || 0)}</td>
@@ -81,9 +84,11 @@ export function generateQuoteExcel(ctx) {
   ];
 
   const rows = righe.map(r => {
+    if (r.tipo === "capitolo") return [(r.descrizione || "").toUpperCase(), "", "", "", "", "", ""];
+    if (r.tipo === "testo") return [r.descrizione || "", "", "", "", "", "", ""];
     const um = unitOptions.find(u => u.value === r.unita_misura)?.label || r.unita_misura || "";
     return [
-      r.descrizione || "",
+      (r.opzionale ? "[Opzionale – non incluso] " : "") + (r.descrizione || ""),
       um,
       { value: r.quantita || 0, type: "number" },
       { value: r.prezzo_unitario || 0, type: "currency" },

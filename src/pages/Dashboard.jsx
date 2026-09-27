@@ -50,7 +50,7 @@ export default function Dashboard() {
       expiringDocs.sort((a, b) => new Date(a.data_scadenza) - new Date(b.data_scadenza));
 
       // Pending quotes
-      const pendingQuotes = quotes.filter(q => q.stato === "in_attesa" || q.stato === "inviato");
+      const pendingQuotes = quotes.filter(q => ["in_attesa", "inviato", "visto"].includes(q.stato));
 
       // Worksite margins
       const worksiteBudgets = worksites.map(w => {

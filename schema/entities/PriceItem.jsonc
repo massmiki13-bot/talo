@@ -1,0 +1,44 @@
+{
+  "name": "PriceItem",
+  "type": "object",
+  "properties": {
+    "descrizione": {
+      "type": "string",
+      "title": "Descrizione"
+    },
+    "categoria": {
+      "type": "string",
+      "title": "Categoria"
+    },
+    "codice": {
+      "type": "string",
+      "title": "Codice"
+    },
+    "unita_misura": {
+      "type": "string",
+      "title": "Unità di misura",
+      "default": "cad"
+    },
+    "prezzo_unitario": {
+      "type": "number",
+      "title": "Prezzo di vendita"
+    },
+    "costo_unitario": {
+      "type": "number",
+      "title": "Costo interno"
+    },
+    "iva_percentuale": {
+      "type": "number",
+      "title": "IVA %",
+      "default": 22
+    },
+    "utilizzi": {
+      "type": "number",
+      "title": "Volte usata",
+      "default": 0
+    }
+  },
+  "required": [
+    "descrizione"
+  ]
+}

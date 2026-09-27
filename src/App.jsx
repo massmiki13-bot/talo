@@ -37,6 +37,7 @@ import WorksiteDetail from '@/pages/WorksiteDetail';
 import Collaborators from '@/pages/Collaborators';
 import CollaboratorJoin from '@/pages/CollaboratorJoin';
 import Posta from '@/pages/Posta';
+import PublicQuote from '@/pages/PublicQuote';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
+      <Route path="/p/:token" element={<PublicQuote />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />

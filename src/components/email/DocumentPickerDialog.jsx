@@ -6,40 +6,21 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, FileText, Check } from "lucide-react";
 import { generateQuotePDF } from "@/utils/quoteTemplates";
+import { UNIT_OPTIONS, calcQuote, chapterTotals, conditionsText, rowTotal } from "@/lib/quotes";
 import { generateContractPDFBlob } from "@/utils/docExportUtils";
 
-const UNIT_OPTIONS = [
-  { value: "nr", label: "nr" },
-  { value: "mq", label: "mq" },
-  { value: "ml", label: "ml" },
-  { value: "mc", label: "mc" },
-  { value: "kg", label: "kg" },
-  { value: "t", label: "t" },
-  { value: "h", label: "h" },
-  { value: "gg", label: "gg" },
-  { value: "mese", label: "mese" },
-  { value: "corpo", label: "corpo" },
-  { value: "%", label: "%" },
-];
-
-function calcRowTotal(row) {
-  const subtotal = (row.quantita || 0) * (row.prezzo_unitario || 0);
-  return subtotal * (1 - (row.sconto || 0) / 100);
-}
-
+// Stesso contesto dell'editor: capitoli, voci opzionali e condizioni inclusi.
 function buildQuoteCtx(quote, profile, client) {
   const righe = quote.righe || [];
-  const imponibile = righe.reduce((sum, r) => sum + calcRowTotal(r), 0);
-  const iva_totale = righe.reduce((sum, r) => sum + calcRowTotal(r) * (r.iva_percentuale || 0) / 100, 0);
   return {
-    profile,
-    quote,
-    righe,
-    totals: { imponibile, iva_totale, totale: imponibile + iva_totale },
+    profile, quote, righe,
+    totals: calcQuote(righe, quote),
+    chapters: chapterTotals(righe),
+    conditions: conditionsText(quote),
     selectedClient: client,
     clienteFirma: quote.firma_cliente_url,
     unitOptions: UNIT_OPTIONS,
-    calcRowTotal,
+    calcRowTotal: rowTotal,
   };
 }
 

@@ -1,29 +1,54 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { db } from "@/lib/db";
-import { Link } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { FileText, Eye, Search, Copy, Bookmark, Upload, Plus, Inbox, Trash2, CheckSquare } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
+import { FileText, Search, Copy, Bookmark, Upload, Plus, Inbox, Trash2, CheckSquare, Download, MoreHorizontal, X, Eye, ArrowUpDown } from "lucide-react";
 import QuoteImportDialog from "@/components/shared/QuoteImportDialog";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
 import ReceivedQuotesSection from "@/components/quotes/ReceivedQuotesSection";
-import { useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
-import PageHeader from "@/components/shared/PageHeader";
 import EmptyState from "@/components/shared/EmptyState";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import StatusBadge from "@/components/shared/StatusBadge";
 import { generateQuoteNumber } from "@/utils/quoteNumbering";
+import { QUOTE_STATES, OPEN_STATES, effectiveState, expiryDate, fmtEur } from "@/lib/quotes";
+import { downloadCsv } from "@/lib/csv";
+
+const PERIODS = {
+  tutti: { label: "Sempre", from: () => null },
+  mese: { label: "Questo mese", from: () => new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
+  trimestre: { label: "Ultimi 3 mesi", from: () => { const d = new Date(); d.setMonth(d.getMonth() - 3); return d; } },
+  anno: { label: "Quest'anno", from: () => new Date(new Date().getFullYear(), 0, 1) },
+  anno_scorso: { label: "Anno scorso", from: () => new Date(new Date().getFullYear() - 1, 0, 1), to: () => new Date(new Date().getFullYear(), 0, 1) },
+};
+
+const SORTS = {
+  data: { label: "Più recenti", fn: (a, b) => String(b.data || b.created_date).localeCompare(String(a.data || a.created_date)) },
+  importo: { label: "Importo", fn: (a, b) => (Number(b.totale) || 0) - (Number(a.totale) || 0) },
+  scadenza: { label: "In scadenza", fn: (a, b) => (expiryDate(a)?.getTime() || Infinity) - (expiryDate(b)?.getTime() || Infinity) },
+  cliente: { label: "Cliente A→Z", fn: (a, b) => String(a.cliente_nome || "~").localeCompare(String(b.cliente_nome || "~"), "it") },
+};
+
+function StateBadge({ state }) {
+  const s = QUOTE_STATES[state] || QUOTE_STATES.in_attesa;
+  return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap ${s.className}`}>{s.label}</span>;
+}
 
 export default function Quotes() {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const tab = params.get("tab") === "ricevuti" ? "ricevuti" : "emessi";
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState("tutti");
-  const [yearFilter, setYearFilter] = useState("tutti");
   const [search, setSearch] = useState("");
+  const [stateFilter, setStateFilter] = useState(params.get("stato") || "tutti");
+  const [period, setPeriod] = useState("tutti");
+  const [clientFilter, setClientFilter] = useState("tutti");
+  const [sort, setSort] = useState("data");
   const [templates, setTemplates] = useState([]);
   const [tplDialog, setTplDialog] = useState(false);
   const [importDialog, setImportDialog] = useState(false);
@@ -31,244 +56,272 @@ export default function Quotes() {
   const [worksites, setWorksites] = useState([]);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
-  const [deleteTarget, setDeleteTarget] = useState(null); // null | { type: "single"|"multi", ids: string[] }
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
-
-  useEffect(() => { load(); }, []);
 
   const load = async () => {
     try {
       const [qs, tpls, profs, sites] = await Promise.all([
-        db.Quote.list("-created_date"),
+        db.Quote.list("-created_date", 5000),
         db.SavedTemplate.filter({ tipo: "preventivo" }),
         db.CompanyProfile.list(),
-        db.Worksite.list(),
+        db.Worksite.list("-created_date", 1000),
       ]);
-      setQuotes(qs);
+      setQuotes(qs.map((q) => ({ ...q, _state: effectiveState(q) })));
       setTemplates(tpls);
       setProfile(profs[0]);
       setWorksites(sites);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+    } catch (e) {
+      toast({ title: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
+  useEffect(() => { load(); }, []);
 
-  const handleDuplicate = async (q) => {
-    try {
-      const profiles = await db.CompanyProfile.list();
-      const profile = profiles[0];
-      const existingQuotes = await db.Quote.list();
-      const { numero, anno } = generateQuoteNumber(profile, existingQuotes);
-      const created = await db.Quote.create({
-        ...q,
-        numero,
-        anno,
-        data: new Date().toISOString().slice(0, 10),
-        stato: "in_attesa",
-        firma_cliente_url: "",
-        data_firma_cliente: "",
-        data_invio: "",
-        inviato_a: "",
-      });
-      delete created.id;
-      toast({ title: "Preventivo duplicato", description: `Nuovo n. ${numero}` });
-      load();
-    } catch (e) { toast({ title: "Errore", variant: "destructive" }); }
-  };
+  const clients = useMemo(() => [...new Map(quotes.filter((q) => q.cliente_nome).map((q) => [q.cliente_id || q.cliente_nome, q.cliente_nome])).entries()]
+    .sort((a, b) => a[1].localeCompare(b[1], "it")), [quotes]);
 
-  const handleDeleteTemplate = async (tplId) => {
-    if (!confirm("Eliminare questo modello?")) return;
-    await db.SavedTemplate.delete(tplId);
-    load();
-    toast({ title: "Modello eliminato" });
-  };
-
-  const toggleSelect = (id) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
+  const inPeriod = useMemo(() => {
+    const p = PERIODS[period];
+    const from = p.from();
+    const to = p.to?.();
+    return quotes.filter((q) => {
+      const d = new Date(q.data || q.created_date);
+      return (!from || d >= from) && (!to || d < to);
     });
-  };
+  }, [quotes, period]);
 
-  const toggleSelectAll = () => {
-    if (selectedIds.size === filtered.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(filtered.map(q => q.id)));
+  const filtered = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    return inPeriod
+      .filter((q) => stateFilter === "tutti" || (stateFilter === "aperti" ? OPEN_STATES.includes(q._state) : q._state === stateFilter))
+      .filter((q) => clientFilter === "tutti" || (q.cliente_id || q.cliente_nome) === clientFilter)
+      .filter((q) => !s || [q.numero, q.cliente_nome, q.oggetto, q.worksite_nome].join(" ").toLowerCase().includes(s))
+      .sort(SORTS[sort].fn);
+  }, [inPeriod, stateFilter, clientFilter, search, sort]);
+
+  // Indicatori sul periodo scelto.
+  const kpi = useMemo(() => {
+    const sum = (arr) => arr.reduce((s, q) => s + (Number(q.totale) || 0), 0);
+    const open = inPeriod.filter((q) => OPEN_STATES.includes(q._state));
+    const won = inPeriod.filter((q) => q._state === "approvato");
+    const lost = inPeriod.filter((q) => q._state === "rifiutato");
+    const soon = open.filter((q) => { const e = expiryDate(q); return e && (e - new Date()) / 86_400_000 <= 7; });
+    return {
+      open: { n: open.length, v: sum(open) }, won: { n: won.length, v: sum(won) },
+      rate: won.length + lost.length ? Math.round((won.length / (won.length + lost.length)) * 100) : null,
+      soon: soon.length, total: { n: inPeriod.length, v: sum(inPeriod) },
+    };
+  }, [inPeriod]);
+
+  const setFilterState = (s) => { setStateFilter(s); };
+
+  const duplicate = async (q) => {
+    try {
+      const existing = await db.Quote.list("-created_date", 5000);
+      const { numero, anno } = generateQuoteNumber(profile, existing);
+      const { id, created_date, updated_date, created_by, created_by_id, _state, ...rest } = q;
+      const created = await db.Quote.create({
+        ...rest, numero, anno, data: new Date().toISOString().slice(0, 10), stato: "in_attesa",
+        firma_cliente_url: "", data_firma_cliente: "", data_invio: "", inviato_a: "", public_token: null, visto_il: null,
+        risposta_cliente: null, revisione: 0, revisioni: [], worksite_id: "", worksite_nome: "",
+      });
+      toast({ title: "Preventivo duplicato", description: `Nuovo n. ${numero}` });
+      navigate(`/preventivi/${created.id}`);
+    } catch (e) {
+      toast({ title: e.message, variant: "destructive" });
     }
   };
 
-  const exitSelectMode = () => {
-    setSelectMode(false);
-    setSelectedIds(new Set());
-  };
+  const exportCsv = () => downloadCsv(`preventivi-${new Date().toISOString().slice(0, 10)}.csv`,
+    ["Numero", "Revisione", "Data", "Cliente", "Oggetto", "Imponibile", "IVA", "Totale", "Stato", "Scadenza", "Lavoro", "Inviato a", "Margine"],
+    filtered.map((q) => [q.numero, q.revisione || 0, q.data, q.cliente_nome, q.oggetto, (q.imponibile || 0).toFixed(2).replace(".", ","),
+      (q.iva_totale || 0).toFixed(2).replace(".", ","), (q.totale || 0).toFixed(2).replace(".", ","), QUOTE_STATES[q._state]?.label,
+      expiryDate(q)?.toISOString().slice(0, 10) || "", q.worksite_nome, q.inviato_a, q.margine != null ? Number(q.margine).toFixed(2).replace(".", ",") : ""]));
 
-  const requestDelete = (id) => {
-    setDeleteTarget({ type: "single", ids: [id] });
-  };
-
-  const requestDeleteMulti = () => {
-    if (selectedIds.size === 0) return;
-    setDeleteTarget({ type: "multi", ids: [...selectedIds] });
-  };
+  const toggleSelect = (id) => setSelectedIds((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const exitSelect = () => { setSelectMode(false); setSelectedIds(new Set()); };
 
   const confirmDelete = async () => {
     const ids = deleteTarget?.ids || [];
-    if (ids.length === 0) return;
     setDeleting(true);
     try {
-      for (const id of ids) {
-        await db.Quote.delete(id);
-      }
+      for (const id of ids) await db.Quote.delete(id);
       toast({ title: ids.length === 1 ? "Preventivo eliminato" : `${ids.length} preventivi eliminati` });
-      exitSelectMode();
+      exitSelect();
       setDeleteTarget(null);
       load();
     } catch (e) {
-      toast({ title: "Errore eliminazione", variant: "destructive" });
+      toast({ title: "Eliminazione non riuscita", variant: "destructive" });
     } finally {
       setDeleting(false);
     }
   };
 
-  const years = [...new Set(quotes.map(q => q.anno).filter(Boolean))].sort((a, b) => b - a);
-
-  const filtered = quotes.filter(q => {
-    if (statusFilter !== "tutti" && q.stato !== statusFilter) return false;
-    if (yearFilter !== "tutti" && q.anno !== parseInt(yearFilter)) return false;
-    if (search && !q.cliente_nome?.toLowerCase().includes(search.toLowerCase()) && !q.oggetto?.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  const activeFilters = [stateFilter !== "tutti", period !== "tutti", clientFilter !== "tutti", !!search].filter(Boolean).length;
+  const resetFilters = () => { setStateFilter("tutti"); setPeriod("tutti"); setClientFilter("tutti"); setSearch(""); };
 
   if (loading) return <LoadingSpinner />;
 
+  const actions = (q) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button onClick={(e) => e.stopPropagation()} aria-label="Azioni" className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"><MoreHorizontal className="w-4 h-4" /></button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+        <DropdownMenuItem onClick={() => navigate(`/preventivi/${q.id}`)}><Eye className="w-4 h-4 mr-2" /> Apri</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => duplicate(q)}><Copy className="w-4 h-4 mr-2" /> Duplica</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setDeleteTarget({ ids: [q.id] })} className="text-red-600 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <div>
-      <PageHeader title="Preventivi" subtitle="Preventivi emessi e ricevuti">
-        <div className="flex gap-2 flex-wrap w-full sm:w-auto">
-          {templates.length > 0 && (
-            <Button variant="outline" onClick={() => setTplDialog(true)} className="gap-2 flex-1 sm:flex-none justify-center">
-              <Bookmark className="w-4 h-4" /> Modelli
-            </Button>
-          )}
-          <Button variant="outline" onClick={() => setImportDialog(true)} className="gap-2 flex-1 sm:flex-none justify-center">
-            <Upload className="w-4 h-4" /> Importa
-          </Button>
-          <Button onClick={() => navigate("/preventivi/nuovo")} className="gap-2 flex-1 sm:flex-none justify-center">
-            <Plus className="w-4 h-4" /> Nuovo Preventivo
-          </Button>
+      <div className="mb-4 sm:mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Preventivi</h1>
+          <p className="text-slate-500 mt-1 text-sm">Emessi ai clienti e ricevuti dai fornitori</p>
         </div>
-      </PageHeader>
+        <div className="flex flex-wrap gap-2">
+          {templates.length > 0 && <Button variant="outline" size="sm" onClick={() => setTplDialog(true)} className="gap-1.5"><Bookmark className="w-4 h-4" /> Modelli</Button>}
+          <Button variant="outline" size="sm" onClick={() => setImportDialog(true)} className="gap-1.5"><Upload className="w-4 h-4" /> Importa da PDF</Button>
+          <Button size="sm" onClick={() => navigate("/preventivi/nuovo")} className="gap-1.5 bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4" /> Nuovo preventivo</Button>
+        </div>
+      </div>
 
-      {/* Multi-select toolbar for emitted quotes */}
-      {selectMode && (
-        <div className="flex items-center justify-between gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 mb-4">
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-blue-700">
-              {selectedIds.size} selezionat{selectedIds.size === 1 ? "o" : "i"}
-            </span>
-            <button onClick={toggleSelectAll} className="text-xs text-blue-600 hover:text-blue-800 underline">
-              {selectedIds.size === filtered.length ? "Deseleziona tutti" : "Seleziona tutti"}
+      <div className="flex gap-1 mb-4 border-b border-slate-200">
+        {[["emessi", "Emessi", FileText], ["ricevuti", "Ricevuti dai fornitori", Inbox]].map(([k, l, Icon]) => (
+          <button key={k} onClick={() => setParams(k === "emessi" ? {} : { tab: k })}
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>
+            <Icon className="w-4 h-4" /> {l}
+          </button>
+        ))}
+      </div>
+
+      {tab === "ricevuti" ? (
+        <ReceivedQuotesSection profile={profile} worksites={worksites} />
+      ) : (
+        <>
+          {/* Indicatori */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <button onClick={() => setFilterState("aperti")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+              <p className="text-xs text-slate-500">In attesa di risposta</p>
+              <p className="text-lg font-bold text-slate-900 tabular-nums">{fmtEur(kpi.open.v)}</p>
+              <p className="text-xs text-slate-500">{kpi.open.n} preventivi</p>
+            </button>
+            <button onClick={() => setFilterState("approvato")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+              <p className="text-xs text-slate-500">Accettati</p>
+              <p className="text-lg font-bold text-emerald-700 tabular-nums">{fmtEur(kpi.won.v)}</p>
+              <p className="text-xs text-slate-500">{kpi.won.n} preventivi</p>
+            </button>
+            <div className="bg-white rounded-xl border border-slate-200 p-3.5">
+              <p className="text-xs text-slate-500">Tasso di accettazione</p>
+              <p className="text-lg font-bold text-slate-900">{kpi.rate === null ? "—" : `${kpi.rate}%`}</p>
+              <p className="text-xs text-slate-500">su accettati e rifiutati</p>
+            </div>
+            <button onClick={() => { setFilterState("aperti"); setSort("scadenza"); }} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+              <p className="text-xs text-slate-500">In scadenza entro 7 giorni</p>
+              <p className={`text-lg font-bold ${kpi.soon ? "text-amber-700" : "text-slate-900"}`}>{kpi.soon}</p>
+              <p className="text-xs text-slate-500">da sollecitare</p>
             </button>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={exitSelectMode}>Annulla</Button>
-            <Button variant="destructive" size="sm" onClick={requestDeleteMulti} disabled={selectedIds.size === 0} className="gap-1.5">
-              <Trash2 className="w-4 h-4" /> Elimina selezionati
-            </Button>
-          </div>
-        </div>
-      )}
 
-      <Tabs defaultValue="emessi" className="w-full">
-        <TabsList className="grid grid-cols-2 w-full max-w-md mb-4">
-          <TabsTrigger value="emessi" className="gap-1.5"><FileText className="w-4 h-4" /> Emessi</TabsTrigger>
-          <TabsTrigger value="ricevuti" className="gap-1.5"><Inbox className="w-4 h-4" /> Ricevuti</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="emessi">
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
+          {/* Filtri */}
+          <div className="flex flex-col xl:flex-row gap-2 mb-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input placeholder="Cerca per cliente o oggetto..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10 h-10" />
+              <Input placeholder="Cerca per numero, cliente, oggetto, lavoro…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-10" aria-label="Cerca preventivi" />
             </div>
-            <div className="flex gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-[160px] h-10"><SelectValue placeholder="Stato" /></SelectTrigger>
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:flex gap-2">
+              <Select value={stateFilter} onValueChange={setStateFilter}>
+                <SelectTrigger className="xl:w-44 h-10"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="tutti">Tutti gli stati</SelectItem>
-                  <SelectItem value="in_attesa">In Attesa</SelectItem>
-                  <SelectItem value="inviato">Inviato</SelectItem>
-                  <SelectItem value="approvato">Approvato</SelectItem>
-                  <SelectItem value="rifiutato">Rifiutato</SelectItem>
-                  <SelectItem value="scaduto">Scaduto</SelectItem>
+                  <SelectItem value="aperti">Aperti (senza risposta)</SelectItem>
+                  {Object.entries(QUOTE_STATES).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {years.length > 0 && (
-                <Select value={yearFilter} onValueChange={setYearFilter}>
-                  <SelectTrigger className="w-[100px] h-10"><SelectValue placeholder="Anno" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="tutti">Tutti</SelectItem>
-                    {years.map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              )}
-              <Button
-                variant={selectMode ? "default" : "outline"}
-                onClick={() => selectMode ? exitSelectMode() : setSelectMode(true)}
-                className="h-10 gap-1.5"
-              >
-                <CheckSquare className="w-4 h-4" /> {selectMode ? "Fine" : "Seleziona"}
-              </Button>
+              <Select value={period} onValueChange={setPeriod}>
+                <SelectTrigger className="xl:w-40 h-10"><SelectValue /></SelectTrigger>
+                <SelectContent>{Object.entries(PERIODS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
+              </Select>
+              <Select value={clientFilter} onValueChange={setClientFilter}>
+                <SelectTrigger className="xl:w-48 h-10"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tutti">Tutti i clienti</SelectItem>
+                  {clients.map(([k, name]) => <SelectItem key={k} value={k}>{name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={sort} onValueChange={setSort}>
+                <SelectTrigger className="xl:w-40 h-10"><ArrowUpDown className="w-4 h-4 text-slate-500" /><SelectValue /></SelectTrigger>
+                <SelectContent>{Object.entries(SORTS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
+              </Select>
             </div>
           </div>
+          <div className="flex flex-wrap items-center gap-2 mb-3 text-sm">
+            <span className="text-slate-600">{filtered.length} preventivi · <strong className="tabular-nums">{fmtEur(filtered.reduce((s, q) => s + (Number(q.totale) || 0), 0))}</strong></span>
+            {activeFilters > 0 && <button onClick={resetFilters} className="flex items-center gap-1 text-xs text-blue-700 hover:underline"><X className="w-3.5 h-3.5" /> Azzera filtri</button>}
+            <div className="flex-1" />
+            <Button variant="ghost" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
+            <Button variant={selectMode ? "default" : "ghost"} size="sm" className="gap-1.5" onClick={() => (selectMode ? exitSelect() : setSelectMode(true))}><CheckSquare className="w-4 h-4" /> {selectMode ? "Fine" : "Seleziona"}</Button>
+          </div>
+
+          {selectMode && (
+            <div className="flex items-center justify-between gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 mb-3">
+              <span className="text-sm font-medium text-blue-800">{selectedIds.size} selezionati</span>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setSelectedIds(selectedIds.size === filtered.length ? new Set() : new Set(filtered.map((q) => q.id)))}>
+                  {selectedIds.size === filtered.length ? "Nessuno" : "Tutti"}
+                </Button>
+                <Button variant="destructive" size="sm" disabled={!selectedIds.size} onClick={() => setDeleteTarget({ ids: [...selectedIds] })} className="gap-1.5"><Trash2 className="w-4 h-4" /> Elimina</Button>
+              </div>
+            </div>
+          )}
 
           {filtered.length === 0 ? (
-            <EmptyState icon={FileText} title="Nessun preventivo" description="Crea il tuo primo preventivo" />
+            activeFilters
+              ? <EmptyState icon={Search} title="Nessun preventivo trovato" description="Prova a cambiare o azzerare i filtri." />
+              : <EmptyState icon={FileText} title="Nessun preventivo" description="Crea il primo preventivo o importane uno da PDF." actionLabel="Nuovo preventivo" onAction={() => navigate("/preventivi/nuovo")} />
           ) : (
             <>
-              {/* Desktop table */}
               <div className="hidden md:block bg-white rounded-xl border border-slate-200 overflow-hidden">
                 <table className="w-full">
                   <thead className="bg-slate-50 border-b border-slate-200">
-                    <tr>
-                      {selectMode && <th className="text-center text-xs font-medium text-slate-500 uppercase px-3 py-3 w-10">
-                        <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0} onChange={toggleSelectAll} className="w-4 h-4 cursor-pointer" />
-                      </th>}
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">N°</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Data</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Cliente</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Oggetto</th>
-                      <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">Totale</th>
-                      <th className="text-center text-xs font-medium text-slate-500 uppercase px-4 py-3">Stato</th>
-                      <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">Azioni</th>
+                    <tr className="text-left text-xs font-medium text-slate-500 uppercase">
+                      {selectMode && <th className="px-3 py-3 w-10" />}
+                      <th className="px-4 py-3">N° / data</th>
+                      <th className="px-4 py-3">Cliente e oggetto</th>
+                      <th className="px-4 py-3 text-right">Totale</th>
+                      <th className="px-4 py-3">Stato</th>
+                      <th className="px-4 py-3 hidden lg:table-cell">Scadenza</th>
+                      <th className="px-2 py-3 w-10" />
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {filtered.map(q => {
-                      const isSelected = selectedIds.has(q.id);
+                    {filtered.map((q) => {
+                      const e = expiryDate(q);
+                      const days = e ? Math.ceil((e - new Date(new Date().toDateString())) / 86_400_000) : null;
                       return (
-                        <tr key={q.id} className={`transition-colors ${isSelected ? "bg-blue-50" : "hover:bg-slate-50"}`}>
-                          {selectMode && (
-                            <td className="px-3 py-3 text-center">
-                              <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(q.id)} className="w-4 h-4 cursor-pointer" />
-                            </td>
-                          )}
-                          <td className="px-4 py-3 text-sm font-medium text-slate-900">{q.numero || "—"}</td>
-                          <td className="px-4 py-3 text-sm text-slate-600">{q.data ? new Date(q.data).toLocaleDateString("it-IT") : "—"}</td>
-                          <td className="px-4 py-3 text-sm text-slate-900">{q.cliente_nome || "—"}</td>
-                          <td className="px-4 py-3 text-sm text-slate-600 truncate max-w-[200px]">{q.oggetto || "—"}</td>
-                          <td className="px-4 py-3 text-sm font-medium text-slate-900 text-right">€ {(q.totale || 0).toFixed(2)}</td>
-                          <td className="px-4 py-3 text-center"><StatusBadge status={q.stato} /></td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              <Link to={`/preventivi/${q.id}`} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-600 inline-flex"><Eye className="w-4 h-4" /></Link>
-                              <button onClick={() => handleDuplicate(q)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-600" title="Duplica"><Copy className="w-4 h-4" /></button>
-                              <button onClick={() => requestDelete(q.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600" title="Elimina"><Trash2 className="w-4 h-4" /></button>
-                            </div>
+                        <tr key={q.id} className={`cursor-pointer ${selectedIds.has(q.id) ? "bg-blue-50" : "hover:bg-slate-50"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))}>
+                          {selectMode && <td className="px-3 py-3"><input type="checkbox" checked={selectedIds.has(q.id)} onChange={() => toggleSelect(q.id)} onClick={(ev) => ev.stopPropagation()} className="w-4 h-4" aria-label={`Seleziona ${q.numero}`} /></td>}
+                          <td className="px-4 py-3">
+                            <p className="text-sm font-semibold text-slate-900">{q.numero || "—"}{q.revisione ? <span className="text-xs text-slate-500 font-normal"> · Rev.{q.revisione}</span> : null}</p>
+                            <p className="text-xs text-slate-500">{q.data ? new Date(q.data).toLocaleDateString("it-IT") : ""}</p>
                           </td>
+                          <td className="px-4 py-3 max-w-[340px]">
+                            <p className="text-sm text-slate-900 truncate">{q.cliente_nome || "—"}</p>
+                            <p className="text-xs text-slate-500 truncate">{q.oggetto || ""}</p>
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm font-semibold text-slate-900 tabular-nums">{fmtEur(q.totale)}</td>
+                          <td className="px-4 py-3"><StateBadge state={q._state} /></td>
+                          <td className="px-4 py-3 hidden lg:table-cell text-sm">
+                            {e && OPEN_STATES.includes(q._state)
+                              ? <span className={days <= 7 ? "text-amber-700 font-medium" : "text-slate-600"}>{days === 0 ? "oggi" : days === 1 ? "domani" : `tra ${days} gg`}</span>
+                              : <span className="text-slate-400">—</span>}
+                          </td>
+                          <td className="px-2 py-3">{actions(q)}</td>
                         </tr>
                       );
                     })}
@@ -276,64 +329,45 @@ export default function Quotes() {
                 </table>
               </div>
 
-              {/* Mobile cards */}
-              <div className="md:hidden space-y-3">
-                {filtered.map(q => {
-                  const isSelected = selectedIds.has(q.id);
-                  return (
-                    <div key={q.id} className={`bg-white rounded-xl border p-4 ${isSelected ? "border-blue-400 bg-blue-50" : "border-slate-200"}`}>
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="min-w-0 flex-1 flex items-start gap-2">
-                          {selectMode && (
-                            <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(q.id)} className="w-4 h-4 mt-1 cursor-pointer flex-shrink-0" />
-                          )}
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-slate-900">{q.numero || "—"}</span>
-                              <span className="text-xs text-slate-400">{q.data ? new Date(q.data).toLocaleDateString("it-IT") : ""}</span>
-                            </div>
-                            <p className="text-sm font-medium text-slate-900 mt-1 truncate">{q.cliente_nome || "—"}</p>
-                            {q.oggetto && <p className="text-xs text-slate-500 truncate">{q.oggetto}</p>}
-                          </div>
-                        </div>
-                        <StatusBadge status={q.stato} />
+              <div className="md:hidden space-y-2">
+                {filtered.map((q) => (
+                  <div key={q.id} className={`bg-white rounded-xl border p-3.5 ${selectedIds.has(q.id) ? "border-blue-400 bg-blue-50" : "border-slate-200"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))}>
+                    <div className="flex items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-slate-900 truncate">{q.cliente_nome || "—"}</p>
+                        <p className="text-xs text-slate-500 truncate">{q.numero}{q.revisione ? ` Rev.${q.revisione}` : ""} · {q.oggetto || "senza oggetto"}</p>
                       </div>
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
-                        <span className="text-base font-bold text-slate-900">€ {(q.totale || 0).toFixed(2)}</span>
-                        <div className="flex gap-1">
-                          <Link to={`/preventivi/${q.id}`} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200"><Eye className="w-4 h-4" /></Link>
-                          <button onClick={() => handleDuplicate(q)} className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200" title="Duplica"><Copy className="w-4 h-4" /></button>
-                          <button onClick={() => requestDelete(q.id)} className="p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100" title="Elimina"><Trash2 className="w-4 h-4" /></button>
-                        </div>
-                      </div>
+                      <StateBadge state={q._state} />
+                      {actions(q)}
                     </div>
-                  );
-                })}
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-xs text-slate-500">{q.data ? new Date(q.data).toLocaleDateString("it-IT") : ""}</span>
+                      <span className="text-base font-bold text-slate-900 tabular-nums">{fmtEur(q.totale)}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </>
           )}
-        </TabsContent>
+        </>
+      )}
 
-        <TabsContent value="ricevuti">
-          <ReceivedQuotesSection profile={profile} worksites={worksites} />
-        </TabsContent>
-      </Tabs>
-
-      {/* Templates dialog */}
       <Dialog open={tplDialog} onOpenChange={setTplDialog}>
         <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Modelli salvati</DialogTitle></DialogHeader>
-          <div className="space-y-2 mt-4">
-            {templates.map(tpl => (
-              <div key={tpl.id} className="flex items-center justify-between border border-slate-200 rounded-lg p-3">
-                <div>
-                  <p className="text-sm font-medium text-slate-900">{tpl.nome}</p>
-                  {tpl.oggetto && <p className="text-xs text-slate-500">{tpl.oggetto}</p>}
-                  <p className="text-xs text-slate-400 mt-0.5">{tpl.righe?.length || 0} voci</p>
+          <DialogHeader>
+            <DialogTitle>Modelli di preventivo</DialogTitle>
+            <DialogDescription>Parti da un preventivo già impostato.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            {templates.map((tpl) => (
+              <div key={tpl.id} className="flex items-center justify-between gap-2 border border-slate-200 rounded-lg p-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-900 truncate">{tpl.nome}</p>
+                  <p className="text-xs text-slate-500 truncate">{tpl.oggetto ? `${tpl.oggetto} · ` : ""}{tpl.righe?.length || 0} voci</p>
                 </div>
-                <div className="flex gap-1">
-                  <Link to={`/preventivi/nuovo?template=${tpl.id}`} onClick={() => setTplDialog(false)} className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700">Usa</Link>
-                  <button onClick={() => handleDeleteTemplate(tpl.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 text-xs">Elimina</button>
+                <div className="flex gap-1 shrink-0">
+                  <Button asChild size="sm"><Link to={`/preventivi/nuovo?template=${tpl.id}`} onClick={() => setTplDialog(false)}>Usa</Link></Button>
+                  <Button size="icon" variant="ghost" aria-label="Elimina modello" onClick={async () => { if (confirm("Eliminare questo modello?")) { await db.SavedTemplate.delete(tpl.id); load(); } }}><Trash2 className="w-4 h-4 text-red-600" /></Button>
                 </div>
               </div>
             ))}
@@ -346,11 +380,9 @@ export default function Quotes() {
       <DeleteConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(v) => { if (!v) setDeleteTarget(null); }}
-        title={deleteTarget?.type === "multi" ? `Elimina ${deleteTarget?.ids.length} preventivi` : "Elimina preventivo"}
-        description={deleteTarget?.type === "multi"
-          ? `Sei sicuro di voler eliminare ${deleteTarget?.ids.length} preventivi? L'azione non può essere annullata.`
-          : "Sei sicuro di voler eliminare questo preventivo? L'azione non può essere annullata."}
-        confirmLabel={deleting ? "Eliminazione..." : "Elimina"}
+        title={deleteTarget?.ids.length > 1 ? `Elimina ${deleteTarget.ids.length} preventivi` : "Elimina preventivo"}
+        description="L'eliminazione è definitiva. Se il preventivo è già stato inviato, valuta di segnarlo come rifiutato invece di eliminarlo."
+        confirmLabel={deleting ? "Eliminazione…" : "Elimina"}
         onConfirm={confirmDelete}
       />
     </div>

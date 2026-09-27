@@ -25,6 +25,10 @@ function getColPositions(margin) {
 }
 
 function getCellValue(row, key, unitOptions, calcRowTotal) {
+  // Capitoli, righe di testo e subtotali: solo descrizione (e importo del subtotale).
+  if (row._subtotale !== undefined) return key === "totale" ? formatEuro(row._subtotale) : key === "descrizione" ? row.descrizione : "";
+  if (row.tipo === "capitolo" || row.tipo === "testo") return key === "descrizione" ? row.descrizione || "" : "";
+  if (row.opzionale && key === "totale") return `(${formatEuro(calcRowTotal(row))})`;
   switch (key) {
     case "descrizione": return row.descrizione || "";
     case "unita_misura": return unitOptions.find((u) => u.value === row.unita_misura)?.label || row.unita_misura || "";
@@ -715,11 +719,168 @@ export const QUOTE_TEMPLATES = [
   { id: "elegante", nome: "Elegante", descrizione: "Premium centrato, doppie linee decorative, tabella arrotondata e dettagli raffinati", render: renderElegante },
 ];
 
+// ─── Preparazione comune a tutte le grafiche ───
+
+const imageCache = new Map();
+
+// jsPDF vuole le immagini già caricate: le trasformiamo in data URL.
+async function toDataUrl(url) {
+  if (!url || url.startsWith("data:")) return url || null;
+  if (imageCache.has(url)) return imageCache.get(url);
+  const p = fetch(url)
+    .then((r) => (r.ok ? r.blob() : null))
+    .then((blob) => blob && new Promise((resolve) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(fr.result);
+      fr.onerror = () => resolve(null);
+      fr.readAsDataURL(blob);
+    }))
+    .catch(() => null);
+  imageCache.set(url, p);
+  return p;
+}
+
+async function imageSize(dataUrl) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+    img.onerror = () => resolve(null);
+    img.src = dataUrl;
+  });
+}
+
+// Righe per la stampa: capitoli in evidenza, subtotale in fondo a ogni capitolo,
+// voci opzionali segnalate (il loro importo non entra nel totale).
+function printableRows(righe, calcRowTotal) {
+  const hasChapters = righe.some((r) => r.tipo === "capitolo");
+  const out = [];
+  let chapter = null;
+  const closeChapter = () => {
+    if (chapter && chapter.count > 0) out.push({ descrizione: `Subtotale ${chapter.titolo}`, _subtotale: chapter.totale });
+  };
+  for (const r of righe) {
+    if (r.tipo === "capitolo") {
+      closeChapter();
+      chapter = { titolo: r.descrizione || "", totale: 0, count: 0 };
+      // Solo caratteri del font standard PDF (niente simboli Unicode).
+      out.push({ ...r, descrizione: (r.descrizione || "").toUpperCase() });
+    } else if (r.tipo === "testo") {
+      out.push(r);
+    } else {
+      if (chapter && !r.opzionale) { chapter.totale += calcRowTotal(r); chapter.count++; }
+      out.push(r.opzionale ? { ...r, descrizione: `[OPZIONALE – non incluso nel totale] ${r.descrizione || ""}` } : r);
+    }
+  }
+  if (hasChapters) closeChapter();
+  return out;
+}
+
+function summaryNote(ctx) {
+  const { quote, totals } = ctx;
+  const parts = [];
+  if (totals.iva?.length > 1) {
+    parts.push("Riepilogo IVA: " + totals.iva.map((x) => `${x.aliquota}% su ${formatEuro(x.imponibile)} = ${formatEuro(x.imposta)}`).join(" · "));
+  }
+  if (totals.sconto_importo > 0.005) parts.push(`Sconto applicato sul totale: ${formatNumber(quote.sconto_globale, 2)}% (${formatEuro(totals.sconto_importo)})`);
+  if (totals.opzionali > 0.005) parts.push(`Voci opzionali non incluse nel totale: ${formatEuro(totals.opzionali)} + IVA`);
+  const conditions = ctx.conditions || "";
+  return [parts.join("\n"), conditions ? `CONDIZIONI\n${conditions}` : "", quote.note || ""].filter(Boolean).join("\n\n");
+}
+
+function drawCover(doc, ctx) {
+  const { profile, quote, totals, chapters } = ctx;
+  const color = hexToRgb(profile?.colore_principale || "#2563eb");
+  doc.setFillColor(color.r, color.g, color.b);
+  doc.rect(0, 0, PAGE_W, 8, "F");
+  let y = 40;
+  if (profile?.logo_url) {
+    const w = Math.min(70, (profile.logo_larghezza || 35) * 1.6);
+    const h = Math.min(40, (profile.logo_altezza || 18) * 1.6);
+    addImageSafe(doc, profile.logo_url, (PAGE_W - w) / 2, y, w, h);
+    y += h + 12;
+  }
+  doc.setFontSize(12); doc.setFont(undefined, "bold"); doc.setTextColor(40, 40, 40);
+  doc.text(profile?.ragione_sociale || "", PAGE_W / 2, y, { align: "center" });
+  y += 30;
+  doc.setFontSize(10); doc.setFont(undefined, "normal"); doc.setTextColor(color.r, color.g, color.b);
+  doc.text("PREVENTIVO", PAGE_W / 2, y, { align: "center" });
+  y += 12;
+  doc.setFontSize(20); doc.setFont(undefined, "bold"); doc.setTextColor(20, 20, 20);
+  const title = doc.splitTextToSize(quote.oggetto || `Preventivo n. ${quote.numero || ""}`, CONTENT_W - 20);
+  doc.text(title, PAGE_W / 2, y, { align: "center" });
+  y += title.length * 9 + 6;
+  doc.setFontSize(10); doc.setFont(undefined, "normal"); doc.setTextColor(90, 90, 90);
+  doc.text(`N. ${quote.numero || ""}${quote.revisione ? ` · Rev. ${quote.revisione}` : ""} · ${quote.data ? new Date(quote.data).toLocaleDateString("it-IT") : ""}`, PAGE_W / 2, y, { align: "center" });
+  y += 7;
+  if (quote.cliente_nome) doc.text(`Alla cortese attenzione di ${quote.cliente_nome}`, PAGE_W / 2, y, { align: "center" });
+  y += 20;
+
+  if (chapters?.length) {
+    doc.setFontSize(8); doc.setFont(undefined, "bold"); doc.setTextColor(color.r, color.g, color.b);
+    doc.text("SOMMARIO", MARGIN + 20, y); y += 5;
+    doc.setDrawColor(210, 210, 210); doc.setLineWidth(0.2);
+    doc.setFont(undefined, "normal"); doc.setTextColor(40, 40, 40); doc.setFontSize(9);
+    chapters.forEach((c) => {
+      doc.text(c.titolo, MARGIN + 20, y + 4);
+      doc.text(formatEuro(c.totale), PAGE_W - MARGIN - 20, y + 4, { align: "right" });
+      doc.line(MARGIN + 20, y + 6.5, PAGE_W - MARGIN - 20, y + 6.5);
+      y += 8;
+    });
+    y += 4;
+  }
+  doc.setFontSize(9); doc.setFont(undefined, "normal"); doc.setTextColor(90, 90, 90);
+  doc.text("Imponibile", MARGIN + 20, y); doc.text(formatEuro(totals.imponibile), PAGE_W - MARGIN - 20, y, { align: "right" }); y += 6;
+  doc.setFontSize(12); doc.setFont(undefined, "bold"); doc.setTextColor(20, 20, 20);
+  doc.text("Totale IVA inclusa", MARGIN + 20, y); doc.text(formatEuro(totals.totale), PAGE_W - MARGIN - 20, y, { align: "right" });
+  doc.setTextColor(0, 0, 0);
+}
+
+async function appendAttachments(doc, allegati = []) {
+  for (const a of allegati) {
+    if (!/\.(png|jpe?g|webp)(\?|$)/i.test(a.url || "") && !/^image\//.test(a.type || "")) continue;
+    const data = await toDataUrl(a.url);
+    if (!data) continue;
+    const size = await imageSize(data);
+    if (!size) continue;
+    doc.addPage();
+    doc.setFontSize(9); doc.setFont(undefined, "bold"); doc.setTextColor(60, 60, 60);
+    doc.text(a.name || "Allegato", MARGIN, 18);
+    const maxW = CONTENT_W, maxH = PAGE_H - 50;
+    const ratio = Math.min(maxW / size.w, maxH / size.h);
+    const w = size.w * ratio, h = size.h * ratio;
+    addImageSafe(doc, data, MARGIN + (maxW - w) / 2, 24, w, h);
+  }
+}
+
+/**
+ * ctx: { profile, quote, righe, totals, selectedClient, clienteFirma, unitOptions, calcRowTotal,
+ *        conditions?, chapters? }
+ */
 export async function generateQuotePDF(templateId, ctx) {
   const jsPDF = (await import("jspdf")).default;
   const doc = new jsPDF();
   const template = QUOTE_TEMPLATES.find((t) => t.id === templateId) || QUOTE_TEMPLATES[0];
-  template.render(doc, ctx);
-  addFooter(doc, ctx.profile, PAGE_W, PAGE_H, MARGIN);
+
+  const [logo, firma, timbro, clienteFirma] = await Promise.all([
+    toDataUrl(ctx.profile?.logo_url), toDataUrl(ctx.profile?.firma_url), toDataUrl(ctx.profile?.timbro_url), toDataUrl(ctx.clienteFirma),
+  ]);
+  const profile = ctx.profile ? { ...ctx.profile, logo_url: logo, firma_url: firma, timbro_url: timbro } : ctx.profile;
+  const prepared = {
+    ...ctx,
+    profile,
+    clienteFirma,
+    righe: printableRows(ctx.righe || [], ctx.calcRowTotal),
+    quote: { ...ctx.quote, numero: `${ctx.quote.numero || ""}${ctx.quote.revisione ? ` Rev.${ctx.quote.revisione}` : ""}` },
+  };
+  prepared.quote.note = summaryNote({ ...prepared, quote: { ...ctx.quote } });
+
+  template.render(doc, prepared);
+  if (ctx.quote.copertina) {
+    doc.insertPage(1);
+    doc.setPage(1);
+    drawCover(doc, prepared);
+  }
+  await appendAttachments(doc, ctx.quote.allegati);
+  addFooter(doc, profile, PAGE_W, PAGE_H, MARGIN);
   return doc.output("blob");
 }

@@ -61,5 +61,5 @@ export function findDuplicates(contacts, form, excludeId) {
   return out;
 }
 
-export const fmtEur = (n) => new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(Number(n) || 0);
+export const fmtEur = (n) => new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", useGrouping: "always" }).format(Number(n) || 0);
 export const fmtDate = (d) => (d ? new Date(d).toLocaleDateString("it-IT") : "—");

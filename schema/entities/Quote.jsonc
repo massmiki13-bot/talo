@@ -75,6 +75,7 @@
       "enum": [
         "in_attesa",
         "inviato",
+        "visto",
         "approvato",
         "rifiutato",
         "scaduto"
@@ -97,7 +98,7 @@
     },
     "validita_giorni": {
       "type": "number",
-      "title": "Validit\u00e0 (giorni)",
+      "title": "Validità (giorni)",
       "default": 30
     },
     "firma_cliente_url": {
@@ -136,6 +137,67 @@
     "branch_nome": {
       "type": "string",
       "title": "Nome Sede"
+    },
+    "sconto_globale": {
+      "type": "number",
+      "title": "Sconto sul totale %",
+      "default": 0
+    },
+    "condizioni_pagamento": {
+      "type": "string",
+      "title": "Condizioni di pagamento"
+    },
+    "tempi_esecuzione": {
+      "type": "string",
+      "title": "Tempi di esecuzione"
+    },
+    "clausole": {
+      "type": "string",
+      "title": "Clausole e condizioni generali"
+    },
+    "copertina": {
+      "type": "boolean",
+      "title": "Pagina di copertina",
+      "default": false
+    },
+    "allegati": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Allegati (immagini in coda al PDF)"
+    },
+    "revisione": {
+      "type": "number",
+      "title": "Revisione",
+      "default": 0
+    },
+    "revisioni": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Storico revisioni"
+    },
+    "public_token": {
+      "type": "string",
+      "title": "Codice link pubblico"
+    },
+    "visto_il": {
+      "type": "string",
+      "title": "Visto dal cliente il"
+    },
+    "risposta_cliente": {
+      "type": "object",
+      "title": "Risposta del cliente"
+    },
+    "costo_totale": {
+      "type": "number",
+      "title": "Costo interno"
+    },
+    "margine": {
+      "type": "number",
+      "title": "Margine"
     }
   },
   "required": [
