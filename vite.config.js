@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => {
       watch: { ignored: ['**/public/**'] },
     },
     ssr: {
-      external: ['nodemailer', '@supabase/supabase-js'],
+      external: ['nodemailer', '@supabase/supabase-js', 'imapflow', 'mailparser'],
     },
     plugins: [react(), localApi()],
     build: {

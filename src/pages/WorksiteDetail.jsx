@@ -1,3 +1,4 @@
+import LinkedEmails from "@/components/email/LinkedEmails";
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api, db } from "@/lib/db";
@@ -393,6 +394,15 @@ export default function WorksiteDetail() {
       {/* Quick notes */}
       <div className="mb-6">
         <WorksiteQuickNotes worksite={worksite} />
+      </div>
+
+      {/* Email */}
+      <div className="mb-6">
+        <LinkedEmails
+          field="worksite_id"
+          id={id}
+          composeDefaults={{ templateVars: { cantiere: worksite?.nome, cliente: worksite?.cliente_nome }, links: { contact_id: worksite?.cliente_id || "" } }}
+        />
       </div>
 
       {/* Photos */}

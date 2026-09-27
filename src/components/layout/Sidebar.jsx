@@ -14,7 +14,7 @@ export default function Sidebar({ onNavigate, isHost = true, accessLevel = "resp
 
   const navItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/", perm: "dashboard" },
-    { label: "Invia Email", icon: Mail, path: "/invia-email", perm: null },
+    { label: "Posta", icon: Mail, path: "/posta", perm: null },
     { label: "Clienti e Fornitori", icon: Users, path: "/contatti", perm: "contatti" },
     { label: "Preventivi", icon: FileText, path: "/preventivi", perm: "preventivi" },
     { label: "Lavori", icon: Briefcase, path: "/lavori", perm: "lavori" },

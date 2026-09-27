@@ -36,7 +36,7 @@ import Worksites from '@/pages/Worksites';
 import WorksiteDetail from '@/pages/WorksiteDetail';
 import Collaborators from '@/pages/Collaborators';
 import CollaboratorJoin from '@/pages/CollaboratorJoin';
-import InviaEmail from '@/pages/InviaEmail';
+import Posta from '@/pages/Posta';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -89,7 +89,8 @@ const AuthenticatedApp = () => {
           <Route path="/report-annuale" element={<Navigate to="/analisi?tab=report" replace />} />
           <Route path="/assistente" element={<AIAssistant />} />
           <Route path="/collaboratori" element={<Collaborators />} />
-          <Route path="/invia-email" element={<InviaEmail />} />
+          <Route path="/posta" element={<Posta />} />
+          <Route path="/invia-email" element={<Navigate to="/posta" replace />} />
         </Route>
       </Route>
       

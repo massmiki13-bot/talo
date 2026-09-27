@@ -9,22 +9,34 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/components/ui/use-toast";
 import { Mail, Plus, Trash2, Star, CheckCircle2, AlertCircle, Shield, HelpCircle, Settings2, Send, RefreshCw } from "lucide-react";
 
+// Server di invio (SMTP) e di ricezione (IMAP) dei provider più diffusi.
 const SMTP_PRESETS = [
-  { value: "aruba", label: "Aruba", host: "smtp.aruba.it", port: 587 },
-  { value: "aruba_pec", label: "Aruba PEC", host: "smtps.pec.aruba.it", port: 465 },
-  { value: "gmail", label: "Gmail (password per app)", host: "smtp.gmail.com", port: 587 },
-  { value: "outlook", label: "Outlook / Office 365", host: "smtp.office365.com", port: 587 },
-  { value: "hotmail", label: "Hotmail", host: "smtp-mail.outlook.com", port: 587 },
-  { value: "libero", label: "Libero", host: "smtp.libero.it", port: 587 },
-  { value: "virgilio", label: "Virgilio", host: "out.virgilio.it", port: 587 },
-  { value: "tiscali", label: "Tiscali", host: "smtp.tiscali.it", port: 587 },
-  { value: "tim", label: "TIM", host: "mail.posta.tim.it", port: 587 },
-  { value: "fastweb", label: "Fastweb", host: "smtp.fastwebnet.it", port: 587 },
-  { value: "register", label: "Register.it", host: "smtp.register.it", port: 587 },
-  { value: "register_pec", label: "Register.it PEC", host: "smtps.pec.register.it", port: 465 },
-  { value: "pec_generic", label: "PEC (altro provider)", host: "", port: 465 },
-  { value: "custom", label: "Personalizzato", host: "", port: 587 },
+  { value: "aruba", label: "Aruba", host: "smtps.aruba.it", port: 465, imap: "imaps.aruba.it" },
+  { value: "gmail", label: "Gmail (password per app)", host: "smtp.gmail.com", port: 587, imap: "imap.gmail.com" },
+  { value: "outlook", label: "Outlook / Office 365", host: "smtp.office365.com", port: 587, imap: "outlook.office365.com" },
+  { value: "hotmail", label: "Hotmail / Outlook.com", host: "smtp-mail.outlook.com", port: 587, imap: "outlook.office365.com" },
+  { value: "libero", label: "Libero", host: "smtp.libero.it", port: 465, imap: "imapmail.libero.it" },
+  { value: "virgilio", label: "Virgilio", host: "out.virgilio.it", port: 465, imap: "in.virgilio.it" },
+  { value: "tiscali", label: "Tiscali", host: "smtp.tiscali.it", port: 465, imap: "imap.tiscali.it" },
+  { value: "fastweb", label: "Fastweb", host: "smtp.fastwebnet.it", port: 587, imap: "imap.fastwebnet.it" },
+  { value: "register", label: "Register.it", host: "authsmtp.register.it", port: 465, imap: "imap.register.it" },
+  { value: "aruba_pec", label: "PEC Aruba", host: "smtps.pec.aruba.it", port: 465, imap: "imaps.pec.aruba.it", pec: true },
+  { value: "legalmail", label: "PEC Legalmail (InfoCert)", host: "sendm.cert.legalmail.it", port: 465, imap: "mbox.cert.legalmail.it", pec: true },
+  { value: "register_pec", label: "PEC Register.it", host: "smtps.pec.register.it", port: 465, imap: "imaps.pec.register.it", pec: true },
+  { value: "pec_generic", label: "PEC (altro provider)", host: "", port: 465, imap: "", pec: true },
+  { value: "custom", label: "Personalizzato", host: "", port: 587, imap: "" },
 ];
+
+// La firma si scrive come testo semplice e si salva come HTML con i caratteri protetti.
+const ENTITIES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
+function signatureTextToHtml(text) {
+  return String(text || "").trim().replace(/[&<>"]/g, (c) => ENTITIES[c]).replace(/\r?\n/g, "<br/>");
+}
+function signatureHtmlToText(html) {
+  return String(html || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+}
 
 export default function EmailAccountsSettings({ profile }) {
   const [accounts, setAccounts] = useState([]);
@@ -40,6 +52,11 @@ export default function EmailAccountsSettings({ profile }) {
     smtp_username: "",
     smtp_password: "",
     is_default: false,
+    is_pec: false,
+    imap_host: "",
+    imap_port: 993,
+    ricezione_attiva: true,
+    firma_html: "",
   });
   const [preset, setPreset] = useState("aruba");
   const [verifyStatus, setVerifyStatus] = useState({}); // { [accountId]: { connected, status, message, loading } }
@@ -78,6 +95,11 @@ export default function EmailAccountsSettings({ profile }) {
       smtp_username: "",
       smtp_password: "",
       is_default: accounts.length === 0,
+      is_pec: false,
+      imap_host: SMTP_PRESETS[0].imap,
+      imap_port: 993,
+      ricezione_attiva: true,
+      firma_html: "",
     });
     setPreset("aruba");
     setDialogOpen(true);
@@ -94,8 +116,13 @@ export default function EmailAccountsSettings({ profile }) {
       smtp_username: account.smtp_username || "",
       smtp_password: account.smtp_password || "",
       is_default: account.is_default || false,
+      is_pec: account.is_pec || false,
+      imap_host: account.imap_host || "",
+      imap_port: account.imap_port || 993,
+      ricezione_attiva: account.ricezione_attiva !== false,
+      firma_html: signatureHtmlToText(account.firma_html),
     });
-    setPreset("custom");
+    setPreset(SMTP_PRESETS.find(p => p.host && p.host === account.smtp_host)?.value || "custom");
     setDialogOpen(true);
   };
 
@@ -103,7 +130,9 @@ export default function EmailAccountsSettings({ profile }) {
     setPreset(val);
     const p = SMTP_PRESETS.find(s => s.value === val);
     if (p && val !== "custom") {
-      setForm(prev => ({ ...prev, smtp_host: p.host, smtp_port: p.port }));
+      setForm(prev => ({ ...prev, smtp_host: p.host, smtp_port: p.port, imap_host: p.imap, imap_port: 993, is_pec: !!p.pec }));
+    } else if (p) {
+      setForm(prev => ({ ...prev, is_pec: !!p.pec }));
     }
   };
 
@@ -122,6 +151,8 @@ export default function EmailAccountsSettings({ profile }) {
     }
     try {
       const data = { ...form };
+      // La firma si scrive come testo semplice: la convertiamo in HTML sicuro.
+      data.firma_html = signatureTextToHtml(data.firma_html);
       if (editingId) {
         await db.EmailAccount.update(editingId, data);
         toast({ title: "Account aggiornato", className: "bg-green-600 text-white" });
@@ -171,7 +202,7 @@ export default function EmailAccountsSettings({ profile }) {
 
   const providerLabel = (a) => {
     if (a.provider === 'gmail_oauth') return 'Gmail · da ricollegare via SMTP';
-    if (a.provider === 'smtp') return `SMTP · ${a.smtp_host || '—'}`;
+    if (a.provider === 'smtp') return `${a.imap_host && a.ricezione_attiva !== false ? 'Invio e ricezione' : 'Solo invio'} · ${a.smtp_host || '—'}`;
     return 'Sconosciuto';
   };
 
@@ -193,7 +224,7 @@ export default function EmailAccountsSettings({ profile }) {
       return (
         <span className="inline-flex items-center gap-1 text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">
           <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-          <Send className="w-3 h-3" /> Pronta per l'invio
+          <Send className="w-3 h-3" /> {st.message || "Pronta per l'invio"}
         </span>
       );
     }
@@ -206,7 +237,7 @@ export default function EmailAccountsSettings({ profile }) {
   };
 
   return (
-    <div className="mt-6 bg-white rounded-xl border border-slate-200 p-5 sm:p-6">
+    <div id="caselle-email" className="mt-6 bg-white rounded-xl border border-slate-200 p-5 sm:p-6 scroll-mt-20">
       {/* Header */}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2.5">
@@ -214,8 +245,8 @@ export default function EmailAccountsSettings({ profile }) {
             <Mail className="w-5 h-5 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-900">Caselle email collegate</h3>
-            <p className="text-xs text-slate-500">Invia preventivi e documenti dal tuo indirizzo</p>
+            <h3 className="text-base font-bold text-slate-900">Caselle email e PEC</h3>
+            <p className="text-xs text-slate-500">Invia e ricevi dalla sezione Posta con i tuoi indirizzi</p>
           </div>
         </div>
       </div>
@@ -253,6 +284,9 @@ export default function EmailAccountsSettings({ profile }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="text-sm font-semibold text-slate-900 truncate">{a.email_address}</p>
+                        {a.is_pec && (
+                          <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded px-1.5 py-0.5 flex-shrink-0">PEC</span>
+                        )}
                         {a.is_default && (
                           <span className="inline-flex items-center gap-1 text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold flex-shrink-0">
                             <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" /> Predefinito
@@ -415,6 +449,48 @@ export default function EmailAccountsSettings({ profile }) {
                 </div>
               </>
             )}
+
+            {form.provider === "smtp" && (
+              <div className="rounded-lg border border-slate-200 p-3 space-y-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4" checked={form.ricezione_attiva}
+                    onChange={e => setForm(prev => ({ ...prev, ricezione_attiva: e.target.checked }))} />
+                  <span className="text-sm text-slate-700">Mostra anche la posta in arrivo nella sezione Posta</span>
+                </label>
+                {form.ricezione_attiva && (
+                  <div className="grid grid-cols-[1fr_90px] gap-3">
+                    <div>
+                      <Label className="text-sm font-medium text-slate-700">Server IMAP</Label>
+                      <Input value={form.imap_host} onChange={e => setForm(prev => ({ ...prev, imap_host: e.target.value }))} className="mt-1" placeholder="imaps.aruba.it" />
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-slate-700">Porta</Label>
+                      <Input type="number" value={form.imap_port} onChange={e => setForm(prev => ({ ...prev, imap_port: parseInt(e.target.value) || 993 }))} className="mt-1" />
+                    </div>
+                  </div>
+                )}
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 mt-0.5" checked={form.is_pec}
+                    onChange={e => setForm(prev => ({ ...prev, is_pec: e.target.checked }))} />
+                  <span className="text-sm text-slate-700">
+                    È una casella <strong>PEC</strong>
+                    <span className="block text-xs text-slate-500">I messaggi inviati da qui vengono segnati come PEC e le ricevute di consegna compaiono nella Posta.</span>
+                  </span>
+                </label>
+              </div>
+            )}
+
+            <div>
+              <Label className="text-sm font-medium text-slate-700">Firma personalizzata (facoltativa)</Label>
+              <textarea
+                value={form.firma_html}
+                onChange={e => setForm(prev => ({ ...prev, firma_html: e.target.value }))}
+                rows={3}
+                className="mt-1 w-full rounded-md border border-input p-2 text-sm"
+                placeholder={"Es. Ufficio Amministrazione\nTel. 0471 000000"}
+              />
+              <p className="text-xs text-slate-400 mt-1">Se vuota si usa la firma automatica con logo e dati della ditta.</p>
+            </div>
 
             <label className="flex items-center gap-2 cursor-pointer">
               <input

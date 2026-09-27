@@ -1,38 +1,42 @@
-// Verifica che una casella SMTP sia raggiungibile e le credenziali valide.
-import { handler, requireUser, admin, HttpError, getRecord, toDoc, rateLimit } from "./_lib/server.js";
+// Verifica invio (SMTP) e ricezione (IMAP) di una casella.
+import { handler, requireUser, HttpError, rateLimit } from "./_lib/server.js";
 import { smtpTransport } from "./_lib/mail.js";
+import { loadAccount, login, imapClient, friendlyMailError } from "./_lib/mailbox.js";
 
 export default handler(async (req, body) => {
   const { user, tenantId } = await requireUser(req);
   rateLimit(`verify:${user.id}`, 10, 60_000);
   if (!body.account_id) throw new HttpError(400, "account_id mancante");
 
-  const row = await getRecord("EmailAccount", body.account_id);
-  if (!row || row.tenant_id !== tenantId) throw new HttpError(404, "Account non trovato");
-  const account = toDoc(row);
-
+  const { account, password } = await loadAccount(tenantId, { id: body.account_id });
   if (account.provider !== "smtp") {
     return { connected: false, status: "needs_smtp", message: "Collega la casella tramite SMTP con password per app" };
   }
-  const { data: secret } = await admin()
-    .from("email_secrets").select("smtp_password").eq("account_id", account.id).maybeSingle();
-  if (!account.smtp_host || !secret?.smtp_password) {
-    return { connected: false, status: "incomplete", message: "Dati SMTP incompleti — inserisci server e password per app" };
+  if (!account.smtp_host || !password) {
+    return { connected: false, status: "incomplete", message: "Dati incompleti — inserisci server e password per app" };
   }
+
+  const result = { connected: false, status: "ready", message: "Pronta per l'invio", imap: null };
   try {
-    await smtpTransport({
-      host: account.smtp_host,
-      port: account.smtp_port,
-      user: account.smtp_username || account.email_address,
-      pass: secret.smtp_password,
-    }).verify();
-    return { connected: true, status: "ready", message: "Pronta per l'invio" };
+    await smtpTransport({ host: account.smtp_host, port: account.smtp_port, user: login(account), pass: password }).verify();
+    result.connected = true;
   } catch (e) {
-    const auth = /auth|credential|535|534/i.test(e.message || "");
-    return {
-      connected: false,
-      status: auth ? "auth_failed" : "connection_error",
-      message: auth ? "Credenziali rifiutate: controlla la password per app" : `Server non raggiungibile: ${e.message}`,
-    };
+    const msg = friendlyMailError(e);
+    return { connected: false, status: /Credenziali/.test(msg) ? "auth_failed" : "connection_error", message: `Invio: ${msg}` };
   }
+
+  if (account.imap_host && account.ricezione_attiva !== false) {
+    const client = imapClient(account, password);
+    try {
+      await client.connect();
+      result.imap = { ok: true };
+      result.message = "Pronta per invio e ricezione";
+    } catch (e) {
+      result.imap = { ok: false, message: friendlyMailError(e) };
+      result.message = `Invio ok · Ricezione: ${friendlyMailError(e)}`;
+    } finally {
+      await client.logout().catch(() => {});
+    }
+  }
+  return result;
 });

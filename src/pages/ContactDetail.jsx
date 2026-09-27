@@ -1,3 +1,4 @@
+import LinkedEmails from "@/components/email/LinkedEmails";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { db } from "@/lib/db";
@@ -284,6 +285,12 @@ export default function ContactDetail() {
           />
         ))}
       </SectionCard>
+
+      <LinkedEmails
+        field="contact_id"
+        id={contact.id}
+        composeDefaults={{ defaultTo: contact.email || contact.pec || "", templateVars: { cliente: displayName } }}
+      />
     </div>
   );
 }

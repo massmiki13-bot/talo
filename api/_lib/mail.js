@@ -43,10 +43,12 @@ export function smtpTransport({ host, port, user, pass }) {
   });
 }
 
-export async function sendMail(transport, { fromName, fromEmail, to, subject, html, text, attachments }) {
+export async function sendMail(transport, { fromName, fromEmail, to, cc, bcc, subject, html, text, attachments }) {
   return transport.sendMail({
     from: { name: clean(fromName) || clean(fromEmail), address: clean(fromEmail) },
     to: clean(to),
+    cc: cc ? clean(cc) : undefined,
+    bcc: bcc ? clean(bcc) : undefined,
     subject: clean(subject),
     html,
     text,

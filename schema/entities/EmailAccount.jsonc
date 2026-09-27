@@ -46,6 +46,41 @@
       "type": "boolean",
       "title": "Attivo",
       "default": true
+    },
+    "is_pec": {
+      "type": "boolean",
+      "title": "Casella PEC",
+      "default": false
+    },
+    "imap_host": {
+      "type": "string",
+      "title": "Server IMAP (posta in arrivo)"
+    },
+    "imap_port": {
+      "type": "number",
+      "title": "Porta IMAP",
+      "default": 993
+    },
+    "ricezione_attiva": {
+      "type": "boolean",
+      "title": "Scarica posta in arrivo",
+      "default": true
+    },
+    "firma_html": {
+      "type": "string",
+      "title": "Firma personalizzata"
+    },
+    "ultimo_uid": {
+      "type": "number",
+      "title": "Ultimo UID scaricato"
+    },
+    "uidvalidity": {
+      "type": "string",
+      "title": "UIDVALIDITY"
+    },
+    "ultima_sincronizzazione": {
+      "type": "string",
+      "title": "Ultima sincronizzazione"
     }
   },
   "required": [

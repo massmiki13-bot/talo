@@ -1,3 +1,4 @@
+import LinkedEmails from "@/components/email/LinkedEmails";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { api, db } from "@/lib/db";
@@ -675,6 +676,19 @@ export default function QuoteEditor() {
         </div>
       )}
 
+      {!isNew && (
+        <LinkedEmails
+          field="quote_id"
+          id={id}
+          title="Email del preventivo"
+          composeDefaults={{
+            defaultTo: contacts.find(c => c.id === quote.cliente_id)?.email || "",
+            templateVars: { cliente: quote.cliente_nome, numero_preventivo: quote.numero, oggetto_preventivo: quote.oggetto, cantiere: quote.worksite_nome },
+            links: { contact_id: quote.cliente_id || "", worksite_id: quote.worksite_id || "" },
+          }}
+        />
+      )}
+
       <EmailComposer
         open={emailComposer}
         onOpenChange={setEmailComposer}
@@ -683,6 +697,14 @@ export default function QuoteEditor() {
         defaultBody={emailDefaults.body}
         attachment={emailAttachment}
         context={`Invio preventivo n. ${quote?.numero} a ${quote?.cliente_nome}. Oggetto: ${quote?.oggetto}.`}
+        links={{ quote_id: isNew ? "" : id, contact_id: quote?.cliente_id || "", worksite_id: quote?.worksite_id || "" }}
+        templateVars={{
+          cliente: quote?.cliente_nome,
+          numero_preventivo: quote?.numero,
+          oggetto_preventivo: quote?.oggetto,
+          totale: new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(calcTotals().totale || 0),
+          cantiere: quote?.worksite_nome,
+        }}
         onSent={async ({ to }) => {
           if (!isNew) {
             const today = new Date().toISOString().slice(0, 10);
