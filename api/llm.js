@@ -11,6 +11,7 @@ const MODELS = (process.env.GEMINI_MODELS || "gemini-3.8-flash,gemini-3.7-flash,
   .split(",").map((m) => m.trim()).filter(Boolean);
 
 const MAX_FILE_BYTES = 18 * 1024 * 1024;
+const MODEL_TIMEOUT_MS = 22_000;
 const SUPPORTED = /^(application\/pdf|image\/(png|jpe?g|webp|heic|heif)|text\/.+|application\/json)$/i;
 
 const MIME_BY_EXT = {
@@ -72,6 +73,12 @@ async function callGemini(model, payload) {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": key },
     body: JSON.stringify(payload),
+    // Un modello lento non deve consumare tutto il tempo della funzione.
+    signal: AbortSignal.timeout(MODEL_TIMEOUT_MS),
+  }).catch((e) => {
+    const err = new Error(e.name === "TimeoutError" ? "Modello troppo lento" : e.message);
+    err.status = 503;
+    throw err;
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
