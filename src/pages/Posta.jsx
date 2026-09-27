@@ -221,10 +221,10 @@ export default function Posta() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-[200px_minmax(0,380px)_1fr] gap-0 lg:gap-4 min-h-[70vh]">
+      <div className="grid lg:grid-cols-[minmax(0,360px)_1fr] xl:grid-cols-[190px_minmax(0,360px)_1fr] gap-0 lg:gap-4 min-h-[70vh]">
         {/* Cartelle */}
-        <nav className={`${selected ? "hidden lg:block" : ""} px-4 sm:px-0 mb-3 lg:mb-0`} aria-label="Cartelle">
-          <ul className="flex lg:flex-col gap-1 overflow-x-auto pb-1 lg:pb-0">
+        <nav className={`${selected ? "hidden lg:block" : ""} px-4 sm:px-0 mb-3 xl:mb-0 lg:col-span-2 xl:col-span-1`} aria-label="Cartelle">
+          <ul className="flex xl:flex-col gap-1 overflow-x-auto pb-1 xl:pb-0">
             {FOLDERS.map((f) => {
               const active = f.key === folder.key;
               return (
@@ -243,7 +243,7 @@ export default function Posta() {
             })}
           </ul>
           {accounts.length > 1 && (
-            <div className="hidden lg:block mt-4">
+            <div className="hidden xl:block mt-4">
               <p className="text-xs font-medium text-slate-500 px-1 mb-1">Casella</p>
               <Select value={accountFilter} onValueChange={setAccountFilter}>
                 <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
@@ -255,7 +255,7 @@ export default function Posta() {
             </div>
           )}
           {accounts.length > 0 && receiving.length === 0 && (
-            <p className="hidden lg:block mt-4 text-xs text-slate-500 px-1">Per vedere anche la posta in arrivo, aggiungi il server IMAP nelle impostazioni della casella.</p>
+            <p className="hidden xl:block mt-4 text-xs text-slate-500 px-1">Per vedere anche la posta in arrivo, aggiungi il server IMAP nelle impostazioni della casella.</p>
           )}
         </nav>
 

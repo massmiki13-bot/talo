@@ -11,7 +11,7 @@ presenze, contratti, promemoria, email e analisi.
 | Database, login, file | Supabase (progetto `dvphtmdzktrkwsrjdxdq`, regione EU) |
 | Funzioni server | Vercel Functions (`api/`) — in locale le serve Vite |
 | AI | Google Gemini (`api/llm.js`) |
-| Email | SMTP delle aziende + casella di sistema (`api/_lib/mail.js`) |
+| Posta | Invio SMTP e ricezione IMAP di email e PEC delle aziende (`api/_lib/mailbox.js`), casella di sistema per gli avvisi |
 | Promemoria giornalieri | Vercel Cron → `api/cron-reminders.js` (8:00 ora italiana) |
 
 ### Dati
@@ -43,6 +43,15 @@ vanno impostate anche su Vercel (Project → Settings → Environment Variables)
 
 Le migrazioni sono in `supabase/migrations/`. Si applicano dall'editor SQL di
 Supabase (o con `supabase db push`).
+
+## Collaudo
+
+```bash
+node scripts/smoke-test.mjs   # dati, permessi, inviti, file, AI
+node scripts/mail-test.mjs    # posta: invio, ricezione, allegati, bozze
+```
+
+Per provare la versione online: `APP_BASE=https://talo-kohl.vercel.app`. In locale l'antivirus può bloccare IMAP/SMTP cifrati (errore di certificato): il collaudo della posta va fatto online.
 
 ## Cartelle
 

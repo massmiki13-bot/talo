@@ -142,12 +142,16 @@ export default function ComposeDialog({
 
   const signatureHtml = withSignature ? buildSignatureHtml(profile, account) : "";
 
-  const applyTemplate = (id) => {
+  const applyTemplate = async (id) => {
     const t = templates.find((x) => x.id === id);
     if (!t) return;
     if (htmlToText(body).trim() && !confirm("Sostituire il testo attuale con il modello?")) return;
-    setSubject(fillTemplate(t.oggetto, vars));
-    setBody(fillTemplate(looksHtml(t.corpo) ? t.corpo : textToHtml(t.corpo), vars));
+    // Il nome del cliente, se manca, lo prendiamo dalla rubrica del primo destinatario.
+    const book = await loadAddressBook().catch(() => []);
+    const recipientName = book.find((b) => b.email === to[0])?.name;
+    const v = { ...vars, cliente: vars.cliente || recipientName };
+    setSubject(fillTemplate(t.oggetto, v));
+    setBody(fillTemplate(looksHtml(t.corpo) ? t.corpo : textToHtml(t.corpo), v));
   };
 
   const handleAi = async () => {
@@ -277,6 +281,10 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
     if (!account) return toast({ title: "Collega prima una casella email", variant: "destructive" });
     if (to.length === 0) return toast({ title: "Inserisci almeno un destinatario", variant: "destructive" });
     if (!subject.trim()) return toast({ title: "Inserisci l'oggetto", variant: "destructive" });
+    const missing = [...new Set([...(subject + body).matchAll(/\{\{\s*(\w+)\s*\}\}/g)].map((m) => m[1]))];
+    if (missing.length) {
+      return toast({ title: "Completa i campi del modello", description: `Sostituisci nel testo: ${missing.map((k) => `{{${k}}}`).join(", ")}`, variant: "destructive" });
+    }
     if (!htmlToText(body).trim() && !confirm("Il messaggio è vuoto. Inviare comunque?")) return;
     setSending(true);
     try {

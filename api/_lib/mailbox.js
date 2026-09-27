@@ -56,6 +56,7 @@ export function friendlyMailError(e) {
   if (/auth|credential|login|535|534|invalid/i.test(msg)) return "Credenziali rifiutate: controlla utente e password per app";
   if (/ENOTFOUND|getaddrinfo/i.test(msg)) return "Server non trovato: controlla l'indirizzo del server";
   if (/ECONNREFUSED|ETIMEDOUT|timeout/i.test(msg)) return "Server non raggiungibile: controlla server e porta";
+  if (/certificate|self.signed|CERT_/i.test(msg)) return "Connessione sicura non verificabile (certificato del server o antivirus che la intercetta)";
   return msg;
 }
 

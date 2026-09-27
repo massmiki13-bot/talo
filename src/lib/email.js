@@ -42,7 +42,11 @@ export function buildSignatureHtml(profile, account) {
 
 // Documento completo inviato: stile base leggibile in tutti i client di posta.
 export function wrapEmailHtml(bodyHtml, signatureHtml = "") {
-  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#0f172a">${bodyHtml}${signatureHtml}</div>`;
+  // Stili in linea: molti client di posta ignorano i fogli di stile.
+  const body = String(bodyHtml || "")
+    .replace(/<p>/g, '<p style="margin:0 0 12px">')
+    .replace(/<blockquote>/g, '<blockquote style="margin:12px 0;padding-left:12px;border-left:3px solid #cbd5e1;color:#475569">');
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#0f172a">${body}${signatureHtml}</div>`;
 }
 
 export function htmlToText(html) {

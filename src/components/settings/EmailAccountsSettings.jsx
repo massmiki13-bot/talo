@@ -71,7 +71,13 @@ export default function EmailAccountsSettings({ profile }) {
       // Verifica automaticamente lo stato di ogni account
       accs.forEach(a => verifyAccount(a.id));
     } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+    finally {
+      setLoading(false);
+      // Arrivando da "Posta → Caselle" portiamo in vista questa sezione.
+      if (window.location.hash === "#caselle-email") {
+        setTimeout(() => document.getElementById("caselle-email")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+      }
+    }
   };
 
   const verifyAccount = async (accountId) => {
