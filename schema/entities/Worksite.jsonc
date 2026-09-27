@@ -24,6 +24,7 @@
       "enum": [
         "da_iniziare",
         "in_corso",
+        "sospeso",
         "finito"
       ],
       "title": "Stato Lavoro",
@@ -78,6 +79,64 @@
     "branch_nome": {
       "type": "string",
       "title": "Nome Sede"
+    },
+    "tipo_intervento": {
+      "type": "string",
+      "title": "Tipo di intervento"
+    },
+    "data_inizio": {
+      "type": "string",
+      "title": "Data inizio"
+    },
+    "data_fine_prevista": {
+      "type": "string",
+      "title": "Fine prevista"
+    },
+    "data_fine_effettiva": {
+      "type": "string",
+      "title": "Fine effettiva"
+    },
+    "squadra_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Squadra"
+    },
+    "direttore_lavori": {
+      "type": "string",
+      "title": "Direttore dei lavori"
+    },
+    "coordinatore_sicurezza": {
+      "type": "string",
+      "title": "Coordinatore sicurezza (CSE)"
+    },
+    "titolo_edilizio": {
+      "type": "object",
+      "title": "Titolo edilizio"
+    },
+    "budget": {
+      "type": "object",
+      "title": "Budget costi per categoria"
+    },
+    "fasi": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Fasi e SAL"
+    },
+    "piano_pagamenti": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Piano pagamenti"
+    },
+    "avanzamento": {
+      "type": "number",
+      "title": "Avanzamento %",
+      "default": 0
     }
   },
   "required": [

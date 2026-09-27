@@ -13,7 +13,13 @@
         "assicurazione",
         "durc",
         "visura",
-        "altro"
+        "altro",
+        "pos",
+        "psc",
+        "permesso",
+        "ddt",
+        "collaudo",
+        "dico"
       ],
       "title": "Tipo Documento"
     },
@@ -74,6 +80,14 @@
     "contenuto_estratto": {
       "type": "string",
       "title": "Contenuto Estratto"
+    },
+    "worksite_id": {
+      "type": "string",
+      "title": "Lavoro"
+    },
+    "worksite_nome": {
+      "type": "string",
+      "title": "Nome lavoro"
     }
   },
   "required": [

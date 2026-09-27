@@ -1,0 +1,52 @@
+{
+  "name": "WorksiteLog",
+  "type": "object",
+  "properties": {
+    "worksite_id": {
+      "type": "string",
+      "title": "Lavoro"
+    },
+    "data": {
+      "type": "string",
+      "title": "Data"
+    },
+    "meteo": {
+      "type": "string",
+      "title": "Meteo"
+    },
+    "presenti": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Presenti"
+    },
+    "attivita": {
+      "type": "string",
+      "title": "Lavorazioni eseguite"
+    },
+    "forniture": {
+      "type": "string",
+      "title": "Forniture e mezzi"
+    },
+    "problemi": {
+      "type": "string",
+      "title": "Problemi e varianti"
+    },
+    "foto": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "title": "Foto"
+    },
+    "autore": {
+      "type": "string",
+      "title": "Compilato da"
+    }
+  },
+  "required": [
+    "worksite_id",
+    "data"
+  ]
+}
