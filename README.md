@@ -47,9 +47,13 @@ Supabase (o con `supabase db push`).
 ## Collaudo
 
 ```bash
-node scripts/smoke-test.mjs   # dati, permessi, inviti, file, AI
-node scripts/mail-test.mjs    # posta: invio, ricezione, allegati, bozze
+npm test                              # logica: IVA e XML FatturaPA (schema ufficiale), presenze, prezzari, preventivi, file privati
+node scripts/smoke-test.mjs           # dati, permessi, inviti, file, AI
+node scripts/mail-test.mjs            # posta: invio, ricezione, allegati, bozze
+node scripts/test-account-delete.mjs  # cancellazione completa di un'azienda
 ```
+
+La validazione XML con lo schema ufficiale (`tests/fixtures/fpa.xsd`) richiede Python con `lxml`; senza, quei test vengono saltati.
 
 Per provare la versione online: `APP_BASE=https://talo-kohl.vercel.app`. In locale l'antivirus può bloccare IMAP/SMTP cifrati (errore di certificato): il collaudo della posta va fatto online.
 

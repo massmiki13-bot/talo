@@ -18,7 +18,7 @@ export function parsePrice(v) {
   if (!s || !/\d/.test(s)) return null;
   if (s.includes(",") && s.includes(".")) s = s.lastIndexOf(",") > s.lastIndexOf(".") ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "");
   else if (s.includes(",")) s = s.replace(",", ".");
-  else if ((s.match(/\./g) || []).length > 1) s = s.replace(/\.(?=.*\.)/g, "");
+  else if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, ""); // "1.234.567": punti delle migliaia
   const n = Number(s.replace(/[^\d.-]/g, ""));
   return isFinite(n) ? n : null;
 }
