@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
+import { aiFillWorksite } from "@/lib/worksiteAi";
 import { WORKSITE_STATES, TIPI_INTERVENTO, TITOLI_EDILIZI, COST_CATEGORIES } from "@/lib/worksites";
 import { displayName } from "@/lib/contacts";
 import { fullName } from "@/lib/employees";
@@ -34,6 +35,7 @@ export default function WorksiteForm({ open, onOpenChange, worksite = null, onSa
     if (!open) return;
     setForm({ ...EMPTY, ...(worksite || {}), squadra_ids: [...(worksite?.squadra_ids || [])], titolo_edilizio: { ...(worksite?.titolo_edilizio || {}) }, budget: { ...(worksite?.budget || {}) }, importo_totale: worksite?.importo_totale ?? "" });
     setTab("dati");
+    setAltro(false);
     Promise.all([db.Contact.list("nome", 5000), db.Employee.list("cognome", 2000)]).then(([c, e]) => {
       setContacts(c.filter((x) => x.tipo !== "fornitore" && !x.archiviato));
       setEmployees(e.filter((x) => x.stato !== "cessato"));
@@ -41,6 +43,49 @@ export default function WorksiteForm({ open, onOpenChange, worksite = null, onSa
   }, [open, worksite]);
 
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
+  // "Altro": il tipo si scrive a mano (anche i tipi scritti a mano in passato risultano "Altro")
+  const [altro, setAltro] = useState(false);
+  const tipoCustom = !!form.tipo_intervento && !TIPI_INTERVENTO.includes(form.tipo_intervento);
+  const tipoSel = altro || tipoCustom ? "Altro" : form.tipo_intervento || "none";
+  // ── Compilazione con l'IA (descrizione libera e/o preventivo del cliente) ──
+  const [ai, setAi] = useState({ open: false, testo: "", quoteId: "none", quotes: [], busy: false });
+  useEffect(() => {
+    if (!open) return;
+    setAi({ open: !worksite?.id, testo: "", quoteId: "none", quotes: [], busy: false });
+    db.Quote.fields(["numero", "oggetto", "cliente_id", "cliente_nome", "totale", "stato", "worksite_id"], { sort: "-data", limit: 500 })
+      .then((qs) => setAi((a) => ({ ...a, quotes: qs.filter((q) => !q.worksite_id || q.worksite_id === worksite?.id) })))
+      .catch(() => {});
+  }, [open, worksite]);
+  const aiQuotes = ai.quotes.filter((q) => !form.cliente_id || q.cliente_id === form.cliente_id);
+  const runAi = async () => {
+    if (!ai.testo.trim() && ai.quoteId === "none") return toast({ title: "Scrivi due righe sul lavoro o scegli un preventivo", variant: "destructive" });
+    setAi((a) => ({ ...a, busy: true }));
+    try {
+      const quote = ai.quoteId !== "none" ? await db.Quote.get(ai.quoteId) : null;
+      const cliente = quote?.cliente_nome || form.cliente_nome;
+      const r = await aiFillWorksite({ descrizione: ai.testo, quote, cliente, employees });
+      setForm((f) => ({
+        ...f,
+        nome: f.nome || r.nome,
+        tipo_intervento: f.tipo_intervento || r.tipo_intervento,
+        indirizzo: f.indirizzo || r.indirizzo,
+        data_inizio: f.data_inizio || r.data_inizio,
+        data_fine_prevista: f.data_fine_prevista || r.data_fine_prevista,
+        fasi: f.fasi?.length ? f.fasi : r.fasi,
+        budget: { ...r.budget, ...Object.fromEntries(Object.entries(f.budget || {}).filter(([, v]) => v !== "" && v != null)) },
+        titolo_edilizio: f.titolo_edilizio?.tipo ? f.titolo_edilizio : { ...(f.titolo_edilizio || {}), tipo: r.titolo_edilizio },
+        squadra_ids: f.squadra_ids.length ? f.squadra_ids : r.squadra_ids,
+        responsabile_id: f.responsabile_id || r.squadra_ids[0] || "",
+        note: [f.note, r.note].filter(Boolean).join("\n\n"),
+        ...(quote ? { preventivo_id: quote.id, cliente_id: f.cliente_id || quote.cliente_id || "", cliente_nome: f.cliente_nome || quote.cliente_nome || "", importo_totale: f.importo_totale || quote.totale || "" } : {}),
+      }));
+      setAi((a) => ({ ...a, open: false }));
+      toast({ title: "Scheda compilata dall'IA", description: "Controlla dati, fasi, squadra e budget prima di salvare." });
+    } catch (e) {
+      toast({ title: "Compilazione non riuscita", description: e.message, variant: "destructive" });
+    } finally { setAi((a) => ({ ...a, busy: false })); }
+  };
+
   const toggleTeam = (id) => set({ squadra_ids: form.squadra_ids.includes(id) ? form.squadra_ids.filter((x) => x !== id) : [...form.squadra_ids, id] });
   const budgetTot = COST_CATEGORIES.reduce((s, c) => s + (Number(form.budget[c]) || 0), 0);
   const importo = Number(form.importo_totale) || Number(quoteTotal) || 0;
@@ -87,6 +132,27 @@ export default function WorksiteForm({ open, onOpenChange, worksite = null, onSa
           </TabsList>
 
           <TabsContent value="dati" className="pt-3">
+            {ai.open ? (
+              <div className="rounded-xl border border-brand-200 bg-brand-50/50 p-3.5 mb-4 space-y-2.5">
+                <p className="text-sm font-semibold text-zinc-900 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-brand-600" aria-hidden="true" />Compila con l'IA</p>
+                <textarea value={ai.testo} onChange={(e) => setAi({ ...ai, testo: e.target.value })} rows={3} aria-label="Descrizione del lavoro per l'IA"
+                  placeholder="Es. Rifacimento bagno e cucina per la signora Bianchi in via Roma 88, si parte lunedì, 5 settimane circa"
+                  className="w-full rounded-lg border border-zinc-200 bg-white p-2.5 text-sm" />
+                <div className="flex flex-wrap gap-2 items-center">
+                  <Select value={ai.quoteId} onValueChange={(v) => setAi({ ...ai, quoteId: v })}>
+                    <SelectTrigger className="flex-1 min-w-[200px] bg-white" aria-label="Preventivo da cui partire"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Senza preventivo</SelectItem>
+                      {aiQuotes.map((q) => <SelectItem key={q.id} value={q.id}>{q.numero} · {q.cliente_nome || "—"} · {q.oggetto || "senza oggetto"}{q.totale ? ` · ${fmtEur(q.totale)}` : ""}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Button type="button" onClick={runAi} disabled={ai.busy} className="gap-1.5 bg-brand-600 hover:bg-brand-700">{ai.busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}Compila</Button>
+                </div>
+                <p className="text-xs text-zinc-600">Propone nome, tipo, date, fasi, squadra, budget e pratica edilizia: i campi già compilati non vengono toccati.</p>
+              </div>
+            ) : (
+              <button type="button" onClick={() => setAi({ ...ai, open: true })} className="mb-3 text-sm font-medium text-brand-700 hover:underline inline-flex items-center gap-1.5"><Sparkles className="w-4 h-4" aria-hidden="true" />Compila con l'IA</button>
+            )}
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Nome del lavoro" className="sm:col-span-2"><Input value={form.nome} onChange={(e) => set({ nome: e.target.value })} placeholder="Es. Ristrutturazione bagno – Via Roma 12" /></Field>
               <Field label="Cliente">
@@ -96,10 +162,14 @@ export default function WorksiteForm({ open, onOpenChange, worksite = null, onSa
                 </Select>
               </Field>
               <Field label="Tipo di intervento">
-                <Select value={form.tipo_intervento || "none"} onValueChange={(v) => set({ tipo_intervento: v === "none" ? "" : v })}>
+                <Select value={tipoSel} onValueChange={(v) => { setAltro(v === "Altro"); set({ tipo_intervento: v === "none" || v === "Altro" ? "" : v }); }}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent><SelectItem value="none">—</SelectItem>{TIPI_INTERVENTO.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                  <SelectContent><SelectItem value="none">—</SelectItem>{TIPI_INTERVENTO.map((t) => <SelectItem key={t} value={t}>{t === "Altro" ? "Altro (specifica)" : t}</SelectItem>)}</SelectContent>
                 </Select>
+                {tipoSel === "Altro" && (
+                  <Input value={form.tipo_intervento} onChange={(e) => set({ tipo_intervento: e.target.value })} autoFocus={altro && !form.tipo_intervento}
+                    placeholder="Es. Bonifica amianto, Piscina, Recinzione…" aria-label="Specifica il tipo di intervento" className="mt-2" />
+                )}
               </Field>
               <Field label="Indirizzo del cantiere" className="sm:col-span-2"><Input value={form.indirizzo} onChange={(e) => set({ indirizzo: e.target.value })} /></Field>
               <div className="sm:col-span-2"><SitePosition lat={form.lat} lng={form.lng} indirizzo={form.indirizzo} onChange={set} /></div>

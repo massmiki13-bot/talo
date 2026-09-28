@@ -1,6 +1,6 @@
 // Dashboard: numeri del giorno, previsione di cassa, agenda della settimana e urgenze.
 import { OPEN_STATES, effectiveState, expiryDate } from "@/lib/quotes";
-import { installments } from "@/lib/worksites";
+import { installments, incomeOf } from "@/lib/worksites";
 import { computeInvoice } from "@/lib/invoices";
 import { dayEntries, employedOn, isWorkingDay } from "@/lib/attendance";
 
@@ -11,7 +11,9 @@ export const MESI = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Se
 const fmt = (v) => new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", useGrouping: "always" }).format(n(v));
 const it = (s) => new Date(s).toLocaleDateString("it-IT");
 
-export function computeDashboard(d) {
+export function computeDashboard(input) {
+  // gli incassi comprendono anche le entrate registrate tra i movimenti dei lavori
+  const d = { ...input, payments: incomeOf(input.payments || [], input.transactions || []) };
   const now = new Date();
   const today = iso(now);
   const y = now.getFullYear();

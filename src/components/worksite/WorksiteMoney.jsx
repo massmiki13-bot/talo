@@ -14,7 +14,7 @@ const METODI = ["Bonifico", "Contanti", "Assegno", "Ri.Ba.", "Carta", "Altro"];
 const today = () => new Date().toISOString().slice(0, 10);
 
 // Incassi del lavoro: piano delle rate (acconto, SAL, saldo) e pagamenti ricevuti.
-export default function WorksiteMoney({ worksite, contractAmount, onSaved, onPaymentsChange, readOnly }) {
+export default function WorksiteMoney({ worksite, contractAmount, extraIncome = [], onSaved, onPaymentsChange, readOnly }) {
   const { toast } = useToast();
   const [payments, setPayments] = useState([]);
   const [payOpen, setPayOpen] = useState(false);
@@ -28,10 +28,11 @@ export default function WorksiteMoney({ worksite, contractAmount, onSaved, onPay
   };
   useEffect(() => { load(); }, [worksite.id]);
 
-  const incassato = payments.reduce((s, p) => s + (Number(p.importo) || 0), 0);
+  const allIncome = useMemo(() => [...payments, ...extraIncome], [payments, extraIncome]);
+  const incassato = allIncome.reduce((s, p) => s + (Number(p.importo) || 0), 0);
   const residuo = Math.max(0, contractAmount - incassato);
   const pct = contractAmount ? Math.min(100, (incassato / contractAmount) * 100) : 0;
-  const rate = useMemo(() => installments(worksite.piano_pagamenti || [], payments), [worksite.piano_pagamenti, payments]);
+  const rate = useMemo(() => installments(worksite.piano_pagamenti || [], allIncome), [worksite.piano_pagamenti, allIncome]);
   const pianificato = rate.reduce((s, r) => s + (Number(r.importo) || 0), 0);
 
   const savePayment = async () => {

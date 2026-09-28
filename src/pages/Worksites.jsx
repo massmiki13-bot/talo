@@ -11,7 +11,7 @@ import EmptyState from "@/components/shared/EmptyState";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
 import WorksiteForm from "@/components/worksite/WorksiteForm";
-import { WORKSITE_STATES, laborFromAttendance, economics, installments, fmtDate } from "@/lib/worksites";
+import { WORKSITE_STATES, laborFromAttendance, economics, installments, incomeOf, fmtDate } from "@/lib/worksites";
 import { fmtEur } from "@/lib/quotes";
 import { fullName } from "@/lib/employees";
 import { downloadCsv } from "@/lib/csv";
@@ -67,7 +67,7 @@ export default function Worksites() {
       const q = quoteById.get(w.preventivo_id);
       const labor = laborFromAttendance(raw.att, raw.emps, w.id);
       const econ = economics({ worksite: w, transactions: txBy.get(w.id) || [], labor, quoteTotal: q?.totale });
-      const pays = payBy.get(w.id) || [];
+      const pays = incomeOf(payBy.get(w.id) || [], txBy.get(w.id) || []);
       const incassato = pays.reduce((s, p) => s + (Number(p.importo) || 0), 0);
       const rate = installments(w.piano_pagamenti || [], pays);
       const late = w.stato !== "finito" && w.data_fine_prevista && new Date(w.data_fine_prevista) < new Date(new Date().toDateString());

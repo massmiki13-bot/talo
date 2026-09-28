@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Eye, FileDown, FileText, Mail, Upload, Copy, Trash2, Sparkles, Loader2, CalendarClock, Check, Pencil, Save, ExternalLink, AlertTriangle, Lock,
-  Smartphone, ShieldCheck, Link2Off,
+  Smartphone, ShieldCheck, Link2Off, Link2, Plus,
 } from "lucide-react";
 import SignRequestDialog from "@/components/shared/SignRequestDialog";
 import { contractHash, signUrl, fmtDateTime } from "@/lib/signing";
@@ -15,14 +15,14 @@ import { randomToken } from "@/lib/quotes";
 import ComposeDialog from "@/components/email/ComposeDialog";
 import EditContractScadenzaDialog from "@/components/contracts/EditContractScadenzaDialog";
 import { generateContractPDF, generateContractWord, generateContractPDFBlob } from "@/utils/docExportUtils";
-import { STATI, statoOf, typeTitle, fmtDate, aiReview } from "@/lib/contracts";
+import { STATI, statoOf, typeTitle, fmtDate, aiReview, RELATED, linkedInitial } from "@/lib/contracts";
 import { formatEuro } from "@/utils/pdfUtils";
 
 const FLOW = ["bozza", "inviato", "firmato", "concluso"];
 const SEV = { alta: "bg-red-100 text-red-800", media: "bg-amber-100 text-amber-800", bassa: "bg-slate-100 text-slate-700" };
 const safeName = (s) => String(s || "Contratto").replace(/[^\p{L}\p{N}_ -]/gu, "").trim().replace(/\s+/g, "_");
 
-export default function ContractDetailSheet({ contract, open, onOpenChange, profile, customTemplates, contacts, employees, onChanged, onDuplicate, onDelete, onPreview }) {
+export default function ContractDetailSheet({ contract, open, onOpenChange, profile, customTemplates, contacts, employees, onChanged, onDuplicate, onDelete, onPreview, onCreateLinked }) {
   const { toast } = useToast();
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState("");
@@ -199,6 +199,19 @@ Cordiali saluti`,
                 <label className="cursor-pointer gap-1.5">{busy === "upload" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}{contract.file_firmato_url ? "Sostituisci" : "Carica"}<input type="file" accept="application/pdf,image/*" className="hidden" onChange={uploadSigned} /></label>
               </Button>
             </div>
+
+            {/* Contratti collegati */}
+            {onCreateLinked && RELATED[contract.tipo]?.length > 0 && (
+              <div className="rounded-lg border border-slate-200 p-3">
+                <p className="text-sm font-medium text-slate-900 flex items-center gap-1.5"><Link2 className="w-4 h-4 text-brand-600" aria-hidden="true" />Crea un contratto collegato</p>
+                <p className="text-xs text-slate-500 mt-0.5">Parte già con oggetto, luogo, date e lavoro di questo contratto.</p>
+                <div className="flex flex-wrap gap-2 mt-2.5">
+                  {RELATED[contract.tipo].map(([t, label]) => (
+                    <Button key={t} size="sm" variant="outline" className="gap-1.5" onClick={() => onCreateLinked(linkedInitial(contract, t))}><Plus className="w-3.5 h-3.5" />{label}</Button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Revisione IA */}
             <div className="rounded-lg border border-slate-200 p-3 space-y-2">

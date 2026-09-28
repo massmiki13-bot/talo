@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { useToast } from "@/components/ui/use-toast";
 import {
   ArrowLeft, Plus, Save, Send, FileDown, Copy, Bookmark, LayoutTemplate, FolderOpen, Check, Loader2, Link2, MoreHorizontal,
-  History, HardHat, ShieldCheck, XCircle, CheckCircle2, Eye, Image as ImageIcon, X, Upload, UserPlus, AlertTriangle, Clock,
+  History, HardHat, Sparkles, ShieldCheck, XCircle, CheckCircle2, Eye, Image as ImageIcon, X, Upload, UserPlus, AlertTriangle, Clock,
 } from "lucide-react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import SignaturePad from "@/components/shared/SignaturePad";
@@ -127,9 +127,9 @@ export default function QuoteEditor() {
           note: importData?.note || templateData?.note || "",
           validita_giorni: importData?.validita_giorni || templateData?.validita_giorni || 30,
           template_variante: tpl,
-          worksite_id: params.get("lavoro") || "", worksite_nome: sites.find((w) => w.id === params.get("lavoro"))?.nome || "",
-          sconto_globale: 0,
-          condizioni_pagamento: "", tempi_esecuzione: "", clausole: DEFAULT_CLAUSOLE,
+          worksite_id: params.get("lavoro") || importData?.worksite_id || "", worksite_nome: sites.find((w) => w.id === (params.get("lavoro") || importData?.worksite_id))?.nome || "",
+          sconto_globale: Number(importData?.sconto_globale) || 0,
+          condizioni_pagamento: importData?.condizioni_pagamento || "", tempi_esecuzione: importData?.tempi_esecuzione || "", clausole: importData?.clausole || DEFAULT_CLAUSOLE,
           copertina: false, allegati: [], revisione: 0, revisioni: [],
         };
         setQuote(base);
@@ -171,6 +171,26 @@ export default function QuoteEditor() {
     setQuote((q) => ({ ...(q || base), ...patch }));
     setDirty(true);
     if (!silent && c && (patch.condizioni_pagamento || patch.sconto_globale)) toast({ title: "Applicate le condizioni abituali del cliente" });
+  };
+
+  // L'IA propone l'oggetto partendo da voci, cliente e cantiere.
+  const [oggettoBusy, setOggettoBusy] = useState(false);
+  const suggestOggetto = async () => {
+    const voci = righe.filter((r) => r.descrizione).map((r) => (r.tipo === "capitolo" ? `## ${r.descrizione}` : `- ${r.descrizione}`)).join("\n").slice(0, 6000);
+    if (!voci) return toast({ title: "Inserisci prima qualche voce", description: "L'oggetto viene proposto a partire dalle voci del preventivo." });
+    setOggettoBusy(true);
+    try {
+      const r = await api.integrations.Core.InvokeLLM({
+        prompt: `Proponi l'oggetto di un preventivo edile italiano: una riga di massimo 90 caratteri, chiara e professionale, del tipo "Ristrutturazione bagno e cucina – Via Roma 88, Bolzano". Usa l'indirizzo del cantiere se presente.
+Cliente: ${quote.cliente_nome || "—"}
+Cantiere: ${quote.worksite_nome || client?.indirizzo || "—"}
+Voci:
+${voci}`,
+        response_json_schema: { type: "object", properties: { oggetto: { type: "string" } } },
+      });
+      if (r?.oggetto) set({ oggetto: r.oggetto.trim().slice(0, 140) });
+    } catch (e) { toast({ title: "Suggerimento non riuscito", description: e.message, variant: "destructive" }); }
+    finally { setOggettoBusy(false); }
   };
 
   const defaultIva = client?.iva_default !== null && client?.iva_default !== undefined && client?.iva_default !== "" ? Number(client.iva_default) : 22;
@@ -573,7 +593,12 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
                   </SelectContent>
                 </Select>
               </div>
-              <div className="col-span-2 md:col-span-4"><Label htmlFor="quoteeditor-oggetto">Oggetto</Label><Input id="quoteeditor-oggetto" className="mt-1" value={quote.oggetto || ""} onChange={(e) => set({ oggetto: e.target.value })} placeholder="Es. Ristrutturazione bagno – Via Roma 12" /></div>
+              <div className="col-span-2 md:col-span-4">
+                <div className="flex items-center justify-between"><Label htmlFor="quoteeditor-oggetto">Oggetto</Label>
+                  <button type="button" onClick={suggestOggetto} disabled={oggettoBusy} className="text-xs font-medium text-brand-700 hover:underline inline-flex items-center gap-1 disabled:opacity-60">{oggettoBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}Suggerisci con l'IA</button>
+                </div>
+                <Input id="quoteeditor-oggetto" className="mt-1" value={quote.oggetto || ""} onChange={(e) => set({ oggetto: e.target.value })} placeholder="Es. Ristrutturazione bagno – Via Roma 12" />
+              </div>
             </div>
           </Section>
 

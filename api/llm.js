@@ -12,7 +12,10 @@ const MODELS = (process.env.GEMINI_MODELS || "gemini-3.8-flash,gemini-3.7-flash,
   .split(",").map((m) => m.trim()).filter(Boolean);
 
 const MAX_FILE_BYTES = 18 * 1024 * 1024;
-const MODEL_TIMEOUT_MS = 22_000;
+// Con documenti da leggere (preventivi, PSC) la risposta è lunga: più tempo per modello, con un tetto complessivo.
+const MODEL_TIMEOUT_MS = 30_000;
+const MODEL_TIMEOUT_FILES_MS = 90_000;
+const TOTAL_BUDGET_MS = 240_000;
 const SUPPORTED = /^(application\/pdf|image\/(png|jpe?g|webp|heic|heif)|text\/.+|application\/json)$/i;
 
 const MIME_BY_EXT = {
@@ -68,14 +71,14 @@ function parseJson(text) {
   throw new HttpError(502, "La risposta dell'AI non è in un formato valido, riprova");
 }
 
-async function callGemini(model, payload) {
+async function callGemini(model, payload, timeoutMs = MODEL_TIMEOUT_MS) {
   const key = process.env.GEMINI_API_KEY;
   const res = await fetch(`${API}/${model}:generateContent`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": key },
     body: JSON.stringify(payload),
     // Un modello lento non deve consumare tutto il tempo della funzione.
-    signal: AbortSignal.timeout(MODEL_TIMEOUT_MS),
+    signal: AbortSignal.timeout(timeoutMs),
   }).catch((e) => {
     const err = new Error(e.name === "TimeoutError" ? "Modello troppo lento" : e.message);
     err.status = 503;
@@ -130,9 +133,12 @@ export default handler(async (req, body) => {
   }
 
   let lastError;
+  const started = Date.now();
+  const timeout = () => Math.max(10_000, Math.min(fileParts.length ? MODEL_TIMEOUT_FILES_MS : MODEL_TIMEOUT_MS, TOTAL_BUDGET_MS - (Date.now() - started)));
   for (const model of MODELS) {
+    if (Date.now() - started > TOTAL_BUDGET_MS - 10_000) break;
     try {
-      const out = await callGemini(model, payload);
+      const out = await callGemini(model, payload, timeout());
       return { result: wantJson ? parseJson(out) : out, model };
     } catch (e) {
       lastError = e;
@@ -142,7 +148,7 @@ export default handler(async (req, body) => {
         payload.contents[0].parts[payload.contents[0].parts.length - 1].text +=
           `\n\nRispondi SOLO con un JSON valido conforme a questo schema:\n${JSON.stringify(response_json_schema)}`;
         try {
-          const out = await callGemini(model, payload);
+          const out = await callGemini(model, payload, timeout());
           return { result: parseJson(out), model };
         } catch (e2) { lastError = e2; }
       }

@@ -94,6 +94,17 @@ export function economics({ worksite, transactions = [], labor, quoteTotal = 0 }
   };
 }
 
+/**
+ * Tutti gli incassi di un lavoro: pagamenti registrati in "Incassi" più le entrate inserite tra i movimenti.
+ * Così scheda del lavoro, elenco, Dashboard e analisi mostrano sempre gli stessi numeri.
+ */
+export function incomeOf(payments = [], transactions = []) {
+  return [
+    ...payments,
+    ...transactions.filter((t) => t.tipo === "entrata").map((t) => ({ id: t.id, importo: t.importo, data: t.data, worksite_id: t.worksite_id, tipo: "entrata", descrizione: t.descrizione, da_movimenti: true })),
+  ];
+}
+
 // Rate del piano pagamenti con lo stato calcolato dai pagamenti registrati (in ordine).
 export function installments(piano = [], payments = []) {
   let paid = payments.reduce((s, p) => s + n(p.importo), 0);

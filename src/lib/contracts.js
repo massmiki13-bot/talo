@@ -80,15 +80,25 @@ export function summaryFields(fields = {}) {
 export const missingRequired = (tipo, fields) => (contractSchemas[tipo]?.required || []).filter((k) => !String(fields[k] ?? "").trim());
 export const fieldLabel = (k) => fieldDefinitions[k]?.label || k.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
 
-/** Compila i campi del modello a partire da una descrizione a parole. */
-export async function aiFillFields(tipo, keys, description, known = {}) {
+/**
+ * Compila i campi del modello con l'IA: descrizione libera, dati collegati (lavoro, preventivi, controparte)
+ * e documenti allegati (preventivo accettato, capitolato, offerta del subappaltatore…).
+ */
+export async function aiFillFields(tipo, keys, description, known = {}, { context = {}, fileUrls = [], optionalKeys = [] } = {}) {
   const props = Object.fromEntries(keys.map((k) => [k, { type: "string", description: fieldLabel(k) }]));
+  const ctx = Object.fromEntries(Object.entries(context).filter(([, v]) => v && (typeof v !== "object" || Object.keys(v).length)));
   const res = await api.integrations.Core.InvokeLLM({
-    prompt: `Sei un consulente di un'impresa edile italiana. Compila i campi di un "${typeTitle(tipo)}" usando SOLO le informazioni della descrizione e dei dati noti.
-Descrizione dell'accordo: """${description}"""
-Dati già noti: ${JSON.stringify(Object.fromEntries(Object.entries(known).filter(([, v]) => v)))}
-Regole: date in formato YYYY-MM-DD; importi solo numero (es. 12500); testo formale e chiaro in italiano; lascia vuoto ("") ciò che non è indicato, non inventare dati anagrafici, codici fiscali o partite IVA.`,
+    prompt: `Sei un consulente di un'impresa edile italiana. Compila il maggior numero possibile di campi di un "${typeTitle(tipo)}".
+${description ? `Descrizione dell'accordo: """${description}"""` : ""}
+Dati già noti nei campi: ${JSON.stringify(Object.fromEntries(Object.entries(known).filter(([, v]) => v)))}
+${Object.keys(ctx).length ? `Dati collegati in Talo (lavoro, preventivi, controparte, impresa): ${JSON.stringify(ctx).slice(0, 20000)}` : ""}
+${fileUrls.length ? "Leggi anche i documenti allegati e usane i dati (oggetto, importi, tempi, pagamenti, penali, luogo)." : ""}
+Regole:
+- usa le informazioni fornite; date in formato AAAA-MM-GG; importi solo numero (es. 12500);
+- ${optionalKeys.length ? `per le clausole facoltative (${optionalKeys.map(fieldLabel).join(", ")}) scrivi un testo formale e prudente, adatto a un'impresa edile italiana, quando sono pertinenti a questo contratto;` : ""}
+- non inventare mai dati anagrafici, codici fiscali, partite IVA, IBAN, importi o date che non compaiono: lascia "" ciò che non è noto.`,
     response_json_schema: { type: "object", properties: props },
+    ...(fileUrls.length ? { file_urls: fileUrls } : {}),
   });
   const out = {};
   for (const k of keys) {
@@ -96,6 +106,33 @@ Regole: date in formato YYYY-MM-DD; importi solo numero (es. 12500); testo forma
     if (v != null && String(v).trim()) out[k] = String(v).trim();
   }
   return out;
+}
+
+// ─── Contratti collegati: da un contratto se ne prepara un altro con i dati in comune ───
+
+export const RELATED = {
+  appalto: [["subappalto", "Subappalto di una parte dei lavori"], ["fornitura", "Fornitura dei materiali"], ["noleggio_comodato", "Noleggio di mezzi e attrezzature"], ["lettera_incarico", "Incarico a un professionista (DL, CSE)"]],
+  subappalto: [["appalto", "Appalto con il committente"], ["fornitura", "Fornitura dei materiali"], ["noleggio_comodato", "Noleggio di mezzi e attrezzature"]],
+  fornitura: [["noleggio_comodato", "Noleggio di mezzi e attrezzature"], ["appalto", "Appalto dei lavori"]],
+  noleggio_comodato: [["fornitura", "Fornitura dei materiali"]],
+  lettera_incarico: [["appalto", "Appalto dei lavori"]],
+};
+
+/** Dati iniziali del contratto collegato (per il wizard). */
+export function linkedInitial(contract, target) {
+  const f = contract.dati_compilati || {};
+  const oggetto = f.OGGETTO_LAVORI || f.OGGETTO_FORNITURA || f.DESCRIZIONE_BENE || f.OGGETTO_INCARICO || contract.titolo || "";
+  const luogo = f.LUOGO_ESECUZIONE || f.LUOGO_CONSEGNA || f.LUOGO_BENE || "";
+  const base = { DATA_CONTRATTO: new Date().toISOString().slice(0, 10), ...(f.LUOGO_STIPULA ? { LUOGO_STIPULA: f.LUOGO_STIPULA } : {}) };
+  const fields = {
+    appalto: { ...base, OGGETTO_LAVORI: oggetto, LUOGO_ESECUZIONE: luogo, DATA_INIZIO: f.DATA_INIZIO || "", DATA_FINE: f.DATA_FINE || "" },
+    subappalto: { ...base, OGGETTO_LAVORI: oggetto ? `Parte dei lavori di: ${oggetto}` : "", LUOGO_ESECUZIONE: luogo, DATA_INIZIO: f.DATA_INIZIO || "", DATA_FINE: f.DATA_FINE || "",
+      RIFERIMENTO_APPALTO_PRINCIPALE: `${contract.titolo || "Contratto d'appalto"}${contract.data_creazione ? ` del ${fmtIt(contract.data_creazione)}` : ""}${contract.controparte_nome ? ` con ${contract.controparte_nome}` : ""}` },
+    fornitura: { ...base, OGGETTO_FORNITURA: oggetto ? `Materiali per: ${oggetto}` : "", LUOGO_CONSEGNA: luogo, DATA_CONSEGNA: f.DATA_INIZIO || "" },
+    noleggio_comodato: { ...base, DESCRIZIONE_BENE: "", LUOGO_BENE: luogo, DATA_INIZIO: f.DATA_INIZIO || "", DATA_FINE: f.DATA_FINE || "" },
+    lettera_incarico: { ...base, OGGETTO_INCARICO: oggetto ? `Direzione dei lavori e/o coordinamento della sicurezza per: ${oggetto}${luogo ? `, ${luogo}` : ""}` : "", DATA_INIZIO: f.DATA_INIZIO || "", DATA_FINE: f.DATA_FINE || "" },
+  }[target] || base;
+  return { tipo: target, fields: Object.fromEntries(Object.entries(fields).filter(([, v]) => v)), links: { worksite_id: contract.worksite_id || "" } };
 }
 
 /** Revisione del testo: lacune, rischi e clausole da aggiungere. */

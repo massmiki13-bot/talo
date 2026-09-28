@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
-import { computeInvoice, nextNumber, validateInvoice, buildFatturaXml, lineTotal } from "@/lib/invoices";
+import { computeInvoice, nextNumber, validateInvoice, buildFatturaXml, lineTotal, ALIQUOTE } from "@/lib/invoices";
 
 const profile = {
   ragione_sociale: "Edil Prova S.r.l.", partita_iva: "01234567897", codice_fiscale: "01234567897",
@@ -71,6 +71,20 @@ describe("calcoli IVA", () => {
   });
 });
 
+describe("aliquote e nature", () => {
+  it("elenco completo delle nature dello SdI, senza quelle generiche dismesse", () => {
+    const nature = new Set(ALIQUOTE.map((a) => a.natura).filter(Boolean));
+    for (const n of ["N1", "N2.1", "N2.2", "N3.1", "N3.2", "N3.3", "N3.4", "N3.5", "N3.6", "N4", "N5", "N6.1", "N6.2", "N6.3", "N6.4", "N6.5", "N6.6", "N6.7", "N6.8", "N6.9", "N7"]) expect(nature.has(n)).toBe(true);
+    expect(nature.has("N2") || nature.has("N3") || nature.has("N6")).toBe(false);
+    expect(ALIQUOTE.every((a) => a.natura ? a.rif : true)).toBe(true);
+  });
+  it("una sola riga di riepilogo per natura", () => {
+    const c = computeInvoice(base([riga(50, { aliquota_key: "N2.2" }), riga(30, { aliquota_key: "N2.2-altri" })]));
+    expect(c.riepilogo).toHaveLength(1);
+    expect(c.riepilogo[0].imponibile).toBe(80);
+  });
+});
+
 describe("numerazione", () => {
   const list = [
     { numero: "1/2026", anno: 2026, tipo_documento: "TD01" },
@@ -112,6 +126,7 @@ describe("file XML FatturaPA", () => {
     "reverse charge edile": [base([riga(5000, { aliquota_key: "N6.3" })]), profile, azienda],
     "forfettario con bollo": [base([riga(500, { aliquota_key: "N2.2" })], { regime: "RF19" }), { ...profile, regime_fiscale: "RF19" }, privato],
     "nota di credito collegata": [base([riga(100)], { tipo_documento: "TD04", numero: "NC1/2026", fattura_collegata: "7/2026" }), profile, azienda],
+    "tutte le aliquote e nature IVA": [base(ALIQUOTE.map((a) => riga(100, { aliquota_key: a.key, descrizione: a.label })), { oggetto: "Prova nature" }), profile, azienda],
     "caratteri speciali e testo lungo": [base([riga(10, { descrizione: "Posa \"piastrelle\" <60x60> & fughe – “extra” 🧱" })], { oggetto: "x".repeat(450) }), profile, azienda],
   };
 

@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Sparkles, Loader2, ChevronDown, ChevronRight, Eye, Save, FileSignature, Users, HardHat, Handshake, Bookmark } from "lucide-react";
+import { api, db } from "@/lib/db";
+import { ArrowLeft, Sparkles, Loader2, ChevronDown, ChevronRight, Eye, Save, FileSignature, Users, HardHat, Handshake, Bookmark, Paperclip } from "lucide-react";
 import { contractVariants, buildBody, getFieldsForType, extractFields } from "@/utils/contractTemplates";
 import { fillTemplate } from "@/utils/docExportUtils";
 import { contractSchemas } from "@/utils/contracts";
@@ -42,7 +43,7 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
     setVariant("pro");
     setFields({ DATA_CONTRATTO: new Date().toISOString().slice(0, 10), ...(initial?.fields || {}) });
     setLinks({ dipendente_id: "", contatto_id: "", worksite_id: "", ...(initial?.links || {}) });
-    setShowOptional(false); setAiText(""); setAsTemplate(false); setTemplateName(""); setTouched(false);
+    setShowOptional(false); setAiText(""); setAiFile(null); setAsTemplate(false); setTemplateName(""); setTouched(false);
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isCustom = tipo.startsWith("custom_");
@@ -90,16 +91,42 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
     if (w?.cliente_id && partyKind(tipo) === "contatto" && !links.contatto_id && tipo === "appalto") linkContact(w.cliente_id);
   };
 
+  // IA: descrizione (facoltativa) + documento allegato + dati collegati (lavoro, preventivi, controparte, impresa)
+  const [aiFile, setAiFile] = useState(null); // { url, name }
+  const [aiUploading, setAiUploading] = useState(false);
+  const attachForAi = async (file) => {
+    if (!file) return;
+    setAiUploading(true);
+    try { setAiFile({ url: (await api.integrations.Core.UploadFile({ file, private: true })).file_url, name: file.name }); }
+    catch (e) { toast({ title: "Caricamento non riuscito", description: e.message, variant: "destructive" }); }
+    finally { setAiUploading(false); }
+  };
+  const canAi = !!(aiText.trim() || aiFile || links.worksite_id || links.contatto_id || links.dipendente_id);
+
   const runAi = async () => {
-    if (!aiText.trim()) return;
+    if (!canAi) return;
     setAiBusy(true);
     try {
+      const w = worksites.find((x) => x.id === links.worksite_id);
+      const quotes = w ? await db.Quote.filter({ worksite_id: w.id }, "-data", 5).catch(() => []) : [];
+      const pick = (o, ks) => (o ? Object.fromEntries(ks.filter((k) => o[k] != null && o[k] !== "").map((k) => [k, o[k]])) : undefined);
+      const context = {
+        impresa: pick(profile, ["ragione_sociale", "partita_iva", "indirizzo", "citta", "provincia"]),
+        ruolo_impresa: tipo === "appalto" ? (fields.RUOLO_DITTA || "appaltatore") : undefined,
+        lavoro: pick(w, ["nome", "indirizzo", "tipo_intervento", "cliente_nome", "importo_totale", "data_inizio", "data_fine_prevista", "direttore_lavori", "coordinatore_sicurezza", "piano_pagamenti", "fasi"]),
+        preventivi: quotes.map((q) => ({ numero: q.numero, oggetto: q.oggetto, stato: q.stato, imponibile: q.imponibile, totale: q.totale, condizioni_pagamento: q.condizioni_pagamento, tempi_esecuzione: q.tempi_esecuzione,
+          capitoli: (q.righe || []).filter((r) => r.tipo === "capitolo").map((r) => r.descrizione), voci: (q.righe || []).filter((r) => !r.tipo || r.tipo === "voce").slice(0, 40).map((r) => r.descrizione) })),
+        controparte: pick(contacts.find((x) => x.id === links.contatto_id), ["nome", "nome_privato", "partita_iva", "codice_fiscale", "indirizzo", "cap", "citta", "provincia", "iban", "pagamento_default"])
+          || pick(employees.find((x) => x.id === links.dipendente_id), ["nome", "cognome", "codice_fiscale", "data_nascita", "luogo_nascita", "indirizzo", "ruolo", "qualifica", "livello", "ccnl", "ore_settimanali", "data_assunzione", "iban"]),
+      };
       const keys = [...required, ...optional].map((f) => f.key);
-      const filled = await aiFillFields(tipo, keys, aiText, fields);
-      const n = Object.keys(filled).length;
-      merge(filled);
-      if (optional.some((f) => filled[f.key])) setShowOptional(true);
-      toast({ title: n ? `L'IA ha compilato ${n} campi` : "L'IA non ha trovato dati utili", description: n ? "Controlla tutto prima di salvare." : "Aggiungi più dettagli alla descrizione." });
+      const filled = await aiFillFields(tipo, keys, aiText, fields, { context, fileUrls: aiFile ? [aiFile.url] : [], optionalKeys: optional.map((f) => f.key) });
+      // non sovrascrive quello che hai già scritto a mano
+      const fresh = Object.fromEntries(Object.entries(filled).filter(([k]) => !String(fields[k] ?? "").trim()));
+      const n = Object.keys(fresh).length;
+      merge(fresh);
+      if (optional.some((f) => fresh[f.key])) setShowOptional(true);
+      toast({ title: n ? `L'IA ha compilato ${n} campi` : "L'IA non ha trovato altri dati", description: n ? "Controlla tutto prima di salvare." : "Aggiungi una descrizione o allega un documento." });
     } catch (e) {
       toast({ title: "IA non disponibile", description: "Riprova tra poco.", variant: "destructive" });
     } finally { setAiBusy(false); }
@@ -229,10 +256,18 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
                 )}
 
                 {/* IA */}
-                <div className="rounded-lg border border-brand-100 bg-brand-50/50 p-3 space-y-2">
-                  <Label htmlFor="ai-desc" className="text-sm font-medium text-slate-900 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-brand-600" /> Descrivi l'accordo, l'IA compila i campi</Label>
+                <div className="rounded-xl border border-brand-100 bg-brand-50/50 p-3 space-y-2">
+                  <Label htmlFor="ai-desc" className="text-sm font-medium text-slate-900 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-brand-600" /> Compila con l'IA</Label>
+                  <p className="text-xs text-slate-600">Usa i dati del lavoro, dei preventivi e della controparte collegati; puoi aggiungere una descrizione o allegare un documento (preventivo accettato, capitolato, offerta).</p>
                   <Textarea id="ai-desc" rows={2} value={aiText} onChange={(e) => setAiText(e.target.value)} className="bg-white" placeholder={partyKind(tipo) === "dipendente" ? "es. muratore 3° livello, 40 ore, dal 1 ottobre per 6 mesi, 1.800 € lordi, prova 30 giorni, cantieri in provincia di Bolzano" : "es. rifacimento tetto condominio via Roma 12, 48.000 € + IVA, inizio 15/10 fine 20/12, SAL al 30%, penale 100 € al giorno"} />
-                  <Button size="sm" onClick={runAi} disabled={!aiText.trim() || aiBusy} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{aiBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Compila con IA</Button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button size="sm" onClick={runAi} disabled={!canAi || aiBusy || aiUploading} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{aiBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Compila tutto</Button>
+                    <label className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-slate-200 bg-white text-sm cursor-pointer hover:bg-slate-50">
+                      {aiUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}{aiFile ? <span className="max-w-[160px] truncate">{aiFile.name}</span> : "Allega documento"}
+                      <input type="file" accept=".pdf,image/*,.txt" className="hidden" onChange={(e) => { attachForAi(e.target.files[0]); e.target.value = ""; }} aria-label="Documento per l'IA" />
+                    </label>
+                    {aiFile && <button type="button" onClick={() => setAiFile(null)} className="text-xs text-slate-500 hover:text-red-600">Rimuovi</button>}
+                  </div>
                 </div>
 
                 {!isCustom && (

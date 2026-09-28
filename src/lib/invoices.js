@@ -16,18 +16,36 @@ export const REGIMI = [
   { value: "RF19", label: "Forfettario (L. 190/2014)" },
 ];
 
-// Aliquote e nature usate da imprese edili e impiantisti.
+// Aliquote e tutte le nature IVA accettate dallo SdI (tracciato 1.2.2): le chiavi storiche restano valide.
 export const ALIQUOTE = [
-  { key: "22", aliquota: 22, label: "22% – ordinaria" },
-  { key: "10", aliquota: 10, label: "10% – manutenzione/ristrutturazione su abitazioni" },
-  { key: "4", aliquota: 4, label: "4% – costruzione prima casa" },
-  { key: "5", aliquota: 5, label: "5%" },
-  { key: "N6.3", aliquota: 0, natura: "N6.3", label: "Reverse charge – subappalto nel settore edile", rif: "Art. 17, c. 6, lett. a), DPR 633/72" },
-  { key: "N6.7", aliquota: 0, natura: "N6.7", label: "Reverse charge – prestazioni comparto edile", rif: "Art. 17, c. 6, lett. a-ter), DPR 633/72" },
-  { key: "N2.2", aliquota: 0, natura: "N2.2", label: "Non soggetta – regime forfettario", rif: "Art. 1, commi 54-89, L. 190/2014" },
-  { key: "N4", aliquota: 0, natura: "N4", label: "Esente", rif: "Art. 10 DPR 633/72" },
-  { key: "N1", aliquota: 0, natura: "N1", label: "Escluso art. 15 (anticipazioni)", rif: "Art. 15 DPR 633/72" },
+  { key: "22", aliquota: 22, label: "22% – ordinaria", group: "Aliquote" },
+  { key: "10", aliquota: 10, label: "10% – manutenzione/ristrutturazione su abitazioni", group: "Aliquote" },
+  { key: "5", aliquota: 5, label: "5% – aliquota ridotta", group: "Aliquote" },
+  { key: "4", aliquota: 4, label: "4% – costruzione prima casa", group: "Aliquote" },
+  { key: "N6.3", aliquota: 0, natura: "N6.3", label: "N6.3 Reverse charge – subappalto nel settore edile", rif: "Art. 17, c. 6, lett. a), DPR 633/72", group: "Inversione contabile (reverse charge)" },
+  { key: "N6.7", aliquota: 0, natura: "N6.7", label: "N6.7 Reverse charge – prestazioni comparto edile e settori connessi", rif: "Art. 17, c. 6, lett. a-ter), DPR 633/72", group: "Inversione contabile (reverse charge)" },
+  { key: "N6.4", aliquota: 0, natura: "N6.4", label: "N6.4 Reverse charge – cessione di fabbricati", rif: "Art. 17, c. 6, lett. a-bis), DPR 633/72", group: "Inversione contabile (reverse charge)" },
+  { key: "N6.1", aliquota: 0, natura: "N6.1", label: "N6.1 Reverse charge – cessione di rottami e materiali di recupero", rif: "Art. 74, c. 7 e 8, DPR 633/72", group: "Inversione contabile (reverse charge)" },
+  { key: "N6.2", aliquota: 0, natura: "N6.2", label: "N6.2 Reverse charge – cessione di oro e argento", rif: "Art. 17, c. 5, DPR 633/72", group: "Inversione contabile (reverse charge)" },
+  { key: "N6.5", aliquota: 0, natura: "N6.5", label: "N6.5 Reverse charge – cessione di telefoni cellulari", rif: "Art. 17, c. 6, lett. b), DPR 633/72", group: "Inversione contabile (reverse charge)" },
+  { key: "N6.6", aliquota: 0, natura: "N6.6", label: "N6.6 Reverse charge – cessione di prodotti elettronici", rif: "Art. 17, c. 6, lett. c), DPR 633/72", group: "Inversione contabile (reverse charge)" },
+  { key: "N6.8", aliquota: 0, natura: "N6.8", label: "N6.8 Reverse charge – settore energetico", rif: "Art. 17, c. 6, lett. d-bis), d-ter), d-quater), DPR 633/72", group: "Inversione contabile (reverse charge)" },
+  { key: "N6.9", aliquota: 0, natura: "N6.9", label: "N6.9 Reverse charge – altri casi", rif: "Art. 17, c. 2, DPR 633/72", group: "Inversione contabile (reverse charge)" },
+  { key: "N2.2", aliquota: 0, natura: "N2.2", label: "N2.2 Non soggetta – regime forfettario", rif: "Art. 1, commi 54-89, L. 190/2014", group: "Non soggette" },
+  { key: "N2.2-altri", aliquota: 0, natura: "N2.2", label: "N2.2 Non soggetta – altri casi", rif: "Artt. 2, 3, 5 DPR 633/72", group: "Non soggette" },
+  { key: "N2.1", aliquota: 0, natura: "N2.1", label: "N2.1 Non soggetta – servizi resi all'estero (artt. 7–7-septies)", rif: "Artt. da 7 a 7-septies DPR 633/72", group: "Non soggette" },
+  { key: "N3.1", aliquota: 0, natura: "N3.1", label: "N3.1 Non imponibile – esportazioni", rif: "Art. 8 DPR 633/72", group: "Non imponibili" },
+  { key: "N3.2", aliquota: 0, natura: "N3.2", label: "N3.2 Non imponibile – cessioni intracomunitarie", rif: "Art. 41 DL 331/93", group: "Non imponibili" },
+  { key: "N3.3", aliquota: 0, natura: "N3.3", label: "N3.3 Non imponibile – cessioni verso San Marino", rif: "Art. 71 DPR 633/72", group: "Non imponibili" },
+  { key: "N3.4", aliquota: 0, natura: "N3.4", label: "N3.4 Non imponibile – operazioni assimilate alle esportazioni", rif: "Artt. 8-bis e 9 DPR 633/72", group: "Non imponibili" },
+  { key: "N3.5", aliquota: 0, natura: "N3.5", label: "N3.5 Non imponibile – dichiarazione d'intento", rif: "Art. 8, c. 1, lett. c), DPR 633/72", group: "Non imponibili" },
+  { key: "N3.6", aliquota: 0, natura: "N3.6", label: "N3.6 Non imponibile – altre operazioni (fuori plafond)", rif: "Art. 72 DPR 633/72", group: "Non imponibili" },
+  { key: "N4", aliquota: 0, natura: "N4", label: "N4 Esente", rif: "Art. 10 DPR 633/72", group: "Altre nature" },
+  { key: "N1", aliquota: 0, natura: "N1", label: "N1 Escluso art. 15 (anticipazioni per conto del cliente)", rif: "Art. 15 DPR 633/72", group: "Altre nature" },
+  { key: "N5", aliquota: 0, natura: "N5", label: "N5 Regime del margine / IVA non esposta", rif: "Art. 36 DL 41/95", group: "Altre nature" },
+  { key: "N7", aliquota: 0, natura: "N7", label: "N7 IVA assolta in altro Stato UE", rif: "Artt. 40, c. 3-4, e 41, c. 1, lett. b), DL 331/93", group: "Altre nature" },
 ];
+export const ALIQUOTE_GROUPS = [...new Set(ALIQUOTE.map((a) => a.group))];
 export const aliquotaOf = (key) => ALIQUOTE.find((a) => a.key === String(key)) || ALIQUOTE[0];
 
 export const PAGAMENTI = [
@@ -53,15 +71,15 @@ export function computeInvoice(inv) {
   const groups = {};
   for (const r of righe) {
     const a = aliquotaOf(r.aliquota_key ?? r.iva_percentuale ?? 22);
-    const g = (groups[a.key] ||= { ...a, imponibile: 0 });
+    const g = (groups[a.natura || a.key] ||= { ...a, imponibile: 0 }); // una riga di riepilogo per aliquota o natura
     g.imponibile = r2(g.imponibile + lineTotal(r));
   }
   const riepilogo = Object.values(groups).map((g) => ({ ...g, imposta: r2((g.imponibile * g.aliquota) / 100) }));
   const imponibile = r2(riepilogo.reduce((s, g) => s + g.imponibile, 0));
   const iva = r2(riepilogo.reduce((s, g) => s + g.imposta, 0));
   // Bollo da 2 € sulle operazioni senza IVA oltre 77,47 €
-  // (il reverse charge N6.x resta un'operazione soggetta a IVA: niente bollo)
-  const senzaIva = riepilogo.filter((g) => g.natura && !g.natura.startsWith("N6")).reduce((s, g) => s + g.imponibile, 0);
+  // (il reverse charge N6.x resta un'operazione soggetta a IVA e nel regime del margine N5 l'IVA è compresa: niente bollo)
+  const senzaIva = riepilogo.filter((g) => g.natura && !g.natura.startsWith("N6") && g.natura !== "N5").reduce((s, g) => s + g.imponibile, 0);
   const bollo = inv.bollo === "no" ? 0 : inv.bollo === "si" || senzaIva > 77.47 ? 2 : 0;
   const splitPayment = !!inv.split_payment;
   const totale = r2(imponibile + iva + (inv.bollo_addebitato === false ? 0 : bollo));

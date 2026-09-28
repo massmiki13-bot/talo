@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -17,7 +17,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import ComposeDialog from "@/components/email/ComposeDialog";
 import { UNIT_OPTIONS, fmtEur, isVoce } from "@/lib/quotes";
-import { TIPI_DOC, REGIMI, ALIQUOTE, PAGAMENTI, STATI, aliquotaOf, lineTotal, computeInvoice, nextNumber, validateInvoice, buildFatturaXml, aiSuggestVat } from "@/lib/invoices";
+import { TIPI_DOC, REGIMI, ALIQUOTE, ALIQUOTE_GROUPS, PAGAMENTI, STATI, aliquotaOf, lineTotal, computeInvoice, nextNumber, validateInvoice, buildFatturaXml, aiSuggestVat } from "@/lib/invoices";
 import { buildInvoicePdf } from "@/lib/invoicePdf";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -423,7 +423,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
                       <label className="text-[11px] text-slate-500">IVA</label>
                       <Select value={String(r.aliquota_key ?? "22")} onValueChange={(v) => setRow(i, { aliquota_key: v })} disabled={locked}>
                         <SelectTrigger className="h-9 mt-0.5 min-w-0 [&>span]:truncate"><SelectValue /></SelectTrigger>
-                        <SelectContent>{ALIQUOTE.map((a) => <SelectItem key={a.key} value={a.key}>{a.label}</SelectItem>)}</SelectContent>
+                        <SelectContent className="max-h-[60vh]">{ALIQUOTE_GROUPS.map((g) => <SelectGroup key={g}><SelectLabel className="text-[11px] uppercase tracking-wide text-zinc-500">{g}</SelectLabel>{ALIQUOTE.filter((a) => a.group === g).map((a) => <SelectItem key={a.key} value={a.key}>{a.label}</SelectItem>)}</SelectGroup>)}</SelectContent>
                       </Select>
                     </div>
                     <div className="text-right col-span-2 sm:col-span-1"><p className="text-[11px] text-slate-500">Importo</p><p className="text-sm font-semibold tabular-nums py-2">{fmtEur(lineTotal(r))}</p></div>

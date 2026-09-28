@@ -23,7 +23,7 @@ import WorksiteQuickNotes from "@/components/worksite/WorksiteQuickNotes";
 import LinkedEmails from "@/components/email/LinkedEmails";
 import SignStampDialog from "@/components/quotes/SignStampDialog";
 import { getAccessContext } from "@/lib/accessScope";
-import { WORKSITE_STATES, COST_CATEGORIES, laborFromAttendance, economics, installments, fmtDate, daysBetween } from "@/lib/worksites";
+import { WORKSITE_STATES, COST_CATEGORIES, laborFromAttendance, economics, installments, incomeOf, fmtDate, daysBetween } from "@/lib/worksites";
 import { fmtEur } from "@/lib/quotes";
 import { fullName } from "@/lib/employees";
 import { exportWorksiteFolder } from "@/utils/worksiteExport";
@@ -98,14 +98,15 @@ export default function WorksiteDetail() {
   const contractAmount = Number(worksite?.importo_totale) || Number(primaryQuote?.totale) || 0;
   const labor = useMemo(() => laborFromAttendance(attendance, employees, id), [attendance, employees, id]);
   const econ = useMemo(() => (worksite ? economics({ worksite, transactions, labor, quoteTotal: primaryQuote?.totale }) : null), [worksite, transactions, labor, primaryQuote]);
-  const rate = useMemo(() => installments(worksite?.piano_pagamenti || [], payments), [worksite, payments]);
+  const income = useMemo(() => incomeOf(payments, transactions), [payments, transactions]);
+  const rate = useMemo(() => installments(worksite?.piano_pagamenti || [], income), [worksite, income]);
 
   if (loading || !worksite) return <LoadingSpinner />;
 
   const st = WORKSITE_STATES[worksite.stato] || WORKSITE_STATES.da_iniziare;
   const team = (worksite.squadra_ids || []).map((eid) => employees.find((e) => e.id === eid)).filter(Boolean);
   const capo = employees.find((e) => e.id === worksite.responsabile_id);
-  const incassato = payments.reduce((s, p) => s + (Number(p.importo) || 0), 0);
+  const incassato = income.reduce((s, p) => s + (Number(p.importo) || 0), 0);
   const late = worksite.stato !== "finito" && worksite.data_fine_prevista && new Date(worksite.data_fine_prevista) < new Date(new Date().toDateString());
   const overdueRates = rate.filter((r) => r.stato === "scaduta");
 
@@ -125,7 +126,7 @@ export default function WorksiteDetail() {
   const report = async (internal) => {
     setBusy(internal ? "rep-int" : "rep-cli");
     try {
-      const blob = await generateWorksiteReport({ worksite, profile, econ, labor, payments, rate, photos, logsCount, team: team.map(fullName) }, { internal });
+      const blob = await generateWorksiteReport({ worksite, profile, econ, labor, payments: income, rate, photos, logsCount, team: team.map(fullName) }, { internal });
       downloadBlob(blob, `${internal ? "Resoconto" : "Relazione_fine_lavori"}_${(worksite.nome || "lavoro").replace(/[^\w-]+/g, "_")}.pdf`);
     } catch (e) {
       toast({ title: e.message, variant: "destructive" });
@@ -290,7 +291,7 @@ export default function WorksiteDetail() {
       )}
 
       {tab === "incassi" && !readOnly && (
-        <WorksiteMoney worksite={worksite} contractAmount={contractAmount} onSaved={(s) => s && setWorksite(s)} onPaymentsChange={setPayments} />
+        <WorksiteMoney worksite={worksite} contractAmount={contractAmount} extraIncome={income.filter((x) => x.da_movimenti)} onSaved={(s) => s && setWorksite(s)} onPaymentsChange={setPayments} />
       )}
 
       {tab === "giornale" && (

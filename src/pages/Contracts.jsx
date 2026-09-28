@@ -205,6 +205,7 @@ export default function Contracts() {
       <ContractDetailSheet
         contract={detail} open={!!detail} onOpenChange={(v) => !v && setDetailId(null)} profile={profile} customTemplates={templates}
         contacts={contacts} employees={employees} onChanged={replaceOne} onDuplicate={duplicate} onDelete={remove} onPreview={(c) => setPreview(c)}
+        onCreateLinked={(initial) => { setDetailId(null); setWizard({ initial }); }}
       />
 
       <ContractPreviewDialog open={!!preview} onOpenChange={(v) => !v && setPreview(null)} contract={preview} profile={profile} mode="saved" />
