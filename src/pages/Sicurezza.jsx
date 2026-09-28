@@ -9,13 +9,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  ShieldCheck, Plus, ArrowLeft, Sparkles, Loader2, FileDown, Trash2, Check, AlertTriangle, RefreshCw, X, Save, Mail, FolderInput, Copy, HardHat,
+  ShieldCheck, Plus, ArrowLeft, Sparkles, Loader2, FileDown, Trash2, Check, AlertTriangle, RefreshCw, X, Save, Mail, FolderInput, Copy, HardHat, FileUp,
 } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import ComposeDialog from "@/components/email/ComposeDialog";
 import { LAVORAZIONI, DPI, SEZIONI, buildInitial, workerRow, checkSections, aiAssessLavorazione, riskLevel, buildPosPdf } from "@/lib/pos";
 import PosSignatures from "@/components/pos/PosSignatures";
+import { extractFromPsc, mergePsc } from "@/lib/posPsc";
 
 const STATI = { bozza: "Bozza", completo: "Completo", consegnato: "Consegnato al CSE" };
 const lines = (arr) => (arr || []).join("\n");
@@ -49,13 +50,30 @@ export default function Sicurezza() {
     window.history.replaceState(null, "", u);
   };
 
+  const [pscFile, setPscFile] = useState(null); // PSC scelto nel dialogo "Nuovo POS"
+  const [creating, setCreating] = useState("");
   const create = async (worksiteId) => {
     const w = ctx.worksites.find((x) => x.id === worksiteId);
     const client = w?.cliente_id ? ctx.contacts.find((c) => c.id === w.cliente_id) : null;
-    const dati = buildInitial({ profile: ctx.profile, worksite: w, employees: ctx.employees, empDocs: ctx.empDocs, client });
-    const plan = await db.SafetyPlan.create({ titolo: `POS – ${w?.nome || "Nuovo cantiere"}`, worksite_id: w?.id || "", worksite_nome: w?.nome || "", stato: "bozza", revisione: 0, data: new Date().toISOString().slice(0, 10), dati });
+    let dati = buildInitial({ profile: ctx.profile, worksite: w, employees: ctx.employees, empDocs: ctx.empDocs, client });
+    let psc = null;
+    let added = 0;
+    if (pscFile) {
+      setCreating("Carico il PSC…");
+      try {
+        const { file_url } = await api.integrations.Core.UploadFile({ file: pscFile, private: true });
+        psc = { url: file_url, nome: pscFile.name, letto_il: new Date().toISOString() };
+        setCreating("L'IA legge il PSC e compila il POS… (può richiedere un minuto)");
+        const res = mergePsc(dati, await extractFromPsc(file_url, { impresa: ctx.profile?.ragione_sociale }));
+        dati = res.dati; added = res.count;
+      } catch (e) {
+        toast({ title: "PSC non letto", description: `${e.message}. Il POS viene creato lo stesso: potrai riprovare con "Compila dal PSC".`, variant: "destructive" });
+      }
+    }
+    const plan = await db.SafetyPlan.create({ titolo: `POS – ${w?.nome || dati.cantiere?.nome || "Nuovo cantiere"}`, worksite_id: w?.id || "", worksite_nome: w?.nome || "", stato: "bozza", revisione: 0, data: new Date().toISOString().slice(0, 10), dati, ...(psc ? { psc_file: psc } : {}) });
     setPlans((l) => [plan, ...l]);
-    setNewOpen(false);
+    setNewOpen(false); setCreating(""); setPscFile(null);
+    if (added) toast({ title: `Dal PSC sono arrivate ${added} informazioni`, description: "Controlla ogni sezione del POS." });
     open(plan.id);
   };
 
@@ -114,20 +132,30 @@ export default function Sicurezza() {
         </div>
       )}
 
-      <Dialog open={newOpen} onOpenChange={setNewOpen}>
+      <Dialog open={newOpen} onOpenChange={(v) => !creating && setNewOpen(v)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Nuovo POS</DialogTitle>
             <DialogDescription>Per quale cantiere? I dati del lavoro e della squadra vengono copiati nel POS.</DialogDescription>
           </DialogHeader>
+          <label className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer ${pscFile ? "border-brand-300 bg-brand-50" : "border-dashed border-slate-300 hover:border-brand-400"}`}>
+            <FileUp className="w-5 h-5 text-brand-600 shrink-0" aria-hidden="true" />
+            <span className="flex-1 min-w-0 text-sm">
+              <span className="block font-medium text-slate-900 truncate">{pscFile ? pscFile.name : "Hai il PSC del cantiere? Allegalo"}</span>
+              <span className="block text-xs text-slate-500">{pscFile ? "L'IA compilerà cantiere, figure, lavorazioni, rischi ed emergenze" : "Facoltativo: l'IA lo legge e compila il POS in automatico"}</span>
+            </span>
+            {pscFile && <button type="button" onClick={(e) => { e.preventDefault(); setPscFile(null); }} className="text-xs text-slate-500 hover:text-red-600">Rimuovi</button>}
+            <input type="file" accept=".pdf,image/*" className="hidden" onChange={(e) => { setPscFile(e.target.files[0] || null); e.target.value = ""; }} aria-label="PSC del cantiere" />
+          </label>
+          {creating && <p className="text-sm text-brand-800 flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />{creating}</p>}
           <div className="max-h-[50vh] overflow-y-auto -mx-2 space-y-0.5">
             {ctx.worksites.filter((w) => w.stato !== "finito").map((w) => (
-              <button key={w.id} onClick={() => create(w.id)} className="w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50">
+              <button key={w.id} onClick={() => create(w.id)} disabled={!!creating} className="w-full text-left disabled:opacity-50 flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50">
                 <HardHat className="w-4 h-4 text-slate-500" />
                 <span className="flex-1 min-w-0"><span className="block text-sm font-medium text-slate-900 truncate">{w.nome}</span><span className="block text-xs text-slate-500 truncate">{[w.cliente_nome, w.indirizzo].filter(Boolean).join(" · ")}</span></span>
               </button>
             ))}
-            <button onClick={() => create("")} className="w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 text-sm text-slate-700"><Plus className="w-4 h-4" /> Cantiere non ancora inserito nei Lavori</button>
+            <button onClick={() => create("")} disabled={!!creating} className="w-full text-left disabled:opacity-50 flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 text-sm text-slate-700"><Plus className="w-4 h-4" /> Cantiere non ancora inserito nei Lavori</button>
           </div>
         </DialogContent>
       </Dialog>
@@ -190,6 +218,23 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
     for (const i of todo) { setAiBusy(i); await assess(i); } // eslint-disable-line no-await-in-loop
     toast({ title: "Valutazione dei rischi completata", description: "Controlla e adatta ogni scheda al tuo cantiere." });
   };
+  // PSC: l'IA lo legge e completa il POS senza toccare ciò che è già scritto
+  const [pscBusy, setPscBusy] = useState(false);
+  const fromPsc = async (file) => {
+    if (!file) return;
+    setPscBusy(true);
+    try {
+      const { file_url } = await api.integrations.Core.UploadFile({ file, private: true });
+      const psc = await extractFromPsc(file_url, { impresa: d.impresa?.ragione_sociale, lavorazioniNote: (d.lavorazioni || []).map((l) => l.nome).join(", ") });
+      const { dati, count } = mergePsc(d, psc);
+      setD(dati);
+      onChange(await db.SafetyPlan.update(plan.id, { psc_file: { url: file_url, nome: file.name, letto_il: new Date().toISOString() } }));
+      toast({ title: count ? `Dal PSC sono arrivate ${count} informazioni` : "Il POS conteneva già tutto quello che c'è nel PSC", description: count ? "I campi già compilati non sono stati toccati. Controlla ogni sezione." : undefined });
+    } catch (e) {
+      toast({ title: "Lettura del PSC non riuscita", description: e.message, variant: "destructive" });
+    } finally { setPscBusy(false); }
+  };
+
   const toggleLav = (nome) => setD((prev) => {
     const has = (prev.lavorazioni || []).some((l) => l.nome === nome);
     return { ...prev, lavorazioni: has ? prev.lavorazioni.filter((l) => l.nome !== nome) : [...(prev.lavorazioni || []), { nome, descrizione: "", rischi: [], misure: [], dpi: [] }] };
@@ -231,8 +276,15 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5 -ml-2"><ArrowLeft className="w-4 h-4" /> Tutti i POS</Button>
         <Input value={meta.titolo} onChange={(e) => setMeta({ ...meta, titolo: e.target.value })} className="flex-1 min-w-[220px] text-base font-semibold border-transparent hover:border-slate-200 focus:border-slate-300 bg-transparent" aria-label="Titolo" />
         <span className="text-xs text-slate-500 w-24 text-right">{saveState === "saving" ? "Salvataggio…" : saveState === "dirty" ? "Modifiche…" : saveState === "error" ? "Errore di salvataggio" : "Salvato"}</span>
+        <label className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-md border text-sm font-medium cursor-pointer ${pscBusy ? "border-brand-300 bg-brand-50 text-brand-800" : "border-slate-200 bg-white hover:bg-slate-50"}`} title={plan.psc_file ? `PSC letto: ${plan.psc_file.nome}` : "L'IA legge il PSC e completa il POS"}>
+          {pscBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileUp className="w-4 h-4" />}{pscBusy ? "Lettura del PSC…" : "Compila dal PSC"}
+          <input type="file" accept=".pdf,image/*" className="hidden" disabled={pscBusy} onChange={(e) => { fromPsc(e.target.files[0]); e.target.value = ""; }} aria-label="Allega il PSC" />
+        </label>
         <Button variant="outline" size="sm" onClick={() => pdf("download")} disabled={pdfBusy} className="gap-1.5">{pdfBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} PDF</Button>
       </div>
+      {plan.psc_file && (
+        <p className="text-xs text-slate-500 -mt-2 mb-3">PSC collegato: <a href={plan.psc_file.url} className="text-brand-700 hover:underline">{plan.psc_file.nome}</a>{plan.psc_file.letto_il ? ` · letto il ${new Date(plan.psc_file.letto_il).toLocaleDateString("it-IT")}` : ""}</p>
+      )}
 
       <div className="grid lg:grid-cols-[250px_minmax(0,1fr)] gap-4 items-start">
         <nav className="bg-white rounded-2xl border border-slate-200 p-1.5 lg:sticky lg:top-4 flex lg:flex-col gap-0.5 overflow-x-auto no-scrollbar min-w-0">
