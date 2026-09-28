@@ -9,7 +9,6 @@ export const PERMISSION_MODULES = [
   { key: "contratti", label: "Contratti", path: "/contratti" },
   { key: "presenze", label: "Presenze", path: "/presenze" },
   { key: "analisi", label: "Analisi", path: "/analisi", legacyPerms: ["report_annuale"] },
-  { key: "assistente", label: "Assistente IA", path: "/assistente" },
 ];
 
 export const HOST_ONLY_PATHS = ["/profilo-ditta", "/collaboratori"];

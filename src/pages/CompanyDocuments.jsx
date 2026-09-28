@@ -190,7 +190,7 @@ export default function CompanyDocuments() {
         setFolders(res.folders);
         folderId = res.folderId;
       }
-      const { cartella, ...meta } = r;
+      const { cartella, _smista, ...meta } = r; // eslint-disable-line no-unused-vars
       doc = await db.CompanyDocument.update(doc.id, {
         ...meta, cartella_id: folderId || "", cartella_nome: foldersRef.current.find((f) => f.id === folderId)?.nome || "",
         data_emissione: r.data_emissione || null, data_scadenza: r.data_scadenza || null,
@@ -199,7 +199,26 @@ export default function CompanyDocuments() {
       if (doc.data_scadenza && new Date(doc.data_scadenza) >= new Date(new Date().toDateString())) {
         await createDocumentReminder(doc.titolo, doc.data_scadenza, doc.id, "CompanyDocument", typeLabel(doc.tipo), doc.dipendente_nome || null).catch(() => null);
       }
-      updateQ(item.id, { status: "done", title: doc.titolo, info: folderId ? pathLabel(folderId, foldersRef.current) : "Da archiviare" });
+      // Smistamento: documenti personali anche nella scheda del dipendente, fatture fornitore nei costi del lavoro.
+      const extra = [];
+      if (_smista?.dipendente && doc.dipendente_id) {
+        const ed = await db.EmployeeDocument.create({
+          dipendente_id: doc.dipendente_id, tipo: _smista.dipendente, titolo: doc.titolo, descrizione: doc.riassunto || "",
+          file_url, data_emissione: doc.data_emissione || null, data_scadenza: doc.data_scadenza || null,
+          ...(_smista.corso_codice ? { corso_codice: _smista.corso_codice } : {}),
+        }).catch(() => null);
+        if (ed) { await db.CompanyDocument.update(doc.id, { documento_dipendente_id: ed.id }).catch(() => null); extra.push(`scheda di ${doc.dipendente_nome}`); }
+      }
+      if (_smista?.costo && doc.worksite_id && _smista.costo.importo > 0) {
+        const tx = await db.WorksiteTransaction.create({
+          worksite_id: doc.worksite_id, worksite_nome: doc.worksite_nome, tipo: "uscita", categoria: _smista.costo.categoria,
+          descrizione: doc.titolo, importo: Math.round(_smista.costo.importo * 100) / 100, data: doc.data_emissione || new Date().toISOString().slice(0, 10),
+          fornitore: doc.emittente || doc.contatto_nome || "", file_url,
+        }).catch(() => null);
+        if (tx) { await db.CompanyDocument.update(doc.id, { transazione_id: tx.id }).catch(() => null); extra.push(`costo di ${doc.worksite_nome}`); }
+      }
+      const where = folderId ? pathLabel(folderId, foldersRef.current) : "Da archiviare";
+      updateQ(item.id, { status: "done", title: doc.titolo, info: extra.length ? `${where} · anche in ${extra.join(" e ")}` : where });
     } catch (e) {
       console.error(e);
       // con docId il file è salvato ma l'IA non ha finito; senza, il caricamento è fallito

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, Users, FileText,
-  UserCheck, FolderOpen, Bell, FileSignature, Bot, FolderTree,
+  UserCheck, FolderOpen, Bell, FileSignature, Bot,
   BarChart3, ChevronLeft, ChevronRight, LogOut, Briefcase, CalendarClock, UserCog,
   User, HardHat, Mail
 } from "lucide-react";
@@ -24,7 +24,6 @@ export default function Sidebar({ onNavigate, isHost = true, accessLevel = "resp
     { label: "Contratti", icon: FileSignature, path: "/contratti", perm: "contratti" },
     { label: "Presenze", icon: CalendarClock, path: "/presenze", perm: "presenze", legacyPerms: ["giornaliere", "ore_mensili"] },
     { label: "Analisi", icon: BarChart3, path: "/analisi", perm: "analisi", legacyPerms: ["report_annuale"] },
-    { label: "Organizza Documenti", icon: FolderTree, path: "/assistente", perm: "assistente" },
 
     { label: "Profilo Ditta", icon: Building2, path: "/profilo-ditta", perm: null },
     { label: "Collaboratori", icon: UserCog, path: "/collaboratori", perm: null },

@@ -31,7 +31,6 @@ import Reminders from '@/pages/Reminders';
 import Contracts from '@/pages/Contracts';
 import Presenze from '@/pages/Presenze';
 import Analisi from '@/pages/Analisi';
-import AIAssistant from '@/pages/AIAssistant';
 import Worksites from '@/pages/Worksites';
 import WorksiteDetail from '@/pages/WorksiteDetail';
 import Collaborators from '@/pages/Collaborators';
@@ -89,7 +88,7 @@ const AuthenticatedApp = () => {
           <Route path="/ore-mensili" element={<Navigate to="/presenze?tab=riepilogo" replace />} />
           <Route path="/analisi" element={<Analisi />} />
           <Route path="/report-annuale" element={<Navigate to="/analisi?tab=report" replace />} />
-          <Route path="/assistente" element={<AIAssistant />} />
+          <Route path="/assistente" element={<Navigate to="/documenti-ditta" replace />} />
           <Route path="/collaboratori" element={<Collaborators />} />
           <Route path="/posta" element={<Posta />} />
           <Route path="/invia-email" element={<Navigate to="/posta" replace />} />

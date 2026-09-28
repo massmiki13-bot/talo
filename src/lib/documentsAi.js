@@ -1,6 +1,8 @@
 // IA per l'archivio: analisi di un singolo file e riorganizzazione dell'intero archivio.
 import { api } from "@/api/client";
 import { DOC_TYPES, STANDARD_TREE, pathLabel } from "@/lib/documents";
+import { CORSI } from "@/lib/employees";
+import { COST_CATEGORIES } from "@/lib/worksites";
 
 const TYPES = DOC_TYPES.map((t) => t.value);
 const standardPaths = () => STANDARD_TREE.flatMap((r) => [r.nome, ...r.figli.map((f) => `${r.nome}/${f}`)]);
@@ -32,6 +34,8 @@ REGOLE:
 - cartella: percorso con "/" (max 3 livelli), preferendo una cartella esistente.
 - collega dipendente/contatto/cantiere solo se il nome compare chiaramente; usa l'id dell'elenco.
 - riassunto: 1-2 frasi con i dati utili (numero, importo, ente, soggetto).
+- documento_dipendente: se il documento riguarda UN dipendente elencato, indica se è "corso" (attestato di formazione), "visita_medica" (idoneità), "contratto" (di lavoro), "documento_identita", altrimenti "nessuno". Per i corsi scegli corso_codice tra: ${CORSI.map((c) => `${c.codice} (${c.nome})`).join("; ")}.
+- fattura: "ricevuta" se è una fattura/ricevuta di un fornitore verso di noi, "emessa" se l'abbiamo emessa noi, altrimenti "no". Per le ricevute indica imponibile (senza IVA) e categoria_costo tra: ${COST_CATEGORIES.join(", ")}.
 - Non inventare nulla.`,
     file_urls: [fileUrl],
     response_json_schema: {
@@ -50,6 +54,11 @@ REGOLE:
         contatto_id: { type: "string" },
         worksite_id: { type: "string" },
         tag: { type: "array", items: { type: "string" } },
+        documento_dipendente: { type: "string", enum: ["corso", "visita_medica", "contratto", "documento_identita", "nessuno"] },
+        corso_codice: { type: "string" },
+        fattura: { type: "string", enum: ["ricevuta", "emessa", "no"] },
+        imponibile: { type: "number" },
+        categoria_costo: { type: "string" },
         testo: { type: "string", description: "testo principale del documento, max 3000 caratteri" },
       },
       required: ["titolo", "tipo", "cartella"],
@@ -74,6 +83,12 @@ REGOLE:
     worksite_id: ws?.id || "", worksite_nome: ws ? ws.nome || ws.titolo || "" : "",
     tag: Array.isArray(r.tag) ? r.tag.slice(0, 6) : [],
     contenuto_estratto: String(r.testo || "").slice(0, 10000),
+    // indicazioni per lo smistamento (non vengono salvate sul documento)
+    _smista: {
+      dipendente: emp && ["corso", "visita_medica", "contratto", "documento_identita"].includes(r.documento_dipendente) ? r.documento_dipendente : null,
+      corso_codice: CORSI.some((c) => c.codice === r.corso_codice) ? r.corso_codice : "",
+      costo: r.fattura === "ricevuta" && ws ? { importo: Number(r.imponibile) > 0 ? Number(r.imponibile) : Number(r.importo) || 0, categoria: COST_CATEGORIES.includes(r.categoria_costo) ? r.categoria_costo : "Materiali" } : null,
+    },
   };
 }
 
