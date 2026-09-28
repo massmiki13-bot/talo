@@ -96,7 +96,7 @@ export default function Posta() {
       db.EmailAccount.list("-created_date"),
       db.Contact.list("nome", 2000).catch(() => []),
       db.Worksite.list("-created_date", 1000).catch(() => []),
-      db.Quote.list("-created_date", 1000).catch(() => []),
+      db.Quote.fields(["numero", "anno", "data", "cliente_id", "cliente_nome", "oggetto", "stato", "totale"], { sort: "-created_date", limit: 1000 }).catch(() => []),
     ]).then(([accs, contacts, worksites, quotes]) => {
       setAccounts(accs.filter((a) => a.active !== false));
       setLookups({

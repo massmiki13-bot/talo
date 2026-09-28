@@ -10,37 +10,37 @@ import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AppLayout from '@/components/layout/AppLayout';
 
-// Auth pages
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import ForgotPassword from '@/pages/ForgotPassword';
-import ResetPassword from '@/pages/ResetPassword';
+import { lazy, Suspense } from "react";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
-// App pages
-import Dashboard from '@/pages/Dashboard';
-import CompanyProfile from '@/pages/CompanyProfile';
-import Contacts from '@/pages/Contacts';
-import ContactDetail from '@/pages/ContactDetail';
-
-import Quotes from '@/pages/Quotes';
-import QuoteEditor from '@/pages/QuoteEditor';
-import Employees from '@/pages/Employees';
-import EmployeeDetail from '@/pages/EmployeeDetail';
-import CompanyDocuments from '@/pages/CompanyDocuments';
-import Prezzari from '@/pages/Prezzari';
-import Sicurezza from '@/pages/Sicurezza';
-import Fatture from '@/pages/Fatture';
-import Legal from '@/pages/Legal';
-import Reminders from '@/pages/Reminders';
-import Contracts from '@/pages/Contracts';
-import Presenze from '@/pages/Presenze';
-import Analisi from '@/pages/Analisi';
-import Worksites from '@/pages/Worksites';
-import WorksiteDetail from '@/pages/WorksiteDetail';
-import Collaborators from '@/pages/Collaborators';
-import CollaboratorJoin from '@/pages/CollaboratorJoin';
-import Posta from '@/pages/Posta';
-import PublicQuote from '@/pages/PublicQuote';
+// Pagine caricate solo quando servono: l'avvio (soprattutto da telefono in cantiere) resta leggero.
+const Login = lazy(() => import("@/pages/Login"));
+const Register = lazy(() => import("@/pages/Register"));
+const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const CompanyProfile = lazy(() => import("@/pages/CompanyProfile"));
+const Contacts = lazy(() => import("@/pages/Contacts"));
+const ContactDetail = lazy(() => import("@/pages/ContactDetail"));
+const Quotes = lazy(() => import("@/pages/Quotes"));
+const QuoteEditor = lazy(() => import("@/pages/QuoteEditor"));
+const Employees = lazy(() => import("@/pages/Employees"));
+const EmployeeDetail = lazy(() => import("@/pages/EmployeeDetail"));
+const CompanyDocuments = lazy(() => import("@/pages/CompanyDocuments"));
+const Prezzari = lazy(() => import("@/pages/Prezzari"));
+const Sicurezza = lazy(() => import("@/pages/Sicurezza"));
+const Fatture = lazy(() => import("@/pages/Fatture"));
+const Legal = lazy(() => import("@/pages/Legal"));
+const Reminders = lazy(() => import("@/pages/Reminders"));
+const Contracts = lazy(() => import("@/pages/Contracts"));
+const Presenze = lazy(() => import("@/pages/Presenze"));
+const Analisi = lazy(() => import("@/pages/Analisi"));
+const Worksites = lazy(() => import("@/pages/Worksites"));
+const WorksiteDetail = lazy(() => import("@/pages/WorksiteDetail"));
+const Collaborators = lazy(() => import("@/pages/Collaborators"));
+const CollaboratorJoin = lazy(() => import("@/pages/CollaboratorJoin"));
+const Posta = lazy(() => import("@/pages/Posta"));
+const PublicQuote = lazy(() => import("@/pages/PublicQuote"));
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -63,6 +63,7 @@ const AuthenticatedApp = () => {
   }
 
   return (
+    <Suspense fallback={<div className="min-h-screen grid place-items-center"><LoadingSpinner /></div>}>
     <Routes>
       <Route path="/p/:token" element={<PublicQuote />} />
       <Route path="/legal/:doc" element={<Legal />} />
@@ -105,6 +106,7 @@ const AuthenticatedApp = () => {
       
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 

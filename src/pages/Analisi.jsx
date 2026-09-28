@@ -40,7 +40,7 @@ export default function Analisi() {
   const load = useCallback(async () => {
     const safe = (p) => p.catch(() => []);
     const [quotes, worksites, transactions, payments, attendance, employees] = await Promise.all([
-      safe(db.Quote.list("-data", 5000)), safe(db.Worksite.list()), safe(db.WorksiteTransaction.list("-data", 10000)),
+      safe(db.Quote.fields(["numero", "data", "stato", "cliente_id", "cliente_nome", "imponibile", "totale", "costo_totale", "margine", "validita_giorni", "data_firma_cliente", "worksite_id", "visto_il"], { sort: "-data", limit: 10000 })), safe(db.Worksite.list()), safe(db.WorksiteTransaction.list("-data", 10000)),
       safe(db.WorksitePayment.list("-data", 10000)), safe(db.DailyAttendance.list("-data", 10000)), safe(db.Employee.list()),
     ]);
     setData({ quotes, worksites, transactions, payments, attendance, employees });

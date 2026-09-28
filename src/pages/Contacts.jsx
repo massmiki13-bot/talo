@@ -48,7 +48,7 @@ export default function Contacts() {
 
   const load = async () => {
     try {
-      const [cs, quotes] = await Promise.all([db.Contact.list("nome", 5000), db.Quote.list("-data", 5000).catch(() => [])]);
+      const [cs, quotes] = await Promise.all([db.Contact.list("nome", 5000), db.Quote.fields(["cliente_id", "stato", "totale", "imponibile", "data"], { sort: "-data", limit: 10000 }).catch(() => [])]);
       const stats = new Map();
       for (const q of quotes) {
         if (!q.cliente_id) continue;

@@ -116,7 +116,7 @@ export default function QuoteEditor() {
         }
         const tpl = prof?.template_predefinito || "classica";
         setSelectedTemplate(tpl);
-        const existing = await db.Quote.list("-created_date", 5000);
+        const existing = await db.Quote.fields(["numero", "anno"], { limit: 10000 });
         const { numero, anno } = generateQuoteNumber(prof, existing);
         const base = {
           numero, anno,
@@ -334,7 +334,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
   };
 
   const duplicate = async () => {
-    const existing = await db.Quote.list("-created_date", 5000);
+    const existing = await db.Quote.fields(["numero", "anno"], { limit: 10000 });
     const { numero, anno } = generateQuoteNumber(profile, existing);
     const data = { ...payload(), numero, anno, data: new Date().toISOString().slice(0, 10), oggetto: quote.oggetto ? `${quote.oggetto} (copia)` : "",
       stato: "in_attesa", firma_cliente_url: "", data_firma_cliente: "", inviato_a: "", data_invio: "", public_token: null, visto_il: null,

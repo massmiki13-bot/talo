@@ -35,7 +35,7 @@ export default function Presenze() {
   const load = useCallback(async () => {
     try {
       const [recs, emps, sites, profiles] = await Promise.all([
-        db.DailyAttendance.list("-data", 5000), db.Employee.list(), db.Worksite.list("-created_date"), db.CompanyProfile.list().catch(() => []),
+        db.DailyAttendance.filter({ data: { $gte: new Date(Date.now() - 400 * 86_400_000).toISOString().slice(0, 10) } }, "-data", 10000), db.Employee.list(), db.Worksite.list("-created_date"), db.CompanyProfile.list().catch(() => []),
       ]);
       setRecords(recs);
       setEmployees(emps);

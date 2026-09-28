@@ -86,6 +86,10 @@ function entityApi(entity) {
   return {
     list: (sort, limit, skip) => list({}, sort, limit, skip),
     filter: (filter, sort, limit, skip) => list(filter, sort, limit, skip),
+    // Solo alcuni campi (per elenchi e calcoli): { filter, sort, limit, skip }
+    fields: (fields, { filter, sort, limit, skip } = {}) =>
+      rpc("entity_list_fields", { p_entity: entity, p_fields: fields, p_filter: filter || {}, p_sort: sort || "-created_date", p_limit: limit ?? null, p_skip: skip || 0 })
+        .then((rows) => rows || []),
     get: (id) => {
       if (!UUID_RE.test(String(id))) return Promise.reject(new ApiError("Record non trovato", 404));
       return rpc("entity_get", { p_entity: entity, p_id: id });

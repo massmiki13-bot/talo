@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { Outlet, useLocation, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import MobileBottomNav from "./MobileBottomNav";
@@ -52,7 +53,9 @@ export default function AppLayout() {
 
       <main className={`min-h-screen pt-14 lg:pt-0 pb-20 lg:pb-0 transition-[margin] duration-300 ${collapsed ? "lg:ml-[72px]" : "lg:ml-64"}`}>
         <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-          <Outlet />
+          <Suspense fallback={<LoadingSpinner />}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
 

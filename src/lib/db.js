@@ -10,8 +10,9 @@ function wrapEntity(entity, entityName) {
   const isScoped = !UNSCOPED_ENTITIES.includes(entityName);
   const sf = (filter) => isScoped ? applyAccessScope(filter, entityName) : (filter || {});
   return {
-    list: (sort, limit) => entity.filter(sf(), sort, limit),
-    filter: (filter, sort, limit) => entity.filter(sf(filter || {}), sort, limit),
+    list: (sort, limit, skip) => entity.filter(sf(), sort, limit, skip),
+    filter: (filter, sort, limit, skip) => entity.filter(sf(filter || {}), sort, limit, skip),
+    fields: (fields, opts = {}) => entity.fields(fields, { ...opts, filter: sf(opts.filter || {}) }),
     create: (data) => entity.create(data),
     bulkCreate: (data) => entity.bulkCreate(data),
     get: (id) => entity.get(id),

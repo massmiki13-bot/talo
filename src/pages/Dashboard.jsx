@@ -39,7 +39,7 @@ export default function Dashboard() {
     const today = new Date();
     const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
     const [quotes, worksites, payments, invoices, transactions, attendance, employees, empDocs, compDocs, contracts, reminders, profile] = await Promise.all([
-      safe(db.Quote.list("-data", 1000)), safe(db.Worksite.list()), safe(db.WorksitePayment.list("-data", 5000)), safe(db.Invoice.list("-data", 2000)),
+      safe(db.Quote.fields(["numero", "anno", "data", "stato", "cliente_id", "cliente_nome", "imponibile", "totale", "validita_giorni", "visto_il", "worksite_id"], { sort: "-data", limit: 2000 })), safe(db.Worksite.list()), safe(db.WorksitePayment.list("-data", 5000)), safe(db.Invoice.list("-data", 2000)),
       safe(db.WorksiteTransaction.list("-data", 5000)), safe(db.DailyAttendance.filter({ data: todayIso })), safe(db.Employee.list()), safe(db.EmployeeDocument.list()),
       safe(db.CompanyDocument.list()), safe(db.GeneratedContract.list()), safe(db.Reminder.filter({ completato: false }, "data", 300)), safe(db.CompanyProfile.list()),
     ]);

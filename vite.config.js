@@ -60,8 +60,6 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks: {
             react: ['react', 'react-dom', 'react-router-dom'],
-            pdf: ['jspdf', 'html2canvas', 'pdf-lib'],
-            charts: ['recharts'],
           },
         },
       },

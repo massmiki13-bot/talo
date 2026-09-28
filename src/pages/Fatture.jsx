@@ -40,7 +40,7 @@ export default function Fatture() {
 
   const load = useCallback(async () => {
     const safe = (p) => p.catch(() => []);
-    const [inv, prof, c, q, w] = await Promise.all([safe(db.Invoice.list("-data", 5000)), safe(db.CompanyProfile.list()), safe(db.Contact.list()), safe(db.Quote.list("-data", 2000)), safe(db.Worksite.list("-created_date"))]);
+    const [inv, prof, c, q, w] = await Promise.all([safe(db.Invoice.list("-data", 5000)), safe(db.CompanyProfile.list()), safe(db.Contact.list()), safe(db.Quote.fields(["numero", "data", "stato", "cliente_id", "cliente_nome", "oggetto", "imponibile", "totale", "worksite_id", "worksite_nome"], { sort: "-data", limit: 5000 })), safe(db.Worksite.list("-created_date"))]);
     setList(inv); setCtx({ profile: prof[0] || null, contacts: c, quotes: q, worksites: w });
     setLoading(false);
     return inv;
@@ -68,6 +68,7 @@ export default function Fatture() {
     const defKey = regime === "RF19" ? "N2.2" : "22";
     let righe = [emptyRow(defKey)];
     let extra = {};
+    if (quote && !quote.righe) quote = await db.Quote.get(quote.id);
     if (quote) {
       righe = (quote.righe || []).filter((r) => isVoce(r) && !r.opzionale && (r.descrizione || Number(r.prezzo_unitario))).map((r) => ({
         descrizione: r.descrizione, quantita: Number(r.quantita) || 1, unita_misura: r.unita_misura || "cad", prezzo_unitario: Number(r.prezzo_unitario) || 0,

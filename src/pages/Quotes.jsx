@@ -62,7 +62,8 @@ export default function Quotes() {
   const load = async () => {
     try {
       const [qs, tpls, profs, sites] = await Promise.all([
-        db.Quote.list("-created_date", 5000),
+        // solo i campi della testata: le righe dei preventivi restano sul server
+        db.Quote.fields(["numero", "anno", "revisione", "data", "stato", "cliente_id", "cliente_nome", "oggetto", "imponibile", "iva_totale", "totale", "margine", "validita_giorni", "worksite_id", "worksite_nome", "inviato_a", "visto_il", "data_firma_cliente"], { sort: "-created_date", limit: 5000 }),
         db.SavedTemplate.filter({ tipo: "preventivo" }),
         db.CompanyProfile.list(),
         db.Worksite.list("-created_date", 1000),
@@ -117,9 +118,10 @@ export default function Quotes() {
 
   const setFilterState = (s) => { setStateFilter(s); };
 
-  const duplicate = async (q) => {
+  const duplicate = async (row) => {
     try {
-      const existing = await db.Quote.list("-created_date", 5000);
+      const q = await db.Quote.get(row.id);
+      const existing = await db.Quote.fields(["numero", "anno"], { limit: 10000 });
       const { numero, anno } = generateQuoteNumber(profile, existing);
       const { id, created_date, updated_date, created_by, created_by_id, _state, ...rest } = q;
       const created = await db.Quote.create({
