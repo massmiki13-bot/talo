@@ -2,7 +2,7 @@
 import { api } from "@/api/client";
 
 export const REMINDER_TYPES = [
-  { value: "appuntamento", label: "Appuntamento", color: "bg-blue-100 text-blue-800" },
+  { value: "appuntamento", label: "Appuntamento", color: "bg-zinc-200 text-zinc-800" },
   { value: "chiamata", label: "Chiamata", color: "bg-sky-100 text-sky-800" },
   { value: "cantiere", label: "Cantiere", color: "bg-emerald-100 text-emerald-800" },
   { value: "scadenza_documento", label: "Scadenza documento", color: "bg-amber-100 text-amber-800" },
@@ -67,7 +67,7 @@ export function bucketOf(r, today = todayIso()) {
 
 export const BUCKETS = [
   { key: "overdue", label: "In ritardo", tone: "text-red-700" },
-  { key: "today", label: "Oggi", tone: "text-blue-700" },
+  { key: "today", label: "Oggi", tone: "text-brand-700" },
   { key: "tomorrow", label: "Domani", tone: "text-slate-900" },
   { key: "week", label: "Prossimi 7 giorni", tone: "text-slate-900" },
   { key: "later", label: "Più avanti", tone: "text-slate-900" },

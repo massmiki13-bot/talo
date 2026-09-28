@@ -247,8 +247,8 @@ export default function EmailAccountsSettings({ profile }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-            <Mail className="w-5 h-5 text-blue-600" />
+          <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+            <Mail className="w-5 h-5 text-brand-600" />
           </div>
           <div>
             <h3 className="text-base font-bold text-slate-900">Caselle email e PEC</h3>
@@ -256,14 +256,14 @@ export default function EmailAccountsSettings({ profile }) {
           </div>
         </div>
       </div>
-      <Button size="sm" onClick={openNew} className="gap-1.5 w-full sm:w-auto mt-4 bg-blue-600 hover:bg-blue-700">
+      <Button size="sm" onClick={openNew} className="gap-1.5 w-full sm:w-auto mt-4 bg-brand-600 hover:bg-brand-700">
         <Plus className="w-4 h-4" /> Collega nuova email
       </Button>
 
       {/* Empty state */}
       {loading ? (
         <div className="flex items-center justify-center py-10">
-          <div className="w-6 h-6 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-slate-200 border-t-brand-600 rounded-full animate-spin" />
         </div>
       ) : accounts.length === 0 ? (
         <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-xl mt-4">
@@ -320,7 +320,7 @@ export default function EmailAccountsSettings({ profile }) {
                     <button onClick={() => verifyAccount(a.id)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-green-600 px-2 py-1.5 rounded-lg hover:bg-green-50 transition-colors">
                       <RefreshCw className="w-3.5 h-3.5" /> Verifica
                     </button>
-                    <button onClick={() => openEdit(a)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600 px-2 py-1.5 rounded-lg hover:bg-blue-50 transition-colors">
+                    <button onClick={() => openEdit(a)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-brand-600 px-2 py-1.5 rounded-lg hover:bg-brand-50 transition-colors">
                       <Settings2 className="w-3.5 h-3.5" /> Modifica
                     </button>
                     <button onClick={() => handleDelete(a.id)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-600 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-colors ml-auto">
@@ -336,26 +336,26 @@ export default function EmailAccountsSettings({ profile }) {
 
       {/* Guida rapida */}
       <details className="mt-4 group">
-        <summary className="flex items-center gap-2 cursor-pointer text-sm font-medium text-blue-600 hover:text-blue-700 select-none">
+        <summary className="flex items-center gap-2 cursor-pointer text-sm font-medium text-brand-600 hover:text-brand-700 select-none">
           <HelpCircle className="w-4 h-4" /> Come collegare la mia email?
         </summary>
         <div className="mt-3 bg-slate-50 rounded-xl p-4 space-y-3">
           <div className="flex gap-3">
-            <div className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">1</div>
+            <div className="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">1</div>
             <div>
               <p className="text-sm font-medium text-slate-700">Scegli il tipo di collegamento</p>
               <p className="text-xs text-slate-500 mt-0.5">Scegli il preset del tuo provider (<strong>Gmail</strong>, <strong>Aruba</strong>, <strong>Outlook</strong>, <strong>PEC</strong>…): server e porta si compilano da soli. Serve solo una <strong>password per app</strong>.</p>
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">2</div>
+            <div className="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">2</div>
             <div>
               <p className="text-sm font-medium text-slate-700">Inserisci i dati della casella</p>
               <p className="text-xs text-slate-500 mt-0.5">Indirizzo email, nome mittente (es. "Amministrazione") e — per SMTP — server e password per app.</p>
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">3</div>
+            <div className="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">3</div>
             <div>
               <p className="text-sm font-medium text-slate-700">Verifica lo stato</p>
               <p className="text-xs text-slate-500 mt-0.5">Dopo il salvataggio, l'app verifica automaticamente il permesso di invio. Il badge verde "Pronta per l'invio" conferma che tutto funziona.</p>
@@ -510,7 +510,7 @@ export default function EmailAccountsSettings({ profile }) {
           </div>
           <DialogFooter className="mt-4">
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Annulla</Button>
-            <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleSave} className="bg-brand-600 hover:bg-brand-700">
               {editingId ? "Salva" : "Collega"}
             </Button>
           </DialogFooter>

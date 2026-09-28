@@ -137,7 +137,7 @@ export default function WorksiteForm({ open, onOpenChange, worksite = null, onSa
               {employees.length ? (
                 <div className="grid sm:grid-cols-2 gap-1.5 mt-1.5">
                   {employees.map((e) => (
-                    <label key={e.id} className={`flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer ${form.squadra_ids.includes(e.id) ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:bg-slate-50"}`}>
+                    <label key={e.id} className={`flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer ${form.squadra_ids.includes(e.id) ? "border-brand-500 bg-brand-50" : "border-slate-200 hover:bg-slate-50"}`}>
                       <input type="checkbox" className="w-4 h-4" checked={form.squadra_ids.includes(e.id)} onChange={() => toggleTeam(e.id)} />
                       <span className="text-sm text-slate-800">{fullName(e)}</span>
                       {e.ruolo && <span className="text-xs text-slate-600 ml-auto">{e.ruolo}</span>}

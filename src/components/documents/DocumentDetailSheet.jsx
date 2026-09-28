@@ -148,7 +148,7 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
               </Button>
             </div>
 
-            {form.riassunto && <p className="text-sm text-slate-700 bg-blue-50/60 border border-blue-100 rounded-lg p-3">{form.riassunto}</p>}
+            {form.riassunto && <p className="text-sm text-slate-700 bg-brand-50/60 border border-brand-100 rounded-lg p-3">{form.riassunto}</p>}
 
             <div className="grid sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2"><Label>Titolo</Label><Input value={form.titolo || ""} onChange={(e) => set("titolo", e.target.value)} /></div>
@@ -186,7 +186,7 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
                   {[...doc.versioni].reverse().map((v, i) => (
                     <li key={i} className="text-sm flex items-center justify-between gap-2">
                       <span className="truncate text-slate-600">{v.nome_file || "File"} · sostituito il {new Date(v.sostituito_il).toLocaleDateString("it-IT")}</span>
-                      <a href={v.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline shrink-0">Apri</a>
+                      <a href={v.file_url} target="_blank" rel="noopener noreferrer" className="text-brand-600 hover:underline shrink-0">Apri</a>
                     </li>
                   ))}
                 </ul>
@@ -195,7 +195,7 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
 
             <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100 sticky bottom-0 bg-white pb-1">
               <Button variant="ghost" className="text-red-600 hover:text-red-700 hover:bg-red-50 gap-1.5" onClick={() => onDelete(doc)}><Trash2 className="w-4 h-4" /> Elimina</Button>
-              <Button onClick={save} disabled={!dirty || saving} className="bg-blue-600 hover:bg-blue-700 gap-1.5">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva</Button>
+              <Button onClick={save} disabled={!dirty || saving} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva</Button>
             </div>
           </div>
         </SheetContent>

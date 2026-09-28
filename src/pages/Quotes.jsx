@@ -181,20 +181,20 @@ export default function Quotes() {
     <div>
       <div className="mb-4 sm:mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Preventivi</h1>
+          <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Preventivi</h1>
           <p className="text-slate-500 mt-1 text-sm">Emessi ai clienti e ricevuti dai fornitori</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {templates.length > 0 && <Button variant="outline" size="sm" onClick={() => setTplDialog(true)} className="gap-1.5"><Bookmark className="w-4 h-4" /> Modelli</Button>}
           <Button variant="outline" size="sm" onClick={() => setImportDialog(true)} className="gap-1.5"><Upload className="w-4 h-4" /> Importa da PDF</Button>
-          <Button size="sm" onClick={() => navigate("/preventivi/nuovo")} className="gap-1.5 bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4" /> Nuovo preventivo</Button>
+          <Button size="sm" onClick={() => navigate("/preventivi/nuovo")} className="gap-1.5 bg-brand-600 hover:bg-brand-700"><Plus className="w-4 h-4" /> Nuovo preventivo</Button>
         </div>
       </div>
 
       <div className="flex gap-1 mb-4 border-b border-slate-200">
         {[["emessi", "Emessi", FileText], ["ricevuti", "Ricevuti dai fornitori", Inbox]].map(([k, l, Icon]) => (
           <button key={k} onClick={() => setParams(k === "emessi" ? {} : { tab: k })}
-            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>
             <Icon className="w-4 h-4" /> {l}
           </button>
         ))}
@@ -206,12 +206,12 @@ export default function Quotes() {
         <>
           {/* Indicatori */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-            <button onClick={() => setFilterState("aperti")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+            <button onClick={() => setFilterState("aperti")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
               <p className="text-xs text-slate-500">In attesa di risposta</p>
               <p className="text-lg font-bold text-slate-900 tabular-nums">{fmtEur(kpi.open.v)}</p>
               <p className="text-xs text-slate-500">{kpi.open.n} preventivi</p>
             </button>
-            <button onClick={() => setFilterState("approvato")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+            <button onClick={() => setFilterState("approvato")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
               <p className="text-xs text-slate-500">Accettati</p>
               <p className="text-lg font-bold text-emerald-700 tabular-nums">{fmtEur(kpi.won.v)}</p>
               <p className="text-xs text-slate-500">{kpi.won.n} preventivi</p>
@@ -221,7 +221,7 @@ export default function Quotes() {
               <p className="text-lg font-bold text-slate-900">{kpi.rate === null ? "—" : `${kpi.rate}%`}</p>
               <p className="text-xs text-slate-500">su accettati e rifiutati</p>
             </div>
-            <button onClick={() => { setFilterState("aperti"); setSort("scadenza"); }} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+            <button onClick={() => { setFilterState("aperti"); setSort("scadenza"); }} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
               <p className="text-xs text-slate-500">In scadenza entro 7 giorni</p>
               <p className={`text-lg font-bold ${kpi.soon ? "text-amber-700" : "text-slate-900"}`}>{kpi.soon}</p>
               <p className="text-xs text-slate-500">da sollecitare</p>
@@ -262,15 +262,15 @@ export default function Quotes() {
           </div>
           <div className="flex flex-wrap items-center gap-2 mb-3 text-sm">
             <span className="text-slate-600">{filtered.length} preventivi · <strong className="tabular-nums">{fmtEur(filtered.reduce((s, q) => s + (Number(q.totale) || 0), 0))}</strong></span>
-            {activeFilters > 0 && <button onClick={resetFilters} className="flex items-center gap-1 text-xs text-blue-700 hover:underline"><X className="w-3.5 h-3.5" /> Azzera filtri</button>}
+            {activeFilters > 0 && <button onClick={resetFilters} className="flex items-center gap-1 text-xs text-brand-700 hover:underline"><X className="w-3.5 h-3.5" /> Azzera filtri</button>}
             <div className="flex-1" />
             <Button variant="ghost" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
             <Button variant={selectMode ? "default" : "ghost"} size="sm" className="gap-1.5" onClick={() => (selectMode ? exitSelect() : setSelectMode(true))}><CheckSquare className="w-4 h-4" /> {selectMode ? "Fine" : "Seleziona"}</Button>
           </div>
 
           {selectMode && (
-            <div className="flex items-center justify-between gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 mb-3">
-              <span className="text-sm font-medium text-blue-800">{selectedIds.size} selezionati</span>
+            <div className="flex items-center justify-between gap-2 bg-brand-50 border border-brand-200 rounded-lg px-4 py-2 mb-3">
+              <span className="text-sm font-medium text-brand-800">{selectedIds.size} selezionati</span>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => setSelectedIds(selectedIds.size === filtered.length ? new Set() : new Set(filtered.map((q) => q.id)))}>
                   {selectedIds.size === filtered.length ? "Nessuno" : "Tutti"}
@@ -304,7 +304,7 @@ export default function Quotes() {
                       const e = expiryDate(q);
                       const days = e ? Math.ceil((e - new Date(new Date().toDateString())) / 86_400_000) : null;
                       return (
-                        <tr key={q.id} className={`cursor-pointer ${selectedIds.has(q.id) ? "bg-blue-50" : "hover:bg-slate-50"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))}>
+                        <tr key={q.id} className={`cursor-pointer ${selectedIds.has(q.id) ? "bg-brand-50" : "hover:bg-slate-50"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))}>
                           {selectMode && <td className="px-3 py-3"><input type="checkbox" checked={selectedIds.has(q.id)} onChange={() => toggleSelect(q.id)} onClick={(ev) => ev.stopPropagation()} className="w-4 h-4" aria-label={`Seleziona ${q.numero}`} /></td>}
                           <td className="px-4 py-3">
                             <p className="text-sm font-semibold text-slate-900">{q.numero || "—"}{q.revisione ? <span className="text-xs text-slate-500 font-normal"> · Rev.{q.revisione}</span> : null}</p>
@@ -331,7 +331,7 @@ export default function Quotes() {
 
               <div className="md:hidden space-y-2">
                 {filtered.map((q) => (
-                  <div key={q.id} className={`bg-white rounded-xl border p-3.5 ${selectedIds.has(q.id) ? "border-blue-400 bg-blue-50" : "border-slate-200"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))}>
+                  <div key={q.id} className={`bg-white rounded-xl border p-3.5 ${selectedIds.has(q.id) ? "border-brand-400 bg-brand-50" : "border-slate-200"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))}>
                     <div className="flex items-start gap-2">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-slate-900 truncate">{q.cliente_nome || "—"}</p>

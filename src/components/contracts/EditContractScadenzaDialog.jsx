@@ -76,7 +76,7 @@ export default function EditContractScadenzaDialog({ open, onOpenChange, contrac
       <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CalendarClock className="w-5 h-5 text-blue-600" />
+            <CalendarClock className="w-5 h-5 text-brand-600" />
             Scadenza Contratto
           </DialogTitle>
         </DialogHeader>
@@ -97,7 +97,7 @@ export default function EditContractScadenzaDialog({ open, onOpenChange, contrac
               <button
                 type="button"
                 onClick={() => setForm(prev => ({ ...prev, scadenza_mode: "manuale" }))}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "manuale" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "manuale" ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
               >Imposta scadenza</button>
               <button
                 type="button"
@@ -128,7 +128,7 @@ export default function EditContractScadenzaDialog({ open, onOpenChange, contrac
           {hasScadenza && (
             <div className="border-t border-slate-100 pt-3 space-y-2">
               <div className="flex items-center gap-2">
-                <Bell className="w-3.5 h-3.5 text-blue-600" />
+                <Bell className="w-3.5 h-3.5 text-brand-600" />
                 <span className="text-xs font-medium text-slate-600">Avvisa con anticipo</span>
               </div>
               <Select value={form.anticipo} onValueChange={v => setForm({ ...form, anticipo: v })}>
@@ -167,14 +167,14 @@ export default function EditContractScadenzaDialog({ open, onOpenChange, contrac
               <Button
                 onClick={() => handleSave(false)}
                 variant="outline"
-                className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                className="border-brand-200 text-brand-700 hover:bg-brand-50"
                 disabled={saving}
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Salva"}
               </Button>
               <Button
                 onClick={() => handleSave(true)}
-                className="bg-blue-600 hover:bg-blue-700 gap-1.5"
+                className="bg-brand-600 hover:bg-brand-700 gap-1.5"
                 disabled={saving}
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
@@ -184,7 +184,7 @@ export default function EditContractScadenzaDialog({ open, onOpenChange, contrac
           ) : (
             <Button
               onClick={() => handleSave(false)}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-brand-600 hover:bg-brand-700"
               disabled={saving}
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Salva"}

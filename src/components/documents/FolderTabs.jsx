@@ -37,14 +37,14 @@ export default function FolderTabs({
         onClick={() => onSelectFolder(null)}
         className={`${baseBtn} ${
           !selectedFolderId
-            ? "bg-blue-600 text-white"
+            ? "bg-brand-600 text-white"
             : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
         }`}
       >
         <Folder className="w-3.5 h-3.5" />
         Tutti
         {docCounts.all > 0 && (
-          <span className={`text-xs ${!selectedFolderId ? "text-blue-100" : "text-slate-400"}`}>
+          <span className={`text-xs ${!selectedFolderId ? "text-brand-100" : "text-slate-400"}`}>
             {docCounts.all}
           </span>
         )}
@@ -67,7 +67,7 @@ export default function FolderTabs({
                 if (e.key === "Enter") handleRenameConfirm(f.id);
                 if (e.key === "Escape") setEditingId(null);
               }}
-              className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm border border-blue-300 outline-none w-36"
+              className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm border border-brand-300 outline-none w-36"
             />
           );
         }
@@ -82,7 +82,7 @@ export default function FolderTabs({
               }}
               className={`${baseBtn} ${
                 isSelected
-                  ? "bg-blue-600 text-white"
+                  ? "bg-brand-600 text-white"
                   : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
               }`}
               title="Doppio click per rinominare"
@@ -90,7 +90,7 @@ export default function FolderTabs({
               <Folder className="w-3.5 h-3.5" />
               {f.nome}
               {count > 0 && (
-                <span className={`text-xs ${isSelected ? "text-blue-100" : "text-slate-400"}`}>
+                <span className={`text-xs ${isSelected ? "text-brand-100" : "text-slate-400"}`}>
                   {count}
                 </span>
               )}
@@ -106,7 +106,7 @@ export default function FolderTabs({
               }}
               className={`p-1 rounded transition-opacity ${
                 isSelected
-                  ? "text-blue-100 hover:text-white opacity-100"
+                  ? "text-brand-100 hover:text-white opacity-100"
                   : "text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100"
               }`}
               title="Elimina cartella"
@@ -131,7 +131,7 @@ export default function FolderTabs({
               setAddingFolder(false);
             }
           }}
-          className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm border border-blue-300 outline-none w-36"
+          className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm border border-brand-300 outline-none w-36"
         />
       ) : (
         <button

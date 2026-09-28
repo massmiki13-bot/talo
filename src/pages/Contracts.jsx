@@ -138,7 +138,7 @@ export default function Contracts() {
         <Kpi icon={PenLine} label="Da firmare" value={kpi.daFirmare} tone="text-amber-600" onClick={() => setStatoFilter("inviato")} />
         <Kpi icon={CheckCircle2} label="Firmati in corso" value={kpi.firmati} tone="text-emerald-600" onClick={() => setStatoFilter("firmato")} />
         <Kpi icon={Clock} label="In scadenza (60 gg)" value={kpi.inScadenza} tone={kpi.inScadenza ? "text-red-600" : "text-slate-400"} onClick={() => setStatoFilter("scadenza")} />
-        <Kpi icon={Euro} label={`Appalti firmati ${new Date().getFullYear()}`} value={formatEuro(kpi.valore)} tone="text-blue-600" />
+        <Kpi icon={Euro} label={`Appalti firmati ${new Date().getFullYear()}`} value={formatEuro(kpi.valore)} tone="text-brand-600" />
       </div>
 
       <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-3">
@@ -168,7 +168,7 @@ export default function Contracts() {
           <FileSignature className="w-10 h-10 text-slate-300 mx-auto" />
           <p className="mt-3 font-semibold text-slate-900">{contracts.length ? "Nessun contratto con questi filtri" : "Nessun contratto ancora"}</p>
           <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">Scegli un modello, collega il dipendente o il cliente e descrivi l'accordo: l'IA compila i campi e prepara il documento con la tua intestazione.</p>
-          {!contracts.length && <Button onClick={() => setWizard({ initial: null })} className="mt-4 bg-blue-600 hover:bg-blue-700 gap-2"><Plus className="w-4 h-4" /> Nuovo contratto</Button>}
+          {!contracts.length && <Button onClick={() => setWizard({ initial: null })} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2"><Plus className="w-4 h-4" /> Nuovo contratto</Button>}
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">

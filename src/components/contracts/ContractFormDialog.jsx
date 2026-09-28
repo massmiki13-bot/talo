@@ -134,7 +134,7 @@ export default function ContractFormDialog({
                     onClick={() => setVariant(v.value)}
                     className={`flex flex-col items-center gap-0.5 p-2.5 rounded-lg border text-center transition-colors ${
                       variant === v.value
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                        ? "border-brand-500 bg-brand-50 text-brand-700"
                         : "border-slate-200 hover:bg-slate-50 text-slate-600"
                     }`}
                   >
@@ -150,7 +150,7 @@ export default function ContractFormDialog({
           {!isCustom && required.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
                 <span className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Informazioni Principali</span>
               </div>
               {required.map(f => renderField(f))}
@@ -182,7 +182,7 @@ export default function ContractFormDialog({
           {isCustom && customFields.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
                 <span className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Campi da Compilare</span>
               </div>
               {customFields.map(fieldKey => renderField({
@@ -213,11 +213,11 @@ export default function ContractFormDialog({
         <DialogFooter className="mt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
           {onPreview && (
-            <Button variant="outline" onClick={handlePreview} className="border-blue-300 text-blue-600 hover:bg-blue-50">
+            <Button variant="outline" onClick={handlePreview} className="border-brand-300 text-brand-600 hover:bg-brand-50">
               <Eye className="w-4 h-4" /> Anteprima
             </Button>
           )}
-          <Button onClick={handleGenerate} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={handleGenerate} className="bg-brand-600 hover:bg-brand-700">
             Genera Contratto
           </Button>
         </DialogFooter>

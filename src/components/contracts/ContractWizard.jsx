@@ -146,10 +146,10 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
               const I = CAT_ICON[cat.key];
               return (
                 <section key={cat.key}>
-                  <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2"><I className="w-4 h-4 text-blue-600" />{cat.label}<span className="font-normal text-slate-500">· {cat.desc}</span></h3>
+                  <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2"><I className="w-4 h-4 text-brand-600" />{cat.label}<span className="font-normal text-slate-500">· {cat.desc}</span></h3>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
                     {cat.types.filter((t) => contractSchemas[t]).map((t) => (
-                      <button key={t} onClick={() => pick(t)} className="text-left rounded-lg border border-slate-200 p-3 hover:border-blue-500 hover:bg-blue-50/40 transition-colors">
+                      <button key={t} onClick={() => pick(t)} className="text-left rounded-lg border border-slate-200 p-3 hover:border-brand-500 hover:bg-brand-50/40 transition-colors">
                         <p className="text-sm font-medium text-slate-900">{contractSchemas[t].title}</p>
                         <p className="text-xs text-slate-500 mt-0.5">{contractSchemas[t].required.length} dati principali</p>
                       </button>
@@ -160,10 +160,10 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
             })}
             {customTemplates.length > 0 && (
               <section>
-                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2"><Bookmark className="w-4 h-4 text-blue-600" />I tuoi modelli</h3>
+                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2"><Bookmark className="w-4 h-4 text-brand-600" />I tuoi modelli</h3>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
                   {customTemplates.map((t) => (
-                    <button key={t.id} onClick={() => pick(`custom_${t.id}`)} className="text-left rounded-lg border border-slate-200 p-3 hover:border-blue-500 hover:bg-blue-50/40">
+                    <button key={t.id} onClick={() => pick(`custom_${t.id}`)} className="text-left rounded-lg border border-slate-200 p-3 hover:border-brand-500 hover:bg-brand-50/40">
                       <p className="text-sm font-medium text-slate-900">{t.nome}</p>
                       <p className="text-xs text-slate-500 mt-0.5">Modello personalizzato</p>
                     </button>
@@ -220,7 +220,7 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
                     <Label className="text-xs text-slate-600">La mia impresa è</Label>
                     <div className="grid sm:grid-cols-2 gap-2 mt-1">
                       {[["appaltatore", "Appaltatore", "Esegue i lavori per il cliente"], ["committente", "Committente", "Affida i lavori a un'altra impresa"]].map(([v, l, d]) => (
-                        <button key={v} type="button" onClick={() => setFields((x) => ({ ...x, RUOLO_DITTA: v }))} className={`rounded-lg border p-2 text-left ${(fields.RUOLO_DITTA || "appaltatore") === v ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-slate-200 hover:border-slate-300"}`}>
+                        <button key={v} type="button" onClick={() => setFields((x) => ({ ...x, RUOLO_DITTA: v }))} className={`rounded-lg border p-2 text-left ${(fields.RUOLO_DITTA || "appaltatore") === v ? "border-brand-600 bg-brand-50 ring-1 ring-brand-600" : "border-slate-200 hover:border-slate-300"}`}>
                           <span className="block text-sm font-medium text-slate-900">{l}</span><span className="block text-xs text-slate-500">{d}</span>
                         </button>
                       ))}
@@ -229,10 +229,10 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
                 )}
 
                 {/* IA */}
-                <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-3 space-y-2">
-                  <Label htmlFor="ai-desc" className="text-sm font-medium text-slate-900 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-blue-600" /> Descrivi l'accordo, l'IA compila i campi</Label>
+                <div className="rounded-lg border border-brand-100 bg-brand-50/50 p-3 space-y-2">
+                  <Label htmlFor="ai-desc" className="text-sm font-medium text-slate-900 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-brand-600" /> Descrivi l'accordo, l'IA compila i campi</Label>
                   <Textarea id="ai-desc" rows={2} value={aiText} onChange={(e) => setAiText(e.target.value)} className="bg-white" placeholder={partyKind(tipo) === "dipendente" ? "es. muratore 3° livello, 40 ore, dal 1 ottobre per 6 mesi, 1.800 € lordi, prova 30 giorni, cantieri in provincia di Bolzano" : "es. rifacimento tetto condominio via Roma 12, 48.000 € + IVA, inizio 15/10 fine 20/12, SAL al 30%, penale 100 € al giorno"} />
-                  <Button size="sm" onClick={runAi} disabled={!aiText.trim() || aiBusy} className="bg-blue-600 hover:bg-blue-700 gap-1.5">{aiBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Compila con IA</Button>
+                  <Button size="sm" onClick={runAi} disabled={!aiText.trim() || aiBusy} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{aiBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Compila con IA</Button>
                 </div>
 
                 {!isCustom && (
@@ -240,7 +240,7 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
                     <Label className="text-xs text-slate-600">Livello di dettaglio</Label>
                     <div className="grid grid-cols-3 gap-2 mt-1">
                       {contractVariants.map((v) => (
-                        <button key={v.value} type="button" onClick={() => setVariant(v.value)} className={`rounded-lg border p-2 text-center ${variant === v.value ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-slate-200 hover:border-slate-300"}`}>
+                        <button key={v.value} type="button" onClick={() => setVariant(v.value)} className={`rounded-lg border p-2 text-center ${variant === v.value ? "border-brand-600 bg-brand-50 ring-1 ring-brand-600" : "border-slate-200 hover:border-slate-300"}`}>
                           <span className="block text-sm font-medium text-slate-900">{v.label}</span>
                           <span className="block text-xs text-slate-500">{v.description}</span>
                         </button>
@@ -282,7 +282,7 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
 
             <div className="px-5 py-3 border-t border-slate-100 flex flex-wrap items-center justify-end gap-2">
               <Button variant="outline" onClick={() => onPreviewPdf({ tipo, content, fields })} className="gap-1.5"><Eye className="w-4 h-4" /> Anteprima PDF</Button>
-              <Button onClick={submit} disabled={saving} className="bg-blue-600 hover:bg-blue-700 gap-1.5">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva contratto</Button>
+              <Button onClick={submit} disabled={saving} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva contratto</Button>
             </div>
           </>
         )}

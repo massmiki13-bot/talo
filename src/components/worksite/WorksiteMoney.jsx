@@ -82,7 +82,7 @@ export default function WorksiteMoney({ worksite, contractAmount, onSaved, onPay
           <ul className="divide-y divide-slate-100 mt-3">
             {payments.map((p) => (
               <li key={p.id} className="py-2 flex items-center gap-3">
-                <span className={`w-2 h-2 rounded-full ${p.tipo === "saldo" ? "bg-emerald-500" : "bg-blue-500"}`} />
+                <span className={`w-2 h-2 rounded-full ${p.tipo === "saldo" ? "bg-emerald-500" : "bg-brand-500"}`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-slate-900">{fmtEur(p.importo)} · {p.tipo === "saldo" ? "Saldo" : p.tipo === "sal" ? "SAL" : "Acconto"}</p>
                   <p className="text-xs text-slate-500 truncate">{fmtDate(p.data)}{p.metodo ? ` · ${p.metodo}` : ""}{p.note ? ` · ${p.note}` : ""}</p>
@@ -96,7 +96,7 @@ export default function WorksiteMoney({ worksite, contractAmount, onSaved, onPay
 
       <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
         <div className="flex items-center gap-2 mb-3">
-          <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><CalendarClock className="w-4 h-4 text-blue-600" /> Piano pagamenti</h3>
+          <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><CalendarClock className="w-4 h-4 text-brand-600" /> Piano pagamenti</h3>
           {!readOnly && <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setPlanOpen(true)}>{rate.length ? "Modifica" : <><Plus className="w-4 h-4" /> Imposta rate</>}</Button>}
         </div>
         {rate.length ? (
@@ -227,7 +227,7 @@ function PlanDialog({ open, onOpenChange, worksite, contractAmount, onSaved }) {
           <span>Totale rate: <strong className="tabular-nums">{fmtEur(tot)}</strong></span>
           {contractAmount > 0 && Math.abs(tot - contractAmount) > 1 && <span className="text-amber-800">differenza {fmtEur(contractAmount - tot)}</span>}
         </div>
-        <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" className="w-4 h-4" checked={remind} onChange={(e) => setRemind(e.target.checked)} /> <Bell className="w-4 h-4 text-blue-600" /> Crea un promemoria per ogni scadenza</label>
+        <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" className="w-4 h-4" checked={remind} onChange={(e) => setRemind(e.target.checked)} /> <Bell className="w-4 h-4 text-brand-600" /> Crea un promemoria per ogni scadenza</label>
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
           <Button onClick={save} disabled={saving}>{saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva piano</Button>

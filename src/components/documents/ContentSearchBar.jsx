@@ -67,7 +67,7 @@ export default function ContentSearchBar({ documents, folders, onResultClick, on
   const matchBadge = (type) => {
     const map = {
       contenuto: { label: "Nel contenuto", className: "bg-purple-100 text-purple-700" },
-      descrizione: { label: "In descrizione", className: "bg-blue-100 text-blue-700" },
+      descrizione: { label: "In descrizione", className: "bg-zinc-200 text-zinc-800" },
       titolo: { label: "Nel titolo", className: "bg-emerald-100 text-emerald-700" },
     };
     const config = map[type] || map.titolo;
@@ -105,7 +105,7 @@ export default function ContentSearchBar({ documents, folders, onResultClick, on
       </div>
 
       {extracting && (
-        <div className="mt-2 text-xs text-blue-600 flex items-center gap-2">
+        <div className="mt-2 text-xs text-brand-600 flex items-center gap-2">
           <Loader2 className="w-3 h-3 animate-spin" />
           Estrazione testo dai documenti… ({extractProgress.current}/{extractProgress.total})
           <span className="text-slate-400">— la prima ricerca può richiedere qualche minuto</span>

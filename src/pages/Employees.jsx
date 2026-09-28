@@ -87,12 +87,12 @@ export default function Employees() {
     <div>
       <div className="mb-4 sm:mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Dipendenti</h1>
+          <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Dipendenti</h1>
           <p className="text-slate-500 mt-1 text-sm">Anagrafiche, contratti, formazione, visite mediche e DPI</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
-          <Button size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => setFormOpen(true)}><Plus className="w-4 h-4" /> Nuovo dipendente</Button>
+          <Button size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700" onClick={() => setFormOpen(true)}><Plus className="w-4 h-4" /> Nuovo dipendente</Button>
         </div>
       </div>
 
@@ -100,7 +100,7 @@ export default function Employees() {
         <div className="grid grid-cols-3 gap-3 mb-4">
           {["ok", "attenzione", "critico"].map((k) => (
             <button key={k} onClick={() => setStatus(status === k ? "tutti" : k)}
-              className={`text-left bg-white rounded-xl border p-3.5 transition-colors ${status === k ? "border-blue-500 ring-1 ring-blue-500" : "border-slate-200 hover:border-slate-300"}`}>
+              className={`text-left bg-white rounded-xl border p-3.5 transition-colors ${status === k ? "border-brand-500 ring-1 ring-brand-500" : "border-slate-200 hover:border-slate-300"}`}>
               <p className="text-xs text-slate-500 flex items-center gap-1.5"><span className={`w-2 h-2 rounded-full ${COMPLIANCE_STYLE[k].dot}`} /> {COMPLIANCE_STYLE[k].label}</p>
               <p className="text-2xl font-bold text-slate-900">{counts[k]}</p>
             </button>
@@ -124,7 +124,7 @@ export default function Employees() {
           <Button variant={showCessati ? "default" : "outline"} className="h-10 gap-1.5" onClick={() => setShowCessati(!showCessati)}><Archive className="w-4 h-4" /> {showCessati ? "Cessati" : "Cessati"}</Button>
         )}
       </div>
-      {filtersOn && <button onClick={() => { setSearch(""); setRole("tutte"); setStatus("tutti"); }} className="flex items-center gap-1 text-xs text-blue-700 hover:underline mb-3"><X className="w-3.5 h-3.5" /> Azzera filtri</button>}
+      {filtersOn && <button onClick={() => { setSearch(""); setRole("tutte"); setStatus("tutti"); }} className="flex items-center gap-1 text-xs text-brand-700 hover:underline mb-3"><X className="w-3.5 h-3.5" /> Azzera filtri</button>}
 
       {filtered.length === 0 ? (
         filtersOn || showCessati

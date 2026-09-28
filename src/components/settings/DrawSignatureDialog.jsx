@@ -39,7 +39,7 @@ export default function DrawSignatureDialog({ open, onOpenChange, currentSignatu
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <PenLine className="w-5 h-5 text-blue-600" />
+            <PenLine className="w-5 h-5 text-brand-600" />
             Disegna firma a mano libera
           </DialogTitle>
         </DialogHeader>

@@ -365,7 +365,7 @@ export default function CompanyDocuments() {
       <ul className="space-y-0.5">
         {VIEWS.map((v) => (
           <li key={v.key}>
-            <button onClick={() => openView(v.key)} className={`w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-sm ${view.type === "view" && view.key === v.key ? "bg-blue-50 text-blue-800 font-medium" : "text-slate-700 hover:bg-slate-100"}`}>
+            <button onClick={() => openView(v.key)} className={`w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-sm ${view.type === "view" && view.key === v.key ? "bg-brand-50 text-brand-800 font-medium" : "text-slate-700 hover:bg-slate-100"}`}>
               <v.icon className={`w-4 h-4 ${v.key === "expired" && viewCounts.expired ? "text-red-600" : v.key === "expiring" && viewCounts.expiring ? "text-amber-600" : ""}`} />
               <span className="flex-1 text-left">{v.label}</span>
               {viewCounts[v.key] > 0 && <span className={`text-xs tabular-nums ${v.key === "expired" ? "text-red-600 font-semibold" : "text-slate-500"}`}>{viewCounts[v.key]}</span>}
@@ -469,7 +469,7 @@ export default function CompanyDocuments() {
               <ul className="space-y-1.5 max-h-48 overflow-y-auto">
                 {queue.map((x) => (
                   <li key={x.id} className="flex items-center gap-2 text-sm">
-                    {x.status === "done" ? <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> : x.status === "error" ? <XCircle className="w-4 h-4 text-red-600 shrink-0" /> : x.status === "partial" ? <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" /> : <Loader2 className="w-4 h-4 animate-spin text-blue-600 shrink-0" />}
+                    {x.status === "done" ? <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> : x.status === "error" ? <XCircle className="w-4 h-4 text-red-600 shrink-0" /> : x.status === "partial" ? <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" /> : <Loader2 className="w-4 h-4 animate-spin text-brand-600 shrink-0" />}
                     <button disabled={!x.docId} onClick={() => x.docId && setDetailId(x.docId)} className="truncate text-left text-slate-800 enabled:hover:underline">{x.title || x.name}</button>
                     <span className="ml-auto text-xs text-slate-500 shrink-0 truncate max-w-[45%]">
                       {x.status === "wait" ? "In attesa" : x.status === "upload" ? "Carico…" : x.status === "ai" ? "L'IA sta leggendo…" : x.info}
@@ -528,9 +528,9 @@ export default function CompanyDocuments() {
       </div>
 
       {dragging && (
-        <div className="fixed inset-0 z-40 bg-blue-600/10 backdrop-blur-[1px] border-4 border-dashed border-blue-500 grid place-items-center pointer-events-none">
+        <div className="fixed inset-0 z-40 bg-brand-600/10 backdrop-blur-[1px] border-4 border-dashed border-brand-500 grid place-items-center pointer-events-none">
           <div className="bg-white rounded-xl shadow-lg px-6 py-4 text-center">
-            <Upload className="w-8 h-8 text-blue-600 mx-auto" />
+            <Upload className="w-8 h-8 text-brand-600 mx-auto" />
             <p className="mt-2 font-semibold text-slate-900">Rilascia per caricare</p>
             <p className="text-sm text-slate-600">{currentFolderId ? `In "${crumbs.at(-1)?.nome}"` : aiAuto ? "L'IA sceglierà la cartella giusta" : "Andranno in Da archiviare"}</p>
           </div>
@@ -593,7 +593,7 @@ function DocRow({ d, folders, showFolder, selected, onSelect, onOpen, onDragStar
   const snip = snippet(d, query);
   const linked = d.worksite_nome || d.contatto_nome || d.dipendente_nome;
   return (
-    <div draggable onDragStart={onDragStart} onClick={onOpen} className={`grid grid-cols-[28px_1fr] md:grid-cols-[28px_1fr_150px_170px_130px] gap-x-3 gap-y-1 px-3 py-2.5 items-center cursor-pointer ${selected ? "bg-blue-50" : "hover:bg-slate-50"}`}>
+    <div draggable onDragStart={onDragStart} onClick={onOpen} className={`grid grid-cols-[28px_1fr] md:grid-cols-[28px_1fr_150px_170px_130px] gap-x-3 gap-y-1 px-3 py-2.5 items-center cursor-pointer ${selected ? "bg-brand-50" : "hover:bg-slate-50"}`}>
       <input type="checkbox" checked={selected} onClick={(e) => e.stopPropagation()} onChange={onSelect} aria-label={`Seleziona ${d.titolo}`} />
       <div className="min-w-0 flex items-center gap-2.5">
         <Icon className="w-5 h-5 text-slate-400 shrink-0" />
@@ -627,7 +627,7 @@ function DocCard({ d, selected, onSelect, onOpen, onDragStart }) {
   const Icon = KIND_ICON[kind];
   const exp = expiryState(d.data_scadenza);
   return (
-    <div draggable onDragStart={onDragStart} onClick={onOpen} className={`relative bg-white rounded-xl border overflow-hidden cursor-pointer transition-shadow hover:shadow-md ${selected ? "border-blue-600 ring-1 ring-blue-600" : "border-slate-200"}`}>
+    <div draggable onDragStart={onDragStart} onClick={onOpen} className={`relative bg-white rounded-xl border overflow-hidden cursor-pointer transition-shadow hover:shadow-md ${selected ? "border-brand-600 ring-1 ring-brand-600" : "border-slate-200"}`}>
       <input type="checkbox" checked={selected} onClick={(e) => e.stopPropagation()} onChange={onSelect} className="absolute top-2 left-2 z-10" aria-label={`Seleziona ${d.titolo}`} />
       <div className="h-28 bg-slate-50 grid place-items-center border-b border-slate-100 overflow-hidden">
         {kind === "image" ? <img src={d.file_url} alt="" loading="lazy" className="w-full h-full object-cover" /> : <Icon className="w-10 h-10 text-slate-300" />}
@@ -649,7 +649,7 @@ function FolderCard({ f, count, subs, onOpen, onDropDocs }) {
       onDragOver={(e) => { if (e.dataTransfer.types.includes("application/x-talo-docs")) { e.preventDefault(); setOver(true); } }}
       onDragLeave={() => setOver(false)}
       onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setOver(false); const ids = JSON.parse(e.dataTransfer.getData("application/x-talo-docs") || "[]"); if (ids.length) onDropDocs(ids, f.id); }}
-      className={`flex items-center gap-3 bg-white rounded-xl border p-3 text-left hover:border-slate-300 hover:shadow-sm transition ${over ? "border-blue-500 ring-2 ring-blue-500" : "border-slate-200"}`}
+      className={`flex items-center gap-3 bg-white rounded-xl border p-3 text-left hover:border-slate-300 hover:shadow-sm transition ${over ? "border-brand-500 ring-2 ring-brand-500" : "border-slate-200"}`}
     >
       <div className="w-10 h-10 rounded-lg grid place-items-center shrink-0" style={{ background: `${f.colore || "#2563eb"}14` }}>
         <Folder className="w-5 h-5" style={{ color: f.colore || "#2563eb" }} />
@@ -672,7 +672,7 @@ function Empty({ searching, folder, noDocs, noFolders, onUpload, onStandard }) {
       </p>
       {!searching && (
         <div className="mt-4 flex flex-wrap justify-center gap-2">
-          <Button onClick={onUpload} className="bg-blue-600 hover:bg-blue-700 gap-2"><Upload className="w-4 h-4" /> Carica file</Button>
+          <Button onClick={onUpload} className="bg-brand-600 hover:bg-brand-700 gap-2"><Upload className="w-4 h-4" /> Carica file</Button>
           {noFolders && <Button variant="outline" onClick={onStandard} className="gap-2"><Wand2 className="w-4 h-4" /> Crea struttura consigliata</Button>}
         </div>
       )}
@@ -705,7 +705,7 @@ function FolderDialog({ dlg, folders, onClose, onSave }) {
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onClose}>Annulla</Button>
-            <Button type="submit" disabled={!cleanFolderName(nome) || busy} className="bg-blue-600 hover:bg-blue-700">{busy && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva</Button>
+            <Button type="submit" disabled={!cleanFolderName(nome) || busy} className="bg-brand-600 hover:bg-brand-700">{busy && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva</Button>
           </div>
         </form>
       </DialogContent>

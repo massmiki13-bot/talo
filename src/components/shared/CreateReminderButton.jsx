@@ -54,7 +54,7 @@ export default function CreateReminderButton({ docTitle, scadenzaDate, docId, do
       variant="outline"
       onClick={handleClick}
       disabled={creating}
-      className="gap-1.5 text-blue-600 border-blue-200 hover:bg-blue-50"
+      className="gap-1.5 text-brand-600 border-brand-200 hover:bg-brand-50"
     >
       {creating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bell className="w-3.5 h-3.5" />}
       Crea promemoria

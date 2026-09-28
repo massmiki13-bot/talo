@@ -147,7 +147,7 @@ export default function RecipientInput({ label, value = [], onChange, placeholde
                 aria-selected={i === active}
                 onMouseDown={(e) => { e.preventDefault(); pick(s); }}
                 onMouseEnter={() => setActive(i)}
-                className={`flex items-center gap-2.5 px-3 py-2 cursor-pointer ${i === active ? "bg-blue-50" : ""}`}
+                className={`flex items-center gap-2.5 px-3 py-2 cursor-pointer ${i === active ? "bg-brand-50" : ""}`}
               >
                 <K.icon className="w-4 h-4 text-slate-400 shrink-0" />
                 <div className="min-w-0 flex-1">

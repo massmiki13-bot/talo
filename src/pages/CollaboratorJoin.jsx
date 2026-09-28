@@ -66,7 +66,7 @@ export default function CollaboratorJoin() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
       </div>
     );
   }
@@ -118,8 +118,8 @@ export default function CollaboratorJoin() {
       <Card className="max-w-md w-full">
         <CardContent className="p-6 sm:p-8">
           <div className="text-center mb-6">
-            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
-              <ShieldCheck className="w-7 h-7 text-blue-600" />
+            <div className="w-14 h-14 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-3">
+              <ShieldCheck className="w-7 h-7 text-brand-600" />
             </div>
             <h1 className="text-xl font-bold text-slate-900">Conferma Invito</h1>
             <p className="text-sm text-slate-500 mt-1">

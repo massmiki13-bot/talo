@@ -33,7 +33,7 @@ function Node({ f, byParent, counts, currentId, onOpen, onDropDocs, onAction, de
         onDragOver={(e) => { if (e.dataTransfer.types.includes("application/x-talo-docs")) { e.preventDefault(); setOver(true); } }}
         onDragLeave={() => setOver(false)}
         onDrop={(e) => { e.preventDefault(); setOver(false); const ids = JSON.parse(e.dataTransfer.getData("application/x-talo-docs") || "[]"); if (ids.length) onDropDocs(ids, f.id); }}
-        className={`group flex items-center gap-1 rounded-md pr-1 py-1 text-sm cursor-pointer select-none ${active ? "bg-blue-50 text-blue-800 font-medium" : "text-slate-700 hover:bg-slate-100"} ${over ? "ring-2 ring-blue-500 bg-blue-50" : ""}`}
+        className={`group flex items-center gap-1 rounded-md pr-1 py-1 text-sm cursor-pointer select-none ${active ? "bg-brand-50 text-brand-800 font-medium" : "text-slate-700 hover:bg-slate-100"} ${over ? "ring-2 ring-brand-500 bg-brand-50" : ""}`}
         style={{ paddingLeft: 4 + depth * 14 }}
       >
         <button type="button" onClick={toggle} className={`p-0.5 rounded hover:bg-slate-200 ${kids.length ? "" : "invisible"}`} aria-label={open ? "Chiudi" : "Apri"}>

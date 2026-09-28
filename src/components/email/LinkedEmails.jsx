@@ -36,7 +36,7 @@ export default function LinkedEmails({ field, id, composeDefaults = {}, title = 
   return (
     <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3 mb-3">
-        <h3 className="font-semibold text-slate-900 flex items-center gap-2"><Mail className="w-4 h-4 text-blue-600" /> {title}</h3>
+        <h3 className="font-semibold text-slate-900 flex items-center gap-2"><Mail className="w-4 h-4 text-brand-600" /> {title}</h3>
         <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setCompose({ ...composeDefaults, links })}>
           <PenSquare className="w-4 h-4" /> Scrivi
         </Button>
@@ -52,7 +52,7 @@ export default function LinkedEmails({ field, id, composeDefaults = {}, title = 
               <button onClick={() => setReading(m)} className="w-full text-left flex items-center gap-3 px-1 py-2.5 rounded hover:bg-slate-50">
                 {m.direzione === "in"
                   ? <ArrowDownLeft className="w-4 h-4 text-emerald-600 shrink-0" aria-label="Ricevuta" />
-                  : <ArrowUpRight className="w-4 h-4 text-blue-600 shrink-0" aria-label="Inviata" />}
+                  : <ArrowUpRight className="w-4 h-4 text-brand-600 shrink-0" aria-label="Inviata" />}
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-slate-800 truncate">
                     {m.is_pec && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded px-1 mr-1.5">PEC</span>}

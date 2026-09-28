@@ -54,7 +54,7 @@ export default function WorksiteLog({ worksite, attendance, employees, readOnly 
   return (
     <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
       <div className="flex items-center gap-2 mb-3">
-        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><BookOpen className="w-4 h-4 text-blue-600" /> Giornale dei lavori</h3>
+        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><BookOpen className="w-4 h-4 text-brand-600" /> Giornale dei lavori</h3>
         {!readOnly && <Button size="sm" className="gap-1.5" onClick={openNew}><Plus className="w-4 h-4" /> Oggi</Button>}
       </div>
       {loading ? <div className="py-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div>
@@ -63,7 +63,7 @@ export default function WorksiteLog({ worksite, attendance, employees, readOnly 
           <ol className="relative border-l border-slate-200 ml-2 space-y-4">
             {entries.map((e) => (
               <li key={e.id} className="ml-4">
-                <span className="absolute -left-[5px] mt-1.5 w-2.5 h-2.5 rounded-full bg-blue-600" />
+                <span className="absolute -left-[5px] mt-1.5 w-2.5 h-2.5 rounded-full bg-brand-600" />
                 <div className="flex items-start gap-2">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-slate-900">{new Date(e.data).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</p>

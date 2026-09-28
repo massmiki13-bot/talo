@@ -202,16 +202,16 @@ export default function Reminders() {
       {/* Riepilogo */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <Stat icon={AlertTriangle} label="In ritardo" value={stats.overdue} tone={stats.overdue ? "text-red-600" : "text-slate-400"} />
-        <Stat icon={Bell} label="Oggi" value={stats.today} tone="text-blue-600" />
+        <Stat icon={Bell} label="Oggi" value={stats.today} tone="text-brand-600" />
         <Stat icon={CalendarIcon} label="Prossimi 7 giorni" value={stats.week} tone="text-slate-700" />
         <Stat icon={CheckCircle2} label="Completati (30 gg)" value={stats.done30} tone="text-emerald-600" />
       </div>
 
       {/* Inserimento rapido */}
       <form onSubmit={quickAdd} className="bg-white rounded-xl border border-slate-200 p-2 flex items-center gap-2 mb-4">
-        <Sparkles className="w-4 h-4 text-blue-600 ml-2 shrink-0" />
+        <Sparkles className="w-4 h-4 text-brand-600 ml-2 shrink-0" />
         <Input value={quick} onChange={(e) => setQuick(e.target.value)} placeholder='Scrivi come parli: "chiamare Bianchi venerdì alle 10", "pagare F24 il 16 ogni mese"…' className="border-0 shadow-none focus-visible:ring-0 h-9" />
-        <Button type="submit" disabled={!quick.trim() || quickBusy} className="bg-blue-600 hover:bg-blue-700 shrink-0 gap-1.5">
+        <Button type="submit" disabled={!quick.trim() || quickBusy} className="bg-brand-600 hover:bg-brand-700 shrink-0 gap-1.5">
           {quickBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}<span className="hidden sm:inline">Aggiungi</span>
         </Button>
       </form>
@@ -294,7 +294,7 @@ export default function Reminders() {
               {main.filter((r) => r.data === dayOpen && matches(r)).sort(byWhen).map((r) => <ReminderRow key={r.id} r={r} {...rowProps} />)}
               {!main.some((r) => r.data === dayOpen && matches(r)) && <p className="p-4 text-sm text-slate-500">Niente in programma.</p>}
             </div>
-            <Button onClick={() => { setEditing({ ...empty(), data: dayOpen }); setDayOpen(null); }} className="bg-blue-600 hover:bg-blue-700 gap-1.5 w-fit"><Plus className="w-4 h-4" /> Aggiungi in questo giorno</Button>
+            <Button onClick={() => { setEditing({ ...empty(), data: dayOpen }); setDayOpen(null); }} className="bg-brand-600 hover:bg-brand-700 gap-1.5 w-fit"><Plus className="w-4 h-4" /> Aggiungi in questo giorno</Button>
           </DialogContent>
         </Dialog>
       )}
@@ -340,7 +340,7 @@ function ReminderRow({ r, today, showDate, onComplete, onSnooze, onEdit, onDelet
           {r.ricorrenza && r.ricorrenza !== "nessuna" && <span className="flex items-center gap-1"><Repeat className="w-3 h-3" />{RECURRENCES.find((x) => x.value === r.ricorrenza)?.label}</span>}
           {r.luogo && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{r.luogo}</span>}
           {r.posticipato > 0 && <span>posticipato {r.posticipato}×</span>}
-          {hasLink && <button onClick={() => onLink(r)} className="flex items-center gap-1 text-blue-700 hover:underline"><ExternalLink className="w-3 h-3" />{LINK_LABEL[r.riferimento_tipo] || "Apri"}</button>}
+          {hasLink && <button onClick={() => onLink(r)} className="flex items-center gap-1 text-brand-700 hover:underline"><ExternalLink className="w-3 h-3" />{LINK_LABEL[r.riferimento_tipo] || "Apri"}</button>}
         </div>
         {r.descrizione && !r.completato && <p className="text-xs text-slate-500 mt-1 line-clamp-2 whitespace-pre-line">{r.descrizione}</p>}
       </div>
@@ -391,7 +391,7 @@ function MonthCalendar({ month, setMonth, reminders, today, onDay, onNew }) {
         <button onClick={() => setMonth(new Date(y, m - 1, 1))} className="p-1.5 rounded-md hover:bg-slate-100" aria-label="Mese precedente"><ChevronLeft className="w-5 h-5" /></button>
         <div className="flex items-center gap-2">
           <p className="font-semibold text-slate-900 capitalize">{month.toLocaleDateString("it-IT", { month: "long", year: "numeric" })}</p>
-          <button onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); }} className="text-xs text-blue-700 hover:underline">Oggi</button>
+          <button onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); }} className="text-xs text-brand-700 hover:underline">Oggi</button>
         </div>
         <button onClick={() => setMonth(new Date(y, m + 1, 1))} className="p-1.5 rounded-md hover:bg-slate-100" aria-label="Mese successivo"><ChevronRight className="w-5 h-5" /></button>
       </div>
@@ -410,14 +410,14 @@ function MonthCalendar({ month, setMonth, reminders, today, onDay, onNew }) {
             >
               {d && (
                 <>
-                  <span className={`inline-grid place-items-center w-6 h-6 text-xs rounded-full ${d === today ? "bg-blue-600 text-white font-semibold" : "text-slate-700"}`}>{Number(d.slice(8))}</span>
+                  <span className={`inline-grid place-items-center w-6 h-6 text-xs rounded-full ${d === today ? "bg-brand-600 text-white font-semibold" : "text-slate-700"}`}>{Number(d.slice(8))}</span>
                   <div className="hidden sm:block space-y-0.5 mt-0.5">
                     {list.slice(0, 3).map((r) => (
                       <p key={r.id} className={`text-[11px] leading-tight truncate px-1 py-0.5 rounded ${r.completato ? "line-through text-slate-400" : r.data < today ? "bg-red-50 text-red-700" : reminderType(r.tipo).color}`}>{r.ora ? `${r.ora} ` : ""}{r.titolo}</p>
                     ))}
                     {list.length > 3 && <p className="text-[11px] text-slate-500 px-1">+{list.length - 3} altri</p>}
                   </div>
-                  {open.length > 0 && <div className="sm:hidden flex justify-center mt-1"><span className={`w-1.5 h-1.5 rounded-full ${d < today ? "bg-red-500" : "bg-blue-500"}`} /></div>}
+                  {open.length > 0 && <div className="sm:hidden flex justify-center mt-1"><span className={`w-1.5 h-1.5 rounded-full ${d < today ? "bg-red-500" : "bg-brand-500"}`} /></div>}
                 </>
               )}
             </div>
@@ -476,7 +476,7 @@ function ReminderDialog({ initial, onClose, onSave }) {
           <p className="text-xs text-slate-500">Il giorno stabilito ricevi un'email di riepilogo al mattino e, con l'app aperta, una notifica (all'ora indicata, se c'è).</p>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onClose}>Annulla</Button>
-            <Button type="submit" disabled={!f.titolo.trim() || !f.data || busy} className="bg-blue-600 hover:bg-blue-700">{busy && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva</Button>
+            <Button type="submit" disabled={!f.titolo.trim() || !f.data || busy} className="bg-brand-600 hover:bg-brand-700">{busy && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva</Button>
           </div>
         </form>
       </DialogContent>

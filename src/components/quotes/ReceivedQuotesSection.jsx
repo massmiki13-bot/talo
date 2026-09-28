@@ -220,12 +220,12 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
       </div>
 
       {selectMode && (
-        <div className="flex items-center justify-between gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 mb-4">
+        <div className="flex items-center justify-between gap-2 bg-brand-50 border border-brand-200 rounded-lg px-4 py-2 mb-4">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-blue-700">
+            <span className="text-sm font-medium text-brand-700">
               {selectedIds.size} selezionat{selectedIds.size === 1 ? "o" : "i"}
             </span>
-            <button onClick={toggleSelectAll} className="text-xs text-blue-600 hover:text-blue-800 underline">
+            <button onClick={toggleSelectAll} className="text-xs text-brand-600 hover:text-brand-800 underline">
               {selectedIds.size === filtered.length ? "Deseleziona tutti" : "Seleziona tutti"}
             </button>
           </div>
@@ -246,7 +246,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
             const Icon = fileTypeIcon(rq.file_tipo);
             const isSelected = selectedIds.has(rq.id);
             return (
-              <div key={rq.id} className={`bg-white rounded-xl border p-4 ${isSelected ? "border-blue-400 bg-blue-50" : "border-slate-200"}`}>
+              <div key={rq.id} className={`bg-white rounded-xl border p-4 ${isSelected ? "border-brand-400 bg-brand-50" : "border-slate-200"}`}>
                 <div className="flex items-start gap-3">
                   {selectMode && (
                     <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(rq.id)} className="w-4 h-4 mt-3 cursor-pointer flex-shrink-0" />
@@ -276,7 +276,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
                         </span>
                       )}
                       {rq.file_firmato_url && (
-                        <span className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full">
                           <FileCheck className="w-3 h-3" /> Firmato
                         </span>
                       )}
@@ -290,12 +290,12 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
                     </a>
                   )}
                   {rq.file_firmato_url && (
-                    <a href={rq.file_firmato_url} target="_blank" rel="noreferrer" className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200" title="Vedi firmato">
+                    <a href={rq.file_firmato_url} target="_blank" rel="noreferrer" className="p-2 rounded-lg bg-brand-100 text-brand-600 hover:bg-brand-200" title="Vedi firmato">
                       <FileCheck className="w-4 h-4" />
                     </a>
                   )}
                   {(rq.file_tipo === "image" || rq.file_tipo === "pdf") && profile && profile.firma_url && (
-                    <Button size="sm" variant="outline" onClick={() => setSignTarget({ ...rq, _mode: "firma" })} className="gap-1 h-8 text-xs border-blue-300 text-blue-700 hover:bg-blue-50">
+                    <Button size="sm" variant="outline" onClick={() => setSignTarget({ ...rq, _mode: "firma" })} className="gap-1 h-8 text-xs border-brand-300 text-brand-700 hover:bg-brand-50">
                       <FileCheck className="w-3 h-3" /> Firma
                     </Button>
                   )}
@@ -335,9 +335,9 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
             </div>
 
             {aiExtracting && (
-              <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-                <div className="w-4 h-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
-                <p className="text-xs text-blue-700">Lettura documento in corso... estrazione automatica del totale</p>
+              <div className="flex items-center gap-2 bg-brand-50 border border-brand-200 rounded-lg px-3 py-2">
+                <div className="w-4 h-4 border-2 border-brand-300 border-t-brand-600 rounded-full animate-spin"></div>
+                <p className="text-xs text-brand-700">Lettura documento in corso... estrazione automatica del totale</p>
               </div>
             )}
 
@@ -380,7 +380,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
               <Label>File del preventivo *</Label>
               <div className="mt-1">
                 <label className="cursor-pointer">
-                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors min-h-[56px] flex items-center justify-center">
+                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:border-brand-400 transition-colors min-h-[56px] flex items-center justify-center">
                     {uploading ? <p className="text-xs text-slate-500">Caricamento...</p> : fileUrl ? <p className="text-xs text-emerald-600">✓ File caricato — tocca per cambiare</p> : <><Upload className="w-6 h-6 text-slate-400 mx-auto mb-1" /><p className="text-xs text-slate-500">Carica PDF, immagine o documento</p></>}
                   </div>
                   <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx" className="hidden" onChange={handleFileUpload} />
@@ -390,7 +390,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
           </div>
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Annulla</Button>
-            <Button onClick={handleSave} disabled={saving || !fileUrl} className="bg-blue-600 hover:bg-blue-700">{saving ? "..." : "Salva"}</Button>
+            <Button onClick={handleSave} disabled={saving || !fileUrl} className="bg-brand-600 hover:bg-brand-700">{saving ? "..." : "Salva"}</Button>
           </div>
         </DialogContent>
       </Dialog>

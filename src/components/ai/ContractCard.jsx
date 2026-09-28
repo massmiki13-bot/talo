@@ -81,7 +81,7 @@ export default function ContractCard({ contract }) {
         </div>
 
         {hasMore && (
-          <button onClick={() => setExpanded(!expanded)} className="text-xs text-blue-600 hover:underline mt-1 flex items-center gap-1">
+          <button onClick={() => setExpanded(!expanded)} className="text-xs text-brand-600 hover:underline mt-1 flex items-center gap-1">
             {expanded ? <><ChevronUp className="w-3 h-3" /> Mostra meno</> : <><ChevronDown className="w-3 h-3" /> Mostra tutto</>}
           </button>
         )}

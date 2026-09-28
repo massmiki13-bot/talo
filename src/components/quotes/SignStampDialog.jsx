@@ -303,7 +303,7 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
                     <div
                       onMouseDown={(e) => handlePointerDown(e, "firma", "resize")}
                       onTouchStart={(e) => handlePointerDown(e, "firma", "resize")}
-                      className="absolute -bottom-1.5 -right-1.5 w-5 h-5 bg-blue-600 rounded-full cursor-se-resize border-2 border-white shadow flex items-center justify-center touch-none z-20"
+                      className="absolute -bottom-1.5 -right-1.5 w-5 h-5 bg-brand-600 rounded-full cursor-se-resize border-2 border-white shadow flex items-center justify-center touch-none z-20"
                     >
                       <svg width="8" height="8" viewBox="0 0 8 8" className="text-white"><path d="M2 6L6 2M4 6L6 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
                     </div>
@@ -322,7 +322,7 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
                     <div
                       onMouseDown={(e) => handlePointerDown(e, "timbro", "resize")}
                       onTouchStart={(e) => handlePointerDown(e, "timbro", "resize")}
-                      className="absolute -bottom-1.5 -right-1.5 w-5 h-5 bg-blue-600 rounded-full cursor-se-resize border-2 border-white shadow flex items-center justify-center touch-none z-20"
+                      className="absolute -bottom-1.5 -right-1.5 w-5 h-5 bg-brand-600 rounded-full cursor-se-resize border-2 border-white shadow flex items-center justify-center touch-none z-20"
                     >
                       <svg width="8" height="8" viewBox="0 0 8 8" className="text-white"><path d="M2 6L6 2M4 6L6 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
                     </div>
@@ -341,7 +341,7 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
               {signedUrl && (
                 <div className="border-t border-slate-100 pt-4">
                   <p className="text-sm font-medium text-slate-700 mb-2 flex items-center gap-1">
-                    <FileCheck className="w-4 h-4 text-blue-600" /> Anteprima firmata
+                    <FileCheck className="w-4 h-4 text-brand-600" /> Anteprima firmata
                   </p>
                   {signedUrl.match(/\.(pdf)$/i) || signedBlob?.type === "application/pdf" ? (
                     <iframe src={signedUrl} className="w-full h-[300px] border border-slate-200 rounded-lg" title="firmato" />
@@ -353,7 +353,7 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                <Button onClick={handleGenerate} disabled={generating} className="bg-blue-600 hover:bg-blue-700 gap-2 flex-1">
+                <Button onClick={handleGenerate} disabled={generating} className="bg-brand-600 hover:bg-brand-700 gap-2 flex-1">
                   {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileCheck className="w-4 h-4" />}
                   {signedUrl ? "Rigenera" : "Genera anteprima"}
                 </Button>

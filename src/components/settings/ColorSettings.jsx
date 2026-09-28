@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { getContrastColor } from "@/hooks/useThemeColors";
 
 const COLOR_FIELDS = [
-  { key: "colore_principale", label: "Colore Primario", required: true, desc: "Menu, pulsanti, intestazioni" },
-  { key: "colore_secondario", label: "Colore Secondario", required: true, desc: "Evidenziazioni, dettagli" },
+  { key: "colore_principale", label: "Colore Primario", required: true, desc: "Intestazioni e titoli di PDF e documenti" },
+  { key: "colore_secondario", label: "Colore Secondario", required: true, desc: "Dettagli dei documenti" },
   { key: "colore_terziario", label: "Colore Terziario", required: false, desc: "Accenti aggiuntivi (facoltativo)" },
   { key: "colore_quaternario", label: "Colore Quaternario", required: false, desc: "Ulteriori accenti (facoltativo)" },
 ];

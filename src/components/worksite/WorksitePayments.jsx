@@ -112,7 +112,7 @@ export default function WorksitePayments({ worksite, quote }) {
       ) : (
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-4">
           <p className="text-xs text-slate-500">Imposta l'importo totale del lavoro per tracciare i pagamenti.
-            {quote?.totale && <button onClick={() => db.Worksite.update(worksite.id, { importo_totale: quote.totale }).then(() => window.location.reload())} className="text-blue-600 font-medium ml-1">Usa totale preventivo ({formatEuro(quote.totale)})</button>}
+            {quote?.totale && <button onClick={() => db.Worksite.update(worksite.id, { importo_totale: quote.totale }).then(() => window.location.reload())} className="text-brand-600 font-medium ml-1">Usa totale preventivo ({formatEuro(quote.totale)})</button>}
           </p>
         </div>
       )}
@@ -123,7 +123,7 @@ export default function WorksitePayments({ worksite, quote }) {
           {payments.map(p => (
             <div key={p.id} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-100 hover:bg-slate-50">
               <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${p.tipo === "acconto" ? "bg-blue-400" : "bg-emerald-400"}`} />
+                <span className={`w-2 h-2 rounded-full ${p.tipo === "acconto" ? "bg-brand-400" : "bg-emerald-400"}`} />
                 <div>
                   <p className="text-sm font-medium text-slate-900">
                     {p.tipo === "acconto" ? "Acconto" : "Saldo"} · {formatEuro(p.importo)}

@@ -99,14 +99,14 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
                 return (
                   <button key={v.key} disabled={loading}
                     onClick={() => handleSelect(v.key)}
-                    className="text-left p-4 rounded-xl border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait flex flex-col gap-2">
-                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-blue-600" />
+                    className="text-left p-4 rounded-xl border-2 border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait flex flex-col gap-2">
+                    <div className="w-10 h-10 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-brand-600" />
                     </div>
                     <h3 className="font-semibold text-slate-900 text-sm">{v.label}</h3>
                     <p className="text-xs text-slate-500 leading-snug">{v.description}</p>
                     <ul className="text-[11px] text-slate-400 space-y-0.5 mt-1">
-                      {filteredIncludes.map((inc, i) => <li key={i} className="flex items-center gap-1"><span className="text-blue-400">•</span>{inc}</li>)}
+                      {filteredIncludes.map((inc, i) => <li key={i} className="flex items-center gap-1"><span className="text-brand-400">•</span>{inc}</li>)}
                     </ul>
                   </button>
                 );

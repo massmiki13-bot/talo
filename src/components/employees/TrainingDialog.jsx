@@ -84,7 +84,7 @@ export default function TrainingDialog({ open, onOpenChange, employee, kind = "c
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {isVisit ? <Stethoscope className="w-5 h-5 text-blue-600" /> : <GraduationCap className="w-5 h-5 text-blue-600" />}
+            {isVisit ? <Stethoscope className="w-5 h-5 text-brand-600" /> : <GraduationCap className="w-5 h-5 text-brand-600" />}
             {isVisit ? "Registra visita medica" : "Registra corso di formazione"}
           </DialogTitle>
           <DialogDescription>{employee && fullName(employee)} · la scadenza si calcola in automatico, puoi correggerla.</DialogDescription>

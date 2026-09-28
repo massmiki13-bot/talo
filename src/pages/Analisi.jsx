@@ -17,8 +17,8 @@ import { computeAnalytics, periodOf, eur, pct } from "@/lib/analytics";
 import { QUOTE_STATES } from "@/lib/quotes";
 import { fmtH } from "@/lib/attendance";
 
-const C = { incassi: "#2563eb", costi: "#f97316", margine: "#059669", neutro: "#94a3b8" };
-const CAT_COLORS = { Materiali: "#2563eb", Manodopera: "#7c3aed", Noleggi: "#0891b2", Subappalti: "#f97316", Altro: "#94a3b8" };
+const C = { incassi: "#c3122a", costi: "#71717a", margine: "#059669", neutro: "#a1a1aa" };
+const CAT_COLORS = { Materiali: "#c3122a", Manodopera: "#18181b", Noleggi: "#71717a", Subappalti: "#f59e0b", Altro: "#d4d4d8" };
 const TABS = [
   { key: "panoramica", label: "Panoramica", icon: LayoutDashboard },
   { key: "lavori", label: "Lavori", icon: HardHat },
@@ -114,7 +114,7 @@ DATI: ${JSON.stringify(facts)}`,
         {tab !== "report" && (
           <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit md:ml-auto">
             {[{ k: "12m", l: "12 mesi" }, ...years.map((y) => ({ k: String(y), l: String(y) }))].map(({ k, l }) => (
-              <button key={k} onClick={() => setPeriodKey(k)} className={`px-3 h-8 rounded-md text-sm tabular-nums ${periodKey === k ? "bg-blue-600 text-white" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>
+              <button key={k} onClick={() => setPeriodKey(k)} className={`px-3 h-8 rounded-md text-sm tabular-nums ${periodKey === k ? "bg-brand-600 text-white" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>
             ))}
           </div>
         )}
@@ -273,7 +273,7 @@ function Overview({ a, ai, aiBusy, onAi }) {
 
       <div className="grid xl:grid-cols-3 gap-4">
         <Card className="xl:col-span-2" title="Sintesi del controller" subtitle="L'IA legge i numeri e ti dice cosa va bene, cosa preoccupa e cosa fare"
-          action={<Button size="sm" onClick={onAi} disabled={aiBusy} className="bg-blue-600 hover:bg-blue-700 gap-1.5">{aiBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{ai ? "Aggiorna" : "Genera sintesi"}</Button>}>
+          action={<Button size="sm" onClick={onAi} disabled={aiBusy} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{aiBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{ai ? "Aggiorna" : "Genera sintesi"}</Button>}>
           {!ai ? (
             <p className="text-sm text-slate-500">Premi "Genera sintesi" per un commento sui numeri di questo periodo.</p>
           ) : ai.errore ? (
@@ -284,7 +284,7 @@ function Overview({ a, ai, aiBusy, onAi }) {
               <div className="grid md:grid-cols-3 gap-4">
                 <AiList title="Va bene" items={ai.positivi} dot="bg-emerald-500" />
                 <AiList title="Attenzione" items={ai.attenzione} dot="bg-amber-500" />
-                <AiList title="Cosa fare" items={ai.azioni} dot="bg-blue-600" numbered />
+                <AiList title="Cosa fare" items={ai.azioni} dot="bg-brand-600" numbered />
               </div>
               <p className="text-xs text-slate-500">Sintesi automatica su {ai.periodo}: controlla sempre i dati di dettaglio.</p>
             </div>
@@ -298,7 +298,7 @@ function Overview({ a, ai, aiBusy, onAi }) {
                 <li key={i} className="py-2.5">
                   <Link to={`/lavori/${o.lavoroId}`} className="flex items-center gap-3 group">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 truncate group-hover:text-blue-700">{o.cliente || o.lavoro}</p>
+                      <p className="text-sm font-medium text-slate-900 truncate group-hover:text-brand-700">{o.cliente || o.lavoro}</p>
                       <p className="text-xs text-slate-500 truncate">{o.descrizione} · {o.lavoro} · scaduta il {new Date(o.scadenza).toLocaleDateString("it-IT")}</p>
                     </div>
                     <span className="text-sm font-semibold tabular-nums text-red-600">{eur(o.residuo)}</span>
@@ -324,7 +324,7 @@ function AiList({ title, items = [], dot, numbered }) {
       <ul className="space-y-2">
         {items.map((t, i) => (
           <li key={i} className="flex gap-2 text-sm text-slate-700 leading-snug">
-            {numbered ? <span className="shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] font-semibold grid place-items-center">{i + 1}</span> : <span className={`shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full ${dot}`} />}
+            {numbered ? <span className="shrink-0 w-5 h-5 rounded-full bg-brand-600 text-white text-[11px] font-semibold grid place-items-center">{i + 1}</span> : <span className={`shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full ${dot}`} />}
             <span>{t}</span>
           </li>
         ))}
@@ -388,7 +388,7 @@ function Jobs({ a }) {
                 {list.map((j) => (
                   <tr key={j.id} className="hover:bg-slate-50">
                     <td className="px-4 sm:px-5 py-2.5">
-                      <Link to={`/lavori/${j.id}`} className="font-medium text-slate-900 hover:text-blue-700">{j.nome}</Link>
+                      <Link to={`/lavori/${j.id}`} className="font-medium text-slate-900 hover:text-brand-700">{j.nome}</Link>
                       <p className="text-xs text-slate-500">{j.cliente || "—"}{j.sforamenti.length ? <span className="text-amber-700"> · sforato: {j.sforamenti.join(", ")}</span> : null}</p>
                     </td>
                     <td className="px-3 py-2.5 text-right tabular-nums">{eur(j.ricavo)}</td>
@@ -399,7 +399,7 @@ function Jobs({ a }) {
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-blue-600" style={{ width: `${Math.min(100, j.avanzamento)}%` }} /></div>
+                        <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600" style={{ width: `${Math.min(100, j.avanzamento)}%` }} /></div>
                         <span className="text-xs tabular-nums text-slate-600 w-9 text-right">{Math.round(j.avanzamento)}%</span>
                       </div>
                     </td>
@@ -437,7 +437,7 @@ function Commercial({ a }) {
         <Kpi icon={FileText} label="Preventivi emessi" value={c.emessi} accent={C.incassi} sub={<span className="text-xs text-slate-500">{eur(c.valoreEmesso)} di imponibile</span>} />
         <Kpi icon={Target} label="Tasso di accettazione" value={pct(c.conversione)} accent={C.margine} sub={<span className="text-xs text-slate-500">{c.accettati} accettati · {eur(c.valoreAccettato)}</span>} />
         <Kpi icon={Timer} label="Tempo di risposta" value={c.tempoRisposta != null ? `${Math.round(c.tempoRisposta)} gg` : "—"} accent="#7c3aed" sub={<span className="text-xs text-slate-500">dall'invio all'accettazione</span>} />
-        <Kpi icon={Briefcase} label="In attesa di risposta" value={eur(c.pipeline)} accent="#d97706" sub={<Link to="/preventivi" className="text-xs text-blue-700 hover:underline inline-flex items-center gap-1">{c.pipelineCount} preventivi aperti <ArrowRight className="w-3 h-3" /></Link>} />
+        <Kpi icon={Briefcase} label="In attesa di risposta" value={eur(c.pipeline)} accent="#d97706" sub={<Link to="/preventivi" className="text-xs text-brand-700 hover:underline inline-flex items-center gap-1">{c.pipelineCount} preventivi aperti <ArrowRight className="w-3 h-3" /></Link>} />
       </div>
 
       <div className="grid xl:grid-cols-3 gap-4">
@@ -479,7 +479,7 @@ function Commercial({ a }) {
               <li key={t.nome} className="flex items-center gap-3 text-sm">
                 <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold grid place-items-center shrink-0">{i + 1}</span>
                 <span className="w-40 sm:w-56 truncate text-slate-800">{t.nome}</span>
-                <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-blue-600" style={{ width: `${(t.value / maxC) * 100}%` }} /></div>
+                <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600" style={{ width: `${(t.value / maxC) * 100}%` }} /></div>
                 <span className="w-24 text-right tabular-nums font-medium">{eur(t.value)}</span>
               </li>
             ))}
@@ -523,8 +523,8 @@ function Staff({ a }) {
                       <p>Costo: <b className="tabular-nums">{eur(payload[0]?.payload.manodopera || 0)}</b></p>
                     </div>
                   ) : null)} cursor={{ fill: "#f1f5f9" }} />
-                  <Bar yAxisId="h" dataKey="ore" name="Ore" fill="#93c5fd" radius={[5, 5, 0, 0]} maxBarSize={26} />
-                  <Line yAxisId="e" dataKey="manodopera" name="Costo" stroke="#7c3aed" strokeWidth={2.5} dot={false} type="monotone" />
+                  <Bar yAxisId="h" dataKey="ore" name="Ore" fill="#d4d4d8" radius={[5, 5, 0, 0]} maxBarSize={26} />
+                  <Line yAxisId="e" dataKey="manodopera" name="Costo" stroke="#c3122a" strokeWidth={2.5} dot={false} type="monotone" />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -555,8 +555,8 @@ function Staff({ a }) {
           <ul className="space-y-3">
             {s.people.map((p) => (
               <li key={p.id} className="grid grid-cols-[1fr_auto] sm:grid-cols-[180px_1fr_auto] items-center gap-x-3 gap-y-1 text-sm">
-                <Link to={`/dipendenti/${p.id}`} className="font-medium text-slate-900 hover:text-blue-700 truncate">{p.nome}</Link>
-                <div className="order-3 sm:order-none col-span-2 sm:col-span-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-blue-600" style={{ width: `${(p.ore / maxO) * 100}%` }} /></div>
+                <Link to={`/dipendenti/${p.id}`} className="font-medium text-slate-900 hover:text-brand-700 truncate">{p.nome}</Link>
+                <div className="order-3 sm:order-none col-span-2 sm:col-span-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600" style={{ width: `${(p.ore / maxO) * 100}%` }} /></div>
                 <span className="text-right tabular-nums text-slate-700 whitespace-nowrap">
                   <b className="text-slate-900">{fmtH(Math.round(p.ore))} h</b> · {p.giorni} gg{p.straordinari ? <span className="text-amber-700"> · +{fmtH(Math.round(p.straordinari))} str.</span> : null} · {eur(p.costo)}
                 </span>

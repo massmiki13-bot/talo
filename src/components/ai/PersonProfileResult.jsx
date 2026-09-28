@@ -13,7 +13,7 @@ const STATO_LABELS = {
 
 const STATO_COLORS = {
   presente: "bg-green-100 text-green-700",
-  ferie: "bg-blue-100 text-blue-700",
+  ferie: "bg-zinc-200 text-zinc-800",
   permesso: "bg-amber-100 text-amber-700",
   assente: "bg-slate-100 text-slate-600",
   malattia: "bg-red-100 text-red-700",
@@ -34,7 +34,7 @@ function Section({ icon: Icon, title, children, count }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <h3 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
-        <Icon className="w-4 h-4 text-blue-600" />
+        <Icon className="w-4 h-4 text-brand-600" />
         {title}
         {count != null && <span className="text-xs text-slate-400">({count})</span>}
       </h3>
@@ -96,14 +96,14 @@ export default function PersonProfileResult({ employee, documents, attendanceRec
 
   return (
     <div className="space-y-4">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-5 text-white">
+      <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-xl p-5 text-white">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
             <User className="w-6 h-6" />
           </div>
           <div>
             <h2 className="text-lg font-bold">{fullName}</h2>
-            <p className="text-sm text-blue-100">{employee.ruolo || "Dipendente"}</p>
+            <p className="text-sm text-brand-100">{employee.ruolo || "Dipendente"}</p>
           </div>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function PersonProfileResult({ employee, documents, attendanceRec
                         <button
                           onClick={() => handleLink(d)}
                           disabled={linking[d.id]}
-                          className="mt-1 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                          className="mt-1 inline-flex items-center gap-1 text-xs text-brand-600 hover:text-brand-800 font-medium"
                         >
                           {linking[d.id] ? <Loader2 className="w-3 h-3 animate-spin" /> : <Link2 className="w-3 h-3" />}
                           Collega a {fullName}
@@ -201,8 +201,8 @@ export default function PersonProfileResult({ employee, documents, attendanceRec
 
       <Section icon={Clock} title="Presenze e Ore Lavorate">
         <div className="grid grid-cols-3 gap-3 mb-3">
-          <div className="bg-blue-50 rounded-lg p-3 text-center">
-            <p className="text-2xl font-bold text-blue-700">{totalOre.toFixed(1)}</p>
+          <div className="bg-brand-50 rounded-lg p-3 text-center">
+            <p className="text-2xl font-bold text-brand-700">{totalOre.toFixed(1)}</p>
             <p className="text-xs text-slate-500">Ore totali</p>
           </div>
           <div className="bg-green-50 rounded-lg p-3 text-center">

@@ -13,7 +13,7 @@ export default function EmptyState({ icon: Icon, title, description, actionLabel
       <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
       {description && <p className="text-sm text-slate-500 mt-1 max-w-sm">{description}</p>}
       {actionLabel && (
-        <Button onClick={onAction} className="mt-4 bg-blue-600 hover:bg-blue-700 gap-2">
+        <Button onClick={onAction} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2">
           <Plus className="w-4 h-4" />
           {actionLabel}
         </Button>

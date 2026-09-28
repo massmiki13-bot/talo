@@ -66,15 +66,15 @@ export default function Prezzari() {
           <BookOpenCheck className="w-10 h-10 text-slate-300 mx-auto" />
           <p className="mt-3 font-semibold text-slate-900">Nessun prezzario caricato</p>
           <p className="text-sm text-slate-500 mt-1 max-w-lg mx-auto">Scarica il prezzario della tua regione dal sito ufficiale (meglio in Excel, va bene anche il PDF) e caricalo qui. Da quel momento, nei preventivi, l'IA propone il prezzo delle voci citando codice e prezzario.</p>
-          <Button onClick={() => setImportOpen(true)} className="mt-4 bg-blue-600 hover:bg-blue-700 gap-2"><Upload className="w-4 h-4" /> Importa prezzario</Button>
+          <Button onClick={() => setImportOpen(true)} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2"><Upload className="w-4 h-4" /> Importa prezzario</Button>
         </div>
       ) : (
         <>
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
             {list.map((p) => (
-              <div key={p.id} className={`bg-white rounded-2xl border p-4 ${p.predefinito ? "border-blue-300 ring-1 ring-blue-200" : "border-slate-200"}`}>
+              <div key={p.id} className={`bg-white rounded-2xl border p-4 ${p.predefinito ? "border-brand-300 ring-1 ring-brand-200" : "border-slate-200"}`}>
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 grid place-items-center shrink-0"><BookOpenCheck className="w-5 h-5 text-blue-700" /></div>
+                  <div className="w-10 h-10 rounded-xl bg-brand-50 grid place-items-center shrink-0"><BookOpenCheck className="w-5 h-5 text-brand-700" /></div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-slate-900 truncate">{p.nome}</p>
                     <p className="text-xs text-slate-500 truncate">{[p.ente, p.anno].filter(Boolean).join(" · ") || TIPI.find((t) => t.value === p.tipo)?.label}</p>
@@ -109,7 +109,7 @@ export default function Prezzari() {
                 <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="all">Tutti i prezzari</SelectItem>{list.map((p) => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent>
               </Select>
-              <Button type="submit" disabled={searching || !query.trim()} className="bg-blue-600 hover:bg-blue-700 gap-1.5">{searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />} Cerca</Button>
+              <Button type="submit" disabled={searching || !query.trim()} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />} Cerca</Button>
             </form>
             {results && (
               results.length === 0 ? <p className="text-sm text-slate-500 mt-4">Nessuna voce trovata. Prova con parole diverse o più generiche.</p> : (
@@ -123,7 +123,7 @@ export default function Prezzari() {
                       <div className="text-right shrink-0">
                         <p className="text-sm font-semibold tabular-nums text-slate-900">{fmtEur(v.prezzo)}</p>
                         <p className="text-xs text-slate-500">al {v.unita_misura || "—"}</p>
-                        <button onClick={() => toListino(v)} className="text-xs text-blue-700 hover:underline mt-1 inline-flex items-center gap-0.5"><Plus className="w-3 h-3" />listino</button>
+                        <button onClick={() => toListino(v)} className="text-xs text-brand-700 hover:underline mt-1 inline-flex items-center gap-0.5"><Plus className="w-3 h-3" />listino</button>
                       </div>
                     </li>
                   ))}
@@ -237,7 +237,7 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
         </div>
 
         {phase === "pick" && (
-          <button onClick={() => input.current?.click()} className="w-full mt-2 rounded-xl border-2 border-dashed border-slate-300 hover:border-blue-500 hover:bg-blue-50/40 py-10 text-center transition-colors">
+          <button onClick={() => input.current?.click()} className="w-full mt-2 rounded-xl border-2 border-dashed border-slate-300 hover:border-brand-500 hover:bg-brand-50/40 py-10 text-center transition-colors">
             <div className="flex justify-center gap-3 text-slate-400"><FileSpreadsheet className="w-8 h-8" /><FileText className="w-8 h-8" /></div>
             <p className="mt-2 text-sm font-medium text-slate-800">Scegli il file del prezzario</p>
             <p className="text-xs text-slate-500">.xlsx .xls .csv .ods .pdf</p>
@@ -252,7 +252,7 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
             <div className="flex flex-wrap items-end gap-3">
               <div><Label>Dalla pagina</Label><Input type="number" min={1} max={pages.total} value={pages.from} onChange={(e) => setPages({ ...pages, from: Math.max(1, Number(e.target.value) || 1) })} className="mt-1 w-24" /></div>
               <div><Label>Alla pagina</Label><Input type="number" min={1} max={pages.total} value={pages.to} onChange={(e) => setPages({ ...pages, to: Math.min(pages.total, Number(e.target.value) || 1) })} className="mt-1 w-24" /></div>
-              <Button onClick={readPdf} disabled={pages.to < pages.from} className="bg-blue-600 hover:bg-blue-700 gap-1.5"><Sparkles className="w-4 h-4" /> Leggi con l'IA</Button>
+              <Button onClick={readPdf} disabled={pages.to < pages.from} className="bg-brand-600 hover:bg-brand-700 gap-1.5"><Sparkles className="w-4 h-4" /> Leggi con l'IA</Button>
             </div>
             <p className="text-xs text-slate-500">Circa 10 secondi ogni 3 pagine. Per prezzari molto lunghi importa i capitoli che usi davvero, oppure cerca la versione Excel sul sito della regione: è più veloce e precisa.</p>
           </div>
@@ -260,9 +260,9 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
 
         {phase === "analyzing" && (
           <div className="py-8 text-center">
-            <Loader2 className="w-7 h-7 animate-spin text-blue-600 mx-auto" />
+            <Loader2 className="w-7 h-7 animate-spin text-brand-600 mx-auto" />
             <p className="text-sm text-slate-600 mt-2">{progress ? `Pagine lette: gruppo ${progress.done} di ${progress.total} · ${progress.found} voci trovate` : "Sto leggendo il file…"}</p>
-            {progress && <div className="h-1.5 rounded-full bg-slate-100 max-w-sm mx-auto mt-3 overflow-hidden"><div className="h-full bg-blue-600" style={{ width: `${(progress.done / progress.total) * 100}%` }} /></div>}
+            {progress && <div className="h-1.5 rounded-full bg-slate-100 max-w-sm mx-auto mt-3 overflow-hidden"><div className="h-full bg-brand-600" style={{ width: `${(progress.done / progress.total) * 100}%` }} /></div>}
           </div>
         )}
 
@@ -282,7 +282,7 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
             {phase === "saving" && progress && <p className="text-sm text-slate-600">Salvataggio: {progress.done.toLocaleString("it-IT")} / {progress.total.toLocaleString("it-IT")}</p>}
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => { setPhase("pick"); setVoci([]); }} disabled={phase === "saving"}>Cambia file</Button>
-              <Button onClick={save} disabled={phase === "saving" || !meta.nome.trim()} className="bg-blue-600 hover:bg-blue-700 gap-1.5">{phase === "saving" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />} Importa {voci.length.toLocaleString("it-IT")} voci</Button>
+              <Button onClick={save} disabled={phase === "saving" || !meta.nome.trim()} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{phase === "saving" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />} Importa {voci.length.toLocaleString("it-IT")} voci</Button>
             </div>
           </div>
         )}

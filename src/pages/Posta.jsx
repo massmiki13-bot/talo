@@ -203,7 +203,7 @@ export default function Posta() {
       {/* Intestazione */}
       <div className="px-4 sm:px-0 mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Posta</h1>
+          <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Posta</h1>
           <p className="text-sm text-slate-500 mt-0.5">
             Email e PEC della ditta in un unico posto
             {lastSync && <> · aggiornata {formatDate(lastSync)}</>}
@@ -217,7 +217,7 @@ export default function Posta() {
               <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Aggiornamento…" : "Aggiorna"}
             </Button>
           )}
-          <Button size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => setCompose({})}><PenSquare className="w-4 h-4" /> Scrivi</Button>
+          <Button size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700" onClick={() => setCompose({})}><PenSquare className="w-4 h-4" /> Scrivi</Button>
         </div>
       </div>
 
@@ -231,12 +231,12 @@ export default function Posta() {
                 <li key={f.key} className="shrink-0">
                   <button
                     onClick={() => selectFolder(f.key)}
-                    className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${active ? "bg-blue-50 text-blue-800 font-semibold" : "text-slate-600 hover:bg-slate-100"}`}
+                    className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${active ? "bg-brand-50 text-brand-800 font-semibold" : "text-slate-600 hover:bg-slate-100"}`}
                     aria-current={active ? "page" : undefined}
                   >
                     <f.icon className="w-4 h-4" />
                     <span>{f.label}</span>
-                    {f.key === "arrivo" && unread > 0 && <span className="ml-auto text-xs rounded-full bg-blue-600 text-white px-1.5 min-w-5 text-center">{unread}</span>}
+                    {f.key === "arrivo" && unread > 0 && <span className="ml-auto text-xs rounded-full bg-brand-600 text-white px-1.5 min-w-5 text-center">{unread}</span>}
                   </button>
                 </li>
               );
@@ -289,9 +289,9 @@ export default function Posta() {
                 const active = selected?.id === m.id;
                 return (
                   <li key={m.id}>
-                    <button onClick={() => open(m)} className={`w-full text-left px-4 py-3 transition-colors ${active ? "bg-blue-50" : "hover:bg-slate-50"}`}>
+                    <button onClick={() => open(m)} className={`w-full text-left px-4 py-3 transition-colors ${active ? "bg-brand-50" : "hover:bg-slate-50"}`}>
                       <div className="flex items-center gap-2">
-                        {unreadRow && <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" aria-label="Non letto" />}
+                        {unreadRow && <span className="w-2 h-2 rounded-full bg-brand-600 shrink-0" aria-label="Non letto" />}
                         <p className={`text-sm truncate flex-1 ${unreadRow ? "font-bold text-slate-900" : "text-slate-700"}`}>
                           {m.stato === "bozza" ? <span className="text-red-700 font-medium">Bozza · </span> : null}
                           {counterpartOf(m)}

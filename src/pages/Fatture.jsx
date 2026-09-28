@@ -118,7 +118,7 @@ export default function Fatture() {
     <div className="space-y-5">
       <PageHeader title="Fatture" subtitle="Compila la fattura in pochi clic e scarica il file XML ufficiale (FatturaPA) da caricare sul tuo programma di fatturazione o sul portale dell'Agenzia delle Entrate.">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild><Button className="bg-blue-600 hover:bg-blue-700 gap-2"><Plus className="w-4 h-4" /> Nuova fattura <ChevronDown className="w-4 h-4" /></Button></DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild><Button className="bg-brand-600 hover:bg-brand-700 gap-2"><Plus className="w-4 h-4" /> Nuova fattura <ChevronDown className="w-4 h-4" /></Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
             <DropdownMenuItem onClick={() => setFromQuote(true)}><FileText className="w-4 h-4 mr-2" /> Da un preventivo accettato{accepted.length ? ` (${accepted.length})` : ""}</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setFromJob(true)}><HardHat className="w-4 h-4 mr-2" /> Acconto / SAL di un lavoro</DropdownMenuItem>
@@ -128,7 +128,7 @@ export default function Fatture() {
       </PageHeader>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-        <Kpi icon={Euro} label={`Fatturato ${anno} (imponibile)`} value={fmtEur(kpi.fatturato)} tone="text-blue-600" />
+        <Kpi icon={Euro} label={`Fatturato ${anno} (imponibile)`} value={fmtEur(kpi.fatturato)} tone="text-brand-600" />
         <Kpi icon={Clock} label="Da incassare" value={fmtEur(kpi.daIncassare)} tone="text-amber-600" />
         <Kpi icon={AlertTriangle} label="Fatture scadute" value={kpi.scadute} tone={kpi.scadute ? "text-red-600" : "text-slate-400"} onClick={() => setStato("scadute")} />
         <Kpi icon={Landmark} label="IVA a debito nel trimestre" value={fmtEur(kpi.iva)} tone="text-violet-600" />
@@ -213,7 +213,7 @@ export default function Fatture() {
                       </button>
                     );
                   })}
-                  <button onClick={() => createFrom({ worksite: w, rata: { descrizione: "Acconto", importo: 0 } })} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 text-sm text-blue-700">+ Importo libero</button>
+                  <button onClick={() => createFrom({ worksite: w, rata: { descrizione: "Acconto", importo: 0 } })} className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 text-sm text-brand-700">+ Importo libero</button>
                 </div>
               </div>
             ))}
@@ -350,7 +350,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
 
       <div className="grid xl:grid-cols-[minmax(0,1fr)_340px] gap-4 items-start">
         <div className="space-y-4 min-w-0">
-          {locked && <p className="text-sm text-blue-900 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2 flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />Fattura emessa: numero, data e righe sono bloccati. Per correggerla emetti una nota di credito. <button className="ml-auto underline" onClick={() => confirm("Rimettere la fattura in bozza? Fallo solo se non l'hai ancora trasmessa.") && set("stato", "bozza")}>Riporta in bozza</button></p>}
+          {locked && <p className="text-sm text-brand-900 bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />Fattura emessa: numero, data e righe sono bloccati. Per correggerla emetti una nota di credito. <button className="ml-auto underline" onClick={() => confirm("Rimettere la fattura in bozza? Fallo solo se non l'hai ancora trasmessa.") && set("stato", "bozza")}>Riporta in bozza</button></p>}
 
           <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5">
             <div className="grid sm:grid-cols-4 gap-3">
@@ -374,7 +374,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
                 {client && (
                   <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
                     {[client.partita_iva ? `P.IVA ${client.partita_iva}` : client.codice_fiscale ? `C.F. ${client.codice_fiscale}` : null, client.codice_sdi ? `SDI ${client.codice_sdi}` : client.pec ? `PEC ${client.pec}` : null, [client.cap, client.citta].filter(Boolean).join(" ")].filter(Boolean).join(" · ") || "Dati fiscali mancanti"}
-                    {" · "}<Link to={`/contatti/${client.id}`} className="text-blue-700 hover:underline">modifica scheda</Link>
+                    {" · "}<Link to={`/contatti/${client.id}`} className="text-brand-700 hover:underline">modifica scheda</Link>
                   </p>
                 )}
               </div>
@@ -389,8 +389,8 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
             <div className="mt-3"><Label className="text-xs text-slate-600">Oggetto / causale</Label><Input value={f.oggetto || ""} onChange={(e) => set("oggetto", e.target.value)} className="mt-1" placeholder="es. Lavori di rifacimento copertura – SAL n. 1" /></div>
             {(f.preventivo_id || f.worksite_id) && (
               <p className="text-xs text-slate-500 mt-2 flex gap-3">
-                {f.preventivo_id && <Link to={`/preventivi/${f.preventivo_id}`} className="text-blue-700 hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3 h-3" />Preventivo collegato</Link>}
-                {f.worksite_id && <Link to={`/lavori/${f.worksite_id}`} className="text-blue-700 hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3 h-3" />{f.worksite_nome || "Lavoro"}</Link>}
+                {f.preventivo_id && <Link to={`/preventivi/${f.preventivo_id}`} className="text-brand-700 hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3 h-3" />Preventivo collegato</Link>}
+                {f.worksite_id && <Link to={`/lavori/${f.worksite_id}`} className="text-brand-700 hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3 h-3" />{f.worksite_nome || "Lavoro"}</Link>}
               </p>
             )}
           </section>
@@ -427,7 +427,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
                     </div>
                     <div className="text-right col-span-2 sm:col-span-1"><p className="text-[11px] text-slate-500">Importo</p><p className="text-sm font-semibold tabular-nums py-2">{fmtEur(lineTotal(r))}</p></div>
                   </div>
-                  {vatNotes[i] && <p className="text-xs text-blue-800 mt-1.5 flex gap-1"><Sparkles className="w-3.5 h-3.5 shrink-0 mt-px" />{vatNotes[i]}</p>}
+                  {vatNotes[i] && <p className="text-xs text-brand-800 mt-1.5 flex gap-1"><Sparkles className="w-3.5 h-3.5 shrink-0 mt-px" />{vatNotes[i]}</p>}
                 </div>
               ))}
             </div>
@@ -481,7 +481,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
               </div>
             ) : <p className="text-sm text-emerald-800 flex items-center gap-1.5 mb-3"><CheckCircle2 className="w-4 h-4" /> Pronta per la fattura elettronica</p>}
             <div className="grid gap-2">
-              <Button onClick={downloadXml} disabled={!!errors.length} className="bg-blue-600 hover:bg-blue-700 gap-1.5 justify-start"><FileCode2 className="w-4 h-4" /> Scarica XML FatturaPA</Button>
+              <Button onClick={downloadXml} disabled={!!errors.length} className="bg-brand-600 hover:bg-brand-700 gap-1.5 justify-start"><FileCode2 className="w-4 h-4" /> Scarica XML FatturaPA</Button>
               <Button variant="outline" onClick={() => pdf("download")} disabled={busy === "pdf"} className="gap-1.5 justify-start">{busy === "pdf" ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} PDF copia di cortesia</Button>
               <Button variant="outline" onClick={() => setCopyOpen(true)} className="gap-1.5 justify-start"><Copy className="w-4 h-4" /> Copia i dati uno per uno</Button>
               <Button variant="outline" onClick={() => pdf("email")} className="gap-1.5 justify-start"><Mail className="w-4 h-4" /> Invia al cliente</Button>

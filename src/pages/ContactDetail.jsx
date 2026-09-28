@@ -23,7 +23,7 @@ import {
 const QUOTE_STATO = {
   bozza: { label: "Bozza", className: "bg-slate-100 text-slate-700" },
   in_attesa: { label: "In attesa", className: "bg-amber-100 text-amber-800" },
-  inviato: { label: "Inviato", className: "bg-blue-100 text-blue-800" },
+  inviato: { label: "Inviato", className: "bg-zinc-200 text-zinc-800" },
   visto: { label: "Visto", className: "bg-indigo-100 text-indigo-800" },
   approvato: { label: "Accettato", className: "bg-emerald-100 text-emerald-800" },
   rifiutato: { label: "Rifiutato", className: "bg-red-100 text-red-700" },
@@ -31,7 +31,7 @@ const QUOTE_STATO = {
 };
 const WORKSITE_STATO = {
   da_iniziare: { label: "Da iniziare", className: "bg-slate-100 text-slate-700" },
-  in_corso: { label: "In corso", className: "bg-blue-100 text-blue-800" },
+  in_corso: { label: "In corso", className: "bg-zinc-200 text-zinc-800" },
   finito: { label: "Finito", className: "bg-emerald-100 text-emerald-800" },
 };
 const DOC_TYPES = { durc: "DURC", visura: "Visura camerale", certificazione: "Certificazione", assicurazione: "Assicurazione", altro: "Altro" };
@@ -179,8 +179,8 @@ export default function ContactDetail() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Indietro" className="shrink-0 -ml-2"><ArrowLeft className="w-5 h-5" /></Button>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 break-words">{name}</h1>
-            <Badge className={fornitore && !cliente ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"}>{TIPO_LABEL[contact.tipo] || "Cliente"}</Badge>
+            <h1 className="font-display text-2xl sm:text-[30px] leading-tight font-bold text-zinc-950 break-words">{name}</h1>
+            <Badge className={fornitore && !cliente ? "bg-amber-100 text-amber-800" : "bg-zinc-200 text-zinc-800"}>{TIPO_LABEL[contact.tipo] || "Cliente"}</Badge>
             {contact.archiviato && <Badge className="bg-slate-200 text-slate-700">Archiviato</Badge>}
           </div>
           <div className="flex flex-wrap gap-1 mt-1.5">
@@ -198,7 +198,7 @@ export default function ContactDetail() {
         {contact.cellulare && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={whatsappHref(contact.cellulare)} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" /> WhatsApp</a></Button>}
         <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setCompose({ defaultTo: emailTo, templateVars: { cliente: name }, links: { contact_id: id } })}><Mail className="w-4 h-4" /> Scrivi email</Button>
         {hasAddress && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={mapsUrl(contact)} target="_blank" rel="noopener noreferrer"><Navigation className="w-4 h-4" /> Indicazioni</a></Button>}
-        {cliente && <Button size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => navigate(`/preventivi/nuovo?cliente=${id}`)}><Plus className="w-4 h-4" /> Nuovo preventivo</Button>}
+        {cliente && <Button size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700" onClick={() => navigate(`/preventivi/nuovo?cliente=${id}`)}><Plus className="w-4 h-4" /> Nuovo preventivo</Button>}
       </div>
 
       {fornitore && expiringDocs.length > 0 && (
@@ -229,7 +229,7 @@ export default function ContactDetail() {
       {/* Schede */}
       <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-slate-200">
         {TABS.map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
+          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
         ))}
       </div>
 
@@ -243,12 +243,12 @@ export default function ContactDetail() {
                     <r.icon className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
                     <div className="min-w-0">
                       <dt className="text-xs text-slate-500">{r.label}</dt>
-                      <dd className="text-sm text-slate-800 break-words">{r.href ? <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="text-blue-700 hover:underline">{r.value}</a> : r.value}</dd>
+                      <dd className="text-sm text-slate-800 break-words">{r.href ? <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="text-brand-700 hover:underline">{r.value}</a> : r.value}</dd>
                     </div>
                   </div>
                 ))}
               </dl>
-            ) : <Empty>Nessun dato anagrafico. <button className="text-blue-700 underline" onClick={() => setEditOpen(true)}>Completa la scheda</button></Empty>}
+            ) : <Empty>Nessun dato anagrafico. <button className="text-brand-700 underline" onClick={() => setEditOpen(true)}>Completa la scheda</button></Empty>}
           </Card>
 
           <div className="space-y-4">

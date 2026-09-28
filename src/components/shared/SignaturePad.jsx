@@ -103,7 +103,7 @@ export default function SignaturePad({ value, onChange, label = "Firma" }) {
       <div className="flex items-center justify-between mb-1">
         <span className="text-sm font-medium text-slate-700">{label}</span>
         <div className="flex gap-1">
-          <button onClick={toggleSize} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-600" title={enlarged ? "Riduci" : "Ingrandisci"}>
+          <button onClick={toggleSize} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-brand-600" title={enlarged ? "Riduci" : "Ingrandisci"}>
             {enlarged ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
           <label className="cursor-pointer p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600" title="Carica immagine firma">

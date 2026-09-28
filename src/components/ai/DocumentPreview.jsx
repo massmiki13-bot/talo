@@ -96,7 +96,7 @@ export default function DocumentPreview({ doc }) {
     <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
       <div className="flex items-center justify-between px-3 py-2 bg-slate-50 border-b border-slate-200">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 flex-shrink-0">
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-800 flex-shrink-0">
             {DOC_TYPE_LABELS[doc.tipo] || doc.tipo || "Documento"}
           </span>
           <span className="text-sm font-medium text-slate-800 truncate">{doc.titolo}</span>
@@ -128,7 +128,7 @@ export default function DocumentPreview({ doc }) {
           {scadenza && <span className={isExpired ? "text-red-600 font-medium" : ""}>Scadenza: {new Date(scadenza).toLocaleDateString("it-IT")}</span>}
         </div>
         <div className="flex gap-2">
-          <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
+          <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-brand-600 hover:underline">
             <ExternalLink className="w-3 h-3" /> Apri
           </a>
           <Button size="sm" variant="outline" onClick={handleDownload} disabled={downloading} className="h-7 text-xs gap-1">

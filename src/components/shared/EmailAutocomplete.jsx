@@ -87,7 +87,7 @@ export default function EmailAutocomplete({ value, onChange, placeholder }) {
               key={email}
               type="button"
               onMouseDown={(e) => { e.preventDefault(); pick(email); }}
-              className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 flex items-center gap-2 ${i === activeIndex ? "bg-blue-50" : ""}`}
+              className={`w-full text-left px-3 py-2 text-sm hover:bg-brand-50 flex items-center gap-2 ${i === activeIndex ? "bg-brand-50" : ""}`}
             >
               <span className="text-slate-400 text-xs">✉</span>
               <span className="truncate">{email}</span>

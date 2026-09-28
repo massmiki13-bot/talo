@@ -163,7 +163,7 @@ Sii MOLTO preciso nella lettura di numeri, quantità e prezzi. Se un dato non è
             <div>
               <Label>Carica documento</Label>
               <label className="block cursor-pointer mt-1">
-                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-brand-400 transition-colors">
                   {uploading ? (
                     <p className="text-sm text-slate-500">Caricamento...</p>
                   ) : fileUrl ? (
@@ -181,14 +181,14 @@ Sii MOLTO preciso nella lettura di numeri, quantità e prezzi. Se un dato non è
             </div>
 
             {fileUrl && !aiLoading && (
-              <Button onClick={handleExtract} className="w-full gap-2 bg-blue-600 hover:bg-blue-700">
+              <Button onClick={handleExtract} className="w-full gap-2 bg-brand-600 hover:bg-brand-700">
                 <Sparkles className="w-4 h-4" /> Leggi documento con IA
               </Button>
             )}
 
             {aiLoading && (
               <div className="flex items-center justify-center py-8">
-                <Sparkles className="w-6 h-6 text-blue-500 animate-spin mr-2" />
+                <Sparkles className="w-6 h-6 text-brand-500 animate-spin mr-2" />
                 <p className="text-sm text-slate-600">Lettura in corso... può richiedere qualche secondo</p>
               </div>
             )}
@@ -251,7 +251,7 @@ Sii MOLTO preciso nella lettura di numeri, quantità e prezzi. Se un dato non è
 
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={() => setReviewing(false)}>Indietro</Button>
-              <Button onClick={handleConfirm} className="bg-blue-600 hover:bg-blue-700">Crea preventivo</Button>
+              <Button onClick={handleConfirm} className="bg-brand-600 hover:bg-brand-700">Crea preventivo</Button>
             </div>
           </div>
         )}

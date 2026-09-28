@@ -146,7 +146,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[["cliente", "Cliente"], ["fornitore", "Fornitore"], ["entrambi", "Entrambi"]].map(([v, l]) => (
             <button key={v} type="button" onClick={() => set({ tipo: v })}
-              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${form.tipo === v ? "border-blue-600 bg-blue-50 text-blue-800" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${form.tipo === v ? "border-brand-600 bg-brand-50 text-brand-800" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
               {l}
             </button>
           ))}
@@ -234,7 +234,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
               <div className="flex flex-wrap gap-1.5 mt-1.5">
                 {categoryOptions.map((c) => (
                   <button key={c} type="button" onClick={() => toggleCat(c)}
-                    className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${form.categorie.includes(c) ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+                    className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${form.categorie.includes(c) ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
                     {c}
                   </button>
                 ))}
@@ -323,7 +323,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
 
         <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
-          <Button onClick={save} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={save} disabled={saving} className="bg-brand-600 hover:bg-brand-700">
             {saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}{contact?.id ? "Salva modifiche" : "Crea contatto"}
           </Button>
         </div>

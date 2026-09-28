@@ -54,7 +54,7 @@ export default function ContractPreviewDialog({
         <div className="flex-1 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 min-h-0">
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <div className="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-slate-200 border-t-brand-600 rounded-full animate-spin"></div>
             </div>
           ) : pdfUrl ? (
             <iframe src={pdfUrl} className="w-full h-full border-0" title="Anteprima Contratto" />
@@ -73,14 +73,14 @@ export default function ContractPreviewDialog({
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 <ArrowLeft className="w-4 h-4" /> Torna alla modifica
               </Button>
-              <Button onClick={() => { onConfirm?.(); }} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={() => { onConfirm?.(); }} className="bg-brand-600 hover:bg-brand-700">
                 <Check className="w-4 h-4" /> Conferma e salva
               </Button>
             </>
           ) : (
             <>
               <Button variant="outline" onClick={() => onOpenChange(false)}>Chiudi</Button>
-              <Button onClick={handleDownload} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={handleDownload} className="bg-brand-600 hover:bg-brand-700">
                 <FileDown className="w-4 h-4" /> Scarica PDF
               </Button>
             </>

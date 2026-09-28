@@ -84,7 +84,7 @@ export default function Sicurezza() {
           <ShieldCheck className="w-10 h-10 text-slate-300 mx-auto" />
           <p className="mt-3 font-semibold text-slate-900">Nessun POS ancora</p>
           <p className="text-sm text-slate-500 mt-1 max-w-lg mx-auto">Scegli un cantiere: impresa, figure della sicurezza, lavoratori con i corsi e le visite e dati del committente si compilano da soli. Tu scegli le lavorazioni, l'IA scrive rischi, misure e DPI.</p>
-          <Button onClick={() => setNewOpen(true)} className="mt-4 bg-blue-600 hover:bg-blue-700 gap-2"><Plus className="w-4 h-4" /> Nuovo POS</Button>
+          <Button onClick={() => setNewOpen(true)} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2"><Plus className="w-4 h-4" /> Nuovo POS</Button>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -95,12 +95,12 @@ export default function Sicurezza() {
                 <button onClick={() => open(p.id)} className="text-left flex gap-3">
                   <div className="w-10 h-10 rounded-xl bg-emerald-50 grid place-items-center shrink-0"><ShieldCheck className="w-5 h-5 text-emerald-700" /></div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-900 truncate hover:text-blue-700">{p.titolo}</p>
+                    <p className="text-sm font-semibold text-slate-900 truncate hover:text-brand-700">{p.titolo}</p>
                     <p className="text-xs text-slate-500">Rev. {p.revisione || 0} · {new Date(p.data || p.created_date).toLocaleDateString("it-IT")} · {(p.dati?.lavorazioni || []).length} lavorazioni</p>
                   </div>
                 </button>
                 <div className="flex items-center gap-2 mt-3">
-                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${p.stato === "consegnato" ? "bg-emerald-100 text-emerald-800" : p.stato === "completo" ? "bg-blue-100 text-blue-800" : "bg-slate-100 text-slate-700"}`}>{STATI[p.stato] || "Bozza"}</span>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${p.stato === "consegnato" ? "bg-emerald-100 text-emerald-800" : p.stato === "completo" ? "bg-zinc-200 text-zinc-800" : "bg-slate-100 text-slate-700"}`}>{STATI[p.stato] || "Bozza"}</span>
                   {miss > 0 ? <span className="text-xs text-amber-700 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" />{miss} dati mancanti</span> : <span className="text-xs text-emerald-700 flex items-center gap-1"><Check className="w-3.5 h-3.5" />Completo</span>}
                   <div className="ml-auto flex">
                     <button onClick={() => duplicate(p)} className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100" title="Duplica per un altro cantiere" aria-label="Duplica"><Copy className="w-4 h-4" /></button>
@@ -238,7 +238,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
           {SEZIONI.map((s) => {
             const m = miss[s.key]?.length || 0;
             return (
-              <button key={s.key} onClick={() => setSec(s.key)} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left whitespace-nowrap ${sec === s.key ? "bg-blue-50 text-blue-800 font-medium" : "text-slate-700 hover:bg-slate-50"}`}>
+              <button key={s.key} onClick={() => setSec(s.key)} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left whitespace-nowrap ${sec === s.key ? "bg-brand-50 text-brand-800 font-medium" : "text-slate-700 hover:bg-slate-50"}`}>
                 <span className={`w-5 h-5 rounded-full text-[11px] font-semibold grid place-items-center shrink-0 ${m ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>{m ? s.n : <Check className="w-3 h-3" />}</span>
                 <span className="lg:whitespace-normal">{s.label}</span>
               </button>
@@ -339,7 +339,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                 <div className="flex flex-wrap gap-1.5">
                   {LAVORAZIONI.map((n) => {
                     const on = (d.lavorazioni || []).some((l) => l.nome === n);
-                    return <button key={n} onClick={() => toggleLav(n)} className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${on ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 text-slate-700 hover:border-slate-300"}`}>{on && <Check className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />}{n}</button>;
+                    return <button key={n} onClick={() => toggleLav(n)} className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${on ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-700 hover:border-slate-300"}`}>{on && <Check className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />}{n}</button>;
                   })}
                 </div>
                 <form className="flex gap-2 mt-3" onSubmit={(e) => { e.preventDefault(); const v = e.target.elements.nuova.value.trim(); if (v) { toggleLav(v); e.target.reset(); } }}>
@@ -347,7 +347,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                   <Button type="submit" variant="outline" className="gap-1.5"><Plus className="w-4 h-4" /> Aggiungi</Button>
                 </form>
                 {(d.lavorazioni || []).some((l) => !l.rischi?.length) && (
-                  <Button onClick={assessAll} disabled={aiBusy != null} className="mt-4 bg-blue-600 hover:bg-blue-700 gap-1.5">
+                  <Button onClick={assessAll} disabled={aiBusy != null} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-1.5">
                     {aiBusy != null ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Valuta i rischi con l'IA ({(d.lavorazioni || []).filter((l) => !l.rischi?.length).length})
                   </Button>
                 )}
@@ -396,7 +396,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                 {uniq([...DPI, ...(d.dpi || [])]).map((x) => {
                   const on = (d.dpi || []).includes(x);
                   return (
-                    <label key={x} className={`flex items-center gap-2 text-sm rounded-lg border px-3 py-2 cursor-pointer ${on ? "border-blue-300 bg-blue-50/60" : "border-slate-200"}`}>
+                    <label key={x} className={`flex items-center gap-2 text-sm rounded-lg border px-3 py-2 cursor-pointer ${on ? "border-brand-300 bg-brand-50/60" : "border-slate-200"}`}>
                       <input type="checkbox" checked={on} onChange={() => set("dpi", on ? d.dpi.filter((y) => y !== x) : [...(d.dpi || []), x])} /> {x}
                     </label>
                   );
@@ -445,7 +445,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
               <p className="text-sm text-slate-600 mt-4">Nel PDF compaiono le righe per le firme di datore di lavoro, RSPP, RLS e CSE; la firma del datore di lavoro viene presa dal Profilo ditta.</p>
               {totalMiss > 0 && <p className="text-sm text-amber-800 mt-3 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" />Prima di consegnarlo completa i {totalMiss} dati mancanti (vedi le sezioni con il numero arancione).</p>}
               <div className="flex flex-wrap gap-2 mt-5">
-                <Button onClick={() => pdf("download")} disabled={pdfBusy} className="bg-blue-600 hover:bg-blue-700 gap-1.5">{pdfBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} Scarica il PDF</Button>
+                <Button onClick={() => pdf("download")} disabled={pdfBusy} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{pdfBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} Scarica il PDF</Button>
                 <Button variant="outline" onClick={() => pdf("email")} disabled={pdfBusy} className="gap-1.5"><Mail className="w-4 h-4" /> Invia al CSE</Button>
                 <Button variant="outline" onClick={() => pdf("archive")} disabled={pdfBusy} className="gap-1.5"><FolderInput className="w-4 h-4" /> Salva in Documenti ditta</Button>
               </div>
@@ -487,7 +487,7 @@ function LavCard({ l, idx, busy, onAssess, onChange, onRemove }) {
               );
             })}
           </div>
-          <button onClick={() => onChange({ rischi: [...l.rischi, { rischio: "", p: 2, d: 2 }] })} className="text-sm text-blue-700 hover:underline mt-2">+ rischio</button>
+          <button onClick={() => onChange({ rischi: [...l.rischi, { rischio: "", p: 2, d: 2 }] })} className="text-sm text-brand-700 hover:underline mt-2">+ rischio</button>
           <div className="grid md:grid-cols-2 gap-3">
             <Area label="Misure di prevenzione e protezione (una per riga)" v={lines(l.misure)} on={(v) => onChange({ misure: toLines(v) })} rows={6} />
             <Area label="DPI (uno per riga)" v={lines(l.dpi)} on={(v) => onChange({ dpi: toLines(v) })} rows={6} />

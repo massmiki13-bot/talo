@@ -213,7 +213,7 @@ export default function MonthlyHours({ onOpenDay } = {}) {
             </Select>
           )}
         </div>
-        <Button onClick={() => setExportTarget("single")} disabled={!selectedEmpId} className="gap-2 bg-blue-600 hover:bg-blue-700">
+        <Button onClick={() => setExportTarget("single")} disabled={!selectedEmpId} className="gap-2 bg-brand-600 hover:bg-brand-700">
           <FileText className="w-4 h-4" /> Esporta tabellone
         </Button>
       </div>
@@ -221,7 +221,7 @@ export default function MonthlyHours({ onOpenDay } = {}) {
       {/* Summary cards */}
       <div className={`grid grid-cols-1 ${canSeeCosts && showCosts ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4 mb-6`}>
         <Card><CardContent className="pt-6">
-          <Users className="w-5 h-5 text-blue-600 mb-2" />
+          <Users className="w-5 h-5 text-brand-600 mb-2" />
           <p className="text-2xl font-bold text-slate-900">{employeeSummary.length}</p>
           <p className="text-xs text-slate-500">Dipendenti con ore</p>
         </CardContent></Card>
@@ -286,18 +286,18 @@ export default function MonthlyHours({ onOpenDay } = {}) {
                     </td>
                     {days.map(d => {
                       const dayData = emp.dayMap[d.dateStr];
-                      if (!dayData) return <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-blue-400 " : ""}border-b border-r border-slate-200 text-center min-w-[28px] w-7 h-8 ${d.isSunday ? "bg-red-50/50" : d.isSaturday ? "bg-slate-50" : ""}`}></td>;
+                      if (!dayData) return <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-slate-200 text-center min-w-[28px] w-7 h-8 ${d.isSunday ? "bg-red-50/50" : d.isSaturday ? "bg-slate-50" : ""}`}></td>;
                       const info = getStatoInfo(dayData.stato);
                       if (dayData.stato === "presente") {
                         return (
-                          <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-blue-400 " : ""}border-b border-r border-slate-200 text-center text-xs font-semibold ${info.bgClass} min-w-[28px] w-7 h-8`}
+                          <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-slate-200 text-center text-xs font-semibold ${info.bgClass} min-w-[28px] w-7 h-8`}
                             title={dayData.cantieri.map(c => `${c.cantiere_nome}: ${c.ore}h`).join(", ")}>
                             {dayData.ore.toFixed(0)}
                           </td>
                         );
                       }
                       return (
-                        <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-blue-400 " : ""}border-b border-r border-slate-200 text-center text-[10px] font-bold min-w-[28px] w-7 h-8 ${info.bgClass}`}>
+                        <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-slate-200 text-center text-[10px] font-bold min-w-[28px] w-7 h-8 ${info.bgClass}`}>
                           {TAB_LETTERS[dayData.stato] || ""}
                         </td>
                       );
@@ -322,7 +322,7 @@ export default function MonthlyHours({ onOpenDay } = {}) {
             {perSite.map((c) => (
               <div key={c.nome} className="flex items-center gap-3 px-4 py-2 text-sm">
                 <span className="flex-1 min-w-0 truncate text-slate-800">{c.nome}</span>
-                <div className="hidden sm:block w-40 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-blue-500" style={{ width: `${(c.ore / perSite[0].ore) * 100}%` }} /></div>
+                <div className="hidden sm:block w-40 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-brand-500" style={{ width: `${(c.ore / perSite[0].ore) * 100}%` }} /></div>
                 <span className="w-16 text-right tabular-nums font-medium">{fmtH(c.ore)} h</span>
                 {canSeeCosts && showCosts && <span className="w-24 text-right tabular-nums text-slate-600">{formatEuro(c.costo)}</span>}
               </div>

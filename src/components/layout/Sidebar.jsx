@@ -1,107 +1,106 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard, Building2, Users, FileText,
-  UserCheck, FolderOpen, Bell, FileSignature, Bot,
-  BarChart3, ChevronLeft, ChevronRight, LogOut, Briefcase, CalendarClock, UserCog,
-  User, HardHat, Mail, BookOpenCheck, ShieldCheck, Receipt
+  LayoutDashboard, Building2, Users, FileText, UserCheck, FolderOpen, Bell, FileSignature,
+  BarChart3, ChevronsLeft, ChevronsRight, LogOut, Briefcase, CalendarClock, UserCog,
+  User, Mail, BookOpenCheck, ShieldCheck, Receipt,
 } from "lucide-react";
 import { api } from "@/lib/db";
+import TaloLogo, { TaloMark } from "@/components/brand/TaloLogo";
 
-export default function Sidebar({ onNavigate, isHost = true, accessLevel = "responsabile", permissions = [], employeeId = null }) {
-  const [collapsed, setCollapsed] = useState(false);
-  const location = useLocation();
-
-  const navItems = [
+const GROUPS = [
+  { title: null, items: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/", perm: "dashboard" },
     { label: "Posta", icon: Mail, path: "/posta", perm: null },
-    { label: "Clienti e Fornitori", icon: Users, path: "/contatti", perm: "contatti" },
+    { label: "Promemoria", icon: Bell, path: "/promemoria", perm: "promemoria" },
+  ] },
+  { title: "Commerciale", items: [
+    { label: "Clienti e fornitori", icon: Users, path: "/contatti", perm: "contatti" },
     { label: "Preventivi", icon: FileText, path: "/preventivi", perm: "preventivi" },
     { label: "Prezzari", icon: BookOpenCheck, path: "/prezzari", perm: "prezzari", legacyPerms: ["preventivi"] },
     { label: "Fatture", icon: Receipt, path: "/fatture", perm: "fatture" },
+    { label: "Contratti", icon: FileSignature, path: "/contratti", perm: "contratti" },
+  ] },
+  { title: "Cantiere", items: [
     { label: "Lavori", icon: Briefcase, path: "/lavori", perm: "lavori" },
     { label: "Sicurezza (POS)", icon: ShieldCheck, path: "/sicurezza", perm: "sicurezza" },
-    { label: "Dipendenti", icon: UserCheck, path: "/dipendenti", perm: "dipendenti" },
-    { label: "Documenti Ditta", icon: FolderOpen, path: "/documenti-ditta", perm: "documenti_ditta" },
-    { label: "Promemoria", icon: Bell, path: "/promemoria", perm: "promemoria" },
-    { label: "Contratti", icon: FileSignature, path: "/contratti", perm: "contratti" },
     { label: "Presenze", icon: CalendarClock, path: "/presenze", perm: "presenze", legacyPerms: ["giornaliere", "ore_mensili"] },
+  ] },
+  { title: "Impresa", items: [
+    { label: "Dipendenti", icon: UserCheck, path: "/dipendenti", perm: "dipendenti" },
+    { label: "Documenti ditta", icon: FolderOpen, path: "/documenti-ditta", perm: "documenti_ditta" },
     { label: "Analisi", icon: BarChart3, path: "/analisi", perm: "analisi", legacyPerms: ["report_annuale"] },
-
-    { label: "Profilo Ditta", icon: Building2, path: "/profilo-ditta", perm: null },
+    { label: "Profilo ditta", icon: Building2, path: "/profilo-ditta", perm: null },
     { label: "Collaboratori", icon: UserCog, path: "/collaboratori", perm: null },
-  ];
+  ] },
+];
 
+export default function Sidebar({ onNavigate, isHost = true, accessLevel = "responsabile", permissions = [], employeeId = null, companyName = "", collapsed = false, onToggle }) {
+  const location = useLocation();
   const isOperaio = !isHost && accessLevel === "operaio";
+  const allowed = (item) => (item.perm === null ? isHost : isHost || permissions.includes(item.perm) || item.legacyPerms?.some((p) => permissions.includes(p)));
+  const groups = isOperaio
+    ? [{ title: null, items: [
+      { label: "Dashboard", icon: LayoutDashboard, path: "/" },
+      { label: "Il mio profilo", icon: User, path: `/dipendenti/${employeeId}` },
+      { label: "Le mie presenze", icon: CalendarClock, path: "/presenze" },
+    ] }]
+    : GROUPS.map((g) => ({ ...g, items: g.items.filter(allowed) })).filter((g) => g.items.length);
 
-  const operaioItems = [
-    { label: "Dashboard", icon: LayoutDashboard, path: "/" },
-    { label: "Il Mio Profilo", icon: User, path: `/dipendenti/${employeeId}` },
-    { label: "Le Mie Presenze", icon: CalendarClock, path: "/presenze" },
-  ];
-
-  const visibleItems = isOperaio
-    ? operaioItems
-    : navItems.filter(item =>
-        item.perm === null ? isHost : (isHost || permissions.includes(item.perm) || (item.legacyPerms && item.legacyPerms.some(p => permissions.includes(p))))
-      );
-
-  const handleLogout = () => {
-    api.auth.logout("/login");
-  };
+  const isActive = (path) => location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
 
   return (
-    <aside
-      className={`fixed left-0 top-0 h-screen bg-sidebar text-sidebar-foreground flex flex-col z-50 transition-all duration-300 w-72 lg:w-60 ${
-        collapsed ? "lg:w-16" : ""
-      }`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Building2 className="w-6 h-6 text-sidebar-primary flex-shrink-0" />
-          <span className="font-bold text-lg text-white tracking-tight truncate">Talo</span>
+    <aside className={`fixed left-0 top-0 h-screen brushed text-zinc-300 flex flex-col z-50 transition-[width] duration-300 w-72 border-r border-white/[0.06] ${collapsed ? "lg:w-[72px]" : "lg:w-64"}`}>
+      {/* Marchio */}
+      <div className={`flex items-center gap-2 h-16 border-b border-white/[0.06] ${collapsed ? "lg:justify-center lg:px-0 px-4" : "px-4"}`}>
+        <div className={`flex-1 min-w-0 ${collapsed ? "lg:hidden" : ""}`}>
+          <TaloLogo size={34} subtitle={companyName || "Gestionale per l'edilizia"} />
         </div>
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="hidden lg:flex p-1.5 rounded-lg hover:bg-sidebar-accent transition-colors text-sidebar-foreground/60 hover:text-white flex-shrink-0"
-        >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
+        {collapsed && <div className="hidden lg:block"><TaloMark size={34} /></div>}
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 py-3 overflow-y-auto">
-        {visibleItems.map((item) => {
-          const isActive = location.pathname === item.path ||
-            (item.path !== "/" && location.pathname.startsWith(item.path));
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={onNavigate}
-              className={`flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-lg"
-                  : "text-sidebar-foreground/60 hover:text-white hover:bg-sidebar-accent"
-              }`}
-              title={collapsed ? item.label : undefined}
-            >
-              <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? "text-white" : ""}`} />
-              <span className={`truncate ${collapsed ? "lg:hidden" : ""}`}>{item.label}</span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto no-scrollbar py-3 space-y-4">
+        {groups.map((g, gi) => (
+          <div key={gi}>
+            {g.title && (
+              <p className={`px-5 mb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-zinc-500 ${collapsed ? "lg:hidden" : ""}`}>{g.title}</p>
+            )}
+            {g.title && collapsed && <div className="hidden lg:block mx-4 mb-2 h-px bg-white/[0.07]" />}
+            <ul className="space-y-0.5 px-2.5">
+              {g.items.map((item) => {
+                const active = isActive(item.path);
+                return (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      onClick={onNavigate}
+                      title={collapsed ? item.label : undefined}
+                      className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-[14px] font-medium transition-colors ${collapsed ? "lg:justify-center lg:px-0" : ""} ${
+                        active ? "bg-white/[0.06] text-white" : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
+                      }`}
+                    >
+                      {active && <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full" style={{ backgroundImage: "var(--metal-red)" }} />}
+                      <span className={`grid place-items-center w-8 h-8 rounded-md shrink-0 transition-colors ${active ? "text-white glow-red" : "text-zinc-500 group-hover:text-zinc-200"}`} style={active ? { backgroundImage: "var(--metal-red)" } : undefined}>
+                        <item.icon className="w-[18px] h-[18px]" />
+                      </span>
+                      <span className={`truncate ${collapsed ? "lg:hidden" : ""}`}>{item.label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </nav>
 
-      {/* Footer */}
-      <div className="p-3 border-t border-sidebar-border">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground/60 hover:text-white hover:bg-sidebar-accent transition-colors"
-          title={collapsed ? "Esci" : undefined}
-        >
-          <LogOut className="w-5 h-5 flex-shrink-0" />
+      <div className="p-2.5 border-t border-white/[0.06] space-y-0.5">
+        {onToggle && (
+          <button onClick={onToggle} className={`hidden lg:flex items-center gap-3 w-full rounded-lg px-3 py-2 text-sm text-zinc-500 hover:text-white hover:bg-white/[0.04] ${collapsed ? "justify-center px-0" : ""}`} aria-label={collapsed ? "Espandi il menu" : "Comprimi il menu"}>
+            {collapsed ? <ChevronsRight className="w-[18px] h-[18px]" /> : <><ChevronsLeft className="w-[18px] h-[18px]" /> Comprimi</>}
+          </button>
+        )}
+        <button onClick={() => api.auth.logout("/login")} className={`flex items-center gap-3 w-full rounded-lg px-3 py-2 text-sm text-zinc-500 hover:text-white hover:bg-white/[0.04] ${collapsed ? "lg:justify-center lg:px-0" : ""}`} title={collapsed ? "Esci" : undefined}>
+          <LogOut className="w-[18px] h-[18px]" />
           <span className={collapsed ? "lg:hidden" : ""}>Esci</span>
         </button>
       </div>

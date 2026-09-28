@@ -104,7 +104,7 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
       {transactions.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {[["tutti", "Tutti"], ["uscita", "Uscite"], ["entrata", "Entrate"]].map(([k, l]) => (
-            <button key={k} onClick={() => setFilter(k)} className={`rounded-full border px-3 py-1 text-xs ${filter === k ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>{l}</button>
+            <button key={k} onClick={() => setFilter(k)} className={`rounded-full border px-3 py-1 text-xs ${filter === k ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>{l}</button>
           ))}
           {cats.length > 1 && (
             <Select value={category} onValueChange={setCategory}>

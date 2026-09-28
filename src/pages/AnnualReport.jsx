@@ -121,7 +121,7 @@ export default function AnnualReport({ embedded = false }) {
       ["Totale uscite", formatEuro(yearData.uscite), "text-red-600"],
       ["Costo manodopera", formatEuro(yearData.laborCost), "text-red-600"],
       ["Margine complessivo", formatEuro(yearData.margine), yearData.margine >= 0 ? "text-emerald-600" : "text-red-600"],
-      ["Totale incassato (pagamenti)", formatEuro(yearData.incassato), "text-blue-600"],
+      ["Totale incassato (pagamenti)", formatEuro(yearData.incassato), "text-brand-600"],
     ];
     rows.forEach((r, i) => {
       doc.text(r[0], margin + 4, y + 12 + i * 4);
@@ -200,7 +200,7 @@ export default function AnnualReport({ embedded = false }) {
           <p className="text-xs text-slate-500">Margine complessivo</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6">
-          <Briefcase className="w-5 h-5 text-blue-600 mb-2" />
+          <Briefcase className="w-5 h-5 text-brand-600 mb-2" />
           <p className="text-xl font-bold text-slate-900">{yearData.lavoriCount}</p>
           <p className="text-xs text-slate-500">Lavori nell'anno</p>
         </CardContent></Card>

@@ -198,7 +198,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
               const ore = r.cantieri.reduce((s, c) => s + c.ore, 0);
               const ot = r.stato === "presente" ? overtime(ore, stdHours(e)) : 0;
               return (
-                <div key={r.dipendente_id} className={`grid grid-cols-[28px_1fr] md:grid-cols-[28px_minmax(150px,1fr)_220px_minmax(260px,1.3fr)_36px] gap-x-3 gap-y-2 px-3 py-2.5 items-start ${selected.has(r.dipendente_id) ? "bg-blue-50/60" : ""}`}>
+                <div key={r.dipendente_id} className={`grid grid-cols-[28px_1fr] md:grid-cols-[28px_minmax(150px,1fr)_220px_minmax(260px,1.3fr)_36px] gap-x-3 gap-y-2 px-3 py-2.5 items-start ${selected.has(r.dipendente_id) ? "bg-brand-50/60" : ""}`}>
                   {!readOnly ? <input type="checkbox" className="mt-2" checked={selected.has(r.dipendente_id)} onChange={() => setSelected((s) => { const n = new Set(s); n.has(r.dipendente_id) ? n.delete(r.dipendente_id) : n.add(r.dipendente_id); return n; })} aria-label={`Seleziona ${r.dipendente_nome}`} /> : <span />}
                   <div className="min-w-0 pt-1">
                     <p className="text-sm font-medium text-slate-900 truncate">{r.dipendente_nome}</p>
@@ -231,11 +231,11 @@ export default function DailySheet({ date, setDate, records, employees, worksite
                         <span className="text-xs text-slate-500">h</span>
                         {!readOnly && (r.cantieri.length > 1
                           ? <button onClick={() => removeSplit(r.dipendente_id, i)} className="p-1 text-slate-400 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
-                          : <button onClick={() => addSplit(r.dipendente_id)} className="p-1 text-slate-400 hover:text-blue-600" title={`Dividi su più ${siteLabel.toLowerCase()}`} aria-label="Aggiungi"><Plus className="w-4 h-4" /></button>)}
+                          : <button onClick={() => addSplit(r.dipendente_id)} className="p-1 text-slate-400 hover:text-brand-600" title={`Dividi su più ${siteLabel.toLowerCase()}`} aria-label="Aggiungi"><Plus className="w-4 h-4" /></button>)}
                       </div>
                     )) : <p className="text-sm text-slate-400 pt-1.5">{r.stato ? "—" : "Non registrato"}</p>}
                     {r.stato === "presente" && r.cantieri.length > 1 && !readOnly && (
-                      <button onClick={() => addSplit(r.dipendente_id)} className="text-xs text-blue-700 hover:underline">+ altro {siteLabel.toLowerCase()}</button>
+                      <button onClick={() => addSplit(r.dipendente_id)} className="text-xs text-brand-700 hover:underline">+ altro {siteLabel.toLowerCase()}</button>
                     )}
                     {(noteOpen.has(r.dipendente_id) || r.note) && (
                       <Input value={r.note || ""} onChange={(ev) => patchRow(r.dipendente_id, (x) => ({ ...x, note: ev.target.value }))} disabled={readOnly} placeholder="Nota (es. uscita anticipata, trasferta)" className="h-8 text-sm" />
@@ -265,7 +265,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
           {!readOnly && (
             <div className="ml-auto flex gap-2">
               {dirty && <Button variant="ghost" size="sm" onClick={() => setRows(JSON.parse(initial))} className="gap-1.5"><RotateCcw className="w-4 h-4" /> Annulla</Button>}
-              <Button onClick={save} disabled={!dirty || saving} className="bg-blue-600 hover:bg-blue-700 gap-1.5">
+              <Button onClick={save} disabled={!dirty || saving} className="bg-brand-600 hover:bg-brand-700 gap-1.5">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {dirty ? "Salva giornata" : "Salvato"}
               </Button>
             </div>

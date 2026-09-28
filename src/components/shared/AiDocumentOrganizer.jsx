@@ -187,14 +187,14 @@ Non indovinare — se manca un'informazione, chiedi.`,
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FolderTree className="w-5 h-5 text-blue-600" /> Sistema i miei documenti
+            <FolderTree className="w-5 h-5 text-brand-600" /> Sistema i miei documenti
           </DialogTitle>
         </DialogHeader>
 
         {results.length === 0 && !analyzing && (
           <div className="mt-4">
             <label className="cursor-pointer block">
-              <div className="border-2 border-dashed border-slate-300 rounded-xl p-10 text-center hover:border-blue-400 transition-colors">
+              <div className="border-2 border-dashed border-slate-300 rounded-xl p-10 text-center hover:border-brand-400 transition-colors">
                 <Upload className="w-10 h-10 text-slate-400 mx-auto mb-3" />
                 <p className="text-sm font-medium text-slate-700">Carica uno o più documenti</p>
                 <p className="text-xs text-slate-500 mt-1">L'IA li analizzerà e li smisterà automaticamente</p>
@@ -206,7 +206,7 @@ Non indovinare — se manca un'informazione, chiedi.`,
 
         {analyzing && (
           <div className="flex flex-col items-center py-12">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-3" />
+            <Loader2 className="w-8 h-8 text-brand-600 animate-spin mb-3" />
             <p className="text-sm text-slate-600">Analisi documenti in corso…</p>
             <p className="text-xs text-slate-400 mt-1">Sto leggendo ogni documento e decidendo dove collocarlo</p>
           </div>
@@ -297,7 +297,7 @@ Non indovinare — se manca un'informazione, chiedi.`,
 
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
               <Button variant="outline" onClick={() => reset()}>Ricomincia</Button>
-              <Button onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700 gap-2">
+              <Button onClick={handleSave} disabled={saving} className="bg-brand-600 hover:bg-brand-700 gap-2">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 Conferma e salva ({results.filter(r => r.entita_nome || r.entita_tipo === "ditta").length})
               </Button>

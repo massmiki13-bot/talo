@@ -61,7 +61,7 @@ export default function MessageView({ message, onReply, onReplyAll, onForward, o
     <article className="flex flex-col h-full">
       <div className="border-b border-slate-100 px-4 sm:px-6 py-4 space-y-3">
         {onBack && (
-          <button onClick={onBack} className="lg:hidden flex items-center gap-1 text-sm text-blue-700 -mt-1"><ArrowLeft className="w-4 h-4" /> Torna all'elenco</button>
+          <button onClick={onBack} className="lg:hidden flex items-center gap-1 text-sm text-brand-700 -mt-1"><ArrowLeft className="w-4 h-4" /> Torna all'elenco</button>
         )}
         <div className="flex items-start gap-2 flex-wrap">
           <h2 className="text-lg font-semibold text-slate-900 flex-1 min-w-0 break-words">{message.subject || "(senza oggetto)"}</h2>

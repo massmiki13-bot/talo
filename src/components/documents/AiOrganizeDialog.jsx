@@ -91,7 +91,7 @@ export default function AiOrganizeDialog({ open, onOpenChange, documents, folder
     <Dialog open={open} onOpenChange={(v) => phase !== "applying" && onOpenChange(v)}>
       <DialogContent className="max-w-3xl max-h-[88vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-blue-600" /> Organizza l'archivio con l'IA</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-brand-600" /> Organizza l'archivio con l'IA</DialogTitle>
           <DialogDescription>L'IA propone cartelle e sottocartelle e dove mettere ogni documento. Niente viene spostato finché non confermi.</DialogDescription>
         </DialogHeader>
 
@@ -113,14 +113,14 @@ export default function AiOrganizeDialog({ open, onOpenChange, documents, folder
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
-              <Button onClick={run} disabled={!target.length} className="bg-blue-600 hover:bg-blue-700 gap-2"><Sparkles className="w-4 h-4" /> Proponi ordine</Button>
+              <Button onClick={run} disabled={!target.length} className="bg-brand-600 hover:bg-brand-700 gap-2"><Sparkles className="w-4 h-4" /> Proponi ordine</Button>
             </div>
           </div>
         )}
 
         {phase === "working" && (
           <div className="py-14 text-center">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto" />
+            <Loader2 className="w-8 h-8 animate-spin text-brand-600 mx-auto" />
             <p className="mt-3 text-sm text-slate-600">Sto studiando {target.length} documenti…</p>
           </div>
         )}
@@ -132,7 +132,7 @@ export default function AiOrganizeDialog({ open, onOpenChange, documents, folder
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Nuovo albero</p>
                 {tree.map((t) => (
                   <div key={t.path} className="flex items-center gap-1.5 text-sm py-0.5" style={{ paddingLeft: t.depth * 14 }}>
-                    <Folder className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <Folder className="w-3.5 h-3.5 text-brand-600 shrink-0" />
                     <span className="truncate text-slate-800">{t.name}</span>
                     {t.n > 0 && <span className="ml-auto text-xs text-slate-500 tabular-nums">{t.n}</span>}
                   </div>
@@ -159,7 +159,7 @@ export default function AiOrganizeDialog({ open, onOpenChange, documents, folder
               <p className="text-sm text-slate-600">{phase === "applying" ? `Sposto… ${progress}/${total}` : `${changes.length} documenti da spostare`}</p>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setPhase("setup")} disabled={phase === "applying"} className="gap-1.5"><RotateCcw className="w-4 h-4" /> Rifai</Button>
-                <Button onClick={apply} disabled={phase === "applying" || !changes.length} className="bg-blue-600 hover:bg-blue-700 gap-2">
+                <Button onClick={apply} disabled={phase === "applying" || !changes.length} className="bg-brand-600 hover:bg-brand-700 gap-2">
                   {phase === "applying" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Folder className="w-4 h-4" />} Applica
                 </Button>
               </div>
@@ -173,7 +173,7 @@ export default function AiOrganizeDialog({ open, onOpenChange, documents, folder
 
 function Choice({ active, onClick, title, text }) {
   return (
-    <button type="button" onClick={onClick} className={`text-left rounded-lg border p-3 transition-colors ${active ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-slate-200 hover:border-slate-300"}`}>
+    <button type="button" onClick={onClick} className={`text-left rounded-lg border p-3 transition-colors ${active ? "border-brand-600 bg-brand-50 ring-1 ring-brand-600" : "border-slate-200 hover:border-slate-300"}`}>
       <p className="text-sm font-medium text-slate-900">{title}</p>
       <p className="text-xs text-slate-500 mt-0.5">{text}</p>
     </button>

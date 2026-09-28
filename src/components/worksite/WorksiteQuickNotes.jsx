@@ -30,7 +30,7 @@ export default function WorksiteQuickNotes({ worksite }) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50"
+          className="flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
           Salva
@@ -40,7 +40,7 @@ export default function WorksiteQuickNotes({ worksite }) {
         value={notes}
         onChange={e => setNotes(e.target.value)}
         placeholder="Accordi col cliente, problemi, promemoria interni…"
-        className="w-full border border-slate-200 rounded-lg p-3 text-sm min-h-[100px] resize-y focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
+        className="w-full border border-slate-200 rounded-lg p-3 text-sm min-h-[100px] resize-y focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
       />
     </div>
   );

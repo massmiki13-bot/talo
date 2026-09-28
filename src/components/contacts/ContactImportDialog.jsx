@@ -95,7 +95,7 @@ export default function ContactImportDialog({ open, onOpenChange, existing = [],
         {!rows ? (
           <div className="space-y-4">
             <button type="button" onClick={() => inputRef.current?.click()}
-              className="w-full rounded-xl border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50/40 p-8 text-center transition-colors">
+              className="w-full rounded-xl border-2 border-dashed border-slate-300 hover:border-brand-400 hover:bg-brand-50/40 p-8 text-center transition-colors">
               <FileSpreadsheet className="w-10 h-10 text-slate-400 mx-auto mb-2" />
               <p className="font-medium text-slate-800">Scegli il file CSV</p>
               <p className="text-sm text-slate-500 mt-1">In Excel: File → Salva con nome → CSV (delimitato dal separatore di elenco)</p>

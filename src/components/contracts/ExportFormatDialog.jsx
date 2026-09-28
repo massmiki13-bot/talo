@@ -30,11 +30,11 @@ export default function ExportFormatDialog({ open, onOpenChange, contract, onExp
 
           <Button
             variant="outline"
-            className="h-auto py-4 justify-start gap-3 border-slate-200 hover:border-blue-300 hover:bg-blue-50"
+            className="h-auto py-4 justify-start gap-3 border-slate-200 hover:border-brand-300 hover:bg-brand-50"
             onClick={() => { onExportWord(contract); onOpenChange(false); }}
           >
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <FileType className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0">
+              <FileType className="w-5 h-5 text-brand-600" />
             </div>
             <div className="text-left">
               <div className="text-sm font-semibold text-slate-800">Word (.doc)</div>

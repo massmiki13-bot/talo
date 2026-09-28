@@ -57,13 +57,13 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
       <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileSearch className="w-5 h-5 text-blue-600" /> Lettura Documento IA
+            <FileSearch className="w-5 h-5 text-brand-600" /> Lettura Documento IA
           </DialogTitle>
         </DialogHeader>
 
         {loading && (
           <div className="flex flex-col items-center py-12 gap-3">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+            <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
             <p className="text-sm text-slate-500">Lettura del documento in corso...</p>
           </div>
         )}
@@ -101,7 +101,7 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
 
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={readDocument}>Rileggi</Button>
-              <Button onClick={handleConfirm} className="bg-blue-600 hover:bg-blue-700 gap-2">
+              <Button onClick={handleConfirm} className="bg-brand-600 hover:bg-brand-700 gap-2">
                 <Check className="w-4 h-4" /> Conferma dati
               </Button>
             </div>

@@ -275,7 +275,7 @@ export default function DailyAttendance() {
               let bgClass;
               let dayStyle = {};
               if (hasData) {
-                bgClass = "border-slate-300 hover:border-blue-500";
+                bgClass = "border-slate-300 hover:border-brand-500";
                 dayStyle = { background: buildDayGradient(dayData.presenze) };
               } else if (holiday) {
                 bgClass = "bg-red-50 border-red-200";
@@ -332,7 +332,7 @@ export default function DailyAttendance() {
           <div className="mt-4">
             <div className="flex gap-2 mb-4">
               <Input value={newSiteName} onChange={e => setNewSiteName(e.target.value)} placeholder={`Nome nuova ${sezioniLabel.toLowerCase()}...`} />
-              <Button onClick={createWorksite} className="bg-blue-600 hover:bg-blue-700">Crea</Button>
+              <Button onClick={createWorksite} className="bg-brand-600 hover:bg-brand-700">Crea</Button>
             </div>
             <div className="space-y-2">
               {worksites.map(s => (

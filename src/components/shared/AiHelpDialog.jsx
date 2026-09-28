@@ -22,8 +22,8 @@ export default function AiHelpDialog({ open, onOpenChange }) {
         <div className="space-y-3 mt-4">
           {capabilities.map((c, i) => (
             <div key={i} className="flex gap-3 p-3 bg-slate-50 rounded-lg">
-              <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                <c.icon className="w-4 h-4 text-blue-600" />
+              <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+                <c.icon className="w-4 h-4 text-brand-600" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-900">{c.title}</p>

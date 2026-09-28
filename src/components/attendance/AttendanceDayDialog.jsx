@@ -121,7 +121,7 @@ export default function AttendanceDayDialog({
             <span className="text-sm font-medium text-slate-600">
               {presenze.length} dipendente{presenze.length !== 1 ? "i" : ""}
               {presenze.some(p => p._autofill) && !readOnly && (
-                <span className="text-xs text-blue-600 font-normal ml-2">• precompilati dall'anagrafica, conferma gli stati</span>
+                <span className="text-xs text-brand-600 font-normal ml-2">• precompilati dall'anagrafica, conferma gli stati</span>
               )}
             </span>
             {!readOnly && (
@@ -129,7 +129,7 @@ export default function AttendanceDayDialog({
                 <Button size="sm" variant="outline" onClick={addPresenza} className="gap-1">
                   <Plus className="w-4 h-4" />Aggiungi
                 </Button>
-                <Button size="sm" onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700 gap-1">
+                <Button size="sm" onClick={handleSave} disabled={saving} className="bg-brand-600 hover:bg-brand-700 gap-1">
                   <Save className="w-4 h-4" />{saving ? "..." : "Salva"}
                 </Button>
               </div>
@@ -208,7 +208,7 @@ export default function AttendanceDayDialog({
                           </div>
                         ))}
                         {!readOnly && (
-                          <button onClick={() => addCantiere(idx)} className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 ml-6">
+                          <button onClick={() => addCantiere(idx)} className="text-xs text-brand-600 hover:text-brand-700 flex items-center gap-1 ml-6">
                             <Plus className="w-3 h-3" />Aggiungi cantiere
                           </button>
                         )}

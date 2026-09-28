@@ -1,48 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
+/* Talo — identità "nero + rosso metallico" */
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 222 47% 11%;
+    --background: 240 6% 97%;
+    --foreground: 240 10% 7%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 240 10% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
-    --chart-1: 221 83% 53%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.625rem;
-    --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --popover-foreground: 240 10% 7%;
+    --primary: 353 83% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 94%;
+    --secondary-foreground: 240 10% 7%;
+    --muted: 240 5% 94%;
+    --muted-foreground: 240 4% 42%;
+    --accent: 240 5% 94%;
+    --accent-foreground: 240 10% 7%;
+    --destructive: 0 84% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 89%;
+    --input: 240 6% 86%;
+    --ring: 353 83% 42%;
+    --chart-1: 353 83% 42%;
+    --chart-2: 240 5% 26%;
+    --chart-3: 240 4% 60%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 160 84% 39%;
+    --radius: 0.7rem;
+    --font-heading: 'Barlow Condensed', 'Barlow', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Barlow', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Barlow Condensed', 'Barlow', ui-sans-serif, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 40% 96%;
-    --sidebar-primary: 221 83% 53%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 217 33% 17%;
-    --sidebar-ring: 221 83% 53%;
+    --sidebar-background: 240 10% 4%;
+    --sidebar-foreground: 240 5% 84%;
+    --sidebar-primary: 353 83% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 7% 10%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 6% 12%;
+    --sidebar-ring: 353 83% 42%;
+
+    /* rosso metallico: luce in alto, ombra in basso */
+    --metal-red: linear-gradient(180deg, #ef3b4d 0%, #c3122a 46%, #9c0c21 54%, #b3142b 100%);
+    --metal-red-soft: linear-gradient(135deg, #e3283a 0%, #a10d23 100%);
+    --metal-ink: linear-gradient(180deg, #1c1c21 0%, #0b0b0d 100%);
   }
 }
 
@@ -52,7 +58,36 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    font-feature-settings: "tnum" 0;
+    background-image:
+      radial-gradient(1200px 500px at 100% -10%, rgba(195, 18, 42, 0.05), transparent 60%),
+      radial-gradient(900px 400px at -10% 110%, rgba(24, 24, 27, 0.05), transparent 60%);
+    background-attachment: fixed;
   }
+  h1, h2, h3 { letter-spacing: -0.01em; }
+  ::selection { background: rgba(195, 18, 42, 0.18); }
+}
+
+@layer components {
+  /* Pulsanti del marchio: riflesso metallico e rilievo */
+  .bg-brand-600 {
+    background-image: var(--metal-red);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 rgba(0, 0, 0, 0.25), 0 1px 2px rgba(60, 4, 12, 0.25), 0 6px 16px -8px rgba(195, 18, 42, 0.55);
+    transition: filter 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  button.bg-brand-600:hover:not(:disabled), a.bg-brand-600:hover { filter: brightness(1.07) saturate(1.05); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), 0 10px 22px -10px rgba(195, 18, 42, 0.7); }
+  button.bg-brand-600:active:not(:disabled) { transform: translateY(1px); filter: brightness(0.96); }
+
+  .metal-ink { background-image: var(--metal-ink); }
+  /* trama sottile tipo lamiera spazzolata */
+  .brushed {
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 4px),
+      radial-gradient(700px 320px at 20% 0%, rgba(195, 18, 42, 0.22), transparent 70%),
+      var(--metal-ink);
+  }
+  .glow-red { box-shadow: 0 0 0 1px rgba(227, 40, 58, 0.35), 0 8px 24px -10px rgba(227, 40, 58, 0.65); }
+  .font-display { font-family: var(--font-display); }
 }
 
 /* Safe area padding for mobile bottom nav (iPhone notch) */
@@ -62,18 +97,26 @@
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 3px;
+  background: hsl(var(--muted-foreground) / 0.25);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: hsl(var(--muted-foreground) / 0.45);
+  background-clip: padding-box;
 }
 /* Menu a schede scorrevoli su telefono senza barra visibile */
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

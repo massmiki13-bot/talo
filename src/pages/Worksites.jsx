@@ -126,27 +126,27 @@ export default function Worksites() {
     <div>
       <div className="mb-4 sm:mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Lavori</h1>
+          <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Lavori</h1>
           <p className="text-slate-500 mt-1 text-sm">Cantieri, avanzamento, costi, incassi e giornale dei lavori</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
-          <Button size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => setFormOpen(true)}><Plus className="w-4 h-4" /> Nuovo lavoro</Button>
+          <Button size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700" onClick={() => setFormOpen(true)}><Plus className="w-4 h-4" /> Nuovo lavoro</Button>
         </div>
       </div>
 
       {rows.length > 0 && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-          <button onClick={() => setState("in_corso")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+          <button onClick={() => setState("in_corso")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
             <p className="text-xs text-slate-500">In corso</p><p className="text-lg font-bold text-slate-900">{kpi.inCorso}</p><p className="text-xs text-slate-500">{fmtEur(kpi.valore)} di lavori aperti</p>
           </button>
-          <button onClick={() => setSort("incassare")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+          <button onClick={() => setSort("incassare")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
             <p className="text-xs text-slate-500">Da incassare</p><p className="text-lg font-bold text-slate-900 tabular-nums">{fmtEur(kpi.daIncassare)}</p><p className="text-xs text-slate-500">su tutti i lavori</p>
           </button>
-          <button onClick={() => setState("perdita")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+          <button onClick={() => setState("perdita")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
             <p className="text-xs text-slate-500">In perdita</p><p className={`text-lg font-bold ${kpi.perdita ? "text-red-700" : "text-slate-900"}`}>{kpi.perdita}</p><p className="text-xs text-slate-500">costi oltre il contratto</p>
           </button>
-          <button onClick={() => setState("ritardo")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-blue-300">
+          <button onClick={() => setState("ritardo")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
             <p className="text-xs text-slate-500">In ritardo</p><p className={`text-lg font-bold ${kpi.ritardo ? "text-amber-700" : "text-slate-900"}`}>{kpi.ritardo}</p><p className="text-xs text-slate-500">oltre la fine prevista</p>
           </button>
         </div>
@@ -192,7 +192,7 @@ export default function Worksites() {
             const st = WORKSITE_STATES[w.stato] || WORKSITE_STATES.da_iniziare;
             const loss = w._econ.margineReale < 0 && w._econ.costi > 0;
             return (
-              <div key={w.id} onClick={() => navigate(`/lavori/${w.id}`)} className="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-blue-300 hover:shadow-sm transition">
+              <div key={w.id} onClick={() => navigate(`/lavori/${w.id}`)} className="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-brand-300 hover:shadow-sm transition">
                 <div className="flex items-start gap-2">
                   <div className="min-w-0 flex-1">
                     <h3 className="font-semibold text-slate-900 truncate">{w.nome}</h3>
@@ -209,7 +209,7 @@ export default function Worksites() {
 
                 <div className="mt-3">
                   <div className="flex justify-between text-xs text-slate-600 mb-1"><span>Avanzamento</span><span className="tabular-nums">{w.avanzamento || 0}%</span></div>
-                  <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-blue-600" style={{ width: `${w.avanzamento || 0}%` }} /></div>
+                  <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-brand-600" style={{ width: `${w.avanzamento || 0}%` }} /></div>
                 </div>
 
                 <dl className="grid grid-cols-3 gap-2 mt-3 text-center">

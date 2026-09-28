@@ -40,7 +40,7 @@ export const PAGAMENTI = [
 
 export const STATI = {
   bozza: { label: "Bozza", className: "bg-slate-100 text-slate-700" },
-  emessa: { label: "Emessa", className: "bg-blue-100 text-blue-800" },
+  emessa: { label: "Emessa", className: "bg-zinc-200 text-zinc-800" },
   inviata: { label: "Inviata allo SdI", className: "bg-indigo-100 text-indigo-800" },
   pagata: { label: "Pagata", className: "bg-emerald-100 text-emerald-800" },
 };

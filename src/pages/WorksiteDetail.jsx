@@ -174,7 +174,7 @@ export default function WorksiteDetail() {
         <div className="flex flex-col lg:flex-row lg:items-start gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 break-words">{worksite.nome}</h1>
+              <h1 className="font-display text-2xl sm:text-[30px] leading-tight font-bold text-zinc-950 break-words">{worksite.nome}</h1>
               {readOnly
                 ? <span className={`text-xs font-semibold rounded-full border px-2 py-0.5 ${st.className}`}>{st.label}</span>
                 : (
@@ -214,7 +214,7 @@ export default function WorksiteDetail() {
           <div className="rounded-lg bg-slate-50 p-3">
             <p className="text-xs text-slate-600">Avanzamento</p>
             <p className="text-lg font-bold text-slate-900">{worksite.avanzamento || 0}%</p>
-            <div className="h-1.5 rounded-full bg-white mt-1 overflow-hidden"><div className="h-full bg-blue-600" style={{ width: `${worksite.avanzamento || 0}%` }} /></div>
+            <div className="h-1.5 rounded-full bg-white mt-1 overflow-hidden"><div className="h-full bg-brand-600" style={{ width: `${worksite.avanzamento || 0}%` }} /></div>
           </div>
           <div className="rounded-lg bg-slate-50 p-3">
             <p className="text-xs text-slate-600">Ore lavorate</p>
@@ -250,7 +250,7 @@ export default function WorksiteDetail() {
 
       <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-slate-200">
         {TABS.map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
+          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
         ))}
       </div>
 
@@ -263,13 +263,13 @@ export default function WorksiteDetail() {
                 <ul className="divide-y divide-slate-100">
                   {team.map((e) => (
                     <li key={e.id} className="py-2 flex items-center gap-3">
-                      <Link to={`/dipendenti/${e.id}`} className="text-sm text-slate-900 hover:underline flex-1">{fullName(e)}{e.id === worksite.responsabile_id && <span className="ml-2 text-[10px] font-bold uppercase bg-blue-100 text-blue-800 rounded px-1.5">Capocantiere</span>}</Link>
+                      <Link to={`/dipendenti/${e.id}`} className="text-sm text-slate-900 hover:underline flex-1">{fullName(e)}{e.id === worksite.responsabile_id && <span className="ml-2 text-[10px] font-bold uppercase bg-zinc-200 text-zinc-800 rounded px-1.5">Capocantiere</span>}</Link>
                       <span className="text-xs text-slate-500">{e.ruolo}</span>
                       <span className="text-xs text-slate-700 tabular-nums w-14 text-right">{labor.persone.get(e.id) || 0} h</span>
                     </li>
                   ))}
                 </ul>
-              ) : <p className="text-sm text-slate-500">Nessuna squadra assegnata.{!readOnly && <> <button className="text-blue-700 underline" onClick={() => setEditOpen(true)}>Assegnala</button></>}</p>}
+              ) : <p className="text-sm text-slate-500">Nessuna squadra assegnata.{!readOnly && <> <button className="text-brand-700 underline" onClick={() => setEditOpen(true)}>Assegnala</button></>}</p>}
             </Card>
             <Card icon={ClipboardList} title="Pratiche e figure">
               <dl className="grid grid-cols-2 gap-3 text-sm">
@@ -321,12 +321,12 @@ export default function WorksiteDetail() {
                         ) : (
                           <>
                             <strong className={b && r > b ? "text-red-700" : "text-slate-900"}>{fmtEur(r)}</strong>{b ? <span className="text-slate-500"> / {fmtEur(b)}</span> : null}
-                            {c === "Manodopera" && <button aria-label="Modifica costo manodopera" onClick={() => setLaborEdit(worksite.costo_manodopera_manuale ?? "")} className="ml-1 text-slate-400 hover:text-blue-700"><Pencil className="w-3.5 h-3.5 inline" /></button>}
+                            {c === "Manodopera" && <button aria-label="Modifica costo manodopera" onClick={() => setLaborEdit(worksite.costo_manodopera_manuale ?? "")} className="ml-1 text-slate-400 hover:text-brand-700"><Pencil className="w-3.5 h-3.5 inline" /></button>}
                           </>
                         )}
                       </span>
                     </div>
-                    {b > 0 && <div className="h-1.5 rounded-full bg-slate-100 mt-1 overflow-hidden"><div className={`h-full ${r > b ? "bg-red-500" : pct > 85 ? "bg-amber-500" : "bg-blue-600"}`} style={{ width: `${pct}%` }} /></div>}
+                    {b > 0 && <div className="h-1.5 rounded-full bg-slate-100 mt-1 overflow-hidden"><div className={`h-full ${r > b ? "bg-red-500" : pct > 85 ? "bg-amber-500" : "bg-brand-600"}`} style={{ width: `${pct}%` }} /></div>}
                   </li>
                 );
               })}
@@ -364,7 +364,7 @@ export default function WorksiteDetail() {
                       <p className="text-xs text-slate-500 truncate">{fmtDate(rq.data)} · {rq.descrizione || ""}{rq.importo ? ` · ${fmtEur(rq.importo)}` : ""}</p>
                     </div>
                     {rq.file_url && <a href={rq.file_url} target="_blank" rel="noreferrer" aria-label="Vedi originale" className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Eye className="w-4 h-4" /></a>}
-                    {rq.file_firmato_url && <a href={rq.file_firmato_url} target="_blank" rel="noreferrer" aria-label="Vedi firmato" className="p-1.5 rounded hover:bg-slate-100 text-blue-700"><CheckCircle2 className="w-4 h-4" /></a>}
+                    {rq.file_firmato_url && <a href={rq.file_firmato_url} target="_blank" rel="noreferrer" aria-label="Vedi firmato" className="p-1.5 rounded hover:bg-slate-100 text-brand-700"><CheckCircle2 className="w-4 h-4" /></a>}
                     {(rq.file_tipo === "image" || rq.file_tipo === "pdf") && profile && (profile.firma_url || profile.timbro_url) && (
                       <Button size="sm" variant="outline" className="h-7" onClick={() => setSignTarget(rq)}>{rq.file_firmato_url ? "Rifirma" : "Firma"}</Button>
                     )}

@@ -57,18 +57,18 @@ export default function QuoteTemplatePicker({
                   onClick={() => onSelectTemplate(t.id)}
                   className={`border rounded-lg p-3 cursor-pointer transition-colors ${
                     selectedTemplate === t.id
-                      ? "border-blue-500 bg-blue-50"
+                      ? "border-brand-500 bg-brand-50"
                       : "border-slate-200 hover:bg-slate-50"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      selectedTemplate === t.id ? "bg-blue-100" : "bg-slate-100"
+                      selectedTemplate === t.id ? "bg-brand-100" : "bg-slate-100"
                     }`}>
-                      <Icon className={`w-4 h-4 ${selectedTemplate === t.id ? "text-blue-600" : "text-slate-500"}`} />
+                      <Icon className={`w-4 h-4 ${selectedTemplate === t.id ? "text-brand-600" : "text-slate-500"}`} />
                     </div>
                     <p className="text-sm font-medium text-slate-900">{t.nome}</p>
-                    {selectedTemplate === t.id && <Check className="w-4 h-4 text-blue-600 ml-auto" />}
+                    {selectedTemplate === t.id && <Check className="w-4 h-4 text-brand-600 ml-auto" />}
                   </div>
                   <p className="text-xs text-slate-500 mt-1.5">{t.descrizione}</p>
                 </div>
@@ -80,7 +80,7 @@ export default function QuoteTemplatePicker({
           <div className="flex-1 rounded-lg border border-slate-200 bg-slate-100 min-h-[300px] overflow-hidden">
             {generating ? (
               <div className="flex flex-col items-center justify-center h-full py-16 gap-2">
-                <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                <Loader2 className="w-6 h-6 animate-spin text-brand-600" />
                 <p className="text-sm text-slate-500">Generazione anteprima...</p>
               </div>
             ) : previewUrl ? (
@@ -114,7 +114,7 @@ export default function QuoteTemplatePicker({
                   <span className="ml-auto text-xs text-slate-400">Pronto da inviare</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_word")}>
-                  <FileType className="w-4 h-4 mr-2 text-blue-600" /> Word (.doc)
+                  <FileType className="w-4 h-4 mr-2 text-brand-600" /> Word (.doc)
                   <span className="ml-auto text-xs text-slate-400">Modificabile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_excel")}>

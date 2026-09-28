@@ -253,21 +253,21 @@ Rispondi con un JSON contenente "cartelle" (array di {nome}) e "assegnazioni" (a
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-blue-600" /> Riordina con IA
+            <Sparkles className="w-5 h-5 text-brand-600" /> Riordina con IA
           </DialogTitle>
         </DialogHeader>
 
         {/* Phase: Extracting */}
         {phase === "extracting" && (
           <div className="flex flex-col items-center py-12">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-3" />
+            <Loader2 className="w-8 h-8 text-brand-600 animate-spin mb-3" />
             <p className="text-sm text-slate-600">
               Lettura dei documenti… ({extractProgress.current}/{extractProgress.total})
             </p>
             <p className="text-xs text-slate-400 mt-1">Sto leggendo il contenuto per decidere come organizzarli</p>
             <div className="w-full max-w-xs mt-4 bg-slate-100 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-blue-600 h-full transition-all duration-300"
+                className="bg-brand-600 h-full transition-all duration-300"
                 style={{ width: `${extractProgress.total > 0 ? (extractProgress.current / extractProgress.total) * 100 : 0}%` }}
               />
             </div>
@@ -277,7 +277,7 @@ Rispondi con un JSON contenente "cartelle" (array di {nome}) e "assegnazioni" (a
         {/* Phase: Proposing */}
         {phase === "proposing" && (
           <div className="flex flex-col items-center py-12">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-3" />
+            <Loader2 className="w-8 h-8 text-brand-600 animate-spin mb-3" />
             <p className="text-sm text-slate-600">Sto creando l'organizzazione…</p>
             <p className="text-xs text-slate-400 mt-1">Analisi di {docsRef.current.length} documenti per proporre le cartelle migliori</p>
           </div>
@@ -304,7 +304,7 @@ Rispondi con un JSON contenente "cartelle" (array di {nome}) e "assegnazioni" (a
               return (
                 <div key={folder.tempId} className="border border-slate-200 rounded-lg overflow-hidden">
                   <div className="bg-slate-50 px-4 py-2.5 flex items-center gap-2 border-b border-slate-200">
-                    <Folder className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <Folder className="w-4 h-4 text-brand-600 flex-shrink-0" />
                     <Input
                       value={folder.nome}
                       onChange={(e) => handleRenameFolder(folder.tempId, e.target.value)}
@@ -355,7 +355,7 @@ Rispondi con un JSON contenente "cartelle" (array di {nome}) e "assegnazioni" (a
             ) : (
               <button
                 onClick={() => setAddingFolder(true)}
-                className="flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors"
+                className="flex items-center gap-2 text-sm text-slate-500 hover:text-brand-600 transition-colors"
               >
                 <FolderPlus className="w-4 h-4" /> Aggiungi cartella
               </button>
@@ -391,7 +391,7 @@ Rispondi con un JSON contenente "cartelle" (array di {nome}) e "assegnazioni" (a
             {/* Actions */}
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 sticky bottom-0 bg-white pb-1">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
-              <Button onClick={handleApply} disabled={applying} className="bg-blue-600 hover:bg-blue-700 gap-2">
+              <Button onClick={handleApply} disabled={applying} className="bg-brand-600 hover:bg-brand-700 gap-2">
                 {applying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 Conferma e applica
               </Button>
@@ -402,7 +402,7 @@ Rispondi con un JSON contenente "cartelle" (array di {nome}) e "assegnazioni" (a
         {/* Phase: Idle / no documents */}
         {phase === "idle" && (
           <div className="py-12 text-center">
-            <Loader2 className="w-6 h-6 text-blue-600 animate-spin mx-auto mb-3" />
+            <Loader2 className="w-6 h-6 text-brand-600 animate-spin mx-auto mb-3" />
             <p className="text-sm text-slate-500">Preparazione analisi…</p>
           </div>
         )}

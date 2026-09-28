@@ -74,7 +74,7 @@ export default function WorksiteDocs({ worksite, readOnly }) {
             const st = getExpirationStatus(d.data_scadenza);
             return (
               <li key={d.id} className="py-2.5 flex items-center gap-3">
-                <FileText className="w-4 h-4 text-blue-600 shrink-0" />
+                <FileText className="w-4 h-4 text-brand-600 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="text-sm text-slate-900 hover:underline truncate block">{d.titolo}</a>
                   <p className="text-xs text-slate-500">{WORKSITE_DOC_TYPES[d.tipo] || d.tipo}{d.data_scadenza ? ` · scade il ${fmtDate(d.data_scadenza)}` : ""}</p>

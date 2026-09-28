@@ -27,16 +27,16 @@ export default function MobileBottomNav({ onMore, isHost = true, accessLevel = "
   };
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 flex items-center justify-around h-16 px-1 safe-area-pb">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 metal-ink border-t border-white/[0.07] flex items-center justify-around h-16 px-1 safe-area-pb">
       {items.map((item) => {
         const active = isActive(item.path);
         return (
           <Link
             key={item.path}
             to={item.path}
-            className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-lg transition-colors min-w-[56px] ${active ? "text-blue-600" : "text-slate-400"}`}
+            className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-lg transition-colors min-w-[56px] ${active ? "text-white" : "text-zinc-500"}`}
           >
-            <item.icon className="w-5 h-5" />
+            <span className={`grid place-items-center w-9 h-7 rounded-full ${active ? "glow-red" : ""}`} style={active ? { backgroundImage: "var(--metal-red)" } : undefined}><item.icon className="w-[18px] h-[18px]" /></span>
             <span className="text-[10px] font-medium">{item.label}</span>
           </Link>
         );
@@ -44,7 +44,7 @@ export default function MobileBottomNav({ onMore, isHost = true, accessLevel = "
       {!isOperaio && (
         <button
           onClick={onMore}
-          className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-lg transition-colors min-w-[56px] text-slate-400"
+          className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-lg transition-colors min-w-[56px] text-zinc-500"
         >
           <Menu className="w-5 h-5" />
           <span className="text-[10px] font-medium">Altro</span>

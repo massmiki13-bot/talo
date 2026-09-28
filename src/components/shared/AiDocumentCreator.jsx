@@ -108,7 +108,7 @@ Scrivi solo il contenuto del documento.`,
       <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FilePlus className="w-5 h-5 text-blue-600" /> Crea Documento con IA
+            <FilePlus className="w-5 h-5 text-brand-600" /> Crea Documento con IA
           </DialogTitle>
         </DialogHeader>
 
@@ -125,7 +125,7 @@ Scrivi solo il contenuto del documento.`,
                 placeholder={`Es. "mi serve un contratto d'appalto", "documento per assumere qualcuno"...`}
               />
             </div>
-            <Button onClick={identifyDocument} disabled={loading || !description.trim()} className="bg-blue-600 hover:bg-blue-700 w-full gap-2">
+            <Button onClick={identifyDocument} disabled={loading || !description.trim()} className="bg-brand-600 hover:bg-brand-700 w-full gap-2">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               {loading ? "Analisi..." : "Continua"}
             </Button>
@@ -135,8 +135,8 @@ Scrivi solo il contenuto del documento.`,
         {/* Step 2: Fill fields */}
         {step === 2 && (
           <div className="space-y-4 mt-4">
-            <div className="bg-blue-50 rounded-lg p-3">
-              <p className="text-xs text-blue-600">Tipo identificato</p>
+            <div className="bg-brand-50 rounded-lg p-3">
+              <p className="text-xs text-brand-600">Tipo identificato</p>
               <p className="text-sm font-semibold text-slate-900">{docType}</p>
             </div>
             <p className="text-sm text-slate-600">Compila i campi richiesti:</p>
@@ -152,7 +152,7 @@ Scrivi solo il contenuto del documento.`,
             ))}
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setStep(1)} className="flex-1">Indietro</Button>
-              <Button onClick={generateDocument} disabled={loading} className="bg-blue-600 hover:bg-blue-700 flex-1 gap-2">
+              <Button onClick={generateDocument} disabled={loading} className="bg-brand-600 hover:bg-brand-700 flex-1 gap-2">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                 {loading ? "Generazione..." : "Genera documento"}
               </Button>
@@ -177,7 +177,7 @@ Scrivi solo il contenuto del documento.`,
                 <RefreshCw className="w-4 h-4" /> Rigenera
               </Button>
               <Button variant="outline" onClick={() => setStep(2)} className="flex-1">Modifica dati</Button>
-              <Button onClick={handleSave} disabled={saving} className="bg-blue-600 hover:bg-blue-700 flex-1 gap-2">
+              <Button onClick={handleSave} disabled={saving} className="bg-brand-600 hover:bg-brand-700 flex-1 gap-2">
                 <Save className="w-4 h-4" />{saving ? "..." : "Salva"}
               </Button>
             </div>

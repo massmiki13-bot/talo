@@ -461,7 +461,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
       <div className="flex flex-col xl:flex-row xl:items-start gap-3 mb-4">
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{isNew ? "Nuovo preventivo" : `Preventivo ${quote.numero}`}</h1>
+            <h1 className="font-display text-2xl sm:text-[30px] leading-tight font-bold text-zinc-950">{isNew ? "Nuovo preventivo" : `Preventivo ${quote.numero}`}</h1>
             {quote.revisione > 0 && <span className="text-xs font-semibold rounded-full bg-slate-800 text-white px-2 py-0.5">Rev. {quote.revisione}</span>}
             {!isNew && <span className={`text-xs font-semibold rounded-full border px-2 py-0.5 ${st.className}`}>{st.label}</span>}
             {dirty && <span className="text-xs text-amber-700">· modifiche non salvate</span>}
@@ -494,7 +494,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
               </DropdownMenu>
             </>
           )}
-          <Button onClick={() => save()} disabled={saving} className="gap-1.5 bg-blue-600 hover:bg-blue-700">
+          <Button onClick={() => save()} disabled={saving} className="gap-1.5 bg-brand-600 hover:bg-brand-700">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva
           </Button>
         </div>
@@ -561,7 +561,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
                   </Select>
                   <Button type="button" variant="outline" size="icon" onClick={() => setNewClientOpen(true)} aria-label="Nuovo cliente" title="Nuovo cliente"><UserPlus className="w-4 h-4" /></Button>
                 </div>
-                {client && <p className="text-xs text-slate-500 mt-1"><Link to={`/contatti/${client.id}`} className="text-blue-700 hover:underline">Scheda cliente</Link>{client.pagamento_default && ` · pagamento abituale: ${client.pagamento_default}`}</p>}
+                {client && <p className="text-xs text-slate-500 mt-1"><Link to={`/contatti/${client.id}`} className="text-brand-700 hover:underline">Scheda cliente</Link>{client.pagamento_default && ` · pagamento abituale: ${client.pagamento_default}`}</p>}
               </div>
               <div className="col-span-2">
                 <Label>Lavoro collegato</Label>
@@ -597,7 +597,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
               <div className="md:col-span-2">
                 <div className="flex items-center justify-between">
                   <Label>Clausole e condizioni generali</Label>
-                  <button type="button" className="text-xs text-blue-700 hover:underline" onClick={() => set({ clausole: DEFAULT_CLAUSOLE })}>Ripristina le clausole standard</button>
+                  <button type="button" className="text-xs text-brand-700 hover:underline" onClick={() => set({ clausole: DEFAULT_CLAUSOLE })}>Ripristina le clausole standard</button>
                 </div>
                 <textarea value={quote.clausole || ""} onChange={(e) => set({ clausole: e.target.value })} rows={5} className="mt-1 w-full rounded-md border border-input p-2 text-sm" />
               </div>
@@ -610,7 +610,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2 text-sm">
                 <span className="text-slate-600">Grafica: <strong>{templateName}</strong></span>
-                {!isNew && <button onClick={openPicker} className="text-blue-700 hover:underline text-sm">cambia</button>}
+                {!isNew && <button onClick={openPicker} className="text-brand-700 hover:underline text-sm">cambia</button>}
               </div>
               <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
                 <input type="checkbox" className="w-4 h-4" checked={!!quote.copertina} onChange={(e) => set({ copertina: e.target.checked })} />
@@ -626,7 +626,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
                       <input value={a.name} onChange={(e) => set({ allegati: quote.allegati.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)) })} className="mt-1 w-full text-[11px] border-b border-slate-200 focus:outline-none" aria-label="Didascalia" />
                     </div>
                   ))}
-                  <label className="w-24 h-20 rounded-md border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-xs text-slate-500 cursor-pointer hover:border-blue-400">
+                  <label className="w-24 h-20 rounded-md border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-xs text-slate-500 cursor-pointer hover:border-brand-400">
                     {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><ImageIcon className="w-5 h-5 mb-1" /> Aggiungi</>}
                     <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => { uploadAttachments([...e.target.files]); e.target.value = ""; }} />
                   </label>
@@ -682,7 +682,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
               {totals.iva.map((x) => (
                 <div key={x.aliquota} className="flex justify-between text-slate-600"><dt>IVA {x.aliquota}%</dt><dd className="tabular-nums">{fmtEur(x.imposta)}</dd></div>
               ))}
-              <div className="flex justify-between text-lg font-bold border-t border-slate-200 pt-2 mt-2"><dt>Totale</dt><dd className="tabular-nums text-blue-700">{fmtEur(totals.totale)}</dd></div>
+              <div className="flex justify-between text-lg font-bold border-t border-slate-200 pt-2 mt-2"><dt>Totale</dt><dd className="tabular-nums text-brand-700">{fmtEur(totals.totale)}</dd></div>
               {totals.opzionali > 0.005 && <p className="text-xs text-slate-500">+ voci opzionali {fmtEur(totals.opzionali)} (non incluse)</p>}
             </dl>
           </Section>

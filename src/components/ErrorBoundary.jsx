@@ -22,7 +22,7 @@ export default class ErrorBoundary extends React.Component {
           <p className="text-slate-500 text-sm mb-4">La pagina verrà ricaricata automaticamente.</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700"
           >
             Ricarica ora
           </button>

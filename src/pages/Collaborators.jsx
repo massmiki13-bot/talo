@@ -16,7 +16,7 @@ const daysLeft = (inv) => Math.ceil(TTL_DAYS - (Date.now() - new Date(inv.create
 
 const ROLES = [
   { key: "titolare", icon: Crown, title: "Titolare", tone: "bg-slate-900 text-white", text: "Tu. Vedi e gestisci tutto, compresi costi, profilo ditta e collaboratori." },
-  { key: "responsabile", icon: ShieldCheck, title: "Responsabile", tone: "bg-blue-100 text-blue-800", text: "Ufficio, capocantiere, commerciale: lavora solo nei moduli che scegli tu." },
+  { key: "responsabile", icon: ShieldCheck, title: "Responsabile", tone: "bg-zinc-200 text-zinc-800", text: "Ufficio, capocantiere, commerciale: lavora solo nei moduli che scegli tu." },
   { key: "operaio", icon: HardHat, title: "Operaio", tone: "bg-amber-100 text-amber-800", text: "Vede soltanto i propri documenti, le proprie presenze e ore. Nessun costo." },
 ];
 
@@ -128,7 +128,7 @@ export default function Collaborators() {
             <ShieldCheck className="w-10 h-10 text-slate-300 mx-auto" />
             <p className="mt-3 font-semibold text-slate-900">Lavori ancora da solo su Talo</p>
             <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">Invita l'ufficio, un capocantiere o i tuoi operai: ricevono un link e un codice di conferma, e vedono solo quello che decidi tu.</p>
-            <Button onClick={() => setInviteOpen(true)} className="mt-4 bg-blue-600 hover:bg-blue-700 gap-2"><UserPlus className="w-4 h-4" /> Invita collaboratore</Button>
+            <Button onClick={() => setInviteOpen(true)} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2"><UserPlus className="w-4 h-4" /> Invita collaboratore</Button>
           </div>
         ) : (
           <ul className="divide-y divide-slate-100">
@@ -162,13 +162,13 @@ function Row({ c, empName, muted, onEdit, onRevoke, onRestore }) {
   const all = mods.length === PERMISSION_MODULES.length;
   return (
     <li className={`px-4 py-3 flex flex-wrap items-center gap-3 ${muted ? "opacity-70" : ""}`}>
-      <div className={`w-10 h-10 rounded-full grid place-items-center text-sm font-semibold shrink-0 ${op ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"}`}>{initials(c.display_name || c.email)}</div>
+      <div className={`w-10 h-10 rounded-full grid place-items-center text-sm font-semibold shrink-0 ${op ? "bg-amber-100 text-amber-800" : "bg-zinc-200 text-zinc-800"}`}>{initials(c.display_name || c.email)}</div>
       <div className="flex-1 min-w-[180px]">
         <p className="text-sm font-medium text-slate-900 truncate">{c.display_name || c.email}</p>
         <p className="text-xs text-slate-500 truncate">{c.email}</p>
       </div>
       <div className="w-full sm:w-auto sm:max-w-[45%] order-last sm:order-none flex flex-wrap items-center gap-1">
-        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${op ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"}`}>{op ? "Operaio" : "Responsabile"}</span>
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${op ? "bg-amber-100 text-amber-800" : "bg-zinc-200 text-zinc-800"}`}>{op ? "Operaio" : "Responsabile"}</span>
         {op ? (
           <span className="text-xs text-slate-600">collegato a {empName[c.employee_id] || "dipendente"}</span>
         ) : all ? (

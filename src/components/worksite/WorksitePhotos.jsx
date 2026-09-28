@@ -5,7 +5,7 @@ import { Camera, Trash2, Upload, Loader2 } from "lucide-react";
 
 const FASI = [
   { value: "prima", label: "Prima", color: "bg-amber-100 text-amber-700 border-amber-200" },
-  { value: "durante", label: "Durante", color: "bg-blue-100 text-blue-700 border-blue-200" },
+  { value: "durante", label: "Durante", color: "bg-zinc-200 text-zinc-800 border-zinc-300" },
   { value: "dopo", label: "Dopo", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
 ];
 
@@ -57,7 +57,7 @@ export default function WorksitePhotos({ worksiteId }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-        <Camera className="w-4 h-4 text-blue-600" /> Foto di Avanzamento
+        <Camera className="w-4 h-4 text-brand-600" /> Foto di Avanzamento
       </h3>
 
       {/* Fase selector + upload */}
@@ -81,7 +81,7 @@ export default function WorksitePhotos({ worksiteId }) {
           className="flex-1 min-w-0 border border-slate-200 rounded-lg px-3 py-2 text-xs h-10"
         />
         <label className="cursor-pointer flex-shrink-0">
-          <div className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10">
+          <div className="flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10">
             {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
             <span>Scatta foto</span>
           </div>

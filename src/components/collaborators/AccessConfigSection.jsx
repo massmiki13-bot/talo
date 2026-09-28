@@ -43,7 +43,7 @@ export default function AccessConfigSection({
             onClick={() => setAccessLevel("responsabile")}
             className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-colors ${
               isResponsabile
-                ? "border-blue-500 bg-blue-50 text-blue-700"
+                ? "border-brand-500 bg-brand-50 text-brand-700"
                 : "border-slate-200 text-slate-500 hover:border-slate-300"
             }`}
           >
@@ -55,7 +55,7 @@ export default function AccessConfigSection({
             onClick={() => setAccessLevel("operaio")}
             className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-colors ${
               !isResponsabile
-                ? "border-blue-500 bg-blue-50 text-blue-700"
+                ? "border-brand-500 bg-brand-50 text-brand-700"
                 : "border-slate-200 text-slate-500 hover:border-slate-300"
             }`}
           >
@@ -79,7 +79,7 @@ export default function AccessConfigSection({
               {PRESETS.map((pr) => {
                 const keys = pr.perms || PERMISSION_MODULES.map((m) => m.key);
                 const on = keys.length === permissions.length && keys.every((k) => permissions.includes(k));
-                return <button key={pr.label} type="button" onClick={() => setPermissions(keys)} className={`text-xs px-2.5 py-1 rounded-full border ${on ? "border-blue-600 bg-blue-50 text-blue-800" : "border-slate-200 text-slate-600 hover:border-slate-300"}`}>{pr.label}</button>;
+                return <button key={pr.label} type="button" onClick={() => setPermissions(keys)} className={`text-xs px-2.5 py-1 rounded-full border ${on ? "border-brand-600 bg-brand-50 text-brand-800" : "border-slate-200 text-slate-600 hover:border-slate-300"}`}>{pr.label}</button>;
               })}
             </div>
             <div className="grid sm:grid-cols-2 gap-x-2 gap-y-0.5 max-h-56 overflow-y-auto rounded-lg border border-slate-200 p-1.5">

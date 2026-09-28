@@ -314,7 +314,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
         <DialogContent className="max-w-3xl w-[calc(100vw-1.5rem)] max-h-[92vh] overflow-y-auto p-0 gap-0">
           <DialogHeader className="px-5 pt-5 pb-3 border-b border-slate-100">
             <DialogTitle className="flex items-center gap-2">
-              {isPec ? <ShieldCheck className="w-5 h-5 text-emerald-600" /> : <Send className="w-5 h-5 text-blue-600" />}
+              {isPec ? <ShieldCheck className="w-5 h-5 text-emerald-600" /> : <Send className="w-5 h-5 text-brand-600" />}
               {draftId ? "Bozza" : isPec ? "Nuova PEC" : "Nuovo messaggio"}
             </DialogTitle>
             <DialogDescription className="sr-only">Scrivi e invia un messaggio di posta</DialogDescription>
@@ -389,7 +389,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
 
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button type="button" variant="outline" size="sm" className="h-9 gap-1.5"><Sparkles className="w-4 h-4 text-blue-600" /> Scrivi con l'AI</Button>
+                    <Button type="button" variant="outline" size="sm" className="h-9 gap-1.5"><Sparkles className="w-4 h-4 text-brand-600" /> Scrivi con l'AI</Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80 space-y-2" align="start">
                     <p className="text-sm font-medium">Cosa vuoi comunicare?</p>
@@ -458,7 +458,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
                   <ul className="grid sm:grid-cols-2 gap-2">
                     {files.map((f, i) => (
                       <li key={`${f.name}-${i}`} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-2">
-                        <FileText className="w-4 h-4 text-blue-600 shrink-0" />
+                        <FileText className="w-4 h-4 text-brand-600 shrink-0" />
                         <div className="min-w-0 flex-1">
                           <p className="text-sm text-slate-800 truncate">{f.name}</p>
                           {f.size ? <p className="text-[11px] text-slate-500">{formatBytes(f.size)}</p> : null}
@@ -478,7 +478,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
                   <Link2 className="w-4 h-4" />
                   Collega a cliente, lavoro o preventivo
                   {[linkState.contact_id, linkState.worksite_id, linkState.quote_id].filter(Boolean).length > 0 && (
-                    <span className="text-xs text-blue-700 bg-blue-50 rounded-full px-2">{[linkState.contact_id, linkState.worksite_id, linkState.quote_id].filter(Boolean).length} collegati</span>
+                    <span className="text-xs text-brand-700 bg-brand-50 rounded-full px-2">{[linkState.contact_id, linkState.worksite_id, linkState.quote_id].filter(Boolean).length} collegati</span>
                   )}
                 </button>
                 {showLinks && (
@@ -503,7 +503,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
               </Button>
               <div className="flex-1" />
               <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
-              <Button onClick={handleSend} disabled={sending || uploading} className={`gap-2 ${isPec ? "bg-emerald-600 hover:bg-emerald-700" : "bg-blue-600 hover:bg-blue-700"}`}>
+              <Button onClick={handleSend} disabled={sending || uploading} className={`gap-2 ${isPec ? "bg-emerald-600 hover:bg-emerald-700" : "bg-brand-600 hover:bg-brand-700"}`}>
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : isPec ? <ShieldCheck className="w-4 h-4" /> : <Send className="w-4 h-4" />}
                 {sending ? "Invio…" : isPec ? "Invia PEC" : "Invia"}
               </Button>

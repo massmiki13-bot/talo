@@ -179,13 +179,13 @@ export default function CompanyProfile() {
             </div>
             <div className="mt-3">
               <div className="flex justify-between text-xs mb-1"><span className="text-slate-600">Profilo completo</span><span className="font-semibold tabular-nums text-slate-900">{completeness}%</span></div>
-              <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className={`h-full rounded-full ${completeness === 100 ? "bg-emerald-500" : "bg-blue-600"}`} style={{ width: `${completeness}%` }} /></div>
+              <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className={`h-full rounded-full ${completeness === 100 ? "bg-emerald-500" : "bg-brand-600"}`} style={{ width: `${completeness}%` }} /></div>
               {missing.length > 0 && <p className="text-xs text-slate-500 mt-2">Mancano: {missing.slice(0, 4).map(([, l]) => l).join(", ")}{missing.length > 4 ? ` e altri ${missing.length - 4}` : ""}</p>}
             </div>
           </div>
           <nav className="bg-white rounded-2xl border border-slate-200 p-1.5 flex lg:flex-col gap-0.5 overflow-x-auto no-scrollbar">
             {SECTIONS.map(({ key, label, icon: I }) => (
-              <button key={key} onClick={() => setSection(key)} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm whitespace-nowrap text-left ${section === key ? "bg-blue-50 text-blue-800 font-medium" : "text-slate-700 hover:bg-slate-50"}`}>
+              <button key={key} onClick={() => setSection(key)} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm whitespace-nowrap text-left ${section === key ? "bg-brand-50 text-brand-800 font-medium" : "text-slate-700 hover:bg-slate-50"}`}>
                 <I className="w-4 h-4 shrink-0" /> {label}
               </button>
             ))}
@@ -195,7 +195,7 @@ export default function CompanyProfile() {
         <div className="min-w-0">
           {section === "anagrafica" && (
             <Panel title="Dati dell'impresa" desc="Inserisci la partita IVA e premi Cerca: ragione sociale e indirizzo arrivano dal registro europeo VIES.">
-              <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-3 mb-5">
+              <div className="rounded-xl border border-brand-100 bg-brand-50/50 p-3 mb-5">
                 <Label htmlFor="p-partita_iva" className="text-sm font-medium text-slate-800">Partita IVA</Label>
                 <div className="flex gap-2 mt-1">
                   <Input id="p-partita_iva" value={profile.partita_iva || ""} onChange={(e) => set("partita_iva", e.target.value.replace(/\s/g, ""))} inputMode="numeric" className={`bg-white max-w-xs ${errors.partita_iva ? "border-red-400" : ""}`} placeholder="01234567890" />
@@ -278,7 +278,7 @@ export default function CompanyProfile() {
                     <div key={key}>
                       <p className="text-sm font-medium text-slate-700 mb-1.5">{label}</p>
                       <div className="relative h-36 rounded-xl border-2 border-dashed border-slate-200 bg-[linear-gradient(45deg,#f8fafc_25%,transparent_25%,transparent_75%,#f8fafc_75%),linear-gradient(45deg,#f8fafc_25%,transparent_25%,transparent_75%,#f8fafc_75%)] bg-[length:16px_16px] bg-[position:0_0,8px_8px] grid place-items-center overflow-hidden">
-                        {uploading === key ? <Loader2 className="w-6 h-6 animate-spin text-blue-600" /> : profile[key] ? (
+                        {uploading === key ? <Loader2 className="w-6 h-6 animate-spin text-brand-600" /> : profile[key] ? (
                           <>
                             <img src={profile[key]} alt={label} className="max-h-28 max-w-[85%] object-contain" />
                             <button onClick={() => set(key, "")} className="absolute top-2 right-2 p-1 rounded-full bg-white shadow border border-slate-200 text-slate-500 hover:text-red-600" aria-label={`Rimuovi ${label}`}><X className="w-3.5 h-3.5" /></button>
@@ -291,8 +291,8 @@ export default function CompanyProfile() {
                         )}
                       </div>
                       <div className="flex gap-3 mt-1.5 text-xs">
-                        {profile[key] && <label className="text-blue-700 hover:underline cursor-pointer">Sostituisci<input type="file" accept="image/*" className="hidden" onChange={(e) => { upload(key, e.target.files?.[0]); e.target.value = ""; }} /></label>}
-                        {key === "firma_url" && <button onClick={() => setSigDrawOpen(true)} className="text-blue-700 hover:underline">Disegna a mano</button>}
+                        {profile[key] && <label className="text-brand-700 hover:underline cursor-pointer">Sostituisci<input type="file" accept="image/*" className="hidden" onChange={(e) => { upload(key, e.target.files?.[0]); e.target.value = ""; }} /></label>}
+                        {key === "firma_url" && <button onClick={() => setSigDrawOpen(true)} className="text-brand-700 hover:underline">Disegna a mano</button>}
                       </div>
                     </div>
                   ))}
@@ -342,7 +342,7 @@ export default function CompanyProfile() {
               <Panel title="Modello di preventivo predefinito" desc="Il modello con cui partono i nuovi preventivi (puoi cambiarlo ogni volta).">
                 <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2">
                   {QUOTE_TEMPLATES.map((t) => (
-                    <button key={t.id} onClick={() => set("template_predefinito", t.id)} className={`text-left p-3 rounded-xl border transition-colors ${(profile.template_predefinito || "classica") === t.id ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-slate-200 hover:border-slate-300"}`}>
+                    <button key={t.id} onClick={() => set("template_predefinito", t.id)} className={`text-left p-3 rounded-xl border transition-colors ${(profile.template_predefinito || "classica") === t.id ? "border-brand-600 bg-brand-50 ring-1 ring-brand-600" : "border-slate-200 hover:border-slate-300"}`}>
                       <span className="block text-sm font-medium text-slate-900">{t.nome}</span>
                       <span className="block text-xs text-slate-500 mt-0.5">{t.descrizione}</span>
                     </button>
@@ -390,7 +390,7 @@ export default function CompanyProfile() {
         <div className="fixed bottom-20 lg:bottom-5 left-1/2 -translate-x-1/2 lg:left-[calc(50%+7.5rem)] z-40 flex items-center gap-3 rounded-full bg-slate-900 text-white pl-5 pr-2 py-2 shadow-xl">
           <span className="text-sm whitespace-nowrap">Modifiche non salvate</span>
           <Button size="sm" variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10 gap-1.5 rounded-full" onClick={() => setProfile(JSON.parse(saved))}><RotateCcw className="w-4 h-4" /> Annulla</Button>
-          <Button size="sm" onClick={save} disabled={saving} className="bg-blue-600 hover:bg-blue-500 gap-1.5 rounded-full">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva</Button>
+          <Button size="sm" onClick={save} disabled={saving} className="bg-brand-600 hover:bg-brand-500 gap-1.5 rounded-full">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva</Button>
         </div>
       )}
 

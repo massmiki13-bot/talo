@@ -137,20 +137,20 @@ export default function Contacts() {
     <div>
       <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Clienti e fornitori</h1>
+          <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Clienti e fornitori</h1>
           <p className="text-slate-500 mt-1 text-sm">Anagrafiche, referenti, condizioni commerciali e storico</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setImportOpen(true)}><Upload className="w-4 h-4" /> Importa</Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
-          <Button size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-700" onClick={() => setForm({})}><Plus className="w-4 h-4" /> Nuovo</Button>
+          <Button size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700" onClick={() => setForm({})}><Plus className="w-4 h-4" /> Nuovo</Button>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-1 mb-4 border-b border-slate-200">
         {TABS.map((t) => (
           <button key={t.key} onClick={() => { setParams(t.key === "cliente" ? {} : { tipo: t.key }); setCategory(""); }}
-            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${t.key === tab.key ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${t.key === tab.key ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>
             {t.label} <span className="text-xs text-slate-400 ml-0.5">{counts[t.key]}</span>
           </button>
         ))}
@@ -172,7 +172,7 @@ export default function Contacts() {
         <div className="flex flex-wrap items-center gap-1.5 mb-4">
           {categories.map((c) => (
             <button key={c} onClick={() => setCategory(category === c ? "" : c)}
-              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${category === c ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}>
+              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${category === c ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}>
               {c}
             </button>
           ))}

@@ -10,6 +10,8 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+  			brand: { 50: "#fff1f2", 100: "#ffe1e3", 200: "#ffc7cc", 300: "#ff9aa4", 400: "#f5606e", 500: "#e3283a", 600: "#c3122a", 700: "#a10d23", 800: "#860f21", 900: "#6f1120", 950: "#3e040c" },
+  			ink: { 900: "#0b0b0d", 800: "#121215", 700: "#1a1a1f", 600: "#24242b" },
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -62,6 +64,8 @@ module.exports = {
   			}
   		},
   		fontFamily: {
+  			sans: ["Barlow", "ui-sans-serif", "system-ui", "sans-serif"],
+  			condensed: ["'Barlow Condensed'", "Barlow", "sans-serif"],
   			heading: ['var(--font-heading)'],
   			body: ['var(--font-body)'],
   			display: ['var(--font-display)'],

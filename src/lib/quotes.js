@@ -79,7 +79,7 @@ export function chapterTotals(righe = []) {
 
 export const QUOTE_STATES = {
   in_attesa: { label: "Da inviare", className: "bg-slate-100 text-slate-700 border-slate-200" },
-  inviato: { label: "Inviato", className: "bg-blue-100 text-blue-800 border-blue-200" },
+  inviato: { label: "Inviato", className: "bg-zinc-200 text-zinc-800 border-zinc-300" },
   visto: { label: "Visto dal cliente", className: "bg-indigo-100 text-indigo-800 border-indigo-200" },
   approvato: { label: "Accettato", className: "bg-emerald-100 text-emerald-800 border-emerald-200" },
   rifiutato: { label: "Rifiutato", className: "bg-red-100 text-red-700 border-red-200" },

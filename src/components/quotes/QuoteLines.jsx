@@ -168,11 +168,11 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
                   <AutoTextarea value={r.descrizione} onChange={(e) => update(i, { descrizione: e.target.value })} placeholder="Descrizione della voce…" aria-label="Descrizione" />
                 </div>
                 <Button type="button" size="icon" variant="ghost" onClick={() => improve(i)} disabled={aiIndex === i || !r.descrizione?.trim()} title="Riscrivi come voce di capitolato" aria-label="Migliora con AI" className="shrink-0">
-                  <Sparkles className={`w-4 h-4 ${aiIndex === i ? "animate-pulse text-blue-600" : "text-slate-400"}`} />
+                  <Sparkles className={`w-4 h-4 ${aiIndex === i ? "animate-pulse text-brand-600" : "text-slate-400"}`} />
                 </Button>
                 {prezzari.length > 0 && (
                   <Button type="button" size="icon" variant="ghost" onClick={() => priceOne(i)} disabled={pricing != null || !r.descrizione?.trim()} title="Prezzo dal prezzario (IA)" aria-label="Prezzo dal prezzario" className="shrink-0">
-                    {pricing === i ? <Loader2 className="w-4 h-4 animate-spin text-blue-600" /> : <Euro className="w-4 h-4 text-slate-400" />}
+                    {pricing === i ? <Loader2 className="w-4 h-4 animate-spin text-brand-600" /> : <Euro className="w-4 h-4 text-slate-400" />}
                   </Button>
                 )}
                 {rowMenu(r, i)}
@@ -203,7 +203,7 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
               </div>
               {r.fonte_prezzo?.prezzario && (
                 <p className="text-xs text-slate-500 mt-1.5 flex items-center gap-1" title={r.fonte_prezzo.voce || ""}>
-                  <BookOpenCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <BookOpenCheck className="w-3.5 h-3.5 text-brand-600 shrink-0" />
                   <span className="truncate">{r.fonte_prezzo.prezzario}{r.fonte_prezzo.codice ? ` · voce ${r.fonte_prezzo.codice}` : ""} · {fmtEur(r.fonte_prezzo.prezzo_base)}{r.fonte_prezzo.um ? `/${r.fonte_prezzo.um}` : ""}{r.fonte_prezzo.affidabilita && r.fonte_prezzo.affidabilita !== "alta" ? ` · corrispondenza ${r.fonte_prezzo.affidabilita}` : ""}</span>
                 </p>
               )}
@@ -226,8 +226,8 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
       </div>
 
       {prezzari.length > 0 && (
-        <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50/60 p-2.5 flex flex-wrap items-center gap-2">
-          <BookOpenCheck className="w-4 h-4 text-blue-700" />
+        <div className="mt-3 rounded-lg border border-brand-100 bg-brand-50/60 p-2.5 flex flex-wrap items-center gap-2">
+          <BookOpenCheck className="w-4 h-4 text-brand-700" />
           <span className="text-sm text-slate-800">Prezzi da</span>
           <Select value={source} onValueChange={setSource}>
             <SelectTrigger className="h-8 w-auto min-w-[200px] bg-white text-sm"><SelectValue /></SelectTrigger>
@@ -236,7 +236,7 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
               {prezzari.map((p) => <SelectItem key={p.id} value={p.id}>{p.nome}{p.predefinito ? " (predefinito)" : ""}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Button type="button" size="sm" onClick={priceAll} disabled={pricing != null} className="ml-auto bg-blue-600 hover:bg-blue-700 gap-1.5">
+          <Button type="button" size="sm" onClick={priceAll} disabled={pricing != null} className="ml-auto bg-brand-600 hover:bg-brand-700 gap-1.5">
             {pricing && typeof pricing === "object" ? <><Loader2 className="w-4 h-4 animate-spin" /> {pricing.done}/{pricing.total}</> : <><Sparkles className="w-4 h-4" /> Prezza le voci senza prezzo</>}
           </Button>
         </div>

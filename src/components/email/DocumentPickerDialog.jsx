@@ -131,11 +131,11 @@ export default function DocumentPickerDialog({ open, onOpenChange, onSelect, pro
               onClick={() => !isSelected && !isGenerating && handleSelect(doc, type)}
               disabled={isSelected || isGenerating}
               className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${
-                isSelected ? "bg-green-50 cursor-default" : "hover:bg-blue-50"
+                isSelected ? "bg-green-50 cursor-default" : "hover:bg-brand-50"
               } ${isGenerating ? "opacity-50" : ""}`}
             >
               {isGenerating ? (
-                <Loader2 className="w-4 h-4 animate-spin text-blue-500 flex-shrink-0" />
+                <Loader2 className="w-4 h-4 animate-spin text-brand-500 flex-shrink-0" />
               ) : isSelected ? (
                 <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
               ) : (
@@ -157,7 +157,7 @@ export default function DocumentPickerDialog({ open, onOpenChange, onSelect, pro
                 <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">file</span>
               )}
               {!doc.file_url && !isSelected && !isGenerating && (
-                <span className="text-[10px] text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded">PDF</span>
+                <span className="text-[10px] text-brand-500 bg-brand-50 px-1.5 py-0.5 rounded">PDF</span>
               )}
             </button>
           );

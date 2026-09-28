@@ -185,7 +185,7 @@ export default function EmployeeDetail() {
           : <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center text-2xl font-semibold text-slate-600 shrink-0">{initials(employee)}</div>}
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{fullName(employee)}</h1>
+            <h1 className="font-display text-2xl sm:text-[30px] leading-tight font-bold text-zinc-950">{fullName(employee)}</h1>
             {cessato
               ? <span className="text-xs font-semibold rounded-full bg-slate-200 text-slate-700 px-2 py-0.5">Cessato il {fmtDate(employee.data_cessazione)}</span>
               : <span className={`inline-flex items-center gap-1.5 text-xs font-semibold rounded-full border px-2 py-0.5 ${st.badge}`}><span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />{st.label}</span>}
@@ -231,7 +231,7 @@ export default function EmployeeDetail() {
 
       <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-slate-200">
         {TABS.map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-blue-600 text-blue-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
+          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
         ))}
       </div>
 
@@ -375,7 +375,7 @@ export default function EmployeeDetail() {
               <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
               <SelectContent>{[0, 1, 2].map((d) => new Date().getFullYear() - d).map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent>
             </Select>
-            <Link to="/presenze" className="text-sm text-blue-700 hover:underline ml-auto">Apri le presenze</Link>
+            <Link to="/presenze" className="text-sm text-brand-700 hover:underline ml-auto">Apri le presenze</Link>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
@@ -394,7 +394,7 @@ export default function EmployeeDetail() {
                   {Object.entries(hours.month.cantieri).sort((a, b) => b[1] - a[1]).map(([name, ore]) => (
                     <li key={name}>
                       <div className="flex justify-between text-sm"><span className="text-slate-800 truncate pr-2">{name}</span><span className="tabular-nums text-slate-700">{ore} h</span></div>
-                      <div className="h-1.5 rounded-full bg-slate-100 mt-1"><div className="h-1.5 rounded-full bg-blue-600" style={{ width: `${Math.min(100, (ore / Math.max(1, hours.month.ore)) * 100)}%` }} /></div>
+                      <div className="h-1.5 rounded-full bg-slate-100 mt-1"><div className="h-1.5 rounded-full bg-brand-600" style={{ width: `${Math.min(100, (ore / Math.max(1, hours.month.ore)) * 100)}%` }} /></div>
                     </li>
                   ))}
                 </ul>
@@ -406,7 +406,7 @@ export default function EmployeeDetail() {
                   const max = Math.max(1, ...hours.perMonth.map((p) => p.ore));
                   return (
                     <button key={i} onClick={() => setMonth((m) => ({ ...m, m: i }))} className="flex-1 flex flex-col items-center gap-1 group" title={`${MONTHS[i]}: ${x.ore} h`}>
-                      <div className={`w-full rounded-t ${i === month.m ? "bg-blue-600" : "bg-slate-300 group-hover:bg-slate-400"}`} style={{ height: `${(x.ore / max) * 88}px` }} />
+                      <div className={`w-full rounded-t ${i === month.m ? "bg-brand-600" : "bg-slate-300 group-hover:bg-slate-400"}`} style={{ height: `${(x.ore / max) * 88}px` }} />
                       <span className="text-[10px] text-slate-500">{MONTHS[i][0]}</span>
                     </button>
                   );
@@ -415,7 +415,7 @@ export default function EmployeeDetail() {
             </Card>
           </div>
           {sitesWorked.length > 0 && (
-            <p className="text-sm text-slate-600">Ha lavorato su {sitesWorked.length} {sitesWorked.length === 1 ? "cantiere" : "cantieri"}: {sitesWorked.map((w, i) => <span key={w.id}>{i > 0 && ", "}<Link to={`/lavori/${w.id}`} className="text-blue-700 hover:underline">{w.nome}</Link></span>)}.</p>
+            <p className="text-sm text-slate-600">Ha lavorato su {sitesWorked.length} {sitesWorked.length === 1 ? "cantiere" : "cantieri"}: {sitesWorked.map((w, i) => <span key={w.id}>{i > 0 && ", "}<Link to={`/lavori/${w.id}`} className="text-brand-700 hover:underline">{w.nome}</Link></span>)}.</p>
           )}
         </div>
       )}
@@ -466,7 +466,7 @@ function DpiDialog({ open, onOpenChange, employee, onSaved }) {
         <div className="flex flex-wrap gap-1.5">
           {DPI_ARTICOLI.map((a) => (
             <button key={a} type="button" onClick={() => toggle(a)}
-              className={`rounded-full border px-2.5 py-1 text-xs ${rows.some((x) => x.articolo === a) ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>{a}</button>
+              className={`rounded-full border px-2.5 py-1 text-xs ${rows.some((x) => x.articolo === a) ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>{a}</button>
           ))}
         </div>
         {rows.length > 0 && (

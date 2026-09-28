@@ -53,13 +53,13 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
   return (
     <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><ListChecks className="w-4 h-4 text-blue-600" /> Fasi e avanzamento</h3>
+        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><ListChecks className="w-4 h-4 text-brand-600" /> Fasi e avanzamento</h3>
         {!readOnly && fasi.length > 0 && <Button size="sm" variant="outline" className="gap-1.5" onClick={emitSal} disabled={saving}><Receipt className="w-4 h-4" /> Emetti SAL</Button>}
       </div>
 
       <div className="mb-4">
         <div className="flex justify-between text-sm mb-1"><span className="text-slate-600">Avanzamento complessivo</span><strong className="tabular-nums">{pct}%</strong></div>
-        <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${pct}%` }} /></div>
+        <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600 transition-all" style={{ width: `${pct}%` }} /></div>
         {contractAmount > 0 && <p className="text-xs text-slate-500 mt-1">Lavori maturati: {fmtEur(contractAmount * pct / 100)} su {fmtEur(contractAmount)}</p>}
       </div>
 
@@ -86,7 +86,7 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
               </div>
               <div className="flex items-center gap-3 mt-2">
                 <input type="range" min="0" max="100" step="5" value={Number(f.completamento) || 0} onChange={(e) => update(i, { completamento: Number(e.target.value) })} disabled={readOnly}
-                  className="flex-1 accent-blue-600" aria-label={`Completamento ${f.nome}`} />
+                  className="flex-1 accent-brand-600" aria-label={`Completamento ${f.nome}`} />
                 <span className={`text-sm font-semibold tabular-nums w-12 text-right ${Number(f.completamento) >= 100 ? "text-emerald-700" : "text-slate-800"}`}>{Number(f.completamento) || 0}%</span>
                 <Input type="date" value={f.data_prevista || ""} onChange={(e) => update(i, { data_prevista: e.target.value })} disabled={readOnly} className="h-8 w-36" aria-label="Data prevista" title="Data prevista di fine fase" />
               </div>

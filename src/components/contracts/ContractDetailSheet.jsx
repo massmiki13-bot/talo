@@ -113,8 +113,8 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
             </dl>
             {(party || contract.worksite_id) && (
               <div className="flex flex-wrap gap-3 text-sm">
-                {party && <Link to={party.to} className="text-blue-700 hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3.5 h-3.5" />{party.label}</Link>}
-                {contract.worksite_id && <Link to={`/lavori/${contract.worksite_id}`} className="text-blue-700 hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3.5 h-3.5" />Lavoro collegato</Link>}
+                {party && <Link to={party.to} className="text-brand-700 hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3.5 h-3.5" />{party.label}</Link>}
+                {contract.worksite_id && <Link to={`/lavori/${contract.worksite_id}`} className="text-brand-700 hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3.5 h-3.5" />Lavoro collegato</Link>}
               </div>
             )}
 
@@ -131,7 +131,7 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-900">Copia firmata</p>
                 {contract.file_firmato_url
-                  ? <a href={contract.file_firmato_url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-700 hover:underline truncate block">{contract.file_firmato_nome || "Apri il documento firmato"}</a>
+                  ? <a href={contract.file_firmato_url} target="_blank" rel="noopener noreferrer" className="text-sm text-brand-700 hover:underline truncate block">{contract.file_firmato_nome || "Apri il documento firmato"}</a>
                   : <p className="text-xs text-slate-500">Carica la scansione firmata: il contratto passa a "Firmato".</p>}
               </div>
               <Button size="sm" variant="outline" asChild disabled={busy === "upload"}>
@@ -142,7 +142,7 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
             {/* Revisione IA */}
             <div className="rounded-lg border border-slate-200 p-3 space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-slate-900 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-blue-600" /> Controllo con IA</p>
+                <p className="text-sm font-medium text-slate-900 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-brand-600" /> Controllo con IA</p>
                 <Button size="sm" variant="outline" onClick={review} disabled={busy === "review"} className="gap-1.5">{busy === "review" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{rev ? "Ricontrolla" : "Controlla il contratto"}</Button>
               </div>
               {placeholders > 0 && <p className="text-sm text-amber-800 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" /> {placeholders} spazi "______" ancora da compilare nel testo.</p>}
@@ -170,7 +170,7 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
                 ) : (
                   <div className="flex gap-2">
                     <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Annulla</Button>
-                    <Button size="sm" onClick={saveText} disabled={busy === "text"} className="bg-blue-600 hover:bg-blue-700 gap-1.5"><Save className="w-4 h-4" /> Salva testo</Button>
+                    <Button size="sm" onClick={saveText} disabled={busy === "text"} className="bg-brand-600 hover:bg-brand-700 gap-1.5"><Save className="w-4 h-4" /> Salva testo</Button>
                   </div>
                 )}
               </div>
