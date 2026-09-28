@@ -696,7 +696,7 @@ function FolderDialog({ dlg, folders, onClose, onSave }) {
           {parent && <DialogDescription>Dentro: {pathLabel(parent.id, folders)}</DialogDescription>}
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
-          <div><Label>Nome</Label><Input autoFocus value={nome} onChange={(e) => setNome(e.target.value)} maxLength={80} /></div>
+          <div><Label htmlFor="companydocuments-nome">Nome</Label><Input id="companydocuments-nome" autoFocus value={nome} onChange={(e) => setNome(e.target.value)} maxLength={80} /></div>
           <div>
             <Label>Colore</Label>
             <div className="flex gap-2 mt-1.5">

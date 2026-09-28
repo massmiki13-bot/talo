@@ -259,7 +259,7 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
                     <span>Timbro</span>
                   </label>
                 )}
-                <p className="text-xs text-slate-400 ml-auto hidden sm:block">Trascina per spostare · Pallino per ridimensionare</p>
+                <p className="text-xs text-slate-500 ml-auto hidden sm:block">Trascina per spostare · Pallino per ridimensionare</p>
               </div>
 
               {/* Page navigation */}
@@ -332,7 +332,7 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
 
               {/* Multi-page hint */}
               {pageCount > 1 && (firma.enabled || timbro.enabled) && (
-                <p className="text-xs text-slate-400 text-center">
+                <p className="text-xs text-slate-500 text-center">
                   Naviga le pagine e posiziona firma/timbro sulla pagina desiderata. Ogni elemento resta sulla pagina in cui lo posizioni.
                 </p>
               )}

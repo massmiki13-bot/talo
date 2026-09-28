@@ -85,9 +85,9 @@ export default function TemplatesDialog({ open, onOpenChange }) {
                 <Input id="tpl-nome" className="mt-1" value={editing.nome} onChange={(e) => setEditing({ ...editing, nome: e.target.value })} placeholder="Es. Invio preventivo" />
               </div>
               <div>
-                <Label>Tipo</Label>
+                <Label htmlFor="templatesdialog-tipo">Tipo</Label>
                 <Select value={editing.tipo || "generico"} onValueChange={(v) => setEditing({ ...editing, tipo: v })}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="templatesdialog-tipo" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>{TEMPLATE_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>

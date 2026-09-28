@@ -87,7 +87,7 @@ export default function WorksiteMoney({ worksite, contractAmount, onSaved, onPay
                   <p className="text-sm text-slate-900">{fmtEur(p.importo)} · {p.tipo === "saldo" ? "Saldo" : p.tipo === "sal" ? "SAL" : "Acconto"}</p>
                   <p className="text-xs text-slate-500 truncate">{fmtDate(p.data)}{p.metodo ? ` · ${p.metodo}` : ""}{p.note ? ` · ${p.note}` : ""}</p>
                 </div>
-                {!readOnly && <button aria-label="Elimina incasso" onClick={() => removePayment(p)} className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                {!readOnly && <button aria-label="Elimina incasso" onClick={() => removePayment(p)} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
               </li>
             ))}
           </ul>
@@ -126,24 +126,24 @@ export default function WorksiteMoney({ worksite, contractAmount, onSaved, onPay
           <DialogHeader><DialogTitle>Registra incasso</DialogTitle><DialogDescription>{worksite.nome}</DialogDescription></DialogHeader>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div><Label>Importo €</Label><Input className="mt-1" type="number" inputMode="decimal" step="0.01" value={pay.importo} onChange={(e) => setPay({ ...pay, importo: e.target.value })} autoFocus /></div>
-              <div><Label>Data</Label><Input className="mt-1" type="date" value={pay.data} onChange={(e) => setPay({ ...pay, data: e.target.value })} /></div>
+              <div><Label htmlFor="worksitemoney-importo">Importo €</Label><Input id="worksitemoney-importo" className="mt-1" type="number" inputMode="decimal" step="0.01" value={pay.importo} onChange={(e) => setPay({ ...pay, importo: e.target.value })} autoFocus /></div>
+              <div><Label htmlFor="worksitemoney-data">Data</Label><Input id="worksitemoney-data" className="mt-1" type="date" value={pay.data} onChange={(e) => setPay({ ...pay, data: e.target.value })} /></div>
               <div>
-                <Label>Tipo</Label>
+                <Label htmlFor="worksitemoney-tipo">Tipo</Label>
                 <Select value={pay.tipo} onValueChange={(v) => setPay({ ...pay, tipo: v })}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="worksitemoney-tipo" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent><SelectItem value="acconto">Acconto</SelectItem><SelectItem value="sal">SAL</SelectItem><SelectItem value="saldo">Saldo</SelectItem></SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Metodo</Label>
+                <Label htmlFor="worksitemoney-metodo">Metodo</Label>
                 <Select value={pay.metodo} onValueChange={(v) => setPay({ ...pay, metodo: v })}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="worksitemoney-metodo" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>{METODI.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
-            <div><Label>Note</Label><Input className="mt-1" value={pay.note} onChange={(e) => setPay({ ...pay, note: e.target.value })} /></div>
+            <div><Label htmlFor="worksitemoney-note">Note</Label><Input id="worksitemoney-note" className="mt-1" value={pay.note} onChange={(e) => setPay({ ...pay, note: e.target.value })} /></div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setPayOpen(false)}>Annulla</Button>
               <Button onClick={savePayment} className="bg-emerald-600 hover:bg-emerald-700">Registra</Button>
@@ -218,7 +218,7 @@ function PlanDialog({ open, onOpenChange, worksite, contractAmount, onSaved }) {
               <Input aria-label="Descrizione" value={r.descrizione || ""} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, descrizione: e.target.value } : y)))} placeholder="Es. Acconto" className="h-9" />
               <Input aria-label="Importo" type="number" step="0.01" value={r.importo ?? ""} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, importo: e.target.value } : y)))} className="h-9 tabular-nums" />
               <Input aria-label="Scadenza" type="date" value={r.scadenza || ""} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, scadenza: e.target.value } : y)))} className="h-9" />
-              <button aria-label="Rimuovi rata" onClick={() => setRows((x) => x.filter((_, j) => j !== i))} className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+              <button aria-label="Rimuovi rata" onClick={() => setRows((x) => x.filter((_, j) => j !== i))} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
             </div>
           ))}
           <Button size="sm" variant="outline" className="gap-1" onClick={() => setRows((x) => [...x, { descrizione: "", importo: "", scadenza: "" }])}><Plus className="w-4 h-4" /> Rata</Button>

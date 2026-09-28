@@ -539,21 +539,21 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
           {/* Dati */}
           <Section title="Dati del preventivo">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div><Label>N° preventivo</Label><Input className="mt-1" value={quote.numero || ""} onChange={(e) => set({ numero: e.target.value })} /></div>
-              <div><Label>Data</Label><Input className="mt-1" type="date" value={quote.data || ""} onChange={(e) => set({ data: e.target.value })} /></div>
-              <div><Label>Validità (giorni)</Label><Input className="mt-1" type="number" inputMode="numeric" value={quote.validita_giorni ?? ""} onChange={(e) => set({ validita_giorni: e.target.value === "" ? "" : Number(e.target.value) })} /></div>
+              <div><Label htmlFor="quoteeditor-n-preventivo">N° preventivo</Label><Input id="quoteeditor-n-preventivo" className="mt-1" value={quote.numero || ""} onChange={(e) => set({ numero: e.target.value })} /></div>
+              <div><Label htmlFor="quoteeditor-data">Data</Label><Input id="quoteeditor-data" className="mt-1" type="date" value={quote.data || ""} onChange={(e) => set({ data: e.target.value })} /></div>
+              <div><Label htmlFor="quoteeditor-validita-giorni">Validità (giorni)</Label><Input id="quoteeditor-validita-giorni" className="mt-1" type="number" inputMode="numeric" value={quote.validita_giorni ?? ""} onChange={(e) => set({ validita_giorni: e.target.value === "" ? "" : Number(e.target.value) })} /></div>
               <div>
-                <Label>Stato</Label>
+                <Label htmlFor="quoteeditor-stato">Stato</Label>
                 <Select value={quote.stato || "in_attesa"} onValueChange={changeState}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="quoteeditor-stato" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>{Object.entries(QUOTE_STATES).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="col-span-2">
-                <Label>Cliente</Label>
+                <Label htmlFor="quoteeditor-cliente">Cliente</Label>
                 <div className="flex gap-2 mt-1">
                   <Select value={quote.cliente_id || "none"} onValueChange={(v) => applyClient(contacts.find((c) => c.id === v) || null)}>
-                    <SelectTrigger><SelectValue placeholder="Seleziona cliente" /></SelectTrigger>
+                    <SelectTrigger id="quoteeditor-cliente"><SelectValue placeholder="Seleziona cliente" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">— Nessun cliente —</SelectItem>
                       {contacts.map((c) => <SelectItem key={c.id} value={c.id}>{displayName(c)}{c.citta ? ` · ${c.citta}` : ""}</SelectItem>)}
@@ -564,16 +564,16 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
                 {client && <p className="text-xs text-slate-500 mt-1"><Link to={`/contatti/${client.id}`} className="text-brand-700 hover:underline">Scheda cliente</Link>{client.pagamento_default && ` · pagamento abituale: ${client.pagamento_default}`}</p>}
               </div>
               <div className="col-span-2">
-                <Label>Lavoro collegato</Label>
+                <Label htmlFor="quoteeditor-lavoro-collegato">Lavoro collegato</Label>
                 <Select value={quote.worksite_id || "none"} onValueChange={(v) => set(v === "none" ? { worksite_id: "", worksite_nome: "" } : { worksite_id: v, worksite_nome: worksites.find((w) => w.id === v)?.nome || "" })}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="quoteeditor-lavoro-collegato" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">— Nessuno —</SelectItem>
                     {worksites.map((w) => <SelectItem key={w.id} value={w.id}>{w.nome}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="col-span-2 md:col-span-4"><Label>Oggetto</Label><Input className="mt-1" value={quote.oggetto || ""} onChange={(e) => set({ oggetto: e.target.value })} placeholder="Es. Ristrutturazione bagno – Via Roma 12" /></div>
+              <div className="col-span-2 md:col-span-4"><Label htmlFor="quoteeditor-oggetto">Oggetto</Label><Input id="quoteeditor-oggetto" className="mt-1" value={quote.oggetto || ""} onChange={(e) => set({ oggetto: e.target.value })} placeholder="Es. Ristrutturazione bagno – Via Roma 12" /></div>
             </div>
           </Section>
 
@@ -589,11 +589,11 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
           <Section title="Condizioni">
             <div className="grid md:grid-cols-2 gap-3">
               <div>
-                <Label>Pagamento</Label>
-                <Input className="mt-1" list="modalita-pagamento" value={quote.condizioni_pagamento || ""} onChange={(e) => set({ condizioni_pagamento: e.target.value })} placeholder="Es. Acconto 30% – saldo a fine lavori" />
+                <Label htmlFor="quoteeditor-pagamento">Pagamento</Label>
+                <Input id="quoteeditor-pagamento" className="mt-1" list="modalita-pagamento" value={quote.condizioni_pagamento || ""} onChange={(e) => set({ condizioni_pagamento: e.target.value })} placeholder="Es. Acconto 30% – saldo a fine lavori" />
                 <datalist id="modalita-pagamento">{MODALITA_PAGAMENTO.map((m) => <option key={m} value={m} />)}</datalist>
               </div>
-              <div><Label>Tempi di esecuzione</Label><Input className="mt-1" value={quote.tempi_esecuzione || ""} onChange={(e) => set({ tempi_esecuzione: e.target.value })} placeholder="Es. 15 giorni lavorativi dall'accettazione" /></div>
+              <div><Label htmlFor="quoteeditor-tempi-di-esecuzione">Tempi di esecuzione</Label><Input id="quoteeditor-tempi-di-esecuzione" className="mt-1" value={quote.tempi_esecuzione || ""} onChange={(e) => set({ tempi_esecuzione: e.target.value })} placeholder="Es. 15 giorni lavorativi dall'accettazione" /></div>
               <div className="md:col-span-2">
                 <div className="flex items-center justify-between">
                   <Label>Clausole e condizioni generali</Label>
@@ -601,7 +601,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
                 </div>
                 <textarea value={quote.clausole || ""} onChange={(e) => set({ clausole: e.target.value })} rows={5} className="mt-1 w-full rounded-md border border-input p-2 text-sm" />
               </div>
-              <div className="md:col-span-2"><Label>Note per il cliente</Label><textarea value={quote.note || ""} onChange={(e) => set({ note: e.target.value })} rows={3} className="mt-1 w-full rounded-md border border-input p-2 text-sm" placeholder="Note aggiuntive…" /></div>
+              <div className="md:col-span-2"><Label htmlFor="quoteeditor-note-per-il-cliente">Note per il cliente</Label><textarea id="quoteeditor-note-per-il-cliente" value={quote.note || ""} onChange={(e) => set({ note: e.target.value })} rows={3} className="mt-1 w-full rounded-md border border-input p-2 text-sm" placeholder="Note aggiuntive…" /></div>
             </div>
           </Section>
 

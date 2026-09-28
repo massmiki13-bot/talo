@@ -154,10 +154,10 @@ export default function DailySheet({ date, setDate, records, employees, worksite
         <div className="bg-white rounded-xl border border-slate-200 p-2.5 flex flex-wrap items-center gap-2">
           <div className="relative min-w-[160px] flex-1 sm:flex-none">
             <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cerca dipendente" className="pl-8 h-9 sm:w-[180px]" />
+            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cerca dipendente" aria-label="Cerca dipendente" className="pl-8 h-9 sm:w-[180px]" />
           </div>
           <Select value={defaultSite || NONE} onValueChange={(v) => { const s = v === NONE ? "" : v; setDefaultSite(s); savePref("site", s); }}>
-            <SelectTrigger className="h-9 w-[200px]"><SelectValue placeholder={`${siteLabel} predefinito`} /></SelectTrigger>
+            <SelectTrigger className="h-9 w-[200px]" aria-label={`${siteLabel} predefinito`}><SelectValue placeholder={`${siteLabel} predefinito`} /></SelectTrigger>
             <SelectContent>
               <SelectItem value={NONE}>Nessun {siteLabel.toLowerCase()} predefinito</SelectItem>
               {activeSites.map((w) => <SelectItem key={w.id} value={w.id}>{w.nome}</SelectItem>)}
@@ -220,7 +220,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
                     {r.stato === "presente" ? r.cantieri.map((c, i) => (
                       <div key={i} className="flex items-center gap-1.5">
                         <Select value={c.cantiere_id || NONE} onValueChange={(v) => setSite(r.dipendente_id, i, "cantiere_id", v === NONE ? "" : v)} disabled={readOnly}>
-                          <SelectTrigger className="h-8 flex-1 min-w-0 text-sm"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="h-8 flex-1 min-w-0 text-sm" aria-label={`${siteLabel} di ${r.dipendente_nome || "dipendente"}`}><SelectValue /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value={NONE}>Senza {siteLabel.toLowerCase()}</SelectItem>
                             {activeSites.map((w) => <SelectItem key={w.id} value={w.id}>{w.nome}</SelectItem>)}
@@ -230,10 +230,10 @@ export default function DailySheet({ date, setDate, records, employees, worksite
                         <Input type="number" inputMode="decimal" step="0.5" min="0" max="24" value={c.ore || ""} onChange={(ev) => setSite(r.dipendente_id, i, "ore", ev.target.value)} disabled={readOnly} className="h-8 w-[68px] text-sm tabular-nums" aria-label="Ore" />
                         <span className="text-xs text-slate-500">h</span>
                         {!readOnly && (r.cantieri.length > 1
-                          ? <button onClick={() => removeSplit(r.dipendente_id, i)} className="p-1 text-slate-400 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
-                          : <button onClick={() => addSplit(r.dipendente_id)} className="p-1 text-slate-400 hover:text-brand-600" title={`Dividi su più ${siteLabel.toLowerCase()}`} aria-label="Aggiungi"><Plus className="w-4 h-4" /></button>)}
+                          ? <button onClick={() => removeSplit(r.dipendente_id, i)} className="p-1 text-slate-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
+                          : <button onClick={() => addSplit(r.dipendente_id)} className="p-1 text-slate-500 hover:text-brand-600" title={`Dividi su più ${siteLabel.toLowerCase()}`} aria-label="Aggiungi"><Plus className="w-4 h-4" /></button>)}
                       </div>
-                    )) : <p className="text-sm text-slate-400 pt-1.5">{r.stato ? "—" : "Non registrato"}</p>}
+                    )) : <p className="text-sm text-slate-500 pt-1.5">{r.stato ? "—" : "Non registrato"}</p>}
                     {r.stato === "presente" && r.cantieri.length > 1 && !readOnly && (
                       <button onClick={() => addSplit(r.dipendente_id)} className="text-xs text-brand-700 hover:underline">+ altro {siteLabel.toLowerCase()}</button>
                     )}
@@ -243,7 +243,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
                   </div>
                   <div className="hidden md:block">
                     {!readOnly && !r.note && !noteOpen.has(r.dipendente_id) && (
-                      <button onClick={() => setNoteOpen((s) => new Set([...s, r.dipendente_id]))} className="p-1.5 rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700" title="Aggiungi nota" aria-label="Aggiungi nota"><MessageSquare className="w-4 h-4" /></button>
+                      <button onClick={() => setNoteOpen((s) => new Set([...s, r.dipendente_id]))} className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700" title="Aggiungi nota" aria-label="Aggiungi nota"><MessageSquare className="w-4 h-4" /></button>
                     )}
                   </div>
                 </div>

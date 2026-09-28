@@ -48,6 +48,7 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen">
+      <a href="#contenuto" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-zinc-900 focus:shadow-lg">Vai al contenuto</a>
       {/* Barra superiore su telefono */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-14 metal-ink flex items-center px-4 z-40 border-b border-white/[0.06]">
         <TaloLogo size={30} subtitle={companyName} />
@@ -65,7 +66,7 @@ export default function AppLayout() {
         </div>
       )}
 
-      <main className={`min-h-screen pt-14 lg:pt-0 pb-20 lg:pb-0 transition-[margin] duration-300 ${collapsed ? "lg:ml-[72px]" : "lg:ml-64"}`}>
+      <main id="contenuto" tabIndex={-1} className={`min-h-screen outline-none pt-14 lg:pt-0 pb-20 lg:pb-0 transition-[margin] duration-300 ${collapsed ? "lg:ml-[72px]" : "lg:ml-64"}`}>
         <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           <Suspense fallback={<LoadingSpinner />}>
             <Outlet />

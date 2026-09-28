@@ -355,7 +355,7 @@ export default function EmployeeDetail() {
                 {[...dpi].map((d, i) => ({ ...d, i })).sort((a, b) => String(b.data_consegna).localeCompare(String(a.data_consegna))).map((d) => (
                   <tr key={d.i}>
                     <td className="py-2 text-slate-900">{d.articolo}</td><td className="py-2">{d.taglia || "—"}</td><td className="py-2">{d.quantita || 1}</td><td className="py-2">{fmtDate(d.data_consegna)}</td>
-                    <td className="py-2 text-right">{!readOnly && <button aria-label="Elimina" onClick={() => removeDpi(d.i)} className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}</td>
+                    <td className="py-2 text-right">{!readOnly && <button aria-label="Elimina" onClick={() => removeDpi(d.i)} className="p-1 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}</td>
                   </tr>
                 ))}
               </tbody>

@@ -103,14 +103,14 @@ export default function SignaturePad({ value, onChange, label = "Firma" }) {
       <div className="flex items-center justify-between mb-1">
         <span className="text-sm font-medium text-slate-700">{label}</span>
         <div className="flex gap-1">
-          <button onClick={toggleSize} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-brand-600" title={enlarged ? "Riduci" : "Ingrandisci"}>
+          <button onClick={toggleSize} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-brand-600" title={enlarged ? "Riduci" : "Ingrandisci"}>
             {enlarged ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
-          <label className="cursor-pointer p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600" title="Carica immagine firma">
+          <label className="cursor-pointer p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-600" title="Carica immagine firma">
             <Upload className="w-4 h-4" />
             <input type="file" accept="image/*" className="hidden" onChange={handleUpload} />
           </label>
-          <button onClick={clear} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-red-600" title="Cancella">
+          <button onClick={clear} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-red-600" title="Cancella">
             <Eraser className="w-4 h-4" />
           </button>
         </div>
@@ -129,7 +129,7 @@ export default function SignaturePad({ value, onChange, label = "Firma" }) {
         onTouchEnd={stopDraw}
       />
       {!hasDrawn && (
-        <p className="text-xs text-slate-400 mt-1 text-center">Firma con il dito/mouse o carica un'immagine</p>
+        <p className="text-xs text-slate-500 mt-1 text-center">Firma con il dito/mouse o carica un'immagine</p>
       )}
       {hasDrawn && (
         <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1">

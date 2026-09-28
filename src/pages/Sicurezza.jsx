@@ -103,8 +103,8 @@ export default function Sicurezza() {
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${p.stato === "consegnato" ? "bg-emerald-100 text-emerald-800" : p.stato === "completo" ? "bg-zinc-200 text-zinc-800" : "bg-slate-100 text-slate-700"}`}>{STATI[p.stato] || "Bozza"}</span>
                   {miss > 0 ? <span className="text-xs text-amber-700 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" />{miss} dati mancanti</span> : <span className="text-xs text-emerald-700 flex items-center gap-1"><Check className="w-3.5 h-3.5" />Completo</span>}
                   <div className="ml-auto flex">
-                    <button onClick={() => duplicate(p)} className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100" title="Duplica per un altro cantiere" aria-label="Duplica"><Copy className="w-4 h-4" /></button>
-                    <button onClick={() => remove(p)} className="p-1.5 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50" aria-label="Elimina"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => duplicate(p)} className="p-1.5 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100" title="Duplica per un altro cantiere" aria-label="Duplica"><Copy className="w-4 h-4" /></button>
+                    <button onClick={() => remove(p)} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </div>
               </div>
@@ -300,7 +300,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                 <div key={k} className="flex gap-2 mb-2">
                   <Input value={s.nome} placeholder="Impresa" onChange={(e) => set("cantiere.subappaltatori", d.cantiere.subappaltatori.map((x, j) => (j === k ? { ...x, nome: e.target.value } : x)))} />
                   <Input value={s.lavorazioni} placeholder="Lavorazioni affidate" onChange={(e) => set("cantiere.subappaltatori", d.cantiere.subappaltatori.map((x, j) => (j === k ? { ...x, lavorazioni: e.target.value } : x)))} />
-                  <button onClick={() => set("cantiere.subappaltatori", d.cantiere.subappaltatori.filter((_, j) => j !== k))} className="p-2 text-slate-400 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
+                  <button onClick={() => set("cantiere.subappaltatori", d.cantiere.subappaltatori.filter((_, j) => j !== k))} className="p-2 text-slate-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
                 </div>
               ))}
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => set("cantiere.subappaltatori", [...(d.cantiere?.subappaltatori || []), { nome: "", lavorazioni: "" }])}><Plus className="w-4 h-4" /> Aggiungi</Button>
@@ -318,7 +318,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                         <p className="text-sm font-medium text-slate-900">{l.nome}</p>
                         <p className="text-xs text-slate-500">{l.qualifica || "—"}{l.idoneita ? ` · ${l.idoneita}` : " · idoneità non registrata"}</p>
                       </div>
-                      <button onClick={() => set("lavoratori", d.lavoratori.filter((_, j) => j !== k))} className="p-1 text-slate-400 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
+                      <button onClick={() => set("lavoratori", d.lavoratori.filter((_, j) => j !== k))} className="p-1 text-slate-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
                     </div>
                     <Input className="mt-2" value={l.mansione || ""} placeholder="Mansione in cantiere (es. muratore, addetto ai ponteggi)" onChange={(e) => set("lavoratori", d.lavoratori.map((x, j) => (j === k ? { ...x, mansione: e.target.value } : x)))} />
                     <p className={`text-xs mt-1.5 ${l.formazione ? "text-slate-600" : "text-amber-700"}`}>{l.formazione ? `Formazione: ${l.formazione}` : "Nessun attestato di formazione registrato"}</p>
@@ -377,7 +377,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                   <Input value={s.nome} placeholder="Prodotto" onChange={(e) => set("sostanze", d.sostanze.map((x, j) => (j === k ? { ...x, nome: e.target.value } : x)))} />
                   <Input value={s.uso} placeholder="Impiego" onChange={(e) => set("sostanze", d.sostanze.map((x, j) => (j === k ? { ...x, uso: e.target.value } : x)))} />
                   <Input value={s.scheda} placeholder="Scheda di sicurezza" onChange={(e) => set("sostanze", d.sostanze.map((x, j) => (j === k ? { ...x, scheda: e.target.value } : x)))} />
-                  <button onClick={() => set("sostanze", d.sostanze.filter((_, j) => j !== k))} className="p-2 text-slate-400 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
+                  <button onClick={() => set("sostanze", d.sostanze.filter((_, j) => j !== k))} className="p-2 text-slate-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
                 </div>
               ))}
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => set("sostanze", [...(d.sostanze || []), { nome: "", uso: "", scheda: "Disponibile in cantiere" }])}><Plus className="w-4 h-4" /> Aggiungi sostanza</Button>
@@ -428,16 +428,16 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                 <F label="Luogo" v={d.firme?.luogo} on={(v) => set("firme.luogo", v)} />
                 <F label="Data" type="date" v={d.firme?.data} on={(v) => set("firme.data", v)} />
                 <div>
-                  <Label className="text-sm text-slate-700">Stato</Label>
+                  <Label htmlFor="sicurezza-stato" className="text-sm text-slate-700">Stato</Label>
                   <Select value={meta.stato} onValueChange={(v) => setMeta({ ...meta, stato: v })}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="sicurezza-stato" className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>{Object.entries(STATI).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-sm text-slate-700">Revisione</Label>
+                  <Label htmlFor="sicurezza-revisione" className="text-sm text-slate-700">Revisione</Label>
                   <div className="flex gap-2 mt-1">
-                    <Input readOnly value={`Rev. ${meta.revisione} del ${new Date(meta.data).toLocaleDateString("it-IT")}`} />
+                    <Input id="sicurezza-revisione" readOnly value={`Rev. ${meta.revisione} del ${new Date(meta.data).toLocaleDateString("it-IT")}`} />
                     <Button variant="outline" onClick={() => confirm("Creare una nuova revisione? Numero e data verranno aggiornati.") && setMeta({ ...meta, revisione: meta.revisione + 1, data: new Date().toISOString().slice(0, 10) })}>Nuova</Button>
                   </div>
                 </div>
@@ -465,7 +465,7 @@ function LavCard({ l, idx, busy, onAssess, onChange, onRemove }) {
       <div className="flex items-start gap-2">
         <h3 className="flex-1 text-sm font-semibold text-slate-900">4.{idx + 1} · {l.nome}</h3>
         <Button size="sm" variant="outline" onClick={onAssess} disabled={busy} className="gap-1.5">{busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{l.rischi?.length ? "Rigenera" : "Valuta con IA"}</Button>
-        <button onClick={onRemove} className="p-1.5 text-slate-400 hover:text-red-600" aria-label="Rimuovi lavorazione"><X className="w-4 h-4" /></button>
+        <button onClick={onRemove} className="p-1.5 text-slate-500 hover:text-red-600" aria-label="Rimuovi lavorazione"><X className="w-4 h-4" /></button>
       </div>
       <Input value={l.note || ""} onChange={(e) => onChange({ note: e.target.value })} placeholder="Dettagli per l'IA (es. copertura a 9 m, tegole in cotto, accesso da cortile)" className="mt-3" />
       {!l.rischi?.length ? <p className="text-sm text-slate-500 mt-3">Premi "Valuta con IA" per ottenere rischi, misure e DPI di questa lavorazione.</p> : (
@@ -482,7 +482,7 @@ function LavCard({ l, idx, busy, onAssess, onChange, onRemove }) {
                   <Input type="number" min={1} max={4} value={r.p} onChange={(e) => upd({ p: Math.min(4, Math.max(1, Number(e.target.value) || 1)) })} className="h-8 text-sm" aria-label="Probabilità" />
                   <Input type="number" min={1} max={4} value={r.d} onChange={(e) => upd({ d: Math.min(4, Math.max(1, Number(e.target.value) || 1)) })} className="h-8 text-sm" aria-label="Danno" />
                   <span className={`text-xs font-semibold text-center rounded-md py-1.5 ${lv.className}`}>{lv.r} {lv.label}</span>
-                  <button onClick={() => onChange({ rischi: l.rischi.filter((_, j) => j !== k) })} className="text-slate-400 hover:text-red-600" aria-label="Rimuovi rischio"><X className="w-4 h-4" /></button>
+                  <button onClick={() => onChange({ rischi: l.rischi.filter((_, j) => j !== k) })} className="text-slate-500 hover:text-red-600" aria-label="Rimuovi rischio"><X className="w-4 h-4" /></button>
                 </div>
               );
             })}
@@ -523,8 +523,8 @@ function F({ label, v, on, wide, type = "text", list }) {
 function Area({ label, v, on, rows = 3, placeholder }) {
   return (
     <div className="mt-4">
-      <Label className="text-sm text-slate-700">{label}</Label>
-      <Textarea value={v || ""} onChange={(e) => on(e.target.value)} rows={rows} className="mt-1" placeholder={placeholder} />
+      <Label htmlFor="sicurezza-campo" className="text-sm text-slate-700">{label}</Label>
+      <Textarea id="sicurezza-campo" value={v || ""} onChange={(e) => on(e.target.value)} rows={rows} className="mt-1" placeholder={placeholder} />
     </div>
   );
 }

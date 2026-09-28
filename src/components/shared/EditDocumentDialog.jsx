@@ -97,13 +97,13 @@ export default function EditDocumentDialog({ open, onOpenChange, doc, employeeNa
         <DialogHeader><DialogTitle>Modifica Documento</DialogTitle></DialogHeader>
         <div className="space-y-4 mt-4">
           <div>
-            <Label>Titolo</Label>
-            <Input value={form.titolo} onChange={e => setForm({ ...form, titolo: e.target.value })} />
+            <Label htmlFor="editdocumentdialog-titolo">Titolo</Label>
+            <Input id="editdocumentdialog-titolo" value={form.titolo} onChange={e => setForm({ ...form, titolo: e.target.value })} />
           </div>
           <div>
-            <Label>Tipo</Label>
+            <Label htmlFor="editdocumentdialog-tipo">Tipo</Label>
             <Select value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger id="editdocumentdialog-tipo"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {docTypes.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
               </SelectContent>
@@ -119,8 +119,8 @@ export default function EditDocumentDialog({ open, onOpenChange, doc, employeeNa
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Data Emissione</Label>
-              <Input type="date" value={form.data_emissione} onChange={e => setForm({ ...form, data_emissione: e.target.value })} />
+              <Label htmlFor="editdocumentdialog-data-emissione">Data Emissione</Label>
+              <Input id="editdocumentdialog-data-emissione" type="date" value={form.data_emissione} onChange={e => setForm({ ...form, data_emissione: e.target.value })} />
             </div>
           </div>
 
@@ -147,12 +147,12 @@ export default function EditDocumentDialog({ open, onOpenChange, doc, employeeNa
                   value={form.data_scadenza || ""}
                   onChange={e => setForm(prev => ({ ...prev, data_scadenza: e.target.value }))}
                 />
-                <p className="text-xs text-slate-400 mt-1">Inserisci o modifica la data di scadenza.</p>
+                <p className="text-xs text-slate-500 mt-1">Inserisci o modifica la data di scadenza.</p>
               </div>
             )}
 
             {form.scadenza_mode === "nessuna" && (
-              <p className="text-xs text-slate-400 mt-2">
+              <p className="text-xs text-slate-500 mt-2">
                 Il documento non ha scadenza — {doc.data_scadenza ? "il promemoria esistente verrà rimosso." : "nessun promemoria verrà creato."}
               </p>
             )}
@@ -178,9 +178,9 @@ export default function EditDocumentDialog({ open, onOpenChange, doc, employeeNa
               </Select>
               {Number(form.anticipo) > 0 && (
                 <div>
-                  <Label className="text-xs">Ripeti avviso</Label>
+                  <Label htmlFor="editdocumentdialog-ripeti-avviso" className="text-xs">Ripeti avviso</Label>
                   <Select value={form.ripetizione} onValueChange={v => setForm({ ...form, ripetizione: v })}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="editdocumentdialog-ripeti-avviso" className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="nessuna">Una volta sola</SelectItem>
                       <SelectItem value="giornaliera">Ogni giorno fino alla scadenza</SelectItem>

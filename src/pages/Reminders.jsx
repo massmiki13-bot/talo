@@ -443,30 +443,30 @@ function ReminderDialog({ initial, onClose, onSave }) {
             <div><Label htmlFor="r-data">Quando</Label><Input id="r-data" type="date" value={f.data} onChange={(e) => set("data", e.target.value)} /></div>
             <div><Label htmlFor="r-ora">Ora (facoltativa)</Label><Input id="r-ora" type="time" value={f.ora} onChange={(e) => set("ora", e.target.value)} /></div>
             <div>
-              <Label>Categoria</Label>
+              <Label htmlFor="reminders-categoria">Categoria</Label>
               <Select value={f.tipo} onValueChange={(v) => set("tipo", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="reminders-categoria"><SelectValue /></SelectTrigger>
                 <SelectContent>{REMINDER_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Priorità</Label>
+              <Label htmlFor="reminders-priorita">Priorità</Label>
               <Select value={f.priorita} onValueChange={(v) => set("priorita", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="reminders-priorita"><SelectValue /></SelectTrigger>
                 <SelectContent>{PRIORITIES.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Si ripete</Label>
+              <Label htmlFor="reminders-si-ripete">Si ripete</Label>
               <Select value={f.ricorrenza} onValueChange={(v) => set("ricorrenza", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="reminders-si-ripete"><SelectValue /></SelectTrigger>
                 <SelectContent>{RECURRENCES.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Avvisami anche</Label>
+              <Label htmlFor="reminders-avvisami-anche">Avvisami anche</Label>
               <Select value={f.anticipo} onValueChange={(v) => set("anticipo", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="reminders-avvisami-anche"><SelectValue /></SelectTrigger>
                 <SelectContent>{ANTICIPI.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>

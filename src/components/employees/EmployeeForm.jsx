@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Camera, X } from "lucide-react";
 import { isValidCodiceFiscale, isValidIban, isValidEmail, formatIban } from "@/lib/validators";
 import { TIPI_CONTRATTO, CCNL, PATENTI, fullName, initials } from "@/lib/employees";
+import Field from "@/components/shared/FormField";
 
 export const EMPTY_EMPLOYEE = {
   nome: "", cognome: "", codice_fiscale: "", data_nascita: "", luogo_nascita: "", nazionalita: "Italiana", indirizzo: "",
@@ -18,15 +19,6 @@ export const EMPTY_EMPLOYEE = {
   permesso_soggiorno_scadenza: "", patenti: [], taglie: {}, contatto_emergenza: {}, note: "", stato: "attivo",
 };
 
-function Field({ label, error, hint, className = "", children }) {
-  return (
-    <div className={className}>
-      <Label className="text-sm">{label}</Label>
-      <div className="mt-1">{children}</div>
-      {error ? <p className="text-xs text-red-600 mt-1">{error}</p> : hint ? <p className="text-xs text-slate-500 mt-1">{hint}</p> : null}
-    </div>
-  );
-}
 
 export default function EmployeeForm({ open, onOpenChange, employee = null, onSaved }) {
   const { toast } = useToast();

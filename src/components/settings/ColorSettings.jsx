@@ -19,7 +19,7 @@ function ColorPicker({ field, value, onChange }) {
         {!field.required && value && (
           <button
             onClick={() => onChange(field.key, "")}
-            className="text-slate-400 hover:text-red-500"
+            className="text-slate-500 hover:text-red-500"
             title="Rimuovi colore"
           >
             <X className="w-3.5 h-3.5" />
@@ -42,7 +42,7 @@ function ColorPicker({ field, value, onChange }) {
           className="font-mono text-xs uppercase"
         />
       </div>
-      <p className="text-[11px] text-slate-400 mt-1">{field.desc}</p>
+      <p className="text-[11px] text-slate-500 mt-1">{field.desc}</p>
     </div>
   );
 }
@@ -60,7 +60,7 @@ export default function ColorSettings({ profile, onChange }) {
         <Palette className="w-4 h-4 text-primary" />
         <h3 className="text-sm font-semibold text-slate-700">Colori</h3>
       </div>
-      <p className="text-xs text-slate-400 mb-4">
+      <p className="text-xs text-slate-500 mb-4">
         Personalizza la palette dell'app e dei documenti generati. I colori facoltativi, se non impostati, non vengono usati.
       </p>
 
@@ -121,7 +121,7 @@ export default function ColorSettings({ profile, onChange }) {
               ) : (
                 <span className="w-7 h-7 rounded-full border border-dashed border-slate-200 flex items-center justify-center text-[8px] text-slate-300">-</span>
               )}
-              <span className="text-[10px] text-slate-400">Accenti facoltativi</span>
+              <span className="text-[10px] text-slate-500">Accenti facoltativi</span>
             </div>
             <div className="flex items-center gap-2 pt-1">
               <div className="h-1.5 flex-1 rounded-full" style={{ background: primary }} />

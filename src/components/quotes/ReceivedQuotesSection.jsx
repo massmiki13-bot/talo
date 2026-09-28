@@ -198,7 +198,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
     return true;
   });
 
-  if (loading) return <div className="py-8 text-center text-sm text-slate-400">Caricamento...</div>;
+  if (loading) return <div className="py-8 text-center text-sm text-slate-500">Caricamento...</div>;
 
   return (
     <div>
@@ -257,7 +257,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-medium text-slate-900">{rq.fornitore}</p>
-                      <span className="text-xs text-slate-400">{rq.data ? new Date(rq.data).toLocaleDateString("it-IT") : ""}</span>
+                      <span className="text-xs text-slate-500">{rq.data ? new Date(rq.data).toLocaleDateString("it-IT") : ""}</span>
                       {rq.importo > 0 && <span className="text-sm font-semibold text-slate-700">€ {rq.importo.toFixed(2)}</span>}
                       <Select value={rq.stato} onValueChange={v => handleStatusChange(rq.id, v)}>
                         <SelectTrigger className="h-6 w-[110px] text-xs"><SelectValue /></SelectTrigger>
@@ -320,17 +320,17 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
           <DialogHeader><DialogTitle>Carica preventivo ricevuto</DialogTitle></DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <Label>Mittente/Fornitore *</Label>
-              <Input value={form.fornitore} onChange={e => setForm({ ...form, fornitore: e.target.value })} placeholder="Es. Mario Rossi Srl" className="mt-1" />
+              <Label htmlFor="receivedquotessection-mittente-fornitore">Mittente/Fornitore *</Label>
+              <Input id="receivedquotessection-mittente-fornitore" value={form.fornitore} onChange={e => setForm({ ...form, fornitore: e.target.value })} placeholder="Es. Mario Rossi Srl" className="mt-1" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Data *</Label>
-                <Input type="date" value={form.data} onChange={e => setForm({ ...form, data: e.target.value })} className="mt-1" />
+                <Label htmlFor="receivedquotessection-data">Data *</Label>
+                <Input id="receivedquotessection-data" type="date" value={form.data} onChange={e => setForm({ ...form, data: e.target.value })} className="mt-1" />
               </div>
               <div>
-                <Label>Importo (€)</Label>
-                <Input type="number" step="0.01" value={form.importo} onChange={e => setForm({ ...form, importo: e.target.value })} className="mt-1" />
+                <Label htmlFor="receivedquotessection-importo">Importo (€)</Label>
+                <Input id="receivedquotessection-importo" type="number" step="0.01" value={form.importo} onChange={e => setForm({ ...form, importo: e.target.value })} className="mt-1" />
               </div>
             </div>
 
@@ -361,19 +361,19 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
               </div>
             )}
             <div>
-              <Label>Descrizione</Label>
-              <Input value={form.descrizione} onChange={e => setForm({ ...form, descrizione: e.target.value })} placeholder="Es. Preventivo fornitura materiali" className="mt-1" />
+              <Label htmlFor="receivedquotessection-descrizione">Descrizione</Label>
+              <Input id="receivedquotessection-descrizione" value={form.descrizione} onChange={e => setForm({ ...form, descrizione: e.target.value })} placeholder="Es. Preventivo fornitura materiali" className="mt-1" />
             </div>
             <div>
-              <Label>Cantiere/Lavoro collegato (opzionale)</Label>
+              <Label htmlFor="receivedquotessection-cantiere-lavoro-collegato-op">Cantiere/Lavoro collegato (opzionale)</Label>
               <Select value={form.worksite_id || "none"} onValueChange={v => setForm({ ...form, worksite_id: v === "none" ? "" : v })}>
-                <SelectTrigger className="mt-1"><SelectValue placeholder="Nessun cantiere" /></SelectTrigger>
+                <SelectTrigger id="receivedquotessection-cantiere-lavoro-collegato-op" className="mt-1"><SelectValue placeholder="Nessun cantiere" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">— Nessun cantiere —</SelectItem>
                   {worksites.map(w => <SelectItem key={w.id} value={w.id}>{w.nome}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-slate-400 mt-1">Se collegato, il preventivo comparirà anche nella cartella del lavoro.</p>
+              <p className="text-xs text-slate-500 mt-1">Se collegato, il preventivo comparirà anche nella cartella del lavoro.</p>
             </div>
 
             <div className="border-t border-slate-100 pt-3">

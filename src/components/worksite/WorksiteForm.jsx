@@ -12,6 +12,7 @@ import { WORKSITE_STATES, TIPI_INTERVENTO, TITOLI_EDILIZI, COST_CATEGORIES } fro
 import { displayName } from "@/lib/contacts";
 import { fullName } from "@/lib/employees";
 import { fmtEur } from "@/lib/quotes";
+import Field from "@/components/shared/FormField";
 
 const EMPTY = {
   nome: "", indirizzo: "", stato: "da_iniziare", tipo_intervento: "", cliente_id: "", cliente_nome: "", importo_totale: "",
@@ -19,15 +20,6 @@ const EMPTY = {
   direttore_lavori: "", coordinatore_sicurezza: "", titolo_edilizio: {}, budget: {}, note: "",
 };
 
-function Field({ label, hint, className = "", children }) {
-  return (
-    <div className={className}>
-      <Label className="text-sm">{label}</Label>
-      <div className="mt-1">{children}</div>
-      {hint && <p className="text-xs text-slate-500 mt-1">{hint}</p>}
-    </div>
-  );
-}
 
 export default function WorksiteForm({ open, onOpenChange, worksite = null, onSaved, quoteTotal }) {
   const { toast } = useToast();

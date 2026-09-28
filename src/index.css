@@ -65,6 +65,21 @@
     background-attachment: fixed;
   }
   h1, h2, h3 { letter-spacing: -0.01em; }
+
+  /* Focus visibile da tastiera su link e pulsanti (i campi shadcn hanno già il loro anello). */
+  :where(a, button, [role="button"], [role="tab"], [role="menuitem"], summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 2px solid #e3283a;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
   ::selection { background: rgba(195, 18, 42, 0.18); }
 }
 

@@ -74,8 +74,8 @@ export default function WorksiteLog({ worksite, attendance, employees, readOnly 
                   </div>
                   {!readOnly && (
                     <>
-                      <button aria-label="Modifica" onClick={() => setEdit({ ...e })} className="p-1 rounded hover:bg-slate-100 text-slate-400"><Pencil className="w-4 h-4" /></button>
-                      <button aria-label="Elimina" onClick={() => remove(e)} className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                      <button aria-label="Modifica" onClick={() => setEdit({ ...e })} className="p-1 rounded hover:bg-slate-100 text-slate-500"><Pencil className="w-4 h-4" /></button>
+                      <button aria-label="Elimina" onClick={() => remove(e)} className="p-1 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                     </>
                   )}
                 </div>
@@ -87,7 +87,7 @@ export default function WorksiteLog({ worksite, attendance, employees, readOnly 
                     {e.foto.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noopener noreferrer"><img src={f.url} alt={`Foto del ${fmtDate(e.data)}`} className="w-20 h-16 object-cover rounded border border-slate-200" /></a>)}
                   </div>
                 )}
-                {e.autore && <p className="text-[11px] text-slate-400 mt-1">Compilato da {e.autore}</p>}
+                {e.autore && <p className="text-[11px] text-slate-500 mt-1">Compilato da {e.autore}</p>}
               </li>
             ))}
           </ol>
@@ -129,19 +129,19 @@ function LogDialog({ open, entry, onOpenChange, onSave, presentOn }) {
         <DialogHeader><DialogTitle>{form.id ? "Modifica giornata" : "Nuova giornata"}</DialogTitle><DialogDescription>I presenti arrivano dalle presenze: puoi correggerli.</DialogDescription></DialogHeader>
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Data</Label><Input className="mt-1" type="date" value={form.data || ""} onChange={(e) => setForm({ ...form, data: e.target.value, presenti: form.id ? form.presenti : presentOn(e.target.value) })} /></div>
+            <div><Label htmlFor="worksitelog-data">Data</Label><Input id="worksitelog-data" className="mt-1" type="date" value={form.data || ""} onChange={(e) => setForm({ ...form, data: e.target.value, presenti: form.id ? form.presenti : presentOn(e.target.value) })} /></div>
             <div>
-              <Label>Meteo</Label>
+              <Label htmlFor="worksitelog-meteo">Meteo</Label>
               <Select value={form.meteo || "Sereno"} onValueChange={(v) => setForm({ ...form, meteo: v })}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="worksitelog-meteo" className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>{METEO.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
               </Select>
             </div>
           </div>
-          <div><Label>Presenti</Label><Input className="mt-1" value={(form.presenti || []).join(", ")} onChange={(e) => setForm({ ...form, presenti: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })} placeholder="Nomi separati da virgola" /></div>
-          <div><Label>Lavorazioni eseguite</Label><textarea value={form.attivita || ""} onChange={(e) => setForm({ ...form, attivita: e.target.value })} rows={4} className="mt-1 w-full rounded-md border border-input p-2 text-sm" placeholder="Es. getto massetto piano terra, posa tubazioni bagno…" /></div>
-          <div><Label>Forniture e mezzi</Label><Input className="mt-1" value={form.forniture || ""} onChange={(e) => setForm({ ...form, forniture: e.target.value })} placeholder="Es. consegna 40 sacchi di cemento, noleggio miniescavatore" /></div>
-          <div><Label>Problemi, sospensioni, varianti</Label><textarea value={form.problemi || ""} onChange={(e) => setForm({ ...form, problemi: e.target.value })} rows={2} className="mt-1 w-full rounded-md border border-input p-2 text-sm" /></div>
+          <div><Label htmlFor="worksitelog-presenti">Presenti</Label><Input id="worksitelog-presenti" className="mt-1" value={(form.presenti || []).join(", ")} onChange={(e) => setForm({ ...form, presenti: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })} placeholder="Nomi separati da virgola" /></div>
+          <div><Label htmlFor="worksitelog-lavorazioni-eseguite">Lavorazioni eseguite</Label><textarea id="worksitelog-lavorazioni-eseguite" value={form.attivita || ""} onChange={(e) => setForm({ ...form, attivita: e.target.value })} rows={4} className="mt-1 w-full rounded-md border border-input p-2 text-sm" placeholder="Es. getto massetto piano terra, posa tubazioni bagno…" /></div>
+          <div><Label htmlFor="worksitelog-forniture-e-mezzi">Forniture e mezzi</Label><Input id="worksitelog-forniture-e-mezzi" className="mt-1" value={form.forniture || ""} onChange={(e) => setForm({ ...form, forniture: e.target.value })} placeholder="Es. consegna 40 sacchi di cemento, noleggio miniescavatore" /></div>
+          <div><Label htmlFor="worksitelog-problemi-sospensioni-variant">Problemi, sospensioni, varianti</Label><textarea id="worksitelog-problemi-sospensioni-variant" value={form.problemi || ""} onChange={(e) => setForm({ ...form, problemi: e.target.value })} rows={2} className="mt-1 w-full rounded-md border border-input p-2 text-sm" /></div>
           <div>
             <Label>Foto</Label>
             <div className="flex flex-wrap gap-2 mt-1">

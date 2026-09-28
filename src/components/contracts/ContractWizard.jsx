@@ -182,9 +182,9 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
                 <div className="grid sm:grid-cols-2 gap-3">
                   {partyKind(tipo) === "dipendente" ? (
                     <div>
-                      <Label className="text-xs text-slate-600">Dipendente</Label>
+                      <Label htmlFor="contractwizard-dipendente" className="text-xs text-slate-600">Dipendente</Label>
                       <Select value={links.dipendente_id || NONE} onValueChange={(v) => v === NONE ? setLinks((l) => ({ ...l, dipendente_id: "" })) : linkEmployee(v)}>
-                        <SelectTrigger><SelectValue placeholder="Scegli per compilare i dati" /></SelectTrigger>
+                        <SelectTrigger id="contractwizard-dipendente"><SelectValue placeholder="Scegli per compilare i dati" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value={NONE}>— Nuova persona —</SelectItem>
                           {employees.map((e) => <SelectItem key={e.id} value={e.id}>{`${e.nome || ""} ${e.cognome || ""}`.trim()}</SelectItem>)}
@@ -193,9 +193,9 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
                     </div>
                   ) : (
                     <div>
-                      <Label className="text-xs text-slate-600">Cliente / fornitore</Label>
+                      <Label htmlFor="contractwizard-cliente-fornitore" className="text-xs text-slate-600">Cliente / fornitore</Label>
                       <Select value={links.contatto_id || NONE} onValueChange={(v) => v === NONE ? setLinks((l) => ({ ...l, contatto_id: "" })) : linkContact(v)}>
-                        <SelectTrigger><SelectValue placeholder="Scegli per compilare i dati" /></SelectTrigger>
+                        <SelectTrigger id="contractwizard-cliente-fornitore"><SelectValue placeholder="Scegli per compilare i dati" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value={NONE}>— Nessuno —</SelectItem>
                           {contacts.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome || c.nome_privato || "Senza nome"}</SelectItem>)}
@@ -204,9 +204,9 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
                     </div>
                   )}
                   <div>
-                    <Label className="text-xs text-slate-600">Lavoro collegato</Label>
+                    <Label htmlFor="contractwizard-lavoro-collegato" className="text-xs text-slate-600">Lavoro collegato</Label>
                     <Select value={links.worksite_id || NONE} onValueChange={(v) => v === NONE ? setLinks((l) => ({ ...l, worksite_id: "" })) : linkWorksite(v)}>
-                      <SelectTrigger><SelectValue placeholder="Facoltativo" /></SelectTrigger>
+                      <SelectTrigger id="contractwizard-lavoro-collegato"><SelectValue placeholder="Facoltativo" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value={NONE}>— Nessuno —</SelectItem>
                         {worksites.map((w) => <SelectItem key={w.id} value={w.id}>{w.nome || "Lavoro"}</SelectItem>)}

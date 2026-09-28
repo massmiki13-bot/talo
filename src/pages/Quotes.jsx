@@ -321,7 +321,7 @@ export default function Quotes() {
                           <td className="px-4 py-3 hidden lg:table-cell text-sm">
                             {e && OPEN_STATES.includes(q._state)
                               ? <span className={days <= 7 ? "text-amber-700 font-medium" : "text-slate-600"}>{days === 0 ? "oggi" : days === 1 ? "domani" : `tra ${days} gg`}</span>
-                              : <span className="text-slate-400">—</span>}
+                              : <span className="text-slate-500">—</span>}
                           </td>
                           <td className="px-2 py-3">{actions(q)}</td>
                         </tr>

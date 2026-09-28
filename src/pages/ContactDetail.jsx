@@ -415,18 +415,18 @@ function SupplierDocDialog({ open, onOpenChange, contact, onSaved }) {
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <Label>Tipo</Label>
+            <Label htmlFor="contactdetail-tipo">Tipo</Label>
             <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
-              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="contactdetail-tipo" className="mt-1"><SelectValue /></SelectTrigger>
               <SelectContent>{Object.entries(DOC_TYPES).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
             </Select>
           </div>
-          <div><Label>Titolo (facoltativo)</Label><Input className="mt-1" value={form.titolo} onChange={(e) => setForm({ ...form, titolo: e.target.value })} placeholder={`${DOC_TYPES[form.tipo]} – ${contact ? displayName(contact) : ""}`} /></div>
+          <div><Label htmlFor="contactdetail-titolo-facoltativo">Titolo (facoltativo)</Label><Input id="contactdetail-titolo-facoltativo" className="mt-1" value={form.titolo} onChange={(e) => setForm({ ...form, titolo: e.target.value })} placeholder={`${DOC_TYPES[form.tipo]} – ${contact ? displayName(contact) : ""}`} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Emesso il</Label><Input type="date" className="mt-1" value={form.data_emissione} onChange={(e) => setForm({ ...form, data_emissione: e.target.value })} /></div>
-            <div><Label>Scade il</Label><Input type="date" className="mt-1" value={form.data_scadenza} onChange={(e) => setForm({ ...form, data_scadenza: e.target.value })} /></div>
+            <div><Label htmlFor="contactdetail-emesso-il">Emesso il</Label><Input id="contactdetail-emesso-il" type="date" className="mt-1" value={form.data_emissione} onChange={(e) => setForm({ ...form, data_emissione: e.target.value })} /></div>
+            <div><Label htmlFor="contactdetail-scade-il">Scade il</Label><Input id="contactdetail-scade-il" type="date" className="mt-1" value={form.data_scadenza} onChange={(e) => setForm({ ...form, data_scadenza: e.target.value })} /></div>
           </div>
-          <div><Label>File</Label><Input type="file" className="mt-1" onChange={(e) => setFile(e.target.files[0] || null)} /></div>
+          <div><Label htmlFor="contactdetail-file">File</Label><Input id="contactdetail-file" type="file" className="mt-1" onChange={(e) => setFile(e.target.files[0] || null)} /></div>
           <div className="flex justify-end gap-2 pt-1">
             <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
             <Button onClick={save} disabled={saving}>{saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva</Button>

@@ -80,7 +80,7 @@ export default function WorksiteDocs({ worksite, readOnly }) {
                   <p className="text-xs text-slate-500">{WORKSITE_DOC_TYPES[d.tipo] || d.tipo}{d.data_scadenza ? ` · scade il ${fmtDate(d.data_scadenza)}` : ""}</p>
                 </div>
                 {st && <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${st === "expired" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{st === "expired" ? "Scaduto" : "In scadenza"}</span>}
-                {!readOnly && <button aria-label="Elimina" onClick={() => remove(d)} className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                {!readOnly && <button aria-label="Elimina" onClick={() => remove(d)} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
               </li>
             );
           })}
@@ -91,18 +91,18 @@ export default function WorksiteDocs({ worksite, readOnly }) {
           <DialogHeader><DialogTitle>Documento di cantiere</DialogTitle><DialogDescription>{worksite.nome}</DialogDescription></DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label>Tipo</Label>
+              <Label htmlFor="worksitedocs-tipo">Tipo</Label>
               <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="worksitedocs-tipo" className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>{Object.entries(WORKSITE_DOC_TYPES).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div><Label>Titolo (facoltativo)</Label><Input className="mt-1" value={form.titolo} onChange={(e) => setForm({ ...form, titolo: e.target.value })} /></div>
+            <div><Label htmlFor="worksitedocs-titolo-facoltativo">Titolo (facoltativo)</Label><Input id="worksitedocs-titolo-facoltativo" className="mt-1" value={form.titolo} onChange={(e) => setForm({ ...form, titolo: e.target.value })} /></div>
             <div className="grid grid-cols-2 gap-3">
-              <div><Label>Data</Label><Input className="mt-1" type="date" value={form.data_emissione} onChange={(e) => setForm({ ...form, data_emissione: e.target.value })} /></div>
-              <div><Label>Scadenza</Label><Input className="mt-1" type="date" value={form.data_scadenza} onChange={(e) => setForm({ ...form, data_scadenza: e.target.value })} /></div>
+              <div><Label htmlFor="worksitedocs-data">Data</Label><Input id="worksitedocs-data" className="mt-1" type="date" value={form.data_emissione} onChange={(e) => setForm({ ...form, data_emissione: e.target.value })} /></div>
+              <div><Label htmlFor="worksitedocs-scadenza">Scadenza</Label><Input id="worksitedocs-scadenza" className="mt-1" type="date" value={form.data_scadenza} onChange={(e) => setForm({ ...form, data_scadenza: e.target.value })} /></div>
             </div>
-            <div><Label>File</Label><Input className="mt-1" type="file" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files[0] || null)} /></div>
+            <div><Label htmlFor="worksitedocs-file">File</Label><Input id="worksitedocs-file" className="mt-1" type="file" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files[0] || null)} /></div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setOpen(false)}>Annulla</Button>
               <Button onClick={save} disabled={saving}>{saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Carica</Button>

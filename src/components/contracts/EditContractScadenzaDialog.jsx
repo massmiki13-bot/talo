@@ -113,12 +113,12 @@ export default function EditContractScadenzaDialog({ open, onOpenChange, contrac
                   value={form.data_scadenza || ""}
                   onChange={e => setForm(prev => ({ ...prev, data_scadenza: e.target.value }))}
                 />
-                <p className="text-xs text-slate-400 mt-1">Inserisci o modifica la data di scadenza del contratto.</p>
+                <p className="text-xs text-slate-500 mt-1">Inserisci o modifica la data di scadenza del contratto.</p>
               </div>
             )}
 
             {form.scadenza_mode === "nessuna" && (
-              <p className="text-xs text-slate-400 mt-2">
+              <p className="text-xs text-slate-500 mt-2">
                 Il contratto non ha scadenza — {contract.data_scadenza ? "il promemoria esistente verrà rimosso." : "nessun promemoria verrà creato."}
               </p>
             )}
@@ -144,9 +144,9 @@ export default function EditContractScadenzaDialog({ open, onOpenChange, contrac
               </Select>
               {Number(form.anticipo) > 0 && (
                 <div>
-                  <Label className="text-xs">Ripeti avviso</Label>
+                  <Label htmlFor="editcontractscadenzadialog-ripeti-avviso" className="text-xs">Ripeti avviso</Label>
                   <Select value={form.ripetizione} onValueChange={v => setForm({ ...form, ripetizione: v })}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="editcontractscadenzadialog-ripeti-avviso" className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="nessuna">Una volta sola</SelectItem>
                       <SelectItem value="giornaliera">Ogni giorno fino alla scadenza</SelectItem>

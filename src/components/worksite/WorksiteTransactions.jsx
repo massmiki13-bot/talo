@@ -127,7 +127,7 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
               </div>
               <span className={`text-sm font-semibold tabular-nums ${t.tipo === "entrata" ? "text-emerald-700" : "text-red-700"}`}>{t.tipo === "entrata" ? "+" : "−"}{fmtEur(t.importo)}</span>
               {t.file_url && <a href={t.file_url} target="_blank" rel="noopener noreferrer" aria-label="Vedi documento" className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Eye className="w-4 h-4" /></a>}
-              {!readOnly && <button aria-label="Elimina" onClick={() => remove(t)} className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
+              {!readOnly && <button aria-label="Elimina" onClick={() => remove(t)} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
             </li>
           ))}
         </ul>
@@ -157,17 +157,17 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
             )}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Categoria</Label>
+                <Label htmlFor="worksitetransactions-categoria">Categoria</Label>
                 <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v })}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="worksitetransactions-categoria" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>{(form.tipo === "entrata" ? INCOME_CATEGORIES : COST_CATEGORIES).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Importo €</Label><Input className="mt-1" type="number" inputMode="decimal" step="0.01" value={form.importo} onChange={(e) => setForm({ ...form, importo: e.target.value })} /></div>
-              <div><Label>Data</Label><Input className="mt-1" type="date" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} /></div>
-              <div><Label>{form.tipo === "uscita" ? "Fornitore" : "Da"}</Label><Input className="mt-1" value={form.fornitore} onChange={(e) => setForm({ ...form, fornitore: e.target.value })} /></div>
+              <div><Label htmlFor="worksitetransactions-importo">Importo €</Label><Input id="worksitetransactions-importo" className="mt-1" type="number" inputMode="decimal" step="0.01" value={form.importo} onChange={(e) => setForm({ ...form, importo: e.target.value })} /></div>
+              <div><Label htmlFor="worksitetransactions-data">Data</Label><Input id="worksitetransactions-data" className="mt-1" type="date" value={form.data} onChange={(e) => setForm({ ...form, data: e.target.value })} /></div>
+              <div><Label htmlFor="worksitetransactions-campo">{form.tipo === "uscita" ? "Fornitore" : "Da"}</Label><Input id="worksitetransactions-campo" className="mt-1" value={form.fornitore} onChange={(e) => setForm({ ...form, fornitore: e.target.value })} /></div>
             </div>
-            <div><Label>Descrizione</Label><Input className="mt-1" value={form.descrizione} onChange={(e) => setForm({ ...form, descrizione: e.target.value })} placeholder="Es. cemento e sabbia" /></div>
+            <div><Label htmlFor="worksitetransactions-descrizione">Descrizione</Label><Input id="worksitetransactions-descrizione" className="mt-1" value={form.descrizione} onChange={(e) => setForm({ ...form, descrizione: e.target.value })} placeholder="Es. cemento e sabbia" /></div>
             {match && (
               <div className="flex gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />

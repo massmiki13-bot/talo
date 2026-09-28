@@ -332,7 +332,7 @@ function CrewCard({ p }) {
       {!p.working ? <Empty text="Oggi è festivo." /> : (
         <>
           <div className="flex items-baseline gap-2 -mt-1">
-            <p className="font-display text-3xl font-bold text-zinc-950 tabular-nums">{p.present.length}<span className="text-zinc-400">/{p.expected}</span></p>
+            <p className="font-display text-3xl font-bold text-zinc-950 tabular-nums">{p.present.length}<span className="text-zinc-500">/{p.expected}</span></p>
             <p className="text-xs text-zinc-500">presenti{p.absent.length ? ` · ${p.absent.length} assenti` : ""}</p>
           </div>
           {p.registered < p.expected && <p className="text-xs text-brand-700 font-medium mt-0.5 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" />{p.expected - p.registered} ancora da registrare</p>}

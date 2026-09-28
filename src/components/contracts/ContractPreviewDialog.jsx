@@ -59,7 +59,7 @@ export default function ContractPreviewDialog({
           ) : pdfUrl ? (
             <iframe src={pdfUrl} className="w-full h-full border-0" title="Anteprima Contratto" />
           ) : (
-            <div className="flex items-center justify-center h-full text-slate-400 text-sm">
+            <div className="flex items-center justify-center h-full text-slate-500 text-sm">
               Nessuna anteprima disponibile
             </div>
           )}

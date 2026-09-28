@@ -89,7 +89,7 @@ export default function PriceListDialog({ open, onOpenChange, onAdd, showCosts }
                     <p className="text-sm font-medium text-slate-900 tabular-nums">{fmtEur(i.prezzo_unitario)}<span className="text-xs text-slate-500">/{unitLabel(i.unita_misura)}</span></p>
                     {showCosts && i.costo_unitario != null && <p className="text-xs text-slate-600">costo {fmtEur(i.costo_unitario)}</p>}
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); remove(i); }} aria-label="Rimuovi dal listino" className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={(e) => { e.stopPropagation(); remove(i); }} aria-label="Rimuovi dal listino" className="p-1 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                 </li>
               ))}
             </ul>

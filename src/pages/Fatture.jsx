@@ -356,9 +356,9 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
           <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5">
             <div className="grid sm:grid-cols-4 gap-3">
               <div className="sm:col-span-2">
-                <Label className="text-xs text-slate-600">Documento</Label>
+                <Label htmlFor="fatture-documento" className="text-xs text-slate-600">Documento</Label>
                 <Select value={f.tipo_documento || "TD01"} onValueChange={(v) => set("tipo_documento", v)} disabled={locked}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="fatture-documento" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>{TIPI_DOC.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
@@ -367,9 +367,9 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
             </div>
             <div className="grid sm:grid-cols-2 gap-3 mt-3">
               <div>
-                <Label className="text-xs text-slate-600">Cliente</Label>
+                <Label htmlFor="fatture-cliente" className="text-xs text-slate-600">Cliente</Label>
                 <Select value={f.cliente_id || undefined} onValueChange={(v) => { const x = ctx.contacts.find((k) => k.id === v); setF((p) => ({ ...p, cliente_id: v, cliente_nome: clientName(x) })); }} disabled={locked}>
-                  <SelectTrigger className="mt-1"><SelectValue placeholder="Scegli il cliente" /></SelectTrigger>
+                  <SelectTrigger id="fatture-cliente" className="mt-1"><SelectValue placeholder="Scegli il cliente" /></SelectTrigger>
                   <SelectContent>{clients.map((k) => <SelectItem key={k.id} value={k.id}>{clientName(k)}</SelectItem>)}</SelectContent>
                 </Select>
                 {client && (
@@ -380,14 +380,14 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
                 )}
               </div>
               <div>
-                <Label className="text-xs text-slate-600">Regime fiscale</Label>
+                <Label htmlFor="fatture-regime-fiscale" className="text-xs text-slate-600">Regime fiscale</Label>
                 <Select value={f.regime || "RF01"} onValueChange={(v) => setF((x) => ({ ...x, regime: v, righe: v === "RF19" ? x.righe.map((r) => ({ ...r, aliquota_key: "N2.2" })) : x.righe }))} disabled={locked}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="fatture-regime-fiscale" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>{REGIMI.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
-            <div className="mt-3"><Label className="text-xs text-slate-600">Oggetto / causale</Label><Input value={f.oggetto || ""} onChange={(e) => set("oggetto", e.target.value)} className="mt-1" placeholder="es. Lavori di rifacimento copertura – SAL n. 1" /></div>
+            <div className="mt-3"><Label htmlFor="fatture-oggetto-causale" className="text-xs text-slate-600">Oggetto / causale</Label><Input id="fatture-oggetto-causale" value={f.oggetto || ""} onChange={(e) => set("oggetto", e.target.value)} className="mt-1" placeholder="es. Lavori di rifacimento copertura – SAL n. 1" /></div>
             {(f.preventivo_id || f.worksite_id) && (
               <p className="text-xs text-slate-500 mt-2 flex gap-3">
                 {f.preventivo_id && <Link to={`/preventivi/${f.preventivo_id}`} className="text-brand-700 hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3 h-3" />Preventivo collegato</Link>}
@@ -439,9 +439,9 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
             <h2 className="text-sm font-semibold text-slate-900 mb-3">Pagamento e opzioni</h2>
             <div className="grid sm:grid-cols-3 gap-3">
               <div>
-                <Label className="text-xs text-slate-600">Modalità</Label>
+                <Label htmlFor="fatture-modalita" className="text-xs text-slate-600">Modalità</Label>
                 <Select value={f.modalita_pagamento || "MP05"} onValueChange={(v) => set("modalita_pagamento", v)}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="fatture-modalita" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>{PAGAMENTI.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
@@ -458,7 +458,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
                 </Select>
               </div>
             </div>
-            <div className="mt-4"><Label className="text-xs text-slate-600">Note sul documento</Label><Textarea value={f.note || ""} onChange={(e) => set("note", e.target.value)} rows={2} className="mt-1" placeholder="es. Lavori agevolabili ai sensi dell'art. 16-bis TUIR" /></div>
+            <div className="mt-4"><Label htmlFor="fatture-note-sul-documento" className="text-xs text-slate-600">Note sul documento</Label><Textarea id="fatture-note-sul-documento" value={f.note || ""} onChange={(e) => set("note", e.target.value)} rows={2} className="mt-1" placeholder="es. Lavori agevolabili ai sensi dell'art. 16-bis TUIR" /></div>
           </section>
         </div>
 
@@ -526,7 +526,7 @@ function PayDialog({ hasJob, amount, onClose, onConfirm }) {
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-sm">
         <DialogHeader><DialogTitle>Fattura pagata</DialogTitle><DialogDescription>Importo incassato: {fmtEur(amount)}</DialogDescription></DialogHeader>
-        <div><Label>Data del pagamento</Label><Input type="date" value={data} onChange={(e) => setData(e.target.value)} className="mt-1" /></div>
+        <div><Label htmlFor="fatture-data-del-pagamento">Data del pagamento</Label><Input id="fatture-data-del-pagamento" type="date" value={data} onChange={(e) => setData(e.target.value)} className="mt-1" /></div>
         {hasJob && <label className="flex items-center gap-2 text-sm text-slate-700"><Switch checked={reg} onCheckedChange={setReg} /> Registra l'incasso anche nel lavoro</label>}
         <div className="flex justify-end gap-2"><Button variant="outline" onClick={onClose}>Annulla</Button><Button onClick={() => onConfirm(data, reg)} className="bg-emerald-600 hover:bg-emerald-700">Conferma</Button></div>
       </DialogContent>

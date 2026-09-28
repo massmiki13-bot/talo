@@ -105,7 +105,7 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
                     </div>
                     <h3 className="font-semibold text-slate-900 text-sm">{v.label}</h3>
                     <p className="text-xs text-slate-500 leading-snug">{v.description}</p>
-                    <ul className="text-[11px] text-slate-400 space-y-0.5 mt-1">
+                    <ul className="text-[11px] text-slate-500 space-y-0.5 mt-1">
                       {filteredIncludes.map((inc, i) => <li key={i} className="flex items-center gap-1"><span className="text-brand-400">•</span>{inc}</li>)}
                     </ul>
                   </button>
@@ -113,7 +113,7 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
               })}
             </div>
             {!canSeeCosts && (
-              <p className="text-xs text-slate-400 text-center">Il PDF verra generato senza importi economici.</p>
+              <p className="text-xs text-slate-500 text-center">Il PDF verra generato senza importi economici.</p>
             )}
           </>
         ) : (
@@ -128,7 +128,7 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
                   Esporta il tabellone completo con tutti i dipendenti, i giorni del mese, le ore giornaliere,
                   i totali e la suddivisione per cantiere. I dati sono modificabili e rielaborabili in Excel o LibreOffice.
                 </p>
-                <ul className="text-[11px] text-slate-400 space-y-0.5 mt-2">
+                <ul className="text-[11px] text-slate-500 space-y-0.5 mt-2">
                   <li className="flex items-center gap-1"><span className="text-green-400">•</span>Matrice dipendenti x giorni</li>
                   <li className="flex items-center gap-1"><span className="text-green-400">•</span>Totali per dipendente e per giorno</li>
                   {canSeeCosts && includeCosts && <li className="flex items-center gap-1"><span className="text-green-400">•</span>Costi manodopera</li>}

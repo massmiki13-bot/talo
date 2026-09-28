@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Search, Loader2, Plus, Trash2, AlertTriangle, CheckCircle2, X } from "lucide-react";
 import { validateContact, isValidPartitaIva, formatIban } from "@/lib/validators";
 import { CATEGORIE_CLIENTE, CATEGORIE_FORNITORE, MODALITA_PAGAMENTO, findDuplicates, displayName } from "@/lib/contacts";
+import Field from "@/components/shared/FormField";
 
 export const EMPTY_CONTACT = {
   tipo: "cliente", tipo_soggetto: "azienda", nome: "", nome_privato: "", partita_iva: "", codice_fiscale: "",
@@ -19,15 +20,6 @@ export const EMPTY_CONTACT = {
   sconto_default: "", iva_default: "", pagamento_default: "", termini_pagamento_giorni: "", note: "",
 };
 
-function Field({ label, error, hint, children, className = "" }) {
-  return (
-    <div className={className}>
-      <Label className="text-sm">{label}</Label>
-      <div className="mt-1">{children}</div>
-      {error ? <p className="text-xs text-red-600 mt-1">{error}</p> : hint ? <p className="text-xs text-slate-500 mt-1">{hint}</p> : null}
-    </div>
-  );
-}
 
 export default function ContactForm({ open, onOpenChange, contact = null, defaultTipo = "cliente", onSaved }) {
   const { toast } = useToast();

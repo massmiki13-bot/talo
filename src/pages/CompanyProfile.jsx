@@ -225,17 +225,17 @@ export default function CompanyProfile() {
                   {errors.iban ? <p className="text-xs text-red-600 mt-1">{errors.iban}</p> : <p className="text-xs text-slate-500 mt-1">Compare nei preventivi per i pagamenti</p>}
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-slate-700">Regime fiscale</Label>
+                  <Label htmlFor="companyprofile-regime-fiscale" className="text-sm font-medium text-slate-700">Regime fiscale</Label>
                   <Select value={profile.regime_fiscale || "RF01"} onValueChange={(v) => set("regime_fiscale", v)}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="companyprofile-regime-fiscale" className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="RF01">Ordinario</SelectItem><SelectItem value="RF19">Forfettario (L. 190/2014)</SelectItem></SelectContent>
                   </Select>
                   <p className="text-xs text-slate-500 mt-1">Usato nelle fatture elettroniche</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-slate-700">Come chiami i luoghi di lavoro</Label>
+                  <Label htmlFor="companyprofile-come-chiami-i-luoghi-di-lavo" className="text-sm font-medium text-slate-700">Come chiami i luoghi di lavoro</Label>
                   <Select value={profile.termine_sezioni || "Cantiere"} onValueChange={(v) => set("termine_sezioni", v)}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="companyprofile-come-chiami-i-luoghi-di-lavo" className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>{["Cantiere", "Lavoro", "Commessa", "Impianto"].map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                   </Select>
                   <p className="text-xs text-slate-500 mt-1">Usato nelle Presenze</p>
@@ -301,9 +301,9 @@ export default function CompanyProfile() {
                 </div>
                 <div className="grid sm:grid-cols-3 gap-4 mt-5 pt-5 border-t border-slate-100">
                   <div>
-                    <Label className="text-sm font-medium text-slate-700">Posizione del logo</Label>
+                    <Label htmlFor="companyprofile-posizione-del-logo" className="text-sm font-medium text-slate-700">Posizione del logo</Label>
                     <Select value={profile.logo_posizione || "alto_sinistra"} onValueChange={(v) => set("logo_posizione", v)}>
-                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                      <SelectTrigger id="companyprofile-posizione-del-logo" className="mt-1"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="alto_sinistra">In alto a sinistra</SelectItem>
                         <SelectItem value="alto_centro">In alto al centro</SelectItem>
@@ -311,8 +311,8 @@ export default function CompanyProfile() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div><Label className="text-sm font-medium text-slate-700">Larghezza logo (mm)</Label><Input type="number" min={10} max={80} value={profile.logo_larghezza ?? 35} onChange={(e) => set("logo_larghezza", parseInt(e.target.value) || 35)} className="mt-1" /></div>
-                  <div><Label className="text-sm font-medium text-slate-700">Altezza logo (mm)</Label><Input type="number" min={5} max={50} value={profile.logo_altezza ?? 18} onChange={(e) => set("logo_altezza", parseInt(e.target.value) || 18)} className="mt-1" /></div>
+                  <div><Label htmlFor="companyprofile-larghezza-logo-mm" className="text-sm font-medium text-slate-700">Larghezza logo (mm)</Label><Input id="companyprofile-larghezza-logo-mm" type="number" min={10} max={80} value={profile.logo_larghezza ?? 35} onChange={(e) => set("logo_larghezza", parseInt(e.target.value) || 35)} className="mt-1" /></div>
+                  <div><Label htmlFor="companyprofile-altezza-logo-mm" className="text-sm font-medium text-slate-700">Altezza logo (mm)</Label><Input id="companyprofile-altezza-logo-mm" type="number" min={5} max={50} value={profile.logo_altezza ?? 18} onChange={(e) => set("logo_altezza", parseInt(e.target.value) || 18)} className="mt-1" /></div>
                 </div>
                 <label className="flex items-center gap-2 mt-4 text-sm text-slate-700"><Switch checked={profile.logo_su_ogni_pagina ?? true} onCheckedChange={(v) => set("logo_su_ogni_pagina", v)} /> Logo su ogni pagina dei PDF</label>
               </Panel>
@@ -330,15 +330,15 @@ export default function CompanyProfile() {
               <Panel title="Numerazione dei preventivi">
                 <div className="grid sm:grid-cols-3 gap-4">
                   <div className="sm:col-span-3">
-                    <Label className="text-sm font-medium text-slate-700">Formato</Label>
+                    <Label htmlFor="companyprofile-formato" className="text-sm font-medium text-slate-700">Formato</Label>
                     <Select value={profile.numerazione_tipo || "progressiva_anno"} onValueChange={(v) => set("numerazione_tipo", v)}>
-                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                      <SelectTrigger id="companyprofile-formato" className="mt-1"><SelectValue /></SelectTrigger>
                       <SelectContent>{numerazioneOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
                     </Select>
                     <p className="text-xs text-slate-500 mt-1">{numerazioneOptions.find((o) => o.value === (profile.numerazione_tipo || "progressiva_anno"))?.description}</p>
                   </div>
-                  {profile.numerazione_tipo === "prefisso" && <div><Label className="text-sm font-medium text-slate-700">Prefisso</Label><Input value={profile.numerazione_prefisso || "PREV"} onChange={(e) => set("numerazione_prefisso", e.target.value)} className="mt-1" /></div>}
-                  {profile.numerazione_tipo === "codice" && <div><Label className="text-sm font-medium text-slate-700">Numero di partenza</Label><Input type="number" value={profile.numerazione_partenza ?? 1} onChange={(e) => set("numerazione_partenza", parseInt(e.target.value) || 1)} className="mt-1" /></div>}
+                  {profile.numerazione_tipo === "prefisso" && <div><Label htmlFor="companyprofile-prefisso" className="text-sm font-medium text-slate-700">Prefisso</Label><Input id="companyprofile-prefisso" value={profile.numerazione_prefisso || "PREV"} onChange={(e) => set("numerazione_prefisso", e.target.value)} className="mt-1" /></div>}
+                  {profile.numerazione_tipo === "codice" && <div><Label htmlFor="companyprofile-numero-di-partenza" className="text-sm font-medium text-slate-700">Numero di partenza</Label><Input id="companyprofile-numero-di-partenza" type="number" value={profile.numerazione_partenza ?? 1} onChange={(e) => set("numerazione_partenza", parseInt(e.target.value) || 1)} className="mt-1" /></div>}
                 </div>
               </Panel>
               <Panel title="Modello di preventivo predefinito" desc="Il modello con cui partono i nuovi preventivi (puoi cambiarlo ogni volta).">
@@ -362,18 +362,18 @@ export default function CompanyProfile() {
             <Panel title="Avvisi di scadenza" desc="Valori predefiniti per documenti, corsi e contratti: ogni documento può avere i suoi.">
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
-                  <Label className="text-sm font-medium text-slate-700">Giorni di preavviso</Label>
-                  <Input type="number" min={0} max={365} value={profile.giorni_preavviso_scadenza ?? 30} onChange={(e) => set("giorni_preavviso_scadenza", parseInt(e.target.value) || 0)} className="mt-1" />
+                  <Label htmlFor="companyprofile-giorni-di-preavviso" className="text-sm font-medium text-slate-700">Giorni di preavviso</Label>
+                  <Input id="companyprofile-giorni-di-preavviso" type="number" min={0} max={365} value={profile.giorni_preavviso_scadenza ?? 30} onChange={(e) => set("giorni_preavviso_scadenza", parseInt(e.target.value) || 0)} className="mt-1" />
                   <p className="text-xs text-slate-500 mt-1">Quanti giorni prima avvisare</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-slate-700">Ripeti l'avviso</Label>
-                  <label className="flex items-center gap-2 mt-2.5 text-sm text-slate-700"><Switch checked={!!profile.ripeti_promemoria} onCheckedChange={(v) => set("ripeti_promemoria", v)} />{profile.ripeti_promemoria ? "Sì, fino alla scadenza" : "No, una volta sola"}</label>
+                  <Label htmlFor="companyprofile-ripeti-l-avviso" className="text-sm font-medium text-slate-700">Ripeti l'avviso</Label>
+                  <label className="flex items-center gap-2 mt-2.5 text-sm text-slate-700"><Switch id="companyprofile-ripeti-l-avviso" checked={!!profile.ripeti_promemoria} onCheckedChange={(v) => set("ripeti_promemoria", v)} />{profile.ripeti_promemoria ? "Sì, fino alla scadenza" : "No, una volta sola"}</label>
                 </div>
                 {profile.ripeti_promemoria && (
                   <div>
-                    <Label className="text-sm font-medium text-slate-700">Numero di avvisi</Label>
-                    <Input type="number" min={1} max={10} value={profile.numero_promemoria_ripetuti ?? 1} onChange={(e) => set("numero_promemoria_ripetuti", parseInt(e.target.value) || 1)} className="mt-1" />
+                    <Label htmlFor="companyprofile-numero-di-avvisi" className="text-sm font-medium text-slate-700">Numero di avvisi</Label>
+                    <Input id="companyprofile-numero-di-avvisi" type="number" min={1} max={10} value={profile.numero_promemoria_ripetuti ?? 1} onChange={(e) => set("numero_promemoria_ripetuti", parseInt(e.target.value) || 1)} className="mt-1" />
                   </div>
                 )}
               </div>

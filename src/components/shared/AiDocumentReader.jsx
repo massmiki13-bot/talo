@@ -80,21 +80,21 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
             <AiWarning />
 
             <div>
-              <Label>Titolo</Label>
-              <Input value={extracted.titolo || ""} onChange={e => setExtracted({ ...extracted, titolo: e.target.value })} />
+              <Label htmlFor="aidocumentreader-titolo">Titolo</Label>
+              <Input id="aidocumentreader-titolo" value={extracted.titolo || ""} onChange={e => setExtracted({ ...extracted, titolo: e.target.value })} />
             </div>
             <div>
-              <Label>Descrizione</Label>
-              <textarea value={extracted.descrizione || ""} onChange={e => setExtracted({ ...extracted, descrizione: e.target.value })} className="w-full border border-slate-200 rounded-lg p-2 text-sm min-h-[60px]" />
+              <Label htmlFor="aidocumentreader-descrizione">Descrizione</Label>
+              <textarea id="aidocumentreader-descrizione" value={extracted.descrizione || ""} onChange={e => setExtracted({ ...extracted, descrizione: e.target.value })} className="w-full border border-slate-200 rounded-lg p-2 text-sm min-h-[60px]" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Data Emissione</Label>
-                <Input type="date" value={extracted.data_emissione || ""} onChange={e => setExtracted({ ...extracted, data_emissione: e.target.value })} />
+                <Label htmlFor="aidocumentreader-data-emissione">Data Emissione</Label>
+                <Input id="aidocumentreader-data-emissione" type="date" value={extracted.data_emissione || ""} onChange={e => setExtracted({ ...extracted, data_emissione: e.target.value })} />
               </div>
               <div>
-                <Label>Data Scadenza (verifica!)</Label>
-                <Input type="date" value={extracted.data_scadenza || ""} onChange={e => setExtracted({ ...extracted, data_scadenza: e.target.value })} />
+                <Label htmlFor="aidocumentreader-data-scadenza-verifica">Data Scadenza (verifica!)</Label>
+                <Input id="aidocumentreader-data-scadenza-verifica" type="date" value={extracted.data_scadenza || ""} onChange={e => setExtracted({ ...extracted, data_scadenza: e.target.value })} />
                 <p className="text-xs text-amber-600 mt-1">Controlla che la data sia corretta</p>
               </div>
             </div>

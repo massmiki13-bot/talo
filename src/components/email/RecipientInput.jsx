@@ -154,7 +154,7 @@ export default function RecipientInput({ label, value = [], onChange, placeholde
                   {s.name && <p className="text-sm text-slate-800 truncate">{s.name}</p>}
                   <p className={`truncate ${s.name ? "text-xs text-slate-500" : "text-sm text-slate-800"}`}>{s.email}</p>
                 </div>
-                <span className="text-[10px] uppercase tracking-wide text-slate-400 shrink-0">{K.label}</span>
+                <span className="text-[10px] uppercase tracking-wide text-slate-500 shrink-0">{K.label}</span>
               </li>
             );
           })}

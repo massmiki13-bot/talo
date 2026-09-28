@@ -82,7 +82,7 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
                 <label className="text-xs text-slate-600 flex items-center gap-1 shrink-0">Peso
                   <Input type="number" min="0" value={f.peso ?? ""} onChange={(e) => update(i, { peso: Number(e.target.value) || 0 })} disabled={readOnly} className="h-8 w-16" aria-label="Peso della fase" />
                 </label>
-                {!readOnly && <button aria-label="Elimina fase" onClick={() => { setFasi((x) => x.filter((_, j) => j !== i)); setDirty(true); }} className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                {!readOnly && <button aria-label="Elimina fase" onClick={() => { setFasi((x) => x.filter((_, j) => j !== i)); setDirty(true); }} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
               </div>
               <div className="flex items-center gap-3 mt-2">
                 <input type="range" min="0" max="100" step="5" value={Number(f.completamento) || 0} onChange={(e) => update(i, { completamento: Number(e.target.value) })} disabled={readOnly}

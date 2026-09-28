@@ -151,7 +151,7 @@ export default function Contacts() {
         {TABS.map((t) => (
           <button key={t.key} onClick={() => { setParams(t.key === "cliente" ? {} : { tipo: t.key }); setCategory(""); }}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${t.key === tab.key ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>
-            {t.label} <span className="text-xs text-slate-400 ml-0.5">{counts[t.key]}</span>
+            {t.label} <span className="text-xs text-slate-500 ml-0.5">{counts[t.key]}</span>
           </button>
         ))}
       </div>
@@ -225,7 +225,7 @@ export default function Contacts() {
                           <p className="text-sm font-medium text-slate-800 tabular-nums">{fmtEur(c._stats.valore)}</p>
                           <p className="text-xs text-slate-500">{c._stats.n} {c._stats.n === 1 ? "preventivo" : "preventivi"}{c._stats.aperti ? ` · ${fmtEur(c._stats.aperti)} aperti` : ""}</p>
                         </>
-                      ) : <span className="text-sm text-slate-400">—</span>}
+                      ) : <span className="text-sm text-slate-500">—</span>}
                     </td>
                     <td className="px-2 py-3"><div className="flex items-center justify-end">{quickLinks(c)}{rowActions(c)}</div></td>
                   </tr>

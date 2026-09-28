@@ -153,25 +153,25 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
             {form.riassunto && <p className="text-sm text-slate-700 bg-brand-50/60 border border-brand-100 rounded-lg p-3">{form.riassunto}</p>}
 
             <div className="grid sm:grid-cols-2 gap-3">
-              <div className="sm:col-span-2"><Label>Titolo</Label><Input value={form.titolo || ""} onChange={(e) => set("titolo", e.target.value)} /></div>
+              <div className="sm:col-span-2"><Label htmlFor="documentdetailsheet-titolo">Titolo</Label><Input id="documentdetailsheet-titolo" value={form.titolo || ""} onChange={(e) => set("titolo", e.target.value)} /></div>
               <div>
-                <Label>Tipo</Label>
+                <Label htmlFor="documentdetailsheet-tipo">Tipo</Label>
                 <Select value={form.tipo || "altro"} onValueChange={(v) => set("tipo", v)}>
-                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="documentdetailsheet-tipo" className="h-9"><SelectValue /></SelectTrigger>
                   <SelectContent>{DOC_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div><Label>Cartella</Label>{sel(form.cartella_id, (v) => set("cartella_id", v), folders.map((f) => ({ value: f.id, label: pathLabel(f.id, folders) })).sort((a, b) => a.label.localeCompare(b.label, "it")), "Senza cartella")}</div>
-              <div><Label>Data emissione</Label><Input type="date" value={form.data_emissione || ""} onChange={(e) => set("data_emissione", e.target.value)} /></div>
-              <div><Label>Scadenza</Label><Input type="date" value={form.data_scadenza || ""} onChange={(e) => set("data_scadenza", e.target.value)} /></div>
-              <div><Label>Numero / protocollo</Label><Input value={form.numero || ""} onChange={(e) => set("numero", e.target.value)} /></div>
-              <div><Label>Emesso da</Label><Input value={form.emittente || ""} onChange={(e) => set("emittente", e.target.value)} /></div>
-              <div><Label>Importo (€)</Label><Input type="number" step="0.01" value={form.importo ?? ""} onChange={(e) => set("importo", e.target.value)} /></div>
-              <div><Label>Etichette</Label><Input value={Array.isArray(form.tag) ? form.tag.join(", ") : form.tag || ""} onChange={(e) => set("tag", e.target.value)} placeholder="es. 2026, urgente" /></div>
+              <div><Label htmlFor="documentdetailsheet-data-emissione">Data emissione</Label><Input id="documentdetailsheet-data-emissione" type="date" value={form.data_emissione || ""} onChange={(e) => set("data_emissione", e.target.value)} /></div>
+              <div><Label htmlFor="documentdetailsheet-scadenza">Scadenza</Label><Input id="documentdetailsheet-scadenza" type="date" value={form.data_scadenza || ""} onChange={(e) => set("data_scadenza", e.target.value)} /></div>
+              <div><Label htmlFor="documentdetailsheet-numero-protocollo">Numero / protocollo</Label><Input id="documentdetailsheet-numero-protocollo" value={form.numero || ""} onChange={(e) => set("numero", e.target.value)} /></div>
+              <div><Label htmlFor="documentdetailsheet-emesso-da">Emesso da</Label><Input id="documentdetailsheet-emesso-da" value={form.emittente || ""} onChange={(e) => set("emittente", e.target.value)} /></div>
+              <div><Label htmlFor="documentdetailsheet-importo">Importo (€)</Label><Input id="documentdetailsheet-importo" type="number" step="0.01" value={form.importo ?? ""} onChange={(e) => set("importo", e.target.value)} /></div>
+              <div><Label htmlFor="documentdetailsheet-etichette">Etichette</Label><Input id="documentdetailsheet-etichette" value={Array.isArray(form.tag) ? form.tag.join(", ") : form.tag || ""} onChange={(e) => set("tag", e.target.value)} placeholder="es. 2026, urgente" /></div>
               <div><Label>Cliente / fornitore</Label>{sel(form.contatto_id, (v) => set("contatto_id", v), contacts.map((c) => ({ value: c.id, label: c.nome || c.nome_privato || "Senza nome" })), "Nessuno")}</div>
               <div><Label>Dipendente</Label>{sel(form.dipendente_id, (v) => set("dipendente_id", v), employees.map((e) => ({ value: e.id, label: `${e.nome || ""} ${e.cognome || ""}`.trim() })), "Nessuno")}</div>
               <div className="sm:col-span-2"><Label>Cantiere</Label>{sel(form.worksite_id, (v) => set("worksite_id", v), worksites.map((w) => ({ value: w.id, label: w.nome || w.titolo || "Cantiere" })), "Nessuno")}</div>
-              <div className="sm:col-span-2"><Label>Note</Label><Textarea value={form.descrizione || ""} onChange={(e) => set("descrizione", e.target.value)} rows={3} /></div>
+              <div className="sm:col-span-2"><Label htmlFor="documentdetailsheet-note">Note</Label><Textarea id="documentdetailsheet-note" value={form.descrizione || ""} onChange={(e) => set("descrizione", e.target.value)} rows={3} /></div>
             </div>
 
             {doc.data_scadenza && (

@@ -86,7 +86,7 @@ export default function QuoteTemplatePicker({
             ) : previewUrl ? (
               <iframe src={previewUrl} className="w-full h-full min-h-[400px]" title="Anteprima preventivo" />
             ) : (
-              <div className="flex items-center justify-center h-full py-16 text-slate-400 text-sm">
+              <div className="flex items-center justify-center h-full py-16 text-slate-500 text-sm">
                 Seleziona un modello per vedere l'anteprima
               </div>
             )}
@@ -111,15 +111,15 @@ export default function QuoteTemplatePicker({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_pdf")}>
                   <FileText className="w-4 h-4 mr-2 text-red-600" /> PDF
-                  <span className="ml-auto text-xs text-slate-400">Pronto da inviare</span>
+                  <span className="ml-auto text-xs text-slate-500">Pronto da inviare</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_word")}>
                   <FileType className="w-4 h-4 mr-2 text-brand-600" /> Word (.doc)
-                  <span className="ml-auto text-xs text-slate-400">Modificabile</span>
+                  <span className="ml-auto text-xs text-slate-500">Modificabile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_excel")}>
                   <FileSpreadsheet className="w-4 h-4 mr-2 text-green-600" /> Excel (.xls)
-                  <span className="ml-auto text-xs text-slate-400">Tabelle e calcoli</span>
+                  <span className="ml-auto text-xs text-slate-500">Tabelle e calcoli</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -92,9 +92,9 @@ export default function TrainingDialog({ open, onOpenChange, employee, kind = "c
         <div className="space-y-3">
           {!isVisit && (
             <div>
-              <Label>Corso</Label>
+              <Label htmlFor="trainingdialog-corso">Corso</Label>
               <Select value={codice} onValueChange={pickCourse}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="trainingdialog-corso" className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {CORSI.map((c) => (
                     <SelectItem key={c.codice} value={c.codice}>
@@ -106,33 +106,33 @@ export default function TrainingDialog({ open, onOpenChange, employee, kind = "c
             </div>
           )}
           {(isVisit || codice === "altro") && (
-            <div><Label>Titolo</Label><Input className="mt-1" value={titolo} onChange={(e) => setTitolo(e.target.value)} /></div>
+            <div><Label htmlFor="trainingdialog-titolo">Titolo</Label><Input id="trainingdialog-titolo" className="mt-1" value={titolo} onChange={(e) => setTitolo(e.target.value)} /></div>
           )}
           <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-1"><Label>{isVisit ? "Data visita" : "Data attestato"}</Label><Input type="date" className="mt-1" value={data} onChange={(e) => setData(e.target.value)} /></div>
-            <div className="col-span-1"><Label>Validità (anni)</Label><Input type="number" min="0" className="mt-1" value={validita} onChange={(e) => setValidita(e.target.value)} placeholder="nessuna" /></div>
-            <div className="col-span-1"><Label>Scadenza</Label><Input type="date" className="mt-1" value={scadenza} onChange={(e) => setScadenza(e.target.value)} /></div>
+            <div className="col-span-1"><Label htmlFor="trainingdialog-campo">{isVisit ? "Data visita" : "Data attestato"}</Label><Input id="trainingdialog-campo" type="date" className="mt-1" value={data} onChange={(e) => setData(e.target.value)} /></div>
+            <div className="col-span-1"><Label htmlFor="trainingdialog-validita-anni">Validità (anni)</Label><Input id="trainingdialog-validita-anni" type="number" min="0" className="mt-1" value={validita} onChange={(e) => setValidita(e.target.value)} placeholder="nessuna" /></div>
+            <div className="col-span-1"><Label htmlFor="trainingdialog-scadenza">Scadenza</Label><Input id="trainingdialog-scadenza" type="date" className="mt-1" value={scadenza} onChange={(e) => setScadenza(e.target.value)} /></div>
           </div>
           {isVisit ? (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Giudizio</Label>
+                <Label htmlFor="trainingdialog-giudizio">Giudizio</Label>
                 <Select value={esito} onValueChange={setEsito}>
-                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="trainingdialog-giudizio" className="mt-1"><SelectValue /></SelectTrigger>
                   <SelectContent>{["Idoneo", "Idoneo con prescrizioni", "Idoneo con limitazioni", "Temporaneamente non idoneo", "Non idoneo"].map((x) => <SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Medico competente</Label><Input className="mt-1" value={ente} onChange={(e) => setEnte(e.target.value)} /></div>
+              <div><Label htmlFor="trainingdialog-medico-competente">Medico competente</Label><Input id="trainingdialog-medico-competente" className="mt-1" value={ente} onChange={(e) => setEnte(e.target.value)} /></div>
             </div>
           ) : (
-            <div><Label>Ente formatore</Label><Input className="mt-1" value={ente} onChange={(e) => setEnte(e.target.value)} placeholder="Es. Scuola Edile, CPT" /></div>
+            <div><Label htmlFor="trainingdialog-ente-formatore">Ente formatore</Label><Input id="trainingdialog-ente-formatore" className="mt-1" value={ente} onChange={(e) => setEnte(e.target.value)} placeholder="Es. Scuola Edile, CPT" /></div>
           )}
-          <div><Label>{isVisit ? "Certificato di idoneità" : "Attestato"} (facoltativo)</Label><Input type="file" accept="image/*,application/pdf" className="mt-1" onChange={(e) => setFile(e.target.files[0] || null)} /></div>
+          <div><Label htmlFor="trainingdialog-facoltativo">{isVisit ? "Certificato di idoneità" : "Attestato"} (facoltativo)</Label><Input id="trainingdialog-facoltativo" type="file" accept="image/*,application/pdf" className="mt-1" onChange={(e) => setFile(e.target.files[0] || null)} /></div>
           {scadenza && (
             <div>
-              <Label>Avvisami prima della scadenza</Label>
+              <Label htmlFor="trainingdialog-avvisami-prima-della-scadenz">Avvisami prima della scadenza</Label>
               <Select value={anticipo} onValueChange={setAnticipo}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="trainingdialog-avvisami-prima-della-scadenz" className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="0">Solo il giorno della scadenza</SelectItem>
                   <SelectItem value="14">2 settimane prima</SelectItem>

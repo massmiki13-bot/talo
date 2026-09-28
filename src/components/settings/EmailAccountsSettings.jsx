@@ -271,7 +271,7 @@ export default function EmailAccountsSettings({ profile }) {
             <Mail className="w-6 h-6 text-slate-400" />
           </div>
           <p className="text-sm font-medium text-slate-700">Nessuna email collegata</p>
-          <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">Collega la tua casella per inviare documenti direttamente dal tuo indirizzo (amministrazione, preventivi, direzione…)</p>
+          <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">Collega la tua casella per inviare documenti direttamente dal tuo indirizzo (amministrazione, preventivi, direzione…)</p>
         </div>
       ) : (
         <>
@@ -382,9 +382,9 @@ export default function EmailAccountsSettings({ profile }) {
           <div className="space-y-4 mt-2">
             {/* Tipo connessione */}
             <div>
-              <Label className="text-sm font-medium text-slate-700">Tipo di collegamento</Label>
+              <Label htmlFor="emailaccountssettings-tipo-di-collegamento" className="text-sm font-medium text-slate-700">Tipo di collegamento</Label>
               <Select value={form.provider} onValueChange={handleProviderChange}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="emailaccountssettings-tipo-di-collegamento" className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="smtp">SMTP con password per app (Gmail, Aruba, Outlook, PEC, Libero, ecc.)</SelectItem>
                 </SelectContent>
@@ -404,9 +404,9 @@ export default function EmailAccountsSettings({ profile }) {
             {form.provider === "smtp" && (
               <>
                 <div>
-                  <Label className="text-sm font-medium text-slate-700">Provider / Preset</Label>
+                  <Label htmlFor="emailaccountssettings-provider-preset" className="text-sm font-medium text-slate-700">Provider / Preset</Label>
                   <Select value={preset} onValueChange={handlePresetChange}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="emailaccountssettings-provider-preset" className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {SMTP_PRESETS.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
                     </SelectContent>
@@ -414,36 +414,36 @@ export default function EmailAccountsSettings({ profile }) {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-sm font-medium text-slate-700">Server SMTP</Label>
-                    <Input value={form.smtp_host} onChange={e => setForm(prev => ({ ...prev, smtp_host: e.target.value }))} className="mt-1" placeholder="smtp.aruba.it" />
+                    <Label htmlFor="emailaccountssettings-server-smtp" className="text-sm font-medium text-slate-700">Server SMTP</Label>
+                    <Input id="emailaccountssettings-server-smtp" value={form.smtp_host} onChange={e => setForm(prev => ({ ...prev, smtp_host: e.target.value }))} className="mt-1" placeholder="smtp.aruba.it" />
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-slate-700">Porta</Label>
-                    <Input type="number" value={form.smtp_port} onChange={e => setForm(prev => ({ ...prev, smtp_port: parseInt(e.target.value) || 587 }))} className="mt-1" />
+                    <Label htmlFor="emailaccountssettings-porta" className="text-sm font-medium text-slate-700">Porta</Label>
+                    <Input id="emailaccountssettings-porta" type="number" value={form.smtp_port} onChange={e => setForm(prev => ({ ...prev, smtp_port: parseInt(e.target.value) || 587 }))} className="mt-1" />
                   </div>
                 </div>
               </>
             )}
 
             <div>
-              <Label className="text-sm font-medium text-slate-700">Indirizzo Email</Label>
-              <Input value={form.email_address} onChange={e => setForm(prev => ({ ...prev, email_address: e.target.value }))} className="mt-1" placeholder="email@esempio.it" />
+              <Label htmlFor="emailaccountssettings-indirizzo-email" className="text-sm font-medium text-slate-700">Indirizzo Email</Label>
+              <Input id="emailaccountssettings-indirizzo-email" value={form.email_address} onChange={e => setForm(prev => ({ ...prev, email_address: e.target.value }))} className="mt-1" placeholder="email@esempio.it" />
             </div>
             <div>
-              <Label className="text-sm font-medium text-slate-700">Nome Mittente</Label>
-              <Input value={form.display_name} onChange={e => setForm(prev => ({ ...prev, display_name: e.target.value }))} className="mt-1" placeholder="Mario Rossi S.r.l." />
-              <p className="text-xs text-slate-400 mt-1">Il nome che appare come mittente nelle email</p>
+              <Label htmlFor="emailaccountssettings-nome-mittente" className="text-sm font-medium text-slate-700">Nome Mittente</Label>
+              <Input id="emailaccountssettings-nome-mittente" value={form.display_name} onChange={e => setForm(prev => ({ ...prev, display_name: e.target.value }))} className="mt-1" placeholder="Mario Rossi S.r.l." />
+              <p className="text-xs text-slate-500 mt-1">Il nome che appare come mittente nelle email</p>
             </div>
 
             {form.provider === "smtp" && (
               <>
                 <div>
-                  <Label className="text-sm font-medium text-slate-700">Username SMTP</Label>
-                  <Input value={form.smtp_username} onChange={e => setForm(prev => ({ ...prev, smtp_username: e.target.value }))} className="mt-1" placeholder="Di solito uguale all'email" />
+                  <Label htmlFor="emailaccountssettings-username-smtp" className="text-sm font-medium text-slate-700">Username SMTP</Label>
+                  <Input id="emailaccountssettings-username-smtp" value={form.smtp_username} onChange={e => setForm(prev => ({ ...prev, smtp_username: e.target.value }))} className="mt-1" placeholder="Di solito uguale all'email" />
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-slate-700">Password per App</Label>
-                  <Input type="password" value={form.smtp_password} onChange={e => setForm(prev => ({ ...prev, smtp_password: e.target.value }))} className="mt-1" placeholder="Password per app dedicata" />
+                  <Label htmlFor="emailaccountssettings-password-per-app" className="text-sm font-medium text-slate-700">Password per App</Label>
+                  <Input id="emailaccountssettings-password-per-app" type="password" value={form.smtp_password} onChange={e => setForm(prev => ({ ...prev, smtp_password: e.target.value }))} className="mt-1" placeholder="Password per app dedicata" />
                   <div className="flex gap-1.5 mt-1.5">
                     <AlertCircle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-slate-500">
@@ -466,12 +466,12 @@ export default function EmailAccountsSettings({ profile }) {
                 {form.ricezione_attiva && (
                   <div className="grid grid-cols-[1fr_90px] gap-3">
                     <div>
-                      <Label className="text-sm font-medium text-slate-700">Server IMAP</Label>
-                      <Input value={form.imap_host} onChange={e => setForm(prev => ({ ...prev, imap_host: e.target.value }))} className="mt-1" placeholder="imaps.aruba.it" />
+                      <Label htmlFor="emailaccountssettings-server-imap" className="text-sm font-medium text-slate-700">Server IMAP</Label>
+                      <Input id="emailaccountssettings-server-imap" value={form.imap_host} onChange={e => setForm(prev => ({ ...prev, imap_host: e.target.value }))} className="mt-1" placeholder="imaps.aruba.it" />
                     </div>
                     <div>
-                      <Label className="text-sm font-medium text-slate-700">Porta</Label>
-                      <Input type="number" value={form.imap_port} onChange={e => setForm(prev => ({ ...prev, imap_port: parseInt(e.target.value) || 993 }))} className="mt-1" />
+                      <Label htmlFor="emailaccountssettings-porta-2" className="text-sm font-medium text-slate-700">Porta</Label>
+                      <Input id="emailaccountssettings-porta-2" type="number" value={form.imap_port} onChange={e => setForm(prev => ({ ...prev, imap_port: parseInt(e.target.value) || 993 }))} className="mt-1" />
                     </div>
                   </div>
                 )}
@@ -487,15 +487,15 @@ export default function EmailAccountsSettings({ profile }) {
             )}
 
             <div>
-              <Label className="text-sm font-medium text-slate-700">Firma personalizzata (facoltativa)</Label>
-              <textarea
+              <Label htmlFor="emailaccountssettings-firma-personalizzata-facolta" className="text-sm font-medium text-slate-700">Firma personalizzata (facoltativa)</Label>
+              <textarea id="emailaccountssettings-firma-personalizzata-facolta"
                 value={form.firma_html}
                 onChange={e => setForm(prev => ({ ...prev, firma_html: e.target.value }))}
                 rows={3}
                 className="mt-1 w-full rounded-md border border-input p-2 text-sm"
                 placeholder={"Es. Ufficio Amministrazione\nTel. 0471 000000"}
               />
-              <p className="text-xs text-slate-400 mt-1">Se vuota si usa la firma automatica con logo e dati della ditta.</p>
+              <p className="text-xs text-slate-500 mt-1">Se vuota si usa la firma automatica con logo e dati della ditta.</p>
             </div>
 
             <label className="flex items-center gap-2 cursor-pointer">

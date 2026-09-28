@@ -161,7 +161,7 @@ Sii MOLTO preciso nella lettura di numeri, quantità e prezzi. Se un dato non è
             </p>
 
             <div>
-              <Label>Carica documento</Label>
+              <Label htmlFor="quoteimportdialog-carica-documento">Carica documento</Label>
               <label className="block cursor-pointer mt-1">
                 <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-brand-400 transition-colors">
                   {uploading ? (
@@ -172,11 +172,11 @@ Sii MOLTO preciso nella lettura di numeri, quantità e prezzi. Se un dato non è
                     <>
                       <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                       <p className="text-sm text-slate-500">Clicca per caricare o scatta una foto</p>
-                      <p className="text-xs text-slate-400 mt-1">PDF, Word, Excel, immagini</p>
+                      <p className="text-xs text-slate-500 mt-1">PDF, Word, Excel, immagini</p>
                     </>
                   )}
                 </div>
-                <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" capture="environment" className="hidden" onChange={handleFileUpload} />
+                <input id="quoteimportdialog-carica-documento" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" capture="environment" className="hidden" onChange={handleFileUpload} />
               </label>
             </div>
 
@@ -202,12 +202,12 @@ Sii MOLTO preciso nella lettura di numeri, quantità e prezzi. Se un dato non è
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Cliente</Label>
-                <Input value={data.cliente_nome} onChange={e => setData({ ...data, cliente_nome: e.target.value })} />
+                <Label htmlFor="quoteimportdialog-cliente">Cliente</Label>
+                <Input id="quoteimportdialog-cliente" value={data.cliente_nome} onChange={e => setData({ ...data, cliente_nome: e.target.value })} />
               </div>
               <div>
-                <Label>Oggetto</Label>
-                <Input value={data.oggetto} onChange={e => setData({ ...data, oggetto: e.target.value })} />
+                <Label htmlFor="quoteimportdialog-oggetto">Oggetto</Label>
+                <Input id="quoteimportdialog-oggetto" value={data.oggetto} onChange={e => setData({ ...data, oggetto: e.target.value })} />
               </div>
             </div>
 
@@ -221,7 +221,7 @@ Sii MOLTO preciso nella lettura di numeri, quantità e prezzi. Se un dato non è
                   <div key={idx} className="border border-slate-200 rounded-lg p-2 space-y-2">
                     <div className="flex gap-1">
                       <Input value={row.descrizione} onChange={e => updateRow(idx, "descrizione", e.target.value)} placeholder="Descrizione" className="text-sm" />
-                      <button onClick={() => removeRow(idx)} className="p-1 text-slate-400 hover:text-red-600 flex-shrink-0">
+                      <button onClick={() => removeRow(idx)} className="p-1 text-slate-500 hover:text-red-600 flex-shrink-0">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -245,8 +245,8 @@ Sii MOLTO preciso nella lettura di numeri, quantità e prezzi. Se un dato non è
             </div>
 
             <div>
-              <Label>Note</Label>
-              <textarea value={data.note} onChange={e => setData({ ...data, note: e.target.value })} className="w-full border border-slate-200 rounded-lg p-2 text-sm min-h-[60px]" />
+              <Label htmlFor="quoteimportdialog-note">Note</Label>
+              <textarea id="quoteimportdialog-note" value={data.note} onChange={e => setData({ ...data, note: e.target.value })} className="w-full border border-slate-200 rounded-lg p-2 text-sm min-h-[60px]" />
             </div>
 
             <div className="flex justify-end gap-2 pt-2">

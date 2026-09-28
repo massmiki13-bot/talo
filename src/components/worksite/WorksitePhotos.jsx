@@ -104,7 +104,7 @@ export default function WorksitePhotos({ worksiteId }) {
                     {photo.didascalia && (
                       <p className="text-xs text-slate-600 px-2 py-1 truncate">{photo.didascalia}</p>
                     )}
-                    <p className="text-[10px] text-slate-400 px-2 pb-1">{photo.data ? new Date(photo.data).toLocaleDateString("it-IT") : ""}</p>
+                    <p className="text-[10px] text-slate-500 px-2 pb-1">{photo.data ? new Date(photo.data).toLocaleDateString("it-IT") : ""}</p>
                     <button
                       onClick={() => handleDelete(photo.id)}
                       className="absolute top-1 right-1 p-1.5 bg-red-500/80 rounded-full text-white md:opacity-0 md:group-hover:opacity-100 transition-opacity"
@@ -118,7 +118,7 @@ export default function WorksitePhotos({ worksiteId }) {
           );
         })}
         {photos.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-6">Nessuna foto. Carica la prima foto di avanzamento.</p>
+          <p className="text-sm text-slate-500 text-center py-6">Nessuna foto. Carica la prima foto di avanzamento.</p>
         )}
       </div>
     </div>

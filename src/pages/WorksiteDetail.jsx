@@ -321,7 +321,7 @@ export default function WorksiteDetail() {
                         ) : (
                           <>
                             <strong className={b && r > b ? "text-red-700" : "text-slate-900"}>{fmtEur(r)}</strong>{b ? <span className="text-slate-500"> / {fmtEur(b)}</span> : null}
-                            {c === "Manodopera" && <button aria-label="Modifica costo manodopera" onClick={() => setLaborEdit(worksite.costo_manodopera_manuale ?? "")} className="ml-1 text-slate-400 hover:text-brand-700"><Pencil className="w-3.5 h-3.5 inline" /></button>}
+                            {c === "Manodopera" && <button aria-label="Modifica costo manodopera" onClick={() => setLaborEdit(worksite.costo_manodopera_manuale ?? "")} className="ml-1 text-slate-500 hover:text-brand-700"><Pencil className="w-3.5 h-3.5 inline" /></button>}
                           </>
                         )}
                       </span>

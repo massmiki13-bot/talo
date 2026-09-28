@@ -333,9 +333,9 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
             <div className="px-5 py-4 space-y-3">
               {/* Mittente */}
               <div className="grid sm:grid-cols-[90px_1fr] items-center gap-1.5 sm:gap-3">
-                <Label className="text-slate-500">Da</Label>
+                <Label htmlFor="composedialog-da" className="text-slate-500">Da</Label>
                 <Select value={accountId} onValueChange={setAccountId}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="composedialog-da"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {accounts.map((a) => (
                       <SelectItem key={a.id} value={a.id}>
@@ -544,9 +544,9 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
 function LinkSelect({ label, value, onChange, options }) {
   return (
     <div>
-      <Label className="text-xs text-slate-500">{label}</Label>
+      <Label htmlFor="composedialog-campo" className="text-xs text-slate-500">{label}</Label>
       <Select value={value || "none"} onValueChange={(v) => onChange(v === "none" ? "" : v)}>
-        <SelectTrigger className="mt-1 h-9 text-sm"><SelectValue /></SelectTrigger>
+        <SelectTrigger id="composedialog-campo" className="mt-1 h-9 text-sm"><SelectValue /></SelectTrigger>
         <SelectContent>
           <SelectItem value="none">— Nessuno —</SelectItem>
           {options.map((o) => <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>)}

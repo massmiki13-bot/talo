@@ -207,23 +207,23 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      {!readOnly && <button onClick={() => setEditDoc(doc)} className="p-1.5 rounded-lg hover:bg-brand-50 text-slate-400 hover:text-brand-600" title="Modifica documento">
+                      {!readOnly && <button onClick={() => setEditDoc(doc)} className="p-1.5 rounded-lg hover:bg-brand-50 text-slate-500 hover:text-brand-600" title="Modifica documento">
                         <Pencil className="w-4 h-4" />
                       </button>}
                       {doc.file_url && (
                         <>
-                          <button onClick={() => openReader(doc.file_url)} className="p-1.5 rounded-lg hover:bg-brand-50 text-slate-400 hover:text-brand-600" title="Leggi con IA">
+                          <button onClick={() => openReader(doc.file_url)} className="p-1.5 rounded-lg hover:bg-brand-50 text-slate-500 hover:text-brand-600" title="Leggi con IA">
                             <ScanLine className="w-4 h-4" />
                           </button>
-                          <button onClick={() => setPreviewDoc(doc)} className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-400 hover:text-indigo-600" title="Anteprima">
+                          <button onClick={() => setPreviewDoc(doc)} className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-500 hover:text-indigo-600" title="Anteprima">
                             <Eye className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDownloadPdf(doc)} disabled={downloadingId === doc.id} className="p-1.5 rounded-lg hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 disabled:opacity-50" title="Scarica PDF">
+                          <button onClick={() => handleDownloadPdf(doc)} disabled={downloadingId === doc.id} className="p-1.5 rounded-lg hover:bg-emerald-50 text-slate-500 hover:text-emerald-600 disabled:opacity-50" title="Scarica PDF">
                             {downloadingId === doc.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
                           </button>
                         </>
                       )}
-                      {!readOnly && <button onClick={() => handleDeleteDoc(doc.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600">
+                      {!readOnly && <button onClick={() => handleDeleteDoc(doc.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600">
                         <Trash2 className="w-4 h-4" />
                       </button>}
                     </div>
@@ -239,11 +239,11 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Carica Documento</DialogTitle></DialogHeader>
           <div className="space-y-4 mt-4">
-            <div><Label>Titolo</Label><Input value={form.titolo} onChange={e => setForm({ ...form, titolo: e.target.value })} /></div>
+            <div><Label htmlFor="employeedocuments-titolo">Titolo</Label><Input id="employeedocuments-titolo" value={form.titolo} onChange={e => setForm({ ...form, titolo: e.target.value })} /></div>
             <div>
-              <Label>Tipo</Label>
+              <Label htmlFor="employeedocuments-tipo">Tipo</Label>
               <Select value={form.tipo} onValueChange={v => setForm({ ...form, tipo: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="employeedocuments-tipo"><SelectValue /></SelectTrigger>
                 <SelectContent>{docTypes.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
               </Select>
               {form.tipo === "altro" && (
@@ -256,7 +256,7 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
               )}
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>Data Emissione</Label><Input type="date" value={form.data_emissione} onChange={e => setForm({ ...form, data_emissione: e.target.value })} /></div>
+              <div><Label htmlFor="employeedocuments-data-emissione">Data Emissione</Label><Input id="employeedocuments-data-emissione" type="date" value={form.data_emissione} onChange={e => setForm({ ...form, data_emissione: e.target.value })} /></div>
             </div>
 
             {/* Scadenza — tre opzioni coerenti con AIAssistant */}
@@ -298,21 +298,21 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
                     </p>
                   )}
                   {form.scadenza_mode === "ia" && !form.data_scadenza && !readingDate && (
-                    <p className="text-xs text-slate-400 mt-1">L'IA non ha trovato una scadenza. Inseriscila manualmente sopra.</p>
+                    <p className="text-xs text-slate-500 mt-1">L'IA non ha trovato una scadenza. Inseriscila manualmente sopra.</p>
                   )}
                   {form.scadenza_mode === "manuale" && (
-                    <p className="text-xs text-slate-400 mt-1">Inserisci la data di scadenza manualmente.</p>
+                    <p className="text-xs text-slate-500 mt-1">Inserisci la data di scadenza manualmente.</p>
                   )}
                 </div>
               )}
 
               {form.scadenza_mode === "nessuna" && (
-                <p className="text-xs text-slate-400 mt-2">Il documento non ha scadenza — nessun promemoria verrà creato.</p>
+                <p className="text-xs text-slate-500 mt-2">Il documento non ha scadenza — nessun promemoria verrà creato.</p>
               )}
             </div>
             <div>
-              <Label>File</Label>
-              <Input type="file" accept="image/*,application/pdf" onChange={handleFileUpload} disabled={uploading} />
+              <Label htmlFor="employeedocuments-file">File</Label>
+              <Input id="employeedocuments-file" type="file" accept="image/*,application/pdf" onChange={handleFileUpload} disabled={uploading} />
               {uploading && <p className="text-xs text-slate-500 mt-1">Caricamento...</p>}
               {form.file_url && (
                 <div className="flex items-center gap-2 mt-2">
@@ -344,9 +344,9 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
                 </Select>
                 {Number(form.anticipo) > 0 && (
                   <div>
-                    <Label className="text-xs">Ripeti avviso</Label>
+                    <Label htmlFor="employeedocuments-ripeti-avviso" className="text-xs">Ripeti avviso</Label>
                     <Select value={form.ripetizione || "nessuna"} onValueChange={v => setForm({ ...form, ripetizione: v })}>
-                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                      <SelectTrigger id="employeedocuments-ripeti-avviso" className="mt-1"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="nessuna">Una volta sola</SelectItem>
                         <SelectItem value="giornaliera">Ogni giorno fino alla scadenza</SelectItem>

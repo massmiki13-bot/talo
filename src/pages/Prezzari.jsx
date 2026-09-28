@@ -92,7 +92,7 @@ export default function Prezzari() {
                 </div>
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
                   <label className="flex items-center gap-2 text-sm text-slate-700"><Switch checked={p.attivo !== false} onCheckedChange={(v) => patch(p, { attivo: v })} /> Usato dall'IA</label>
-                  <button onClick={() => remove(p)} className="p-1.5 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50" aria-label="Elimina"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={() => remove(p)} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina"><Trash2 className="w-4 h-4" /></button>
                 </div>
               </div>
             ))}
@@ -216,9 +216,9 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
         <div className="grid sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2"><Label htmlFor="pz-nome">Nome</Label><Input id="pz-nome" value={meta.nome} onChange={(e) => setMeta({ ...meta, nome: e.target.value })} placeholder="es. Prezzario Provincia di Bolzano 2026" className="mt-1" /></div>
           <div>
-            <Label>Tipo</Label>
+            <Label htmlFor="prezzari-tipo">Tipo</Label>
             <Select value={meta.tipo} onValueChange={(v) => setMeta({ ...meta, tipo: v })}>
-              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="prezzari-tipo" className="mt-1"><SelectValue /></SelectTrigger>
               <SelectContent>{TIPI.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
             </Select>
           </div>
@@ -232,13 +232,13 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
                 </Select>
               ) : <Input value={meta.ente} onChange={(e) => setMeta({ ...meta, ente: e.target.value })} className="mt-1" />}
             </div>
-            <div><Label>Anno</Label><Input type="number" value={meta.anno} onChange={(e) => setMeta({ ...meta, anno: e.target.value })} className="mt-1" /></div>
+            <div><Label htmlFor="prezzari-anno">Anno</Label><Input id="prezzari-anno" type="number" value={meta.anno} onChange={(e) => setMeta({ ...meta, anno: e.target.value })} className="mt-1" /></div>
           </div>
         </div>
 
         {phase === "pick" && (
           <button onClick={() => input.current?.click()} className="w-full mt-2 rounded-xl border-2 border-dashed border-slate-300 hover:border-brand-500 hover:bg-brand-50/40 py-10 text-center transition-colors">
-            <div className="flex justify-center gap-3 text-slate-400"><FileSpreadsheet className="w-8 h-8" /><FileText className="w-8 h-8" /></div>
+            <div className="flex justify-center gap-3 text-slate-500"><FileSpreadsheet className="w-8 h-8" /><FileText className="w-8 h-8" /></div>
             <p className="mt-2 text-sm font-medium text-slate-800">Scegli il file del prezzario</p>
             <p className="text-xs text-slate-500">.xlsx .xls .csv .ods .pdf</p>
             <input ref={input} type="file" className="hidden" accept=".xlsx,.xls,.csv,.ods,.pdf" onChange={(e) => { choose(e.target.files?.[0]); e.target.value = ""; }} />
@@ -250,8 +250,8 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
           <div className="rounded-xl border border-slate-200 p-4 space-y-3">
             <p className="text-sm text-slate-800"><b>{file?.name}</b> · {pages.total} pagine</p>
             <div className="flex flex-wrap items-end gap-3">
-              <div><Label>Dalla pagina</Label><Input type="number" min={1} max={pages.total} value={pages.from} onChange={(e) => setPages({ ...pages, from: Math.max(1, Number(e.target.value) || 1) })} className="mt-1 w-24" /></div>
-              <div><Label>Alla pagina</Label><Input type="number" min={1} max={pages.total} value={pages.to} onChange={(e) => setPages({ ...pages, to: Math.min(pages.total, Number(e.target.value) || 1) })} className="mt-1 w-24" /></div>
+              <div><Label htmlFor="prezzari-dalla-pagina">Dalla pagina</Label><Input id="prezzari-dalla-pagina" type="number" min={1} max={pages.total} value={pages.from} onChange={(e) => setPages({ ...pages, from: Math.max(1, Number(e.target.value) || 1) })} className="mt-1 w-24" /></div>
+              <div><Label htmlFor="prezzari-alla-pagina">Alla pagina</Label><Input id="prezzari-alla-pagina" type="number" min={1} max={pages.total} value={pages.to} onChange={(e) => setPages({ ...pages, to: Math.min(pages.total, Number(e.target.value) || 1) })} className="mt-1 w-24" /></div>
               <Button onClick={readPdf} disabled={pages.to < pages.from} className="bg-brand-600 hover:bg-brand-700 gap-1.5"><Sparkles className="w-4 h-4" /> Leggi con l'IA</Button>
             </div>
             <p className="text-xs text-slate-500">Circa 10 secondi ogni 3 pagine. Per prezzari molto lunghi importa i capitoli che usi davvero, oppure cerca la versione Excel sul sito della regione: è più veloce e precisa.</p>

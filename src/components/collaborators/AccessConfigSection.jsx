@@ -63,7 +63,7 @@ export default function AccessConfigSection({
             <span className="text-sm font-medium">Operaio / Dipendente</span>
           </button>
         </div>
-        <p className="text-xs text-slate-400 mt-1.5">
+        <p className="text-xs text-slate-500 mt-1.5">
           {isResponsabile
             ? "Vede e gestisce i dati dei moduli autorizzati."
             : "Vede solo i propri documenti, giornaliere e ore lavorate."}
@@ -118,7 +118,7 @@ export default function AccessConfigSection({
               </SelectContent>
             </Select>
           )}
-          <p className="text-xs text-slate-400 mt-1.5">
+          <p className="text-xs text-slate-500 mt-1.5">
             L'operaio vedrà solo i propri documenti, le proprie presenze e le proprie ore.
           </p>
         </div>
