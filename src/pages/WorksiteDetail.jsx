@@ -11,6 +11,7 @@ import {
   MoreHorizontal, Plus, Loader2, HardHat, Receipt, ClipboardList, Edit3, CheckCircle2,
 } from "lucide-react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { DetailHero, DetailCard, DetailTabs, HeroButton, StatusPill, Alerts, eurShort } from "@/components/shared/DetailLayout";
 import WorksiteForm from "@/components/worksite/WorksiteForm";
 import WorksitePhases from "@/components/worksite/WorksitePhases";
 import WorksiteMoney from "@/components/worksite/WorksiteMoney";
@@ -29,18 +30,7 @@ import { exportWorksiteFolder } from "@/utils/worksiteExport";
 import { generateWorksiteReport } from "@/utils/worksiteReport";
 import { downloadBlob } from "@/utils/employeePdf";
 
-function Card({ icon: Icon, title, action, children }) {
-  return (
-    <section className="bg-white rounded-xl border border-slate-200">
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
-        <Icon className="w-4 h-4 text-slate-500" />
-        <h3 className="text-sm font-semibold text-slate-800 flex-1">{title}</h3>
-        {action}
-      </div>
-      <div className="p-4">{children}</div>
-    </section>
-  );
-}
+const Card = ({ icon, title, action, children }) => <DetailCard icon={icon} title={title} action={action}>{children}</DetailCard>;
 
 export default function WorksiteDetail() {
   const { id } = useParams();
@@ -159,100 +149,60 @@ export default function WorksiteDetail() {
 
   const TABS = [
     ["panoramica", "Panoramica"],
-    ...(readOnly ? [] : [["economia", "Costi e margine"], ["incassi", `Incassi${overdueRates.length ? ` (${overdueRates.length})` : ""}`]]),
+    ...(readOnly ? [] : [["economia", "Costi e margine", econ.sforamenti.length], ["incassi", "Incassi", overdueRates.length]]),
     ["giornale", "Giornale"],
     ["foto", "Foto e documenti"],
     ...(readOnly ? [] : [["email", "Email"]]),
   ];
 
   return (
-    <div className="space-y-4">
-      <Link to="/lavori" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800"><ArrowLeft className="w-4 h-4" /> Lavori</Link>
-
-      {/* Intestazione */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
-        <div className="flex flex-col lg:flex-row lg:items-start gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-display text-2xl sm:text-[30px] leading-tight font-bold text-zinc-950 break-words">{worksite.nome}</h1>
-              {readOnly
-                ? <span className={`text-xs font-semibold rounded-full border px-2 py-0.5 ${st.className}`}>{st.label}</span>
-                : (
-                  <Select value={worksite.stato || "da_iniziare"} onValueChange={changeState}>
-                    <SelectTrigger className={`h-7 w-auto gap-1.5 rounded-full border text-xs font-semibold ${st.className}`}><SelectValue /></SelectTrigger>
-                    <SelectContent>{Object.entries(WORKSITE_STATES).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
-                  </Select>
-                )}
-            </div>
-            <div className="text-sm text-slate-600 mt-1 flex flex-wrap gap-x-4 gap-y-1">
-              {worksite.cliente_nome && <span>{worksite.cliente_id ? <Link to={`/contatti/${worksite.cliente_id}`} className="hover:underline">{worksite.cliente_nome}</Link> : worksite.cliente_nome}</span>}
-              {worksite.indirizzo && <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(worksite.indirizzo)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:underline"><MapPin className="w-3.5 h-3.5" />{worksite.indirizzo}</a>}
-              {(worksite.data_inizio || worksite.data_fine_prevista) && <span className="flex items-center gap-1"><CalendarDays className="w-3.5 h-3.5" />{worksite.data_inizio ? fmtDate(worksite.data_inizio) : "?"} → {fmtDate(worksite.data_fine_effettiva || worksite.data_fine_prevista)}</span>}
-              {capo && <span className="flex items-center gap-1"><HardHat className="w-3.5 h-3.5" />{fullName(capo)}</span>}
-            </div>
-          </div>
-          {!readOnly && (
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditOpen(true)}><Pencil className="w-4 h-4" /> Modifica</Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild><Button variant="outline" size="sm" className="gap-1.5"><FileDown className="w-4 h-4" /> Documenti</Button></DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => report(true)}><FileDown className="w-4 h-4 mr-2" /> Resoconto interno (con costi)</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => report(false)}><FileDown className="w-4 h-4 mr-2" /> Relazione per il cliente</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={exportFolder}><FileDown className="w-4 h-4 mr-2" /> Cartella completa (Excel)</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              {busy && <Loader2 className="w-5 h-5 animate-spin text-slate-400 self-center" />}
-              <Button size="sm" className="gap-1.5" onClick={() => setTab("economia")}><Plus className="w-4 h-4" /> Spesa</Button>
-            </div>
+    <div className="space-y-5">
+      <DetailHero
+        back={{ to: "/lavori", label: "Lavori" }}
+        eyebrow={worksite.tipo_intervento || "Lavoro"}
+        title={worksite.nome}
+        badge={readOnly
+          ? <StatusPill className={st.className}>{st.label}</StatusPill>
+          : (
+            <Select value={worksite.stato || "da_iniziare"} onValueChange={changeState}>
+              <SelectTrigger aria-label="Stato del lavoro" className={`h-7 w-auto gap-1.5 rounded-full border-0 text-xs font-semibold ${st.className}`}><SelectValue /></SelectTrigger>
+              <SelectContent>{Object.entries(WORKSITE_STATES).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
+            </Select>
           )}
-        </div>
+        meta={[
+          worksite.cliente_nome && (worksite.cliente_id ? <Link to={`/contatti/${worksite.cliente_id}`} className="hover:text-white underline-offset-4 hover:underline">{worksite.cliente_nome}</Link> : worksite.cliente_nome),
+          worksite.indirizzo && <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(worksite.indirizzo)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-white"><MapPin className="w-3.5 h-3.5 shrink-0" aria-hidden="true" /><span className="truncate">{worksite.indirizzo}</span><Navigation className="w-3 h-3 shrink-0" aria-hidden="true" /></a>,
+          (worksite.data_inizio || worksite.data_fine_prevista) && <><CalendarDays className="w-3.5 h-3.5" aria-hidden="true" />{worksite.data_inizio ? fmtDate(worksite.data_inizio) : "?"} → {fmtDate(worksite.data_fine_effettiva || worksite.data_fine_prevista)}{late && <span className="text-brand-400 font-medium">· in ritardo</span>}</>,
+          capo && <><HardHat className="w-3.5 h-3.5" aria-hidden="true" />{fullName(capo)}</>,
+        ]}
+        actions={!readOnly && (
+          <>
+            <HeroButton primary onClick={() => setTab("economia")}><Plus className="w-4 h-4" aria-hidden="true" />Spesa</HeroButton>
+            <HeroButton onClick={() => setEditOpen(true)}><Pencil className="w-4 h-4" aria-hidden="true" />Modifica</HeroButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild><HeroButton>{busy ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <FileDown className="w-4 h-4" aria-hidden="true" />}Documenti</HeroButton></DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => report(true)}><FileDown className="w-4 h-4 mr-2" /> Resoconto interno (con costi)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => report(false)}><FileDown className="w-4 h-4 mr-2" /> Relazione per il cliente</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={exportFolder}><FileDown className="w-4 h-4 mr-2" /> Cartella completa (Excel)</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        )}
+        stats={[
+          { label: "Avanzamento", value: `${Math.round(worksite.avanzamento || 0)}%`, progress: worksite.avanzamento || 0, sub: late ? "fine prevista superata" : worksite.data_fine_prevista ? `fine ${fmtDate(worksite.data_fine_prevista)}` : undefined, tone: late ? "bad" : undefined },
+          { label: "Ore lavorate", value: `${labor.ore.toLocaleString("it-IT")} h`, sub: `${labor.giorni} giornate · ${labor.persone.size} persone` },
+          ...(readOnly ? [] : [
+            { label: "Incassato", value: eurShort(incassato), sub: contractAmount ? `${Math.round((incassato / contractAmount) * 100)}% di ${eurShort(contractAmount)}` : "nessun importo di contratto", progress: contractAmount ? (incassato / contractAmount) * 100 : undefined },
+            { label: "Margine ad oggi", value: eurShort(econ.margineReale), sub: `costi ${eurShort(econ.costi)}${econ.ricavo ? ` · ${Math.round((econ.margineReale / econ.ricavo) * 100)}%` : ""}`, tone: econ.margineReale < 0 && econ.costi > 0 ? "bad" : "good" },
+          ]),
+        ]}
+      />
 
-        {/* Indicatori */}
-        <div className={`grid grid-cols-2 ${readOnly ? "" : "lg:grid-cols-4"} gap-3 mt-4`}>
-          <div className="rounded-lg bg-slate-50 p-3">
-            <p className="text-xs text-slate-600">Avanzamento</p>
-            <p className="text-lg font-bold text-slate-900">{worksite.avanzamento || 0}%</p>
-            <div className="h-1.5 rounded-full bg-white mt-1 overflow-hidden"><div className="h-full bg-brand-600" style={{ width: `${worksite.avanzamento || 0}%` }} /></div>
-          </div>
-          <div className="rounded-lg bg-slate-50 p-3">
-            <p className="text-xs text-slate-600">Ore lavorate</p>
-            <p className="text-lg font-bold text-slate-900">{labor.ore.toLocaleString("it-IT")} h</p>
-            <p className="text-xs text-slate-600">{labor.giorni} giornate · {labor.persone.size} persone</p>
-          </div>
-          {!readOnly && (
-            <>
-              <div className="rounded-lg bg-slate-50 p-3">
-                <p className="text-xs text-slate-600">Incassato</p>
-                <p className="text-lg font-bold text-slate-900 tabular-nums">{fmtEur(incassato)}</p>
-                <p className="text-xs text-slate-600">su {fmtEur(contractAmount)}</p>
-              </div>
-              <div className={`rounded-lg p-3 ${econ.margineReale < 0 && econ.costi > 0 ? "bg-red-50" : "bg-emerald-50"}`}>
-                <p className="text-xs text-slate-700">Margine ad oggi</p>
-                <p className={`text-lg font-bold tabular-nums ${econ.margineReale < 0 && econ.costi > 0 ? "text-red-700" : "text-emerald-800"}`}>{fmtEur(econ.margineReale)}</p>
-                <p className="text-xs text-slate-700">costi {fmtEur(econ.costi)}</p>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+      {!readOnly && <Alerts items={alerts.map((a) => ({ ...a, icon: AlertTriangle }))} />}
 
-      {!readOnly && alerts.length > 0 && (
-        <div className="space-y-2">
-          {alerts.map((a, i) => (
-            <div key={i} className={`flex gap-2 rounded-lg border px-3 py-2 text-sm ${a.level === "red" ? "border-red-200 bg-red-50 text-red-900" : "border-amber-200 bg-amber-50 text-amber-900"}`}>
-              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /> {a.text}
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-slate-200">
-        {TABS.map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
-        ))}
-      </div>
+      <DetailTabs tabs={TABS} value={tab} onChange={setTab} />
 
       {tab === "panoramica" && (
         <div className="grid lg:grid-cols-2 gap-4 items-start">

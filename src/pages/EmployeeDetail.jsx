@@ -9,10 +9,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  ArrowLeft, Pencil, Phone, Mail, MessageCircle, IdCard, GraduationCap, Stethoscope, HardHat, Clock, ShieldCheck, AlertTriangle,
+  Pencil, Phone, Mail, MessageCircle, IdCard, GraduationCap, Stethoscope, HardHat, Clock, ShieldCheck, AlertTriangle,
   CheckCircle2, MoreHorizontal, UserMinus, UserCheck, Plus, Trash2, FileDown, Loader2, Smartphone, Briefcase,
 } from "lucide-react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { DetailHero, DetailCard, DetailTabs, HeroButton, StatusPill, Avatar } from "@/components/shared/DetailLayout";
 import EmployeeForm from "@/components/employees/EmployeeForm";
 import EmployeeDocuments from "@/components/employees/EmployeeDocuments";
 import TrainingDialog from "@/components/employees/TrainingDialog";
@@ -27,18 +28,7 @@ import { phoneHref, whatsappHref, fmtEur } from "@/lib/contacts";
 const fmtDate = (d) => (d ? new Date(d).toLocaleDateString("it-IT") : "—");
 const MONTHS = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
-function Card({ icon: Icon, title, action, children }) {
-  return (
-    <section className="bg-white rounded-xl border border-slate-200">
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
-        <Icon className="w-4 h-4 text-slate-500" />
-        <h3 className="text-sm font-semibold text-slate-800 flex-1">{title}</h3>
-        {action}
-      </div>
-      <div className="p-4">{children}</div>
-    </section>
-  );
-}
+const Card = ({ icon, title, action, children }) => <DetailCard icon={icon} title={title} action={action}>{children}</DetailCard>;
 
 function Info({ label, value }) {
   if (!value && value !== 0) return null;
@@ -141,6 +131,7 @@ export default function EmployeeDetail() {
   const courses = docs.filter((d) => d.tipo === "corso");
   const visits = docs.filter((d) => d.tipo === "visita_medica");
   const dpi = employee.dpi_consegnati || [];
+  const lastVisit = [...visits].filter((v) => v.data_scadenza).sort((a, b) => String(b.data_scadenza).localeCompare(String(a.data_scadenza)))[0];
 
   const badge = async () => {
     setBusy("badge");
@@ -168,44 +159,35 @@ export default function EmployeeDetail() {
 
   const TABS = [
     ["panoramica", "Panoramica"],
-    ["sicurezza", `Formazione e visite${status.problemi.length ? ` (${status.problemi.length})` : ""}`],
-    ["dpi", `DPI (${dpi.length})`],
+    ["sicurezza", "Formazione e visite", status.problemi.length],
+    ["dpi", `DPI · ${dpi.length}`],
     ["ore", "Ore e cantieri"],
-    ["documenti", `Documenti (${docs.length})`],
+    ["documenti", `Documenti · ${docs.length}`],
   ];
 
   return (
-    <div className="space-y-4">
-      {!readOnly && <Link to="/dipendenti" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800"><ArrowLeft className="w-4 h-4" /> Dipendenti</Link>}
-
-      {/* Intestazione */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row gap-4">
-        {employee.foto_url
-          ? <img src={employee.foto_url} alt={fullName(employee)} className="w-20 h-20 rounded-full object-cover border border-slate-200 shrink-0" />
-          : <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center text-2xl font-semibold text-slate-600 shrink-0">{initials(employee)}</div>}
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="font-display text-2xl sm:text-[30px] leading-tight font-bold text-zinc-950">{fullName(employee)}</h1>
-            {cessato
-              ? <span className="text-xs font-semibold rounded-full bg-slate-200 text-slate-700 px-2 py-0.5">Cessato il {fmtDate(employee.data_cessazione)}</span>
-              : <span className={`inline-flex items-center gap-1.5 text-xs font-semibold rounded-full border px-2 py-0.5 ${st.badge}`}><span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />{st.label}</span>}
-          </div>
-          <p className="text-sm text-slate-600 mt-0.5">
-            {[employee.ruolo, employee.qualifica, employee.livello].filter(Boolean).join(" · ") || "Mansione non indicata"}
-            {employee.data_assunzione && ` · in azienda da ${seniority(employee.data_assunzione)}`}
-          </p>
-          <div className="flex flex-wrap gap-2 mt-3">
-            {phone && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={phoneHref(phone)}><Phone className="w-4 h-4" /> Chiama</a></Button>}
-            {employee.cellulare && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={whatsappHref(employee.cellulare)} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" /> WhatsApp</a></Button>}
-            {employee.email && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={`mailto:${employee.email}`}><Mail className="w-4 h-4" /> Email</a></Button>}
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={badge} disabled={busy === "badge"}>{busy === "badge" ? <Loader2 className="w-4 h-4 animate-spin" /> : <IdCard className="w-4 h-4" />} Tesserino</Button>
-          </div>
-        </div>
-        {!readOnly && (
-          <div className="flex sm:flex-col gap-2 sm:items-end">
-            <Button size="sm" className="gap-1.5" onClick={() => setEditOpen(true)}><Pencil className="w-4 h-4" /> Modifica</Button>
+    <div className="space-y-5">
+      <DetailHero
+        back={readOnly ? null : { to: "/dipendenti", label: "Dipendenti" }}
+        eyebrow={[employee.ruolo || employee.qualifica, employee.livello].filter(Boolean).join(" · ") || "Dipendente"}
+        title={fullName(employee)}
+        avatar={<Avatar src={employee.foto_url} name={fullName(employee)} size={68} />}
+        badge={cessato
+          ? <StatusPill className="bg-zinc-700 text-zinc-100">Cessato il {fmtDate(employee.data_cessazione)}</StatusPill>
+          : <StatusPill className={`inline-flex items-center gap-1.5 ${st.badge}`}><span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} aria-hidden="true" />{st.label}</StatusPill>}
+        meta={[
+          employee.data_assunzione && <><Briefcase className="w-3.5 h-3.5" aria-hidden="true" />In azienda da {seniority(employee.data_assunzione)}</>,
+          phone && <a href={phoneHref(phone)} className="inline-flex items-center gap-1.5 hover:text-white"><Phone className="w-3.5 h-3.5" aria-hidden="true" />{phone}</a>,
+          employee.email && <a href={`mailto:${employee.email}`} className="inline-flex items-center gap-1.5 hover:text-white min-w-0"><Mail className="w-3.5 h-3.5 shrink-0" aria-hidden="true" /><span className="truncate">{employee.email}</span></a>,
+          collab && <><Smartphone className="w-3.5 h-3.5" aria-hidden="true" />Usa l'app</>,
+        ]}
+        actions={<>
+          {!readOnly && <HeroButton primary onClick={() => setEditOpen(true)}><Pencil className="w-4 h-4" aria-hidden="true" />Modifica</HeroButton>}
+          {employee.cellulare && <HeroButton as="a" href={whatsappHref(employee.cellulare)} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" aria-hidden="true" />WhatsApp</HeroButton>}
+          <HeroButton onClick={badge} disabled={busy === "badge"}>{busy === "badge" ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <IdCard className="w-4 h-4" aria-hidden="true" />}Tesserino</HeroButton>
+          {!readOnly && (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild><Button variant="outline" size="sm" className="gap-1.5"><MoreHorizontal className="w-4 h-4" /> Altro</Button></DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild><HeroButton aria-label="Altre azioni"><MoreHorizontal className="w-4 h-4" aria-hidden="true" /></HeroButton></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {!collab && <DropdownMenuItem onClick={() => setInviteOpen(true)}><Smartphone className="w-4 h-4 mr-2" /> Invita all'app</DropdownMenuItem>}
                 <DropdownMenuItem onClick={() => setTraining({ kind: "corso" })}><GraduationCap className="w-4 h-4 mr-2" /> Registra corso</DropdownMenuItem>
@@ -217,23 +199,25 @@ export default function EmployeeDetail() {
                   : <DropdownMenuItem onClick={() => setCessato(true)} className="text-red-600 focus:text-red-700"><UserMinus className="w-4 h-4 mr-2" /> Segna come cessato</DropdownMenuItem>}
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-        )}
-      </div>
+          )}
+        </>}
+        stats={[
+          { label: `Ore di ${MONTHS[month.m].toLowerCase()}`, value: `${hours.month.ore.toLocaleString("it-IT")} h`, sub: `${hours.month.giorni} giornate` },
+          { label: `Ore nel ${month.y}`, value: `${hours.anno.toLocaleString("it-IT")} h`, sub: `${sitesWorked.length} cantieri` },
+          { label: "Formazione", value: `${courses.length} ${courses.length === 1 ? "corso" : "corsi"}`, sub: status.problemi.length ? `${status.problemi.length} da sistemare` : "tutto in regola", tone: status.problemi.length ? "bad" : "good" },
+          { label: "Idoneità medica", value: lastVisit?.data_scadenza ? fmtDate(lastVisit.data_scadenza) : "—", sub: lastVisit ? (new Date(lastVisit.data_scadenza) < new Date() ? "scaduta" : "scadenza visita") : "nessuna visita registrata", tone: lastVisit?.data_scadenza && new Date(lastVisit.data_scadenza) < new Date() ? "bad" : undefined },
+        ]}
+      />
 
       {!cessato && status.problemi.length > 0 && (
-        <div className={`rounded-xl border p-4 ${status.livello === "critico" ? "border-red-200 bg-red-50" : "border-amber-200 bg-amber-50"}`}>
-          <p className={`text-sm font-semibold flex items-center gap-2 ${status.livello === "critico" ? "text-red-800" : "text-amber-900"}`}><AlertTriangle className="w-4 h-4" /> Da sistemare per la sicurezza</p>
+        <div className={`rounded-2xl border p-4 ${status.livello === "critico" ? "border-red-200 bg-red-50" : "border-amber-200 bg-amber-50"}`}>
+          <p className={`text-sm font-semibold flex items-center gap-2 ${status.livello === "critico" ? "text-red-800" : "text-amber-900"}`}><AlertTriangle className="w-4 h-4" aria-hidden="true" /> Da sistemare per la sicurezza</p>
           <ul className="mt-1.5 text-sm text-slate-800 list-disc pl-6 space-y-0.5">{status.problemi.map((p, i) => <li key={i}>{p.testo}</li>)}</ul>
           {!readOnly && <Button size="sm" variant="outline" className="mt-2 bg-white" onClick={() => setTab("sicurezza")}>Vai a formazione e visite</Button>}
         </div>
       )}
 
-      <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-slate-200">
-        {TABS.map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
-        ))}
-      </div>
+      <DetailTabs tabs={TABS} value={tab} onChange={setTab} />
 
       {tab === "panoramica" && (
         <div className="grid lg:grid-cols-2 gap-4">

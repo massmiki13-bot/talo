@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { DetailHero, DetailCard, DetailTabs, HeroButton, StatusPill, Alerts, Avatar, eurShort } from "@/components/shared/DetailLayout";
 import {
-  ArrowLeft, Pencil, FileText, Briefcase, Phone, Mail, MapPin, MessageCircle, Plus, Navigation,
+  Pencil, FileText, Briefcase, Phone, Mail, MapPin, MessageCircle, Plus, Navigation,
   Inbox, FolderOpen, User, Users, StickyNote, ChevronRight, CreditCard, Receipt, ShieldCheck, Upload, Loader2, AlertTriangle, Globe,
 } from "lucide-react";
 import ContactForm from "@/components/contacts/ContactForm";
@@ -38,18 +39,7 @@ const DOC_TYPES = { durc: "DURC", visura: "Visura camerale", certificazione: "Ce
 
 const Badge = ({ className, children }) => <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${className}`}>{children}</span>;
 
-function Card({ icon: Icon, title, action, children, className = "" }) {
-  return (
-    <section className={`bg-white rounded-xl border border-slate-200 ${className}`}>
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100">
-        <Icon className="w-4 h-4 text-slate-500" />
-        <h3 className="text-sm font-semibold text-slate-800 flex-1">{title}</h3>
-        {action}
-      </div>
-      <div className="p-4">{children}</div>
-    </section>
-  );
-}
+const Card = ({ icon, title, action, children, className = "" }) => <DetailCard icon={icon} title={title} action={action} className={className}>{children}</DetailCard>;
 
 function Row({ to, title, subtitle, right, rightSub, badge }) {
   return (
@@ -166,72 +156,49 @@ export default function ContactDetail() {
 
   const TABS = [
     ["panoramica", "Panoramica"],
-    ["attivita", `Attività (${timeline.length})`],
-    ...(cliente ? [["preventivi", `Preventivi (${data.quotes.length})`], ["lavori", `Lavori (${data.worksites.length})`]] : []),
-    ["documenti", `Documenti (${data.documents.length})`],
+    ["attivita", "Attività"],
+    ...(cliente ? [["preventivi", `Preventivi · ${data.quotes.length}`], ["lavori", `Lavori · ${data.worksites.length}`]] : []),
+    ["documenti", "Documenti", expiringDocs.length],
     ["email", "Email"],
   ];
 
   return (
-    <div className="space-y-4">
-      {/* Intestazione */}
-      <div className="flex items-start gap-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Indietro" className="shrink-0 -ml-2"><ArrowLeft className="w-5 h-5" /></Button>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="font-display text-2xl sm:text-[30px] leading-tight font-bold text-zinc-950 break-words">{name}</h1>
-            <Badge className={fornitore && !cliente ? "bg-amber-100 text-amber-800" : "bg-zinc-200 text-zinc-800"}>{TIPO_LABEL[contact.tipo] || "Cliente"}</Badge>
-            {contact.archiviato && <Badge className="bg-slate-200 text-slate-700">Archiviato</Badge>}
-          </div>
-          <div className="flex flex-wrap gap-1 mt-1.5">
-            {SOGGETTO_LABEL[contact.tipo_soggetto] && <span className="text-xs text-slate-500 mr-1">{SOGGETTO_LABEL[contact.tipo_soggetto]}</span>}
-            {(contact.categorie || []).map((c) => <span key={c} className="text-[11px] rounded-full bg-slate-100 text-slate-700 px-2 py-0.5">{c}</span>)}
-            {contact.categoria_fornitore && <span className="text-[11px] rounded-full bg-amber-50 text-amber-800 px-2 py-0.5">{contact.categoria_fornitore}</span>}
-          </div>
-        </div>
-        <Button variant="outline" size="sm" className="gap-1.5 shrink-0" onClick={() => setEditOpen(true)}><Pencil className="w-4 h-4" /> Modifica</Button>
-      </div>
+    <div className="space-y-5">
+      <DetailHero
+        back={{ to: "/contatti", label: "Clienti e fornitori" }}
+        eyebrow={[TIPO_LABEL[contact.tipo] || "Cliente", SOGGETTO_LABEL[contact.tipo_soggetto]].filter(Boolean).join(" · ")}
+        title={name}
+        avatar={<Avatar name={name} size={60} />}
+        badge={<>
+          {contact.archiviato && <StatusPill className="bg-zinc-700 text-zinc-100">Archiviato</StatusPill>}
+          {(contact.categorie || []).slice(0, 3).map((c) => <StatusPill key={c} className="bg-white/10 text-zinc-200">{c}</StatusPill>)}
+          {contact.categoria_fornitore && <StatusPill className="bg-white/10 text-zinc-200">{contact.categoria_fornitore}</StatusPill>}
+        </>}
+        meta={[
+          hasAddress && <a href={mapsUrl(contact)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-white"><MapPin className="w-3.5 h-3.5 shrink-0" aria-hidden="true" /><span className="truncate">{fullAddress(contact)}</span></a>,
+          phone && <a href={phoneHref(phone)} className="inline-flex items-center gap-1.5 hover:text-white"><Phone className="w-3.5 h-3.5" aria-hidden="true" />{phone}</a>,
+          contact.email && <a href={`mailto:${contact.email}`} className="inline-flex items-center gap-1.5 hover:text-white min-w-0"><Mail className="w-3.5 h-3.5 shrink-0" aria-hidden="true" /><span className="truncate">{contact.email}</span></a>,
+          contact.partita_iva && <span className="tabular-nums">P.IVA {contact.partita_iva}</span>,
+        ]}
+        actions={<>
+          {cliente && <HeroButton primary onClick={() => navigate(`/preventivi/nuovo?cliente=${id}`)}><Plus className="w-4 h-4" aria-hidden="true" />Nuovo preventivo</HeroButton>}
+          {phone && <HeroButton as="a" href={phoneHref(phone)}><Phone className="w-4 h-4" aria-hidden="true" />Chiama</HeroButton>}
+          {contact.cellulare && <HeroButton as="a" href={whatsappHref(contact.cellulare)} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" aria-hidden="true" />WhatsApp</HeroButton>}
+          <HeroButton onClick={() => setCompose({ defaultTo: emailTo, templateVars: { cliente: name }, links: { contact_id: id } })}><Mail className="w-4 h-4" aria-hidden="true" />Email</HeroButton>
+          {hasAddress && <HeroButton as="a" href={mapsUrl(contact)} target="_blank" rel="noopener noreferrer" aria-label="Indicazioni stradali"><Navigation className="w-4 h-4" aria-hidden="true" /></HeroButton>}
+          <HeroButton onClick={() => setEditOpen(true)} aria-label="Modifica"><Pencil className="w-4 h-4" aria-hidden="true" /></HeroButton>
+        </>}
+        stats={cliente ? [
+          { label: "Preventivato", value: eurShort(stats.preventivato), sub: `${data.quotes.length} preventivi` },
+          { label: "Accettato", value: eurShort(stats.accettato), sub: stats.conversione !== null ? `${stats.conversione}% di conversione` : "nessuna risposta ancora", tone: stats.conversione >= 50 ? "good" : undefined },
+          { label: "Incassato", value: eurShort(stats.incassato), sub: `${data.payments.length} pagamenti` },
+          { label: "Da incassare", value: eurShort(stats.daIncassare), sub: `${data.worksites.length} lavori`, tone: stats.daIncassare > 0 ? "bad" : "good" },
+        ] : []}
+      />
 
-      {/* Azioni rapide */}
-      <div className="flex flex-wrap gap-2">
-        {phone && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={phoneHref(phone)}><Phone className="w-4 h-4" /> Chiama</a></Button>}
-        {contact.cellulare && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={whatsappHref(contact.cellulare)} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" /> WhatsApp</a></Button>}
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setCompose({ defaultTo: emailTo, templateVars: { cliente: name }, links: { contact_id: id } })}><Mail className="w-4 h-4" /> Scrivi email</Button>
-        {hasAddress && <Button asChild variant="outline" size="sm" className="gap-1.5"><a href={mapsUrl(contact)} target="_blank" rel="noopener noreferrer"><Navigation className="w-4 h-4" /> Indicazioni</a></Button>}
-        {cliente && <Button size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700" onClick={() => navigate(`/preventivi/nuovo?cliente=${id}`)}><Plus className="w-4 h-4" /> Nuovo preventivo</Button>}
-      </div>
+      {fornitore && <Alerts items={expiringDocs.length ? [{ level: "amber", icon: AlertTriangle, text: expiringDocs.map((d) => `${DOC_TYPES[d.tipo] || d.titolo} ${getExpirationStatus(d.data_scadenza) === "expired" ? "scaduto" : "in scadenza"} (${fmtDate(d.data_scadenza)})`).join(" · ") }] : []} />}
 
-      {fornitore && expiringDocs.length > 0 && (
-        <div className="flex gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>{expiringDocs.map((d) => `${DOC_TYPES[d.tipo] || d.titolo} ${getExpirationStatus(d.data_scadenza) === "expired" ? "scaduto" : "in scadenza"} (${fmtDate(d.data_scadenza)})`).join(" · ")}</span>
-        </div>
-      )}
-
-      {/* Riepilogo economico */}
-      {cliente && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[
-            ["Preventivato", fmtEur(stats.preventivato), `${data.quotes.length} preventivi`, "text-slate-900"],
-            ["Accettato", fmtEur(stats.accettato), stats.conversione !== null ? `${stats.conversione}% di conversione` : "—", "text-emerald-700"],
-            ["Incassato", fmtEur(stats.incassato), `${data.payments.length} pagamenti`, "text-slate-900"],
-            ["Da incassare", fmtEur(stats.daIncassare), `${data.worksites.length} lavori`, stats.daIncassare > 0 ? "text-red-700" : "text-slate-900"],
-          ].map(([label, value, sub, color]) => (
-            <div key={label} className="bg-white rounded-xl border border-slate-200 p-3.5">
-              <p className="text-xs text-slate-500">{label}</p>
-              <p className={`text-lg font-bold tabular-nums ${color}`}>{value}</p>
-              <p className="text-xs text-slate-500">{sub}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Schede */}
-      <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-slate-200">
-        {TABS.map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k)} className={`shrink-0 px-3.5 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>{l}</button>
-        ))}
-      </div>
+      <DetailTabs tabs={TABS} value={tab} onChange={setTab} />
 
       {tab === "panoramica" && (
         <div className="grid lg:grid-cols-2 gap-4">
