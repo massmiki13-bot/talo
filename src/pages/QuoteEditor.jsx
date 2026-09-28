@@ -517,6 +517,11 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
           <Button onClick={createWorksite} className="gap-1.5 bg-emerald-600 hover:bg-emerald-700"><Plus className="w-4 h-4" /> Crea il lavoro</Button>
         </div>
       )}
+      {!isNew && quote.stato === "approvato" && (
+        <div className="flex justify-end -mt-2 mb-4">
+          <Button variant="outline" size="sm" onClick={() => navigate(`/fatture?da_preventivo=${quote.id}`)} className="gap-1.5"><Plus className="w-4 h-4" /> Crea la fattura</Button>
+        </div>
+      )}
       {!isNew && state === "scaduto" && (
         <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 mb-4 text-sm text-amber-900">
           <Clock className="w-4 h-4 shrink-0" /> Offerta scaduta il {exp?.toLocaleDateString("it-IT")}. Per riproporla crea una nuova revisione o aumenta la validità.

@@ -3,6 +3,7 @@ export const PERMISSION_MODULES = [
   { key: "contatti", label: "Clienti e Fornitori", path: "/contatti" },
   { key: "preventivi", label: "Preventivi", path: "/preventivi" },
   { key: "prezzari", label: "Prezzari", path: "/prezzari", legacyPerms: ["preventivi"] },
+  { key: "fatture", label: "Fatture", path: "/fatture" },
   { key: "lavori", label: "Lavori", path: "/lavori" },
   { key: "dipendenti", label: "Dipendenti", path: "/dipendenti" },
   { key: "sicurezza", label: "Sicurezza (POS)", path: "/sicurezza" },

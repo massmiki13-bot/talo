@@ -223,6 +223,14 @@ export default function CompanyProfile() {
                   {errors.iban ? <p className="text-xs text-red-600 mt-1">{errors.iban}</p> : <p className="text-xs text-slate-500 mt-1">Compare nei preventivi per i pagamenti</p>}
                 </div>
                 <div>
+                  <Label className="text-sm font-medium text-slate-700">Regime fiscale</Label>
+                  <Select value={profile.regime_fiscale || "RF01"} onValueChange={(v) => set("regime_fiscale", v)}>
+                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                    <SelectContent><SelectItem value="RF01">Ordinario</SelectItem><SelectItem value="RF19">Forfettario (L. 190/2014)</SelectItem></SelectContent>
+                  </Select>
+                  <p className="text-xs text-slate-500 mt-1">Usato nelle fatture elettroniche</p>
+                </div>
+                <div>
                   <Label className="text-sm font-medium text-slate-700">Come chiami i luoghi di lavoro</Label>
                   <Select value={profile.termine_sezioni || "Cantiere"} onValueChange={(v) => set("termine_sezioni", v)}>
                     <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>

@@ -29,6 +29,7 @@ import EmployeeDetail from '@/pages/EmployeeDetail';
 import CompanyDocuments from '@/pages/CompanyDocuments';
 import Prezzari from '@/pages/Prezzari';
 import Sicurezza from '@/pages/Sicurezza';
+import Fatture from '@/pages/Fatture';
 import Reminders from '@/pages/Reminders';
 import Contracts from '@/pages/Contracts';
 import Presenze from '@/pages/Presenze';
@@ -83,6 +84,7 @@ const AuthenticatedApp = () => {
           <Route path="/documenti-ditta" element={<CompanyDocuments />} />
           <Route path="/prezzari" element={<Prezzari />} />
           <Route path="/sicurezza" element={<Sicurezza />} />
+          <Route path="/fatture" element={<Fatture />} />
           <Route path="/promemoria" element={<Reminders />} />
           <Route path="/contratti" element={<Contracts />} />
           <Route path="/lavori" element={<Worksites />} />

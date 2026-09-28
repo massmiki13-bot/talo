@@ -58,6 +58,9 @@
           },
           "iva_percentuale": {
             "type": "number"
+          },
+          "aliquota_key": {
+            "type": "string"
           }
         }
       }
@@ -97,6 +100,47 @@
     "inviato_a": {
       "type": "string",
       "title": "Inviato a"
+    },
+    "tipo_documento": {
+      "type": "string"
+    },
+    "regime": {
+      "type": "string"
+    },
+    "scadenza": {
+      "type": "string",
+      "format": "date"
+    },
+    "modalita_pagamento": {
+      "type": "string"
+    },
+    "iban": {
+      "type": "string"
+    },
+    "bollo": {
+      "type": "string"
+    },
+    "split_payment": {
+      "type": "boolean"
+    },
+    "worksite_id": {
+      "type": "string"
+    },
+    "worksite_nome": {
+      "type": "string"
+    },
+    "rata_rif": {
+      "type": "string"
+    },
+    "data_pagamento": {
+      "type": "string",
+      "format": "date"
+    },
+    "progressivo_invio": {
+      "type": "string"
+    },
+    "fattura_collegata": {
+      "type": "string"
     }
   },
   "required": [
