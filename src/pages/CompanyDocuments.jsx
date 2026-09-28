@@ -21,6 +21,7 @@ import {
   DOC_TYPES, STANDARD_TREE, FOLDER_COLORS, typeLabel, cleanFolderName, buildTree, pathOf, pathLabel, descendants, ensurePath, fileKind, expiryState, formatSize,
 } from "@/lib/documents";
 import { analyzeDocument } from "@/lib/documentsAi";
+import { useFileUrl } from "@/lib/privateFiles";
 import { createDocumentReminder, deleteRemindersForDoc } from "@/utils/expirationReminders";
 
 const VIEWS = [
@@ -172,7 +173,7 @@ export default function CompanyDocuments() {
   const processFile = async (item, targetFolderId) => {
     try {
       updateQ(item.id, { status: "upload" });
-      const { file_url } = await api.integrations.Core.UploadFile({ file: item.file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file: item.file, private: true });
       const folder = foldersRef.current.find((f) => f.id === targetFolderId);
       let doc = await db.CompanyDocument.create({
         titolo: item.file.name.replace(/\.[^.]+$/, ""), tipo: "altro", file_url, nome_file: item.file.name, dimensione: item.file.size, mime: item.file.type,
@@ -624,13 +625,14 @@ function DocRow({ d, folders, showFolder, selected, onSelect, onOpen, onDragStar
 
 function DocCard({ d, selected, onSelect, onOpen, onDragStart }) {
   const kind = fileKind(d);
+  const thumb = useFileUrl(kind === "image" ? d.file_url : null);
   const Icon = KIND_ICON[kind];
   const exp = expiryState(d.data_scadenza);
   return (
     <div draggable onDragStart={onDragStart} onClick={onOpen} className={`relative bg-white rounded-xl border overflow-hidden cursor-pointer transition-shadow hover:shadow-md ${selected ? "border-brand-600 ring-1 ring-brand-600" : "border-slate-200"}`}>
       <input type="checkbox" checked={selected} onClick={(e) => e.stopPropagation()} onChange={onSelect} className="absolute top-2 left-2 z-10" aria-label={`Seleziona ${d.titolo}`} />
       <div className="h-28 bg-slate-50 grid place-items-center border-b border-slate-100 overflow-hidden">
-        {kind === "image" ? <img src={d.file_url} alt="" loading="lazy" className="w-full h-full object-cover" /> : <Icon className="w-10 h-10 text-slate-300" />}
+        {kind === "image" && thumb ? <img src={thumb} alt="" loading="lazy" className="w-full h-full object-cover" /> : <Icon className="w-10 h-10 text-slate-300" />}
       </div>
       <div className="p-2.5">
         <p className="text-sm font-medium text-slate-900 line-clamp-2 leading-snug">{d.titolo}</p>

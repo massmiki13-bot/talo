@@ -291,7 +291,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
       const attachments = [];
       if (!errors.length) {
         const x = xml();
-        const { file_url } = await api.integrations.Core.UploadFile({ file: new File([x.xml], x.fileName, { type: "application/xml" }) });
+        const { file_url } = await api.integrations.Core.UploadFile({ file: new File([x.xml], x.fileName, { type: "application/xml" }), private: true });
         attachments.push({ url: file_url, name: x.fileName });
       }
       setCompose({

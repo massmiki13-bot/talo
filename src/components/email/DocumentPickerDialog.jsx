@@ -102,7 +102,7 @@ export default function DocumentPickerDialog({ open, onOpenChange, onSelect, pro
 
       if (blob) {
         const file = new File([blob], filename, { type: "application/pdf" });
-        const result = await api.integrations.Core.UploadFile({ file });
+        const result = await api.integrations.Core.UploadFile({ file, private: true });
         onSelect({ url: result.file_url, name: filename });
       }
     } catch (e) {

@@ -206,7 +206,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
     setUploading(true);
     try {
       for (const file of incoming) {
-        const { file_url } = await api.integrations.Core.UploadFile({ file });
+        const { file_url } = await api.integrations.Core.UploadFile({ file, private: true });
         setFiles((prev) => [...prev, { url: file_url, name: file.name, size: file.size }]);
       }
     } catch (e) {
@@ -222,7 +222,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
     for (const f of files) {
       if (f.url) { out.push({ url: f.url, name: f.name, size: f.size }); continue; }
       const file = new File([f.blob], f.name, { type: f.blob.type || "application/pdf" });
-      const { file_url } = await api.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file, private: true });
       out.push({ url: file_url, name: f.name, size: f.size });
     }
     setFiles(out);

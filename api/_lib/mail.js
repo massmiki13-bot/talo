@@ -1,27 +1,21 @@
 // Invio email: caselle SMTP delle aziende e casella di sistema di Talo.
 import nodemailer from "nodemailer";
-import { HttpError, supabaseHost } from "./server.js";
+import { HttpError } from "./server.js";
+import { isStoredFileUrl, fetchStoredFile } from "./files.js";
 
 const MAX_ATTACHMENTS_BYTES = 20 * 1024 * 1024;
 
 // Allegati solo dall'archivio file di Talo (niente URL arbitrari: SSRF).
-export function isAllowedFileUrl(url) {
-  try {
-    const u = new URL(url);
-    return u.protocol === "https:" && u.host === supabaseHost() && u.pathname.startsWith("/storage/v1/object/");
-  } catch {
-    return false;
-  }
-}
+export const isAllowedFileUrl = isStoredFileUrl;
 
-export async function downloadAttachments(list) {
+export async function downloadAttachments(list, tenantId) {
   const out = [];
   let total = 0;
   for (const att of list || []) {
     if (!att?.url || !isAllowedFileUrl(att.url)) continue;
-    const res = await fetch(att.url);
-    if (!res.ok) continue;
-    const buf = Buffer.from(await res.arrayBuffer());
+    const file = await fetchStoredFile(att.url, tenantId);
+    if (!file) continue;
+    const buf = file.buffer;
     total += buf.length;
     if (total > MAX_ATTACHMENTS_BYTES) throw new HttpError(413, "Allegati troppo grandi (massimo 20 MB)");
     out.push({ filename: String(att.name || "documento").replace(/[\r\n]+/g, " "), content: buf });

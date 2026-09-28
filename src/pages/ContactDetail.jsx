@@ -384,7 +384,7 @@ function SupplierDocDialog({ open, onOpenChange, contact, onSaved }) {
     if (!file) return toast({ title: "Scegli il file", variant: "destructive" });
     setSaving(true);
     try {
-      const { file_url } = await api.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file, private: true });
       const titolo = form.titolo.trim() || `${DOC_TYPES[form.tipo]} – ${displayName(contact)}`;
       const created = await db.CompanyDocument.create({
         tipo: form.tipo, titolo, file_url,

@@ -2,6 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from '@/App.jsx'
 import '@/index.css'
+import { installPrivateLinkHandler } from '@/lib/privateFiles'
+
+installPrivateLinkHandler()
 
 // Fix: NotFoundError during React commit-phase DOM operations.
 // Radix UI portals (Dialog, Select, etc.) render to document.body.

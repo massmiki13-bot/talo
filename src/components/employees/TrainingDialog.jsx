@@ -55,7 +55,7 @@ export default function TrainingDialog({ open, onOpenChange, employee, kind = "c
     setSaving(true);
     try {
       let file_url = "";
-      if (file) file_url = (await api.integrations.Core.UploadFile({ file })).file_url;
+      if (file) file_url = (await api.integrations.Core.UploadFile({ file, private: true })).file_url;
       const corso = CORSI.find((x) => x.codice === codice);
       const doc = await db.EmployeeDocument.create({
         dipendente_id: employee.id,

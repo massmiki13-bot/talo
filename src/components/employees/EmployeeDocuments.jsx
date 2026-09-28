@@ -54,7 +54,7 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await api.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file, private: true });
       setForm(prev => ({ ...prev, file_url }));
     } catch (err) {
       toast({ title: "Errore upload", variant: "destructive" });

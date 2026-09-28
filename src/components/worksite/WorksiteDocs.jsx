@@ -36,7 +36,7 @@ export default function WorksiteDocs({ worksite, readOnly }) {
     if (!file) return toast({ title: "Scegli il file", variant: "destructive" });
     setSaving(true);
     try {
-      const { file_url } = await api.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file, private: true });
       const titolo = form.titolo.trim() || `${WORKSITE_DOC_TYPES[form.tipo].split(" – ")[0]} – ${worksite.nome}`;
       const d = await db.CompanyDocument.create({ ...form, titolo, file_url, data_emissione: form.data_emissione || null, data_scadenza: form.data_scadenza || null, worksite_id: worksite.id, worksite_nome: worksite.nome });
       if (form.data_scadenza) await createDocumentReminder(titolo, form.data_scadenza, d.id, "CompanyDocument", WORKSITE_DOC_TYPES[form.tipo], worksite.nome, 15);

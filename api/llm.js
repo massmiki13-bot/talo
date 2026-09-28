@@ -3,6 +3,7 @@
 // Restituisce { result } — oggetto JSON se è stato chiesto uno schema, altrimenti testo.
 import { handler, requireUser, HttpError, rateLimit } from "./_lib/server.js";
 import { isAllowedFileUrl } from "./_lib/mail.js";
+import { fetchStoredFile } from "./_lib/files.js";
 
 const API = "https://generativelanguage.googleapis.com/v1beta/models";
 // Dal più capace al più economico: se un modello non è disponibile o ha
@@ -19,18 +20,18 @@ const MIME_BY_EXT = {
   heic: "image/heic", heif: "image/heif", txt: "text/plain", csv: "text/csv", html: "text/html", json: "application/json",
 };
 
-async function loadFiles(urls) {
+async function loadFiles(urls, tenantId) {
   const parts = [];
   const skipped = [];
   let total = 0;
   for (const url of (urls || []).slice(0, 10)) {
     if (!isAllowedFileUrl(url)) { skipped.push(url); continue; }
-    const res = await fetch(url);
-    if (!res.ok) { skipped.push(url); continue; }
+    const file = await fetchStoredFile(url, tenantId).catch(() => null);
+    if (!file) { skipped.push(url); continue; }
     const ext = decodeURIComponent(new URL(url).pathname).split(".").pop().toLowerCase();
-    let mime = (res.headers.get("content-type") || "").split(";")[0].trim();
+    let mime = file.contentType;
     if (!SUPPORTED.test(mime)) mime = MIME_BY_EXT[ext] || mime;
-    const buf = Buffer.from(await res.arrayBuffer());
+    const buf = file.buffer;
     total += buf.length;
     if (!SUPPORTED.test(mime) || total > MAX_FILE_BYTES) { skipped.push(url); continue; }
     parts.push({ inline_data: { mime_type: mime, data: buf.toString("base64") } });
@@ -98,7 +99,7 @@ async function callGemini(model, payload) {
 }
 
 export default handler(async (req, body) => {
-  const { user } = await requireUser(req);
+  const { user, tenantId } = await requireUser(req);
   if (!process.env.GEMINI_API_KEY) throw new HttpError(503, "Assistente AI non configurato (manca GEMINI_API_KEY)");
   rateLimit(`llm:${user.id}`, 20, 60_000);
 
@@ -106,7 +107,7 @@ export default handler(async (req, body) => {
   if (!prompt || typeof prompt !== "string") throw new HttpError(400, "Richiesta AI vuota");
   if (prompt.length > 200_000) throw new HttpError(413, "Testo troppo lungo per l'AI");
 
-  const { parts: fileParts, skipped } = await loadFiles(file_urls);
+  const { parts: fileParts, skipped } = await loadFiles(file_urls, tenantId);
   const wantJson = !!response_json_schema;
   const useSearch = !!add_context_from_internet;
 

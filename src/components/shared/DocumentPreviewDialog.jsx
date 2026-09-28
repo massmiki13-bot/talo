@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { files } from "@/api/client";
+import { useFileUrl } from "@/lib/privateFiles";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Loader2 } from "lucide-react";
@@ -16,11 +18,12 @@ function isPdf(url) {
   return getFileExt(url) === "pdf";
 }
 
-export async function downloadAsPdf(url, filename) {
-  const ext = getFileExt(url);
+export async function downloadAsPdf(fileUrl, filename) {
+  const url = await files.signed(fileUrl);
+  const ext = getFileExt(fileUrl);
   const name = (filename || "documento").replace(/\.[^.]+$/, "");
 
-  if (isPdf(url)) {
+  if (isPdf(fileUrl)) {
     const a = document.createElement("a");
     a.href = url;
     a.download = `${name}.pdf`;
@@ -28,7 +31,7 @@ export async function downloadAsPdf(url, filename) {
     a.click();
     return;
   }
-  if (isImage(url)) {
+  if (isImage(fileUrl)) {
     return new Promise((resolve) => {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -66,6 +69,7 @@ export async function downloadAsPdf(url, filename) {
 
 export default function DocumentPreviewDialog({ open, onOpenChange, fileUrl, titolo }) {
   const [downloading, setDownloading] = useState(false);
+  const viewUrl = useFileUrl(open ? fileUrl : null);
   if (!fileUrl) return null;
 
   const imageType = isImage(fileUrl);
@@ -88,9 +92,9 @@ export default function DocumentPreviewDialog({ open, onOpenChange, fileUrl, tit
         </DialogHeader>
         <div className="flex-1 overflow-auto bg-slate-100 rounded-lg flex items-center justify-center min-h-[300px]">
           {imageType ? (
-            <img src={fileUrl} alt={titolo} className="max-w-full max-h-[60vh] object-contain" />
+            <img src={viewUrl || undefined} alt={titolo} className="max-w-full max-h-[60vh] object-contain" />
           ) : pdfType ? (
-            <iframe src={fileUrl} className="w-full" style={{ height: "60vh", border: "none" }} title={titolo} />
+            <iframe src={viewUrl || undefined} className="w-full" style={{ height: "60vh", border: "none" }} title={titolo} />
           ) : (
             <div className="p-8 text-center">
               <FileText className="w-12 h-12 text-slate-400 mx-auto mb-2" />

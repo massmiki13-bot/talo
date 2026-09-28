@@ -13,6 +13,7 @@ import ComposeDialog from "@/components/email/ComposeDialog";
 import { DOC_TYPES, typeLabel, fileKind, expiryState, pathLabel, formatSize } from "@/lib/documents";
 import { analyzeDocument } from "@/lib/documentsAi";
 import { deleteRemindersForDoc } from "@/utils/expirationReminders";
+import { useFileUrl } from "@/lib/privateFiles";
 
 const NONE = "__none";
 
@@ -25,6 +26,7 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
   const [compose, setCompose] = useState(false);
 
   useEffect(() => { if (doc) setForm({ ...doc }); }, [doc]);
+  const previewUrl = useFileUrl(doc?.file_url);
   if (!doc || !form) return null;
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -82,7 +84,7 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
     if (!file) return;
     setReplacing(true);
     try {
-      const { file_url } = await api.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file, private: true });
       const versioni = [...(doc.versioni || []), { file_url: doc.file_url, nome_file: doc.nome_file || "", sostituito_il: new Date().toISOString() }].slice(-10);
       const updated = await db.CompanyDocument.update(doc.id, { file_url, nome_file: file.name, dimensione: file.size, mime: file.type, versioni, contenuto_estratto: "" });
       onChanged?.(updated);
@@ -129,9 +131,9 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
             {doc.file_url && (
               <div className="rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
                 {kind === "image" ? (
-                  <img src={doc.file_url} alt={doc.titolo} className="w-full max-h-[420px] object-contain bg-white" />
+                  previewUrl ? <img src={previewUrl} alt={doc.titolo} className="w-full max-h-[420px] object-contain bg-white" /> : <div className="h-40 grid place-items-center text-sm text-slate-500">Caricamento…</div>
                 ) : kind === "pdf" ? (
-                  <iframe src={doc.file_url} title={doc.titolo} className="w-full h-[420px] bg-white" />
+                  previewUrl ? <iframe src={previewUrl} title={doc.titolo} className="w-full h-[420px] bg-white" /> : <div className="h-40 grid place-items-center text-sm text-slate-500">Caricamento…</div>
                 ) : (
                   <div className="p-6 text-center text-sm text-slate-500">Anteprima non disponibile per questo formato.</div>
                 )}

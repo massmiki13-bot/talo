@@ -59,7 +59,7 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
     e.target.value = "";
     if (!file) return;
     run("upload", async () => {
-      const { file_url } = await api.integrations.Core.UploadFile({ file });
+      const { file_url } = await api.integrations.Core.UploadFile({ file, private: true });
       await update({ file_firmato_url: file_url, file_firmato_nome: file.name, stato: "firmato", firmato_il: contract.firmato_il || new Date().toISOString().slice(0, 10) }, "Copia firmata archiviata");
     });
   };

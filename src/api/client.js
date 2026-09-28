@@ -278,16 +278,53 @@ const functions = {
 const safeName = (name) =>
   (name || "file").normalize("NFKD").replace(/[^\w.\-]+/g, "_").replace(/_+/g, "_").slice(-80);
 
+const PRIVATE_PREFIX = "/storage/v1/object/authenticated/private/";
+
+// Link firmati per i file privati, tenuti in memoria qualche minuto per non richiederli a ogni rendering.
+const signedCache = new Map();
+export const files = {
+  isPrivate: (url) => typeof url === "string" && url.includes(PRIVATE_PREFIX),
+  async signed(url, { download } = {}) {
+    if (!files.isPrivate(url)) return url;
+    const key = download ? `${url}#${download}` : url;
+    const hit = signedCache.get(key);
+    if (hit && hit.expires > Date.now()) return hit.url;
+    const res = await callServer("file-url", { url, ...(download ? { download } : {}) });
+    const signedUrl = res.urls?.[url];
+    if (!signedUrl) throw new ApiError("File non accessibile", 403);
+    signedCache.set(key, { url: signedUrl, expires: Date.now() + 8 * 60_000 });
+    return signedUrl;
+  },
+  async signedMany(urls) {
+    const todo = [...new Set(urls.filter((u) => files.isPrivate(u) && !(signedCache.get(u)?.expires > Date.now())))];
+    for (let i = 0; i < todo.length; i += 50) {
+      const res = await callServer("file-url", { urls: todo.slice(i, i + 50) });
+      for (const [u, signedUrl] of Object.entries(res.urls || {})) signedCache.set(u, { url: signedUrl, expires: Date.now() + 8 * 60_000 });
+    }
+    return Object.fromEntries(urls.map((u) => [u, files.isPrivate(u) ? signedCache.get(u)?.url || null : u]));
+  },
+  // Contenuto del file (per PDF, anteprime, firma): funziona sia per i file pubblici sia per quelli privati.
+  async fetch(url) {
+    const res = await fetch(await files.signed(url));
+    if (!res.ok) throw new ApiError("Download non riuscito", res.status);
+    return res;
+  },
+};
+
 const Core = {
-  async UploadFile({ file }) {
+  // private: true per i documenti sensibili (personale, documenti ditta, contratti, fatture):
+  // finiscono nell'archivio privato e si aprono solo con link firmati a scadenza (vedi files).
+  async UploadFile({ file, private: isPrivate = false }) {
     if (!file) throw new ApiError("Nessun file selezionato", 400);
     const { tenant_id } = await rpc("my_access");
     const path = `${tenant_id}/${crypto.randomUUID()}-${safeName(file.name)}`;
-    const { error } = await supabase.storage.from("uploads").upload(path, file, {
+    const bucket = isPrivate ? "private" : "uploads";
+    const { error } = await supabase.storage.from(bucket).upload(path, file, {
       contentType: file.type || undefined,
       upsert: false,
     });
     if (error) fail(error, "Caricamento file non riuscito");
+    if (isPrivate) return { file_url: `${SUPABASE_URL}${PRIVATE_PREFIX}${path}` };
     const { data } = supabase.storage.from("uploads").getPublicUrl(path);
     return { file_url: data.publicUrl };
   },
@@ -305,6 +342,7 @@ export const api = {
   auth,
   functions,
   integrations: { Core },
+  files,
   access: () => rpc("my_access"),
 };
 

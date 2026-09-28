@@ -34,7 +34,7 @@ export default function WorksiteTransactions({ worksite, transactions, allWorksi
   const upload = async (file) => {
     if (!file) return;
     setUploading(true);
-    try { setFileUrl((await api.integrations.Core.UploadFile({ file })).file_url); }
+    try { setFileUrl((await api.integrations.Core.UploadFile({ file, private: true })).file_url); }
     catch (e) { toast({ title: e.message, variant: "destructive" }); }
     finally { setUploading(false); }
   };

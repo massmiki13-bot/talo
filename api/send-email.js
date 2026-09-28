@@ -30,7 +30,7 @@ export default handler(async (req, body) => {
 
   const list = Array.isArray(body.attachments) ? body.attachments
     : body.attachment_url ? [{ url: body.attachment_url, name: body.attachment_name || "documento.pdf" }] : [];
-  const files = await downloadAttachments(list);
+  const files = await downloadAttachments(list, tenantId);
 
   const record = {
     account_id: account.id,

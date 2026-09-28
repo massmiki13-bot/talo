@@ -203,7 +203,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
       if (mode === "email") setCompose({ attachment: { blob: doc.output("blob"), filename: name }, defaultSubject: `POS – ${d.cantiere?.nome || ""} – ${d.impresa?.ragione_sociale || ""}`, defaultBody: `Buongiorno,\n\nin allegato il Piano Operativo di Sicurezza (rev. ${meta.revisione}) per il cantiere ${d.cantiere?.nome || ""}${d.cantiere?.indirizzo ? `, ${d.cantiere.indirizzo}` : ""}, per la verifica di idoneità.\n\nCordiali saluti`, links: { worksite_id: plan.worksite_id || undefined } });
       if (mode === "archive") {
         const file = new File([doc.output("blob")], name, { type: "application/pdf" });
-        const { file_url } = await api.integrations.Core.UploadFile({ file });
+        const { file_url } = await api.integrations.Core.UploadFile({ file, private: true });
         await db.CompanyDocument.create({ titolo: `POS rev. ${meta.revisione} – ${d.cantiere?.nome || ""}`, tipo: "pos", file_url, nome_file: name, mime: "application/pdf", dimensione: file.size, data_emissione: meta.data, worksite_id: plan.worksite_id || "", worksite_nome: plan.worksite_nome || "" });
         toast({ title: "Salvato in Documenti ditta", description: "Lo trovi tra i documenti del cantiere." });
       }
