@@ -44,7 +44,7 @@ export default function Quotes() {
   const tab = params.get("tab") === "ricevuti" ? "ricevuti" : "emessi";
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => params.get("q") || "");
   const [stateFilter, setStateFilter] = useState(params.get("stato") || "tutti");
   const [period, setPeriod] = useState("tutti");
   const [clientFilter, setClientFilter] = useState("tutti");

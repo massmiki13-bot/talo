@@ -3,12 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, Users, FileText, UserCheck, FolderOpen, Bell, FileSignature,
   BarChart3, ChevronsLeft, ChevronsRight, LogOut, Briefcase, CalendarClock, UserCog,
-  User, Mail, BookOpenCheck, ShieldCheck, Receipt,
+  User, Mail, BookOpenCheck, ShieldCheck, Receipt, Search,
 } from "lucide-react";
 import { api } from "@/lib/db";
 import TaloLogo, { TaloMark } from "@/components/brand/TaloLogo";
 
-const GROUPS = [
+export const GROUPS = [
   { title: null, items: [
     { label: "Dashboard", icon: LayoutDashboard, path: "/", perm: "dashboard" },
     { label: "Posta", icon: Mail, path: "/posta", perm: null },
@@ -35,7 +35,7 @@ const GROUPS = [
   ] },
 ];
 
-export default function Sidebar({ onNavigate, isHost = true, accessLevel = "responsabile", permissions = [], employeeId = null, companyName = "", collapsed = false, onToggle }) {
+export default function Sidebar({ onNavigate, isHost = true, accessLevel = "responsabile", permissions = [], employeeId = null, companyName = "", collapsed = false, onToggle, onSearch }) {
   const location = useLocation();
   const isOperaio = !isHost && accessLevel === "operaio";
   const allowed = (item) => (item.perm === null ? isHost : isHost || permissions.includes(item.perm) || item.legacyPerms?.some((p) => permissions.includes(p)));
@@ -58,6 +58,17 @@ export default function Sidebar({ onNavigate, isHost = true, accessLevel = "resp
         </div>
         {collapsed && <div className="hidden lg:block"><TaloMark size={34} /></div>}
       </div>
+
+      {onSearch && (
+        <div className="px-2.5 pt-3">
+          <button type="button" onClick={() => { onNavigate?.(); onSearch(); }} title={collapsed ? "Cerca (Ctrl K)" : undefined} aria-label="Cerca in Talo (Ctrl K)"
+            className={`flex items-center gap-2.5 w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 h-10 text-sm text-zinc-400 hover:text-white hover:bg-white/[0.06] hover:border-white/[0.14] transition-colors ${collapsed ? "lg:justify-center lg:px-0" : ""}`}>
+            <Search className="w-4 h-4 shrink-0" aria-hidden="true" />
+            <span className={`flex-1 text-left ${collapsed ? "lg:hidden" : ""}`}>Cerca…</span>
+            <kbd className={`text-[10.5px] font-medium text-zinc-500 border border-white/10 rounded px-1.5 py-0.5 ${collapsed ? "lg:hidden" : ""}`}>Ctrl K</kbd>
+          </button>
+        </div>
+      )}
 
       <nav className="flex-1 overflow-y-auto no-scrollbar py-3 space-y-4">
         {groups.map((g, gi) => (

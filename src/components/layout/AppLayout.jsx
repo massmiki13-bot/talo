@@ -8,6 +8,8 @@ import { useAuth } from "@/lib/AuthContext";
 import { useCollaborator } from "@/hooks/useCollaborator";
 import { useReminderNotifications } from "@/hooks/useReminderNotifications";
 import TaloLogo from "@/components/brand/TaloLogo";
+import CommandPalette from "./CommandPalette";
+import { Search } from "lucide-react";
 
 const readCollapsed = () => { try { return localStorage.getItem("talo.sidebar") === "1"; } catch { return false; } };
 
@@ -18,6 +20,16 @@ export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [collapsed, setCollapsed] = useState(readCollapsed);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // Ctrl+K / ⌘K: ricerca globale da qualsiasi pagina.
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setSearchOpen((v) => !v); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     db.CompanyProfile.list().then((profiles) => { if (profiles[0]?.ragione_sociale) setCompanyName(profiles[0].ragione_sociale); }).catch(() => {});
@@ -31,13 +43,15 @@ export default function AppLayout() {
 
   if (!collabLoading && !canAccessPath(location.pathname)) return <Navigate to="/" replace />;
 
-  const nav = { isHost, accessLevel, permissions, employeeId, companyName };
+  const isOperaioNav = !isHost && accessLevel === "operaio";
+  const nav = { isHost, accessLevel, permissions, employeeId, companyName, onSearch: isOperaioNav ? null : () => setSearchOpen(true) };
 
   return (
     <div className="min-h-screen">
       {/* Barra superiore su telefono */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-14 metal-ink flex items-center px-4 z-40 border-b border-white/[0.06]">
         <TaloLogo size={30} subtitle={companyName} />
+        {!isOperaioNav && <button type="button" onClick={() => setSearchOpen(true)} aria-label="Cerca" className="ml-auto grid place-items-center w-10 h-10 rounded-lg text-zinc-300 hover:text-white hover:bg-white/[0.06]"><Search className="w-5 h-5" /></button>}
       </div>
 
       {mobileOpen && <div className="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-50 lg:hidden" onClick={() => setMobileOpen(false)} />}
@@ -58,6 +72,8 @@ export default function AppLayout() {
           </Suspense>
         </div>
       </main>
+
+      {!isOperaioNav && <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} canAccessPath={canAccessPath} />}
 
       <MobileBottomNav onMore={() => setMobileOpen(true)} isHost={isHost} accessLevel={accessLevel} permissions={permissions} employeeId={employeeId} />
     </div>

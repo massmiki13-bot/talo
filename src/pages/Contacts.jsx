@@ -39,11 +39,11 @@ export default function Contacts() {
   const tab = TABS.find((t) => t.key === params.get("tipo")) || TABS[0];
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => params.get("q") || "");
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("nome");
   const [showArchived, setShowArchived] = useState(false);
-  const [form, setForm] = useState(null); // { contact } oppure {} per nuovo
+  const [form, setForm] = useState(() => (params.get("nuovo") ? {} : null)); // { contact } oppure {} per nuovo
   const [importOpen, setImportOpen] = useState(false);
 
   const load = async () => {
