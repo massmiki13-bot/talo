@@ -289,7 +289,7 @@ export const files = {
     const key = download ? `${url}#${download}` : url;
     const hit = signedCache.get(key);
     if (hit && hit.expires > Date.now()) return hit.url;
-    const res = await callServer("file-url", { url, ...(download ? { download } : {}) });
+    const res = await callServer("account", { action: "file-url", url, ...(download ? { download } : {}) });
     const signedUrl = res.urls?.[url];
     if (!signedUrl) throw new ApiError("File non accessibile", 403);
     signedCache.set(key, { url: signedUrl, expires: Date.now() + 8 * 60_000 });
@@ -298,7 +298,7 @@ export const files = {
   async signedMany(urls) {
     const todo = [...new Set(urls.filter((u) => files.isPrivate(u) && !(signedCache.get(u)?.expires > Date.now())))];
     for (let i = 0; i < todo.length; i += 50) {
-      const res = await callServer("file-url", { urls: todo.slice(i, i + 50) });
+      const res = await callServer("account", { action: "file-url", urls: todo.slice(i, i + 50) });
       for (const [u, signedUrl] of Object.entries(res.urls || {})) signedCache.set(u, { url: signedUrl, expires: Date.now() + 8 * 60_000 });
     }
     return Object.fromEntries(urls.map((u) => [u, files.isPrivate(u) ? signedCache.get(u)?.url || null : u]));

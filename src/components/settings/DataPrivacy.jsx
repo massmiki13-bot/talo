@@ -36,7 +36,7 @@ export default function DataPrivacy({ profile }) {
   const deleteAccount = async () => {
     setDeleting(true);
     try {
-      const res = await api.functions.invoke("account-delete", { confirm });
+      const res = await api.functions.invoke("account", { action: "delete", confirm });
       if (res.data?.error) throw new Error(res.data.error);
       await api.auth.logout("/login");
     } catch (e) {

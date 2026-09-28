@@ -24,7 +24,7 @@ await adminDb.storage.from("private").upload(`${uid}/prova.txt`, new Blob(["rise
 const { data: session } = await anon.auth.signInWithPassword({ email, password });
 const token = session.session.access_token;
 
-const call = (confirm) => fetch(`${BASE}/api/account-delete`, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${token}` }, body: JSON.stringify({ confirm }) });
+const call = (confirm) => fetch(`${BASE}/api/account`, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${token}` }, body: JSON.stringify({ action: "delete", confirm }) });
 
 check("senza la frase di conferma viene rifiutata", (await call("elimina")).status === 400);
 const res = await call("ELIMINA DEFINITIVAMENTE");
