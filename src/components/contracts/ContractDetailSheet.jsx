@@ -7,7 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Eye, FileDown, FileText, Mail, Upload, Copy, Trash2, Sparkles, Loader2, CalendarClock, Check, Pencil, Save, ExternalLink, AlertTriangle, Lock,
+  Smartphone, ShieldCheck, Link2Off,
 } from "lucide-react";
+import SignRequestDialog from "@/components/shared/SignRequestDialog";
+import { contractHash, signUrl, fmtDateTime } from "@/lib/signing";
+import { randomToken } from "@/lib/quotes";
 import ComposeDialog from "@/components/email/ComposeDialog";
 import EditContractScadenzaDialog from "@/components/contracts/EditContractScadenzaDialog";
 import { generateContractPDF, generateContractWord, generateContractPDFBlob } from "@/utils/docExportUtils";
@@ -25,8 +29,15 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
   const [busy, setBusy] = useState("");
   const [compose, setCompose] = useState(null);
   const [scadenzaOpen, setScadenzaOpen] = useState(false);
+  const [signOpen, setSignOpen] = useState(false);
+  const [integrity, setIntegrity] = useState(null); // true = testo uguale a quello firmato
 
   useEffect(() => { setEditing(false); setText(contract?.contenuto_finale || ""); }, [contract?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const f = contract?.firma_controparte;
+    if (!f?.hash) { setIntegrity(null); return; }
+    contractHash(contract).then((h) => setIntegrity(h === f.hash));
+  }, [contract?.firma_controparte?.hash, contract?.contenuto_finale, contract?.titolo]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!contract) return null;
 
   const stato = statoOf(contract);
@@ -53,6 +64,31 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
       context: `Invio del contratto "${contract.titolo}" alla controparte per la firma.`,
     });
   });
+
+  const openSign = () => run("sign", async () => {
+    const token = contract.firma_token || randomToken();
+    if (!contract.firma_token || !contract.stato || contract.stato === "bozza") await update({ firma_token: token, ...(!contract.stato || contract.stato === "bozza" ? { stato: "inviato", inviato_il: new Date().toISOString().slice(0, 10) } : {}) });
+    setSignOpen(true);
+  });
+  const revokeSign = () => confirm("Revocare il link di firma? Chi lo ha ricevuto non potrà più firmare.") && run("sign", () => update({ firma_token: null }, "Link di firma revocato"));
+  const emailSignLink = () => {
+    const to = contacts.find((c) => c.id === contract.contatto_id)?.email || employees.find((e) => e.id === contract.dipendente_id)?.email || "";
+    setSignOpen(false);
+    setCompose({
+      defaultTo: to,
+      defaultSubject: `Firma: ${contract.titolo}`,
+      defaultBody: `Buongiorno,
+
+può leggere e firmare il documento "${contract.titolo}" direttamente dal telefono o dal computer, a questo link:
+${signUrl(contract.firma_token)}
+
+Bastano un minuto e una firma con il dito.
+
+Cordiali saluti`,
+      links: { contact_id: contract.contatto_id || undefined, worksite_id: contract.worksite_id || undefined },
+      context: `Richiesta di firma elettronica del contratto "${contract.titolo}".`,
+    });
+  };
 
   const uploadSigned = (e) => {
     const file = e.target.files?.[0];
@@ -126,6 +162,31 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setScadenzaOpen(true)}><CalendarClock className="w-4 h-4" /> Scadenza e avvisi</Button>
             </div>
 
+            {/* Firma dal telefono */}
+            {contract.firma_controparte ? (
+              <div className={`rounded-lg border p-3 ${integrity === false ? "border-amber-300 bg-amber-50" : "border-emerald-200 bg-emerald-50"}`}>
+                <div className="flex items-start gap-3">
+                  <img src={contract.firma_controparte.firma} alt={`Firma di ${contract.firma_controparte.nome}`} className="h-12 w-28 object-contain bg-white rounded border border-emerald-100 shrink-0" />
+                  <div className="min-w-0 text-sm">
+                    <p className="font-medium text-emerald-900 flex items-center gap-1.5"><ShieldCheck className="w-4 h-4" />Firmato dal telefono da {contract.firma_controparte.nome}</p>
+                    <p className="text-xs text-emerald-800 mt-0.5">{fmtDateTime(contract.firma_controparte.data)} · IP {contract.firma_controparte.ip}</p>
+                    <p className="text-[11px] text-emerald-800/80 mt-0.5 font-mono break-all">Impronta SHA-256: {contract.firma_controparte.hash}</p>
+                    {integrity === false && <p className="text-xs text-amber-900 mt-1.5 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" />Il testo è stato modificato dopo la firma: non corrisponde più a quello firmato.</p>}
+                    {integrity === true && <p className="text-xs text-emerald-800 mt-1">Il testo attuale corrisponde a quello firmato.</p>}
+                  </div>
+                </div>
+              </div>
+            ) : contract.stato !== "annullato" && (
+              <div className="rounded-lg border border-slate-200 p-3 flex items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-900">Firma dal telefono</p>
+                  <p className="text-xs text-slate-500">{contract.firma_token ? "Link attivo: in attesa della firma." : "La controparte legge e firma con il dito, senza stampare nulla."}</p>
+                </div>
+                {contract.firma_token && <Button size="sm" variant="ghost" onClick={revokeSign} aria-label="Revoca il link di firma" title="Revoca il link"><Link2Off className="w-4 h-4" /></Button>}
+                <Button size="sm" onClick={openSign} disabled={busy === "sign"} className="gap-1.5 bg-brand-600 hover:bg-brand-700">{busy === "sign" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}{contract.firma_token ? "Mostra link" : "Richiedi firma"}</Button>
+              </div>
+            )}
+
             {/* Copia firmata */}
             <div className="rounded-lg border border-slate-200 p-3 flex items-center gap-3">
               <div className="flex-1 min-w-0">
@@ -193,6 +254,10 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
       {compose && (
         <ComposeDialog open onOpenChange={(v) => !v && setCompose(null)} {...compose}
           onSent={() => { if (!contract.stato || contract.stato === "bozza") update({ stato: "inviato", inviato_il: new Date().toISOString().slice(0, 10) }); }} />
+      )}
+      {contract.firma_token && (
+        <SignRequestDialog open={signOpen} onOpenChange={setSignOpen} url={signUrl(contract.firma_token)} title={contract.titolo}
+          message={`Ciao, ecco il documento "${contract.titolo}" da leggere e firmare:`} onEmail={emailSignLink} />
       )}
       <EditContractScadenzaDialog open={scadenzaOpen} onOpenChange={setScadenzaOpen} contract={contract} typeLabel={typeTitle(contract.tipo, customTemplates)}
         onUpdated={async () => { const u = await db.GeneratedContract.get(contract.id); onChanged?.(u); }} />

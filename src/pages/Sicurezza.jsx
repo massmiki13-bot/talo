@@ -15,6 +15,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import ComposeDialog from "@/components/email/ComposeDialog";
 import { LAVORAZIONI, DPI, SEZIONI, buildInitial, workerRow, checkSections, aiAssessLavorazione, riskLevel, buildPosPdf } from "@/lib/pos";
+import PosSignatures from "@/components/pos/PosSignatures";
 
 const STATI = { bozza: "Bozza", completo: "Completo", consegnato: "Consegnato al CSE" };
 const lines = (arr) => (arr || []).join("\n");
@@ -442,7 +443,8 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                   </div>
                 </div>
               </Grid>
-              <p className="text-sm text-slate-600 mt-4">Nel PDF compaiono le righe per le firme di datore di lavoro, RSPP, RLS e CSE; la firma del datore di lavoro viene presa dal Profilo ditta.</p>
+              <p className="text-sm text-slate-600 mt-4">Nel PDF compaiono le righe per le firme di datore di lavoro, RSPP, RLS e CSE; la firma del datore di lavoro viene presa dal Profilo ditta. Le firme raccolte dal telefono vengono aggiunte in fondo.</p>
+              <PosSignatures plan={plan} dati={d} revisione={meta.revisione} onChange={onChange} />
               {totalMiss > 0 && <p className="text-sm text-amber-800 mt-3 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" />Prima di consegnarlo completa i {totalMiss} dati mancanti (vedi le sezioni con il numero arancione).</p>}
               <div className="flex flex-wrap gap-2 mt-5">
                 <Button onClick={() => pdf("download")} disabled={pdfBusy} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{pdfBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} Scarica il PDF</Button>

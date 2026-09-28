@@ -344,6 +344,29 @@ export async function buildPosPdf(plan, profile) {
   sig("Il RLS / RLST (per presa visione)", i.rls);
   sig("Il CSE (per verifica di idoneità)", c.cse);
 
+  // ── Registro di presa visione (firme raccolte dal telefono) ──
+  const rev = Number(plan.revisione) || 0;
+  const firme = (plan.firme_raccolte || []).filter((f) => f.revisione === rev);
+  if (firme.length) {
+    doc.addPage(); header(); y += 2;
+    doc.setFontSize(12); doc.setFont(undefined, "bold"); doc.setTextColor(20, 20, 20);
+    doc.text(`Registro di presa visione del POS (rev. ${rev})`, M, y); y += 6;
+    doc.setFont(undefined, "normal");
+    para("I sottoscritti dichiarano di aver letto il Piano Operativo di Sicurezza, di aver ricevuto le informazioni sui rischi e sulle misure di prevenzione e di impegnarsi a rispettarle. Firme elettroniche semplici (art. 20 D.Lgs. 82/2005) raccolte con Talo.", 8.5);
+    y += 2;
+    for (const f of firme) {
+      ensure(22);
+      doc.setFontSize(9); doc.setTextColor(20, 20, 20); doc.setFont(undefined, "bold"); doc.text(f.nome, M, y);
+      doc.setFont(undefined, "normal"); doc.setFontSize(8); doc.setTextColor(100, 100, 100);
+      doc.text(`${f.ruolo} · ${new Date(f.data).toLocaleString("it-IT")} · IP ${f.ip || ""}`, M, y + 4.5);
+      try { doc.addImage(f.firma, "PNG", W - M - 45, y - 5, 45, 15); } catch { /* firma non valida */ }
+      doc.setDrawColor(225, 225, 225); doc.line(M, y + 11, W - M, y + 11);
+      y += 17;
+    }
+    doc.setFontSize(7); doc.setTextColor(140, 140, 140);
+    ensure(8); doc.text(doc.splitTextToSize(`Impronta SHA-256 del POS firmato: ${firme[0].hash}`, W - 2 * M), M, y + 2);
+  }
+
   // numeri di pagina
   const n = doc.internal.getNumberOfPages();
   for (let p = 2; p <= n; p++) { doc.setPage(p); doc.setFontSize(7.5); doc.setTextColor(140, 140, 140); doc.text(`Pagina ${p} di ${n}`, W - M, H - 8, { align: "right" }); }

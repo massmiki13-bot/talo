@@ -209,8 +209,22 @@ export async function buildContractDoc(contract, profile) {
   if (contract.controparte_nome) {
     doc.text(contract.controparte_nome, rightColX, signLineY - 3);
   }
+  const fc = contract.firma_controparte;
+  if (fc?.firma) addImageSafe(doc, fc.firma, rightColX, y, 40, 16);
   doc.line(rightColX, signLineY, rightColX + colW - 10, signLineY);
   doc.text("Firma", rightColX, signLineY + 4);
+
+  // Dati della firma elettronica semplice raccolta dal telefono
+  if (fc) {
+    let ey = signLineY + 12;
+    if (ey > pageHeight - 32) { doc.addPage(); ey = 20; }
+    doc.setFontSize(7);
+    doc.setTextColor(90, 90, 90);
+    const when = new Date(fc.data).toLocaleString("it-IT");
+    const lines = doc.splitTextToSize(`Firma elettronica semplice (art. 20 D.Lgs. 82/2005) apposta da ${fc.nome} il ${when}, IP ${fc.ip}. Impronta SHA-256 del testo firmato: ${fc.hash}`, pageWidth - margin * 2);
+    doc.text(lines, margin, ey);
+    doc.setTextColor(0, 0, 0);
+  }
 
   addFooter(doc, profile, pageWidth, pageHeight, margin);
   return doc;

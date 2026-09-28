@@ -1,7 +1,11 @@
 // Pagina pubblica del preventivo: il cliente la apre dal link, senza account.
 // GET  ?t=<token>  → dati del preventivo (senza costi interni) e segna "visto"
 // POST { token, esito: "accetta"|"rifiuta", nome, commento, firma } → risposta del cliente
+// Firma da telefono di contratti e POS (stesso endpoint, limite funzioni Vercel):
+// GET  ?f=<token>  → documento da firmare
+// POST { documento: true, token, nome, firma, hash, accetto, firmatario_id? }
 import { admin, HttpError, rateLimit, escapeHtml } from "./_lib/server.js";
+import { getSignable, postSignature } from "./_lib/sign.js";
 import { systemTransport, systemFrom, sendMail } from "./_lib/mail.js";
 
 const PUBLIC_QUOTE_FIELDS = [
@@ -58,6 +62,11 @@ export default async function quotePublic(req, res) {
     const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "anon";
     rateLimit(`pub:${ip}`, 60, 60_000);
 
+    if (req.method === "GET" && (req.query?.f || new URL(req.url, "http://x").searchParams.get("f"))) {
+      send(200, await getSignable(req.query?.f || new URL(req.url, "http://x").searchParams.get("f")));
+      return;
+    }
+
     if (req.method === "GET") {
       const token = req.query?.t || new URL(req.url, "http://x").searchParams.get("t");
       const row = await loadByToken(token);
@@ -81,6 +90,7 @@ export default async function quotePublic(req, res) {
     if (req.method === "POST") {
       const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
       rateLimit(`pubpost:${ip}`, 10, 60_000);
+      if (body.documento === true) { send(200, await postSignature(req, body, ip)); return; }
       const row = await loadByToken(body.token);
       const q = row.data;
       if (["approvato", "rifiutato"].includes(q.stato)) throw new HttpError(409, "Hai già risposto a questo preventivo");

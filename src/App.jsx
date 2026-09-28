@@ -41,6 +41,7 @@ const Collaborators = lazy(() => import("@/pages/Collaborators"));
 const CollaboratorJoin = lazy(() => import("@/pages/CollaboratorJoin"));
 const Posta = lazy(() => import("@/pages/Posta"));
 const PublicQuote = lazy(() => import("@/pages/PublicQuote"));
+const PublicSign = lazy(() => import("@/pages/PublicSign"));
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
     <Suspense fallback={<div className="min-h-screen grid place-items-center"><LoadingSpinner /></div>}>
     <Routes>
       <Route path="/p/:token" element={<PublicQuote />} />
+      <Route path="/firma/:token" element={<PublicSign />} />
       <Route path="/legal/:doc" element={<Legal />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
