@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronLeft, ChevronRight, Copy, UserCheck, Search, Plus, X, Save, Loader2, MessageSquare, AlertTriangle, RotateCcw } from "lucide-react";
 import { ATTENDANCE_STATES, STATE_ORDER } from "@/utils/attendanceStates";
+import { isNetworkError } from "@/lib/offlineStore";
+import { queueAttendance } from "@/lib/offlineSync";
 import { dayEntries, saveDay, previousWorkingDay, holidayName, parseIso, addDays, iso, employedOn, overtime, fmtH, STD_HOURS } from "@/lib/attendance";
 import { formatEuro } from "@/utils/pdfUtils";
 
@@ -113,8 +115,16 @@ export default function DailySheet({ date, setDate, records, employees, worksite
       toast({ title: "Giornata salvata", description: `${entries.length} dipendenti registrati` });
       onSaved?.();
     } catch (e) {
-      console.error(e);
-      toast({ title: "Salvataggio non riuscito", description: "Riprova: i dati precedenti non sono stati toccati.", variant: "destructive" });
+      if (isNetworkError(e)) {
+        // senza rete: la giornata resta sul telefono e parte appena torna la connessione
+        const entries = rows.filter((r) => r.stato).map((r) => ({ ...r, cantieri: r.cantieri.filter((c) => c.ore > 0 || c.cantiere_id) }));
+        await queueAttendance(date, entries);
+        setInitial(JSON.stringify(rows));
+        toast({ title: "Salvata sul telefono", description: "Sei senza rete: la giornata verrà inviata da sola appena torna la connessione." });
+      } else {
+        console.error(e);
+        toast({ title: "Salvataggio non riuscito", description: "Riprova: i dati precedenti non sono stati toccati.", variant: "destructive" });
+      }
     } finally { setSaving(false); }
   };
 

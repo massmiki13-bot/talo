@@ -242,6 +242,37 @@ await check("non invia email", async () => {
   assert(r.status === 403, JSON.stringify(r));
 });
 
+console.log("\nTimbrature dal telefono");
+await check("senza GPS attivo la posizione non viene salvata", async () => {
+  const e = await O.rpc("clock_punch", { p_tipo: "entrata", p_worksite: cantiere.id, p_lat: 46.49, p_lng: 11.35, p_accuracy: 10 });
+  assert(e.dipendente_id === dip1.id && e.tipo === "entrata" && e.worksite_nome === "Villa Bianchi", JSON.stringify(e));
+  assert(!e.posizione, "posizione salvata senza consenso del titolare");
+});
+await check("con GPS attivo: posizione e distanza dal cantiere", async () => {
+  const [prof] = await T.e("CompanyProfile").list();
+  await T.e("CompanyProfile").update(prof.id, { timbrature: { gps: true, raggio_m: 300 } });
+  await T.e("Worksite").update(cantiere.id, { lat: 46.49835, lng: 11.35478 });
+  const e = await O.rpc("clock_punch", { p_tipo: "uscita", p_worksite: cantiere.id, p_lat: 46.50735, p_lng: 11.35478, p_accuracy: 8 });
+  assert(e.posizione?.lat === 46.50735, JSON.stringify(e.posizione));
+  assert(e.distanza_m > 950 && e.distanza_m < 1050, `distanza ${e.distanza_m}`);
+});
+await check("timbratura offline: ora reale e nessun doppione al reinvio", async () => {
+  const when = new Date(Date.now() - 3 * 3600_000).toISOString();
+  const p = { p_tipo: "entrata", p_client_time: when, p_client_id: `smoke-${Date.now()}` };
+  const a = await O.rpc("clock_punch", p);
+  const b = await O.rpc("clock_punch", p);
+  assert(a.id === b.id && a.inviata_dopo === true, "reinvio duplicato o ora non rispettata");
+  await expectError(O.rpc("clock_punch", { p_tipo: "entrata", p_client_time: new Date(Date.now() - 72 * 3600_000).toISOString() }), "accettata timbratura di 3 giorni fa");
+});
+await check("l'operaio vede solo le sue timbrature e non le modifica", async () => {
+  const mine = await O.e("ClockEvent").list();
+  assert(mine.length >= 3 && mine.every((x) => x.dipendente_id === dip1.id), "timbrature visibili errate");
+  await expectError(O.e("ClockEvent").update(mine[0].id, { tipo: "uscita" }), "l'operaio modifica una timbratura");
+  await expectError(T.rpc("clock_punch", { p_tipo: "entrata" }), "il titolare senza dipendente collegato timbra");
+  const all = await T.e("ClockEvent").list();
+  assert(all.length === mine.length, "il titolare non vede le timbrature");
+});
+
 console.log("\nPreventivo online (link pubblico)");
 await check("il cliente vede il preventivo senza costi interni", async () => {
   const token = "tok" + crypto.randomUUID().replace(/-/g, "");

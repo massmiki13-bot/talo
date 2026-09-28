@@ -6,6 +6,7 @@
 //   api.integrations.Core (UploadFile, InvokeLLM, SendEmail)
 //   api.functions.invoke  (funzioni server)
 import { createClient } from "@supabase/supabase-js";
+import { cacheGet, cacheSet, cacheClear, isNetworkError } from "@/lib/offlineStore";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -70,9 +71,28 @@ if (typeof window !== "undefined") {
 
 // ─── Entità ───
 
+// Le letture vengono copiate sul dispositivo: senza rete si usa l'ultima copia (app installata in cantiere).
+const CACHED_READS = new Set(["entity_list", "entity_list_fields", "entity_get", "my_access"]);
+const MAX_CACHED_ROWS = 3000;
+
 async function rpc(fn, params) {
-  const { data, error } = await supabase.rpc(fn, params);
-  if (error) fail(error);
+  const key = CACHED_READS.has(fn) ? `${fn}:${JSON.stringify(params)}` : null;
+  let res;
+  try {
+    res = await supabase.rpc(fn, params);
+  } catch (e) {
+    res = { error: e };
+  }
+  const { data, error } = res;
+  if (error) {
+    if (key && isNetworkError(error)) {
+      const hit = await cacheGet(key);
+      if (hit) return hit.value;
+    }
+    if (isNetworkError(error)) throw new ApiError("Sei offline: questa operazione richiede la connessione", 0, error);
+    fail(error);
+  }
+  if (key && (!Array.isArray(data) || data.length <= MAX_CACHED_ROWS)) cacheSet(key, data);
   return data;
 }
 
@@ -166,6 +186,11 @@ const appUrl = (path) => `${window.location.origin}${path}`;
 const auth = {
   async me() {
     const { data, error } = await supabase.auth.getUser();
+    if (error && isNetworkError(error)) {
+      // senza rete: l'utente della sessione salvata sul dispositivo
+      const { data: s } = await supabase.auth.getSession();
+      if (s?.session?.user) return toUser(s.session.user);
+    }
     if (error || !data?.user) throw new ApiError("Non autenticato", 401);
     return toUser(data.user);
   },
@@ -228,6 +253,7 @@ const auth = {
     return toUser(res.user);
   },
   async logout(redirectTo) {
+    await cacheClear(); // le copie dei dati restano solo per l'utente collegato
     await supabase.auth.signOut();
     if (redirectTo) window.location.href = typeof redirectTo === "string" && redirectTo.startsWith("/") ? redirectTo : "/login";
   },
@@ -364,6 +390,14 @@ export async function logError(error, extra) {
   } catch { /* il registro non deve mai causare altri errori */ }
 }
 
+// Timbratura del dipendente collegato all'utente (funzione del database con i controlli).
+export const clock = {
+  punch: ({ tipo, worksite, lat, lng, accuracy, note, client_time, client_id }) => rpc("clock_punch", {
+    p_tipo: tipo, p_worksite: worksite || null, p_lat: lat ?? null, p_lng: lng ?? null, p_accuracy: accuracy ?? null,
+    p_note: note || null, p_client_time: client_time || null, p_client_id: client_id || null,
+  }),
+};
+
 export const api = {
   entities,
   auth,
@@ -371,6 +405,7 @@ export const api = {
   integrations: { Core },
   files,
   audit,
+  clock,
   logError,
   access: () => rpc("my_access"),
 };

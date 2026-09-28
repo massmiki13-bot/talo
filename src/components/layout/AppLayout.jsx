@@ -9,6 +9,7 @@ import { useCollaborator } from "@/hooks/useCollaborator";
 import { useReminderNotifications } from "@/hooks/useReminderNotifications";
 import TaloLogo from "@/components/brand/TaloLogo";
 import CommandPalette from "./CommandPalette";
+import AppStatusBar from "./AppStatusBar";
 import { Search } from "lucide-react";
 
 const readCollapsed = () => { try { return localStorage.getItem("talo.sidebar") === "1"; } catch { return false; } };
@@ -74,6 +75,7 @@ export default function AppLayout() {
         </div>
       </main>
 
+      <AppStatusBar />
       {!isOperaioNav && <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} canAccessPath={canAccessPath} />}
 
       <MobileBottomNav onMore={() => setMobileOpen(true)} isHost={isHost} accessLevel={accessLevel} permissions={permissions} employeeId={employeeId} />

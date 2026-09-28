@@ -11,6 +11,7 @@ import {
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { fmtEur } from "@/lib/quotes";
 import { computeDashboard, MESI } from "@/lib/dashboard";
+import ClockCard from "@/components/attendance/ClockCard";
 
 const n = (v) => Number(v) || 0;
 const eurShort = (v) => new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" }).format(n(v));
@@ -474,8 +475,9 @@ function OperaioHome({ name, dateLabel, employeeId }) {
       <section className="relative overflow-hidden rounded-3xl brushed text-white p-6 sm:p-8">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-400">{dateLabel}</p>
         <h1 className="font-display text-4xl font-bold uppercase mt-3">{greeting()}{name ? `, ${name}` : ""}</h1>
-        <p className="text-zinc-400 mt-2">Qui trovi le tue presenze, i tuoi documenti e le scadenze dei corsi.</p>
+        <p className="text-zinc-400 mt-2">Qui timbri entrata e uscita e trovi le tue presenze, i tuoi documenti e le scadenze dei corsi.</p>
       </section>
+      {employeeId && <ClockCard employeeId={employeeId} />}
       <div className="grid sm:grid-cols-2 gap-3">
         {[["/presenze", ClipboardList, "Le mie presenze", "Ore registrate e calendario"], [`/dipendenti/${employeeId}`, Users, "Il mio profilo", "Documenti, corsi e visite mediche"]].map(([to, I, t, s]) => (
           <Link key={to} to={to} className="group bg-white rounded-2xl border border-zinc-200 p-5 hover:border-zinc-300 transition flex items-center gap-4">

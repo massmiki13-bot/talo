@@ -7,6 +7,11 @@ import { logError } from '@/api/client'
 
 installPrivateLinkHandler()
 
+// App installabile e utilizzabile offline (solo nella versione pubblicata).
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => {}) })
+}
+
 // Errori non gestiti → registro errori (Supabase, tabella app_errors).
 // Esclusi i caricamenti interrotti e il rumore delle estensioni del browser.
 const IGNORE = /ResizeObserver loop|Script error\.?$|chrome-extension:|moz-extension:|Failed to fetch dynamically imported module|Load failed|NetworkError/i

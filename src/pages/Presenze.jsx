@@ -1,18 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { db } from "@/lib/db";
 import { getAccessContext } from "@/lib/accessScope";
-import { ClipboardList, CalendarDays, Table2 } from "lucide-react";
+import { ClipboardList, CalendarDays, Table2, Smartphone } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import DailySheet from "@/components/attendance/DailySheet";
 import AttendanceCalendar from "@/components/attendance/AttendanceCalendar";
 import MonthlyHours from "@/pages/MonthlyHours";
+import ClockReview from "@/components/attendance/ClockReview";
+import ClockCard from "@/components/attendance/ClockCard";
 import { iso, parseIso } from "@/lib/attendance";
 
 const TABS = [
   { key: "giornaliera", label: "Giornaliera", icon: ClipboardList },
   { key: "calendario", label: "Calendario", icon: CalendarDays },
   { key: "tabellone", label: "Tabellone mensile", icon: Table2 },
+  { key: "timbrature", label: "Timbrature", icon: Smartphone, staff: true },
 ];
 const LEGACY = { inserimento: "giornaliera", riepilogo: "tabellone" };
 
@@ -63,8 +66,10 @@ export default function Presenze() {
     <div>
       <PageHeader title="Presenze" subtitle={isOperaio ? "Le tue giornate registrate" : `Registra ogni giorno chi c'era, dove ha lavorato e per quante ore: il costo manodopera finisce da solo nei lavori.`} />
 
+      {isOperaio && ctx.employeeId && <div className="mb-4 max-w-xl"><ClockCard employeeId={ctx.employeeId} /></div>}
+
       <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit mb-4 max-w-full overflow-x-auto no-scrollbar">
-        {TABS.map(({ key, label, icon: I }) => (
+        {TABS.filter((t) => !t.staff || !isOperaio).map(({ key, label, icon: I }) => (
           <button key={key} onClick={() => switchTab(key)} className={`flex items-center gap-1.5 px-3 h-9 rounded-md text-sm whitespace-nowrap ${tab === key ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}>
             <I className="w-4 h-4" /> {label}
           </button>
@@ -81,6 +86,7 @@ export default function Presenze() {
         <AttendanceCalendar month={month} setMonth={setMonth} records={records} employees={employees} today={iso(new Date())} onOpenDay={openDay} myEmpId={isOperaio ? ctx.employeeId : null} />
       )}
       {tab === "tabellone" && <MonthlyHours onOpenDay={isOperaio ? undefined : openDay} />}
+      {tab === "timbrature" && !isOperaio && <ClockReview date={date} setDate={setDate} records={records} isHost={ctx.isHost} onSaved={load} />}
     </div>
   );
 }

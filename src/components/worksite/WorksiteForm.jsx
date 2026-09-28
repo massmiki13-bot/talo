@@ -13,6 +13,7 @@ import { displayName } from "@/lib/contacts";
 import { fullName } from "@/lib/employees";
 import { fmtEur } from "@/lib/quotes";
 import Field from "@/components/shared/FormField";
+import SitePosition from "@/components/worksite/SitePosition";
 
 const EMPTY = {
   nome: "", indirizzo: "", stato: "da_iniziare", tipo_intervento: "", cliente_id: "", cliente_nome: "", importo_totale: "",
@@ -101,6 +102,7 @@ export default function WorksiteForm({ open, onOpenChange, worksite = null, onSa
                 </Select>
               </Field>
               <Field label="Indirizzo del cantiere" className="sm:col-span-2"><Input value={form.indirizzo} onChange={(e) => set({ indirizzo: e.target.value })} /></Field>
+              <div className="sm:col-span-2"><SitePosition lat={form.lat} lng={form.lng} indirizzo={form.indirizzo} onChange={set} /></div>
               <Field label="Stato">
                 <Select value={form.stato || "da_iniziare"} onValueChange={(v) => set({ stato: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
