@@ -1,6 +1,7 @@
 // Invio tramite la casella di sistema di Talo, usato quando l'azienda non ha
 // ancora collegato una propria casella.
 import { handler, requireUser, HttpError, rateLimit, admin } from "./_lib/server.js";
+import { isDemoTenant } from "./_lib/demo.js";
 import { systemTransport, systemFrom, sendMail } from "./_lib/mail.js";
 
 export default handler(async (req, body) => {
@@ -8,6 +9,7 @@ export default handler(async (req, body) => {
   if (accessLevel === "operaio") throw new HttpError(403, "Non autorizzato a inviare email");
   // Limite stretto: la casella di sistema non deve diventare un canale di spam.
   rateLimit(`sys:${user.id}`, 10, 60 * 60_000);
+  if (isDemoTenant(tenantId)) throw new HttpError(403, "Nella demo l'invio di email è disattivato: crea il tuo account per usarlo.");
 
   const { to, subject, body: html } = body;
   if (!to || !subject || !html) throw new HttpError(400, "Destinatario, oggetto e testo sono obbligatori");

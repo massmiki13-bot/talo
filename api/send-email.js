@@ -1,6 +1,7 @@
 // Invia un'email o una PEC dalla casella aziendale collegata e la registra
 // nella posta inviata (anche in caso di errore, con il motivo).
 import { handler, requireUser, admin, HttpError, rateLimit } from "./_lib/server.js";
+import { isDemoTenant } from "./_lib/demo.js";
 import { smtpTransport, sendMail, downloadAttachments } from "./_lib/mail.js";
 import { loadAccount, login, parseAddresses, insertMessage, searchText, friendlyMailError } from "./_lib/mailbox.js";
 
@@ -10,6 +11,7 @@ export default handler(async (req, body) => {
   const { user, tenantId, accessLevel } = await requireUser(req);
   if (accessLevel === "operaio") throw new HttpError(403, "Non autorizzato a inviare email");
   rateLimit(`send:${user.id}`, 30, 60_000);
+  if (isDemoTenant(tenantId)) throw new HttpError(403, "Nella demo l'invio di email è disattivato: crea il tuo account per usarlo.");
 
   const { subject, body: html, text, from_email, account_id, draft_id } = body;
   const to = parseAddresses(body.to);

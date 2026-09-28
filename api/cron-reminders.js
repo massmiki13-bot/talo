@@ -2,6 +2,7 @@
 // Chiamata dal cron di Vercel (vercel.json) con l'intestazione CRON_SECRET.
 import { admin, escapeHtml } from "./_lib/server.js";
 import { systemTransport, systemFrom, sendMail } from "./_lib/mail.js";
+import { resetDemo, demoUserId, isDemoTenant } from "./_lib/demo.js";
 
 export default async function cronReminders(req, res) {
   const secret = process.env.CRON_SECRET;
@@ -12,12 +13,14 @@ export default async function cronReminders(req, res) {
   try {
     const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
     const db = admin();
+    // Ogni mattina l'azienda demo torna ai suoi dati di esempio (con date aggiornate).
+    if (demoUserId()) await resetDemo(demoUserId(), process.env.DEMO_EMAIL).catch((e) => console.error("Ripristino demo non riuscito:", e.message));
 
     const { data: rows, error } = await db
       .from("entity_records").select("tenant_id, created_by_id, data")
       .eq("entity", "Reminder").eq("data->>data", today);
     if (error) throw error;
-    const active = rows.filter((r) => !r.data.completato && r.created_by_id);
+    const active = rows.filter((r) => !r.data.completato && r.created_by_id && !isDemoTenant(r.tenant_id));
     if (active.length === 0) {
       res.status(200).json({ sent: 0, total: 0, date: today });
       return;

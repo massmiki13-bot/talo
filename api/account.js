@@ -1,7 +1,10 @@
-// Account e file: link firmati per i documenti privati (action "file-url") e cancellazione definitiva
-// dell'account aziendale (action "delete", solo titolare). Riunite in una funzione per il limite del piano Vercel.
+// Account e file: link firmati per i documenti privati (action "file-url"), cancellazione definitiva
+// dell'account aziendale (action "delete", solo titolare) e accesso all'azienda demo (action "demo", senza login).
+// Riunite in una funzione per il limite del piano Vercel.
+import { createClient } from "@supabase/supabase-js";
 import { handler, requireUser, admin, HttpError, rateLimit } from "./_lib/server.js";
 import { privatePath, signPrivateUrl } from "./_lib/files.js";
+import { isDemoTenant } from "./_lib/demo.js";
 
 const CONFIRM_TEXT = "ELIMINA DEFINITIVAMENTE";
 
@@ -48,6 +51,7 @@ async function removeFolder(db, bucket, folder) {
 async function deleteAccount({ user, tenantId, accessLevel }, body) {
   rateLimit(`account-delete:${user.id}`, 3, 60_000);
   if (accessLevel !== "host" || tenantId !== user.id) throw new HttpError(403, "Solo il titolare può eliminare l'account dell'azienda");
+  if (isDemoTenant(tenantId)) throw new HttpError(403, "L'azienda demo non si può eliminare");
   if (String(body.confirm || "").trim().toUpperCase() !== CONFIRM_TEXT) throw new HttpError(400, `Per confermare scrivi: ${CONFIRM_TEXT}`);
   const db = admin();
   const files = (await removeFolder(db, "uploads", tenantId)) + (await removeFolder(db, "private", tenantId));
@@ -62,7 +66,22 @@ async function deleteAccount({ user, tenantId, accessLevel }, body) {
   return { ok: true, records: count || 0, files };
 }
 
+// Sessione dell'azienda demo: la password resta sul server, il browser riceve solo i token.
+async function demoSession(req) {
+  const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "anon";
+  rateLimit(`demo:${ip}`, 10, 60 * 60_000);
+  const { DEMO_EMAIL, DEMO_PASSWORD } = process.env;
+  if (!DEMO_EMAIL || !DEMO_PASSWORD) throw new HttpError(503, "La demo non è disponibile in questo momento");
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data, error } = await client.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+  if (error || !data?.session) throw new HttpError(503, "La demo non è disponibile in questo momento");
+  return { access_token: data.session.access_token, refresh_token: data.session.refresh_token };
+}
+
 export default handler(async (req, body) => {
+  if (body.action === "demo") return demoSession(req);
   const ctx = await requireUser(req);
   if (body.action === "file-url") return signedUrls(ctx, body);
   if (body.action === "delete") return deleteAccount(ctx, body);

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { api } from "@/api/client";
+import { api, supabase } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
+import { LogIn, Mail, Lock, Loader2, PlayCircle } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 
@@ -30,6 +30,24 @@ export default function Login() {
       setError(err.message || "Email o password non corretti");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Azienda dimostrativa con dati di esempio: il server apre la sessione, qui arrivano solo i token.
+  const [demoLoading, setDemoLoading] = useState(false);
+  const openDemo = async () => {
+    setError("");
+    setDemoLoading(true);
+    try {
+      const res = await fetch("/api/account", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "demo" }) });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.error || "La demo non è disponibile in questo momento");
+      const { error: e } = await supabase.auth.setSession({ access_token: j.access_token, refresh_token: j.refresh_token });
+      if (e) throw e;
+      window.location.href = "/";
+    } catch (err) {
+      setError(err.message);
+      setDemoLoading(false);
     }
   };
 
@@ -129,6 +147,16 @@ export default function Login() {
           )}
         </Button>
       </form>
+
+      <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 flex items-center gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-zinc-900">Vuoi solo dare un'occhiata?</p>
+          <p className="text-xs text-zinc-600 mt-0.5">Entra in un'impresa di esempio con cantieri, preventivi e presenze già compilati.</p>
+        </div>
+        <Button type="button" variant="outline" onClick={openDemo} disabled={demoLoading} className="gap-1.5 shrink-0 bg-white">
+          {demoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlayCircle className="w-4 h-4" />} Prova la demo
+        </Button>
+      </div>
     </AuthLayout>
   );
 }

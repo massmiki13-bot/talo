@@ -3,7 +3,7 @@ import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { Outlet, useLocation, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import MobileBottomNav from "./MobileBottomNav";
-import { db } from "@/lib/db";
+import { api, db } from "@/lib/db";
 import { useAuth } from "@/lib/AuthContext";
 import { useCollaborator } from "@/hooks/useCollaborator";
 import { useReminderNotifications } from "@/hooks/useReminderNotifications";
@@ -12,7 +12,8 @@ import CommandPalette from "./CommandPalette";
 import AppStatusBar from "./AppStatusBar";
 import { Search } from "lucide-react";
 
-const readCollapsed = () => { try { return localStorage.getItem("talo.sidebar") === "1"; } catch { return false; } };
+const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL || "demo@talo.app";
+const readCollapsed =() => { try { return localStorage.getItem("talo.sidebar") === "1"; } catch { return false; } };
 
 export default function AppLayout() {
   const { user } = useAuth();
@@ -69,6 +70,12 @@ export default function AppLayout() {
 
       <main id="contenuto" tabIndex={-1} className={`min-h-screen outline-none pt-14 lg:pt-0 pb-20 lg:pb-0 transition-[margin] duration-300 ${collapsed ? "lg:ml-[72px]" : "lg:ml-64"}`}>
         <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+          {user?.email === DEMO_EMAIL && (
+            <div className="mb-5 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+              <p className="flex-1 min-w-[220px] text-brand-900"><b>Stai provando l'azienda demo.</b> Tocca e modifica tutto: i dati tornano come nuovi ogni notte. L'invio di email è disattivato.</p>
+              <button type="button" onClick={() => api.auth.logout("/register")} className="rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-2">Crea il tuo account</button>
+            </div>
+          )}
           <Suspense fallback={<LoadingSpinner />}>
             <Outlet />
           </Suspense>
