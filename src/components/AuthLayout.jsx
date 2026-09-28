@@ -42,7 +42,7 @@ export default function AuthLayout({ title, subtitle, footer, children }) {
             ))}
           </ul>
         </div>
-        <p className="relative text-xs text-zinc-500">© {new Date().getFullYear()} Talo</p>
+        <p className="relative text-xs text-zinc-500">© {new Date().getFullYear()} Talo · <a href="/legal/privacy" className="hover:text-zinc-300">Privacy</a> · <a href="/legal/termini" className="hover:text-zinc-300">Termini</a></p>
       </aside>
 
       <main className="flex items-center justify-center px-5 py-12 sm:px-10">
@@ -52,6 +52,7 @@ export default function AuthLayout({ title, subtitle, footer, children }) {
           {subtitle && <p className="text-zinc-500 mt-2 text-[15px]">{subtitle}</p>}
           <div className="mt-8">{children}</div>
           {footer && <p className="text-sm text-zinc-500 mt-8">{footer}</p>}
+          <p className="lg:hidden text-xs text-zinc-400 mt-10"><a href="/legal/privacy" className="hover:text-zinc-700">Privacy</a> · <a href="/legal/termini" className="hover:text-zinc-700">Termini di servizio</a></p>
         </div>
       </main>
     </div>

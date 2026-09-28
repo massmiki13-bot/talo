@@ -186,11 +186,11 @@ const auth = {
     });
     if (error) throw new ApiError(error.message, 400, error);
   },
-  async register({ email, password, full_name }) {
+  async register({ email, password, full_name, consent }) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: full_name ? { full_name } : undefined, emailRedirectTo: appUrl("/") },
+      options: { data: { ...(full_name ? { full_name } : {}), ...(consent || {}) }, emailRedirectTo: appUrl("/") },
     });
     if (error) throw new ApiError(/already registered/i.test(error.message) ? "Esiste già un account con questa email" : error.message, 400, error);
     return { user: toUser(data.user), needsConfirmation: !data.session };

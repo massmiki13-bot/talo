@@ -13,7 +13,7 @@ import { QUOTE_TEMPLATES } from "@/utils/quoteTemplates";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import PageHeader from "@/components/shared/PageHeader";
 import { numerazioneOptions } from "@/utils/quoteNumbering";
-import BackupExport from "@/components/shared/BackupExport";
+import DataPrivacy from "@/components/settings/DataPrivacy";
 import EmailAccountsSettings from "@/components/settings/EmailAccountsSettings";
 import ColorSettings from "@/components/settings/ColorSettings";
 import DrawSignatureDialog from "@/components/settings/DrawSignatureDialog";
@@ -27,7 +27,7 @@ const SECTIONS = [
   { key: "documenti", label: "Documenti e preventivi", icon: FileText },
   { key: "posta", label: "Caselle email", icon: Mail },
   { key: "scadenze", label: "Avvisi di scadenza", icon: Bell },
-  { key: "dati", label: "Backup dei dati", icon: Database },
+  { key: "dati", label: "Dati e privacy", icon: Database },
 ];
 
 const EMPTY = {
@@ -380,7 +380,7 @@ export default function CompanyProfile() {
           )}
 
           {section === "dati" && (
-            <div className="[&>div]:mt-0 [&>div]:rounded-2xl"><BackupExport /></div>
+            <DataPrivacy profile={profile} />
           )}
         </div>
       </div>

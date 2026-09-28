@@ -30,6 +30,7 @@ import CompanyDocuments from '@/pages/CompanyDocuments';
 import Prezzari from '@/pages/Prezzari';
 import Sicurezza from '@/pages/Sicurezza';
 import Fatture from '@/pages/Fatture';
+import Legal from '@/pages/Legal';
 import Reminders from '@/pages/Reminders';
 import Contracts from '@/pages/Contracts';
 import Presenze from '@/pages/Presenze';
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/p/:token" element={<PublicQuote />} />
+      <Route path="/legal/:doc" element={<Legal />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import AuthLayout from "@/components/AuthLayout";
+import { LEGAL_VERSION } from "@/lib/legal";
 import GoogleIcon from "@/components/GoogleIcon";
 
 // Il login con Google si attiva dopo aver configurato il provider su Supabase.
@@ -17,6 +18,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
@@ -33,9 +35,13 @@ export default function Register() {
       setError("Le password non coincidono");
       return;
     }
+    if (!accepted) {
+      setError("Per continuare accetta i termini di servizio, l'informativa privacy e l'accordo sul trattamento dei dati");
+      return;
+    }
     setLoading(true);
     try {
-      await api.auth.register({ email, password });
+      await api.auth.register({ email, password, consent: { terms_version: LEGAL_VERSION, terms_accepted_at: new Date().toISOString() } });
       setShowOtp(true);
     } catch (err) {
       setError(err.message || "Registrazione non riuscita");
@@ -223,6 +229,10 @@ export default function Register() {
             />
           </div>
         </div>
+        <label className="flex items-start gap-2.5 text-sm text-zinc-600 leading-snug cursor-pointer">
+          <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 w-4 h-4 accent-brand-600" required />
+          <span>Accetto i <a href="/legal/termini" target="_blank" className="text-brand-700 underline">termini di servizio</a> e l'<a href="/legal/accordo-trattamento-dati" target="_blank" className="text-brand-700 underline">accordo sul trattamento dei dati</a> e ho letto l'<a href="/legal/privacy" target="_blank" className="text-brand-700 underline">informativa privacy</a>.</span>
+        </label>
         <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
           {loading ? (
             <>
