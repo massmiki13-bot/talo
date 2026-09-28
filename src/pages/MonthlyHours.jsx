@@ -12,12 +12,14 @@ import { generateSingleEmployeePdf, generateAllEmployeesPdf } from "@/utils/mont
 import { generateSingleEmployeeExcel, generateAllEmployeesExcel } from "@/utils/hoursExcelExport";
 import ExportVariantDialog from "@/components/attendance/ExportVariantDialog";
 import { Switch } from "@/components/ui/switch";
+import { holidayName, overtime, fmtH } from "@/lib/attendance";
+import { stdHours } from "@/components/attendance/DailySheet";
 
 const MESI = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 const WEEKDAY_LETTERS = ["D", "L", "M", "M", "G", "V", "S"];
 const TAB_LETTERS = { ferie: "F", permesso: "P", malattia: "M", assente: "A" };
 
-export default function MonthlyHours() {
+export default function MonthlyHours({ onOpenDay } = {}) {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState([]);
   const [attendance, setAttendance] = useState([]);
@@ -104,6 +106,7 @@ export default function MonthlyHours() {
         map[emp.id].nome = `${emp.nome} ${emp.cognome}`;
         map[emp.id].costoOrario = emp.costo_orario || 0;
         map[emp.id].costoTotale = (emp.costo_orario || 0) * map[emp.id].totaleOre;
+        map[emp.id].straordinari = Object.values(map[emp.id].dayMap).reduce((s, d) => s + (d.stato === "presente" ? overtime(d.ore, stdHours(emp)) : 0), 0);
       }
     });
 
@@ -113,6 +116,15 @@ export default function MonthlyHours() {
 
     return Object.values(map).sort((a, b) => b.totaleOre - a.totaleOre);
   }, [monthAttendance, employees, worksites, isOperaio, myEmpId]);
+
+  const perSite = useMemo(() => {
+    const m = {};
+    for (const e of employeeSummary) for (const [nome, ore] of Object.entries(e.perLavoro)) {
+      const c = (m[nome] ||= { nome, ore: 0, costo: 0 });
+      c.ore += ore; c.costo += ore * (e.costoOrario || 0);
+    }
+    return Object.values(m).sort((a, b) => b.ore - a.ore);
+  }, [employeeSummary]);
 
   const totaleOreMese = employeeSummary.reduce((s, e) => s + e.totaleOre, 0);
   const totaleCostoMese = employeeSummary.reduce((s, e) => s + (e.costoTotale || 0), 0);
@@ -124,7 +136,7 @@ export default function MonthlyHours() {
       const dateStr = `${anno}-${String(mese + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
       const date = new Date(dateStr);
       const weekday = date.getDay();
-      arr.push({ day: d, dateStr, weekday, letter: WEEKDAY_LETTERS[weekday], isSunday: weekday === 0, isSaturday: weekday === 6 });
+      arr.push({ day: d, dateStr, weekday, letter: WEEKDAY_LETTERS[weekday], isSunday: weekday === 0 || !!holidayName(dateStr), isSaturday: weekday === 6, hol: holidayName(dateStr) });
     }
     return arr;
   }, [anno, mese, daysInMonth]);
@@ -246,6 +258,7 @@ export default function MonthlyHours() {
                     </th>
                   ))}
                   <th className="bg-slate-50 border-b border-slate-200 px-2 py-1 text-center text-xs font-medium text-slate-500 uppercase min-w-[50px]">ORE</th>
+                  <th className="bg-slate-50 border-b border-l border-slate-200 px-2 py-1 text-center text-xs font-medium text-slate-500 uppercase min-w-[50px]" title="Ore oltre l'orario giornaliero">STR.</th>
                 </tr>
                 <tr>
                   <th className="sticky left-0 z-10 bg-slate-50 border-b border-r border-slate-200"></th>
@@ -255,6 +268,7 @@ export default function MonthlyHours() {
                     </th>
                   ))}
                   <th className="bg-slate-50 border-b border-slate-200"></th>
+                  <th className="bg-slate-50 border-b border-l border-slate-200"></th>
                 </tr>
               </thead>
               <tbody>
@@ -272,18 +286,18 @@ export default function MonthlyHours() {
                     </td>
                     {days.map(d => {
                       const dayData = emp.dayMap[d.dateStr];
-                      if (!dayData) return <td key={d.dateStr} className={`border-b border-r border-slate-200 text-center min-w-[28px] w-7 h-8 ${d.isSunday ? "bg-red-50/50" : d.isSaturday ? "bg-slate-50" : ""}`}></td>;
+                      if (!dayData) return <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-blue-400 " : ""}border-b border-r border-slate-200 text-center min-w-[28px] w-7 h-8 ${d.isSunday ? "bg-red-50/50" : d.isSaturday ? "bg-slate-50" : ""}`}></td>;
                       const info = getStatoInfo(dayData.stato);
                       if (dayData.stato === "presente") {
                         return (
-                          <td key={d.dateStr} className={`border-b border-r border-slate-200 text-center text-xs font-semibold ${info.bgClass} min-w-[28px] w-7 h-8`}
+                          <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-blue-400 " : ""}border-b border-r border-slate-200 text-center text-xs font-semibold ${info.bgClass} min-w-[28px] w-7 h-8`}
                             title={dayData.cantieri.map(c => `${c.cantiere_nome}: ${c.ore}h`).join(", ")}>
                             {dayData.ore.toFixed(0)}
                           </td>
                         );
                       }
                       return (
-                        <td key={d.dateStr} className={`border-b border-r border-slate-200 text-center text-[10px] font-bold min-w-[28px] w-7 h-8 ${info.bgClass}`}>
+                        <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-blue-400 " : ""}border-b border-r border-slate-200 text-center text-[10px] font-bold min-w-[28px] w-7 h-8 ${info.bgClass}`}>
                           {TAB_LETTERS[dayData.stato] || ""}
                         </td>
                       );
@@ -291,10 +305,28 @@ export default function MonthlyHours() {
                     <td className="border-b border-slate-200 text-center font-bold text-slate-900 bg-slate-50 px-2 py-1.5">
                       {emp.totaleOre.toFixed(1)}
                     </td>
+                    <td className={`border-b border-l border-slate-200 text-center px-2 py-1.5 bg-slate-50 tabular-nums ${emp.straordinari ? "font-semibold text-amber-700" : "text-slate-400"}`}>{emp.straordinari ? fmtH(emp.straordinari) : "—"}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Ore e costo per cantiere */}
+      {perSite.length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200 mt-4 overflow-hidden">
+          <p className="px-4 py-2.5 text-sm font-semibold text-slate-900 border-b border-slate-100">Ore per cantiere · {MESI[mese]} {anno}</p>
+          <div className="divide-y divide-slate-100">
+            {perSite.map((c) => (
+              <div key={c.nome} className="flex items-center gap-3 px-4 py-2 text-sm">
+                <span className="flex-1 min-w-0 truncate text-slate-800">{c.nome}</span>
+                <div className="hidden sm:block w-40 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-blue-500" style={{ width: `${(c.ore / perSite[0].ore) * 100}%` }} /></div>
+                <span className="w-16 text-right tabular-nums font-medium">{fmtH(c.ore)} h</span>
+                {canSeeCosts && showCosts && <span className="w-24 text-right tabular-nums text-slate-600">{formatEuro(c.costo)}</span>}
+              </div>
+            ))}
           </div>
         </div>
       )}

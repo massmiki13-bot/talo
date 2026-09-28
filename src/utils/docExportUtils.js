@@ -68,6 +68,10 @@ export function fillTemplate(templateText, fields, profile) {
   // Pulisce righe vuote multiple (lascia al massimo una riga vuota tra i paragrafi)
   content = content.replace(/\n{3,}/g, "\n\n");
 
+  // Numera gli articoli in sequenza: le clausole facoltative ("ART. –") non hanno un numero fisso
+  let art = 0;
+  content = content.replace(/^ART\.\s*\d*\s*–/gm, () => `ART. ${++art} –`);
+
   // Rinumera gli articoli progressivamente (saltando quelli omessi)
   let artNum = 0;
   content = content.split("\n").map(line => {

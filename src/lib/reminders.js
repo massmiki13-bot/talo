@@ -87,10 +87,11 @@ export function linkFor(r) {
     case "Worksite": return `/lavori/${r.riferimento_id}`;
     case "Contact": return `/contatti/${r.riferimento_id}`;
     case "Employee": return `/dipendenti/${r.riferimento_id}`;
+    case "GeneratedContract": return `/contratti?id=${r.riferimento_id}`;
     default: return null;
   }
 }
-export const LINK_LABEL = { CompanyDocument: "Apri documento", Quote: "Apri preventivo", Worksite: "Apri lavoro", Contact: "Apri scheda", Employee: "Apri dipendente", EmployeeDocument: "Apri dipendente" };
+export const LINK_LABEL = { CompanyDocument: "Apri documento", Quote: "Apri preventivo", Worksite: "Apri lavoro", Contact: "Apri scheda", Employee: "Apri dipendente", EmployeeDocument: "Apri dipendente", GeneratedContract: "Apri contratto" };
 
 /** Trasforma una frase ("chiamare Rossi venerdì alle 10") in un promemoria. */
 export async function parseQuickReminder(text) {

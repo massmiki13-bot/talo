@@ -39,7 +39,7 @@ ART. 2 – LUOGO DI ESECUZIONE
 I lavori verranno eseguiti presso: {{LUOGO_ESECUZIONE}}.
 {{/if}}
 §1
-ART. 3 – CORRIPETTIVO
+ART. 3 – CORRISPETTIVO
 L'importo complessivo dell'appalto è stabilito in € {{IMPORTO}}, più IVA, inteso a corpo e comprensivo di tutti gli oneri, le spese e gli accessori.
 
 §1
@@ -93,7 +93,7 @@ ART. – OBBLIGHI DELL'APPALTATORE
 L'Appaltatore si impegna a eseguire i lavori a regola d'arte con materiali conformi, a osservare le norme di sicurezza (D.Lgs. 81/2008), a garantire la regolarità contributiva e fiscale (DURC), a utilizzare manodopera regolarmente assunta e a rispondere dei vizi e dei difetti di esecuzione.
 
 §2
-ART. – GARANZIA E COLLADO
+ART. – GARANZIA E COLLAUDO
 L'Appaltatore garantisce i lavori per il periodo previsto dalla legge (10 anni per i lavori edili, art. 1669 c.c.). Al termine, il Committente procederà al collaudo.
 
 §3
@@ -157,7 +157,7 @@ ART. 2 – LUOGO DI ESECUZIONE
 I lavori verranno eseguiti presso: {{LUOGO_ESECUZIONE}}.
 {{/if}}
 §1
-ART. 3 – CORRIPETTIVO
+ART. 3 – CORRISPETTIVO
 L'importo complessivo del subappalto è stabilito in € {{IMPORTO}}, più IVA, inteso a corpo e comprensivo di tutti gli oneri.
 
 §1
@@ -196,7 +196,7 @@ ART. – OBBLIGHI DEL SUBAPPALTATORE
 Il Subappaltatore si impegna a eseguire i lavori a regola d'arte, a osservare le norme di sicurezza (D.Lgs. 81/2008), a garantire la regolarità contributiva e fiscale (DURC), a utilizzare manodopera regolarmente assunta e a rispettare le condizioni del contratto di appalto principale.
 
 §2
-ART. – RESPONSABILITÀ E COLLADO
+ART. – RESPONSABILITÀ E COLLAUDO
 Il Subappaltatore risponde verso l'Appaltatore principale della corretta esecuzione e manterrà indenne l'Appaltatore da ogni responsabilità derivante da inadempienze del Subappaltatore. Al termine, l'Appaltatore procederà alla verifica e al collaudo.
 
   ${_FORZAMAGGIORE_OPT}
@@ -634,7 +634,7 @@ ART. – TEMPISTICHE
 {{/if}}
 {{#if IMPORTO}}
 §2
-ART. – CORRIPETTIVO
+ART. – CORRISPETTIVO
 L'importo complessivo pattuito è di € {{IMPORTO}}, più IVA ove applicabile{{#if MODALITA_PAGAMENTO}}. Il pagamento verrà effettuato tramite {{MODALITA_PAGAMENTO}}{{/if}}{{#if IBAN_PAGAMENTO}} sul conto corrente con IBAN {{IBAN_PAGAMENTO}}{{/if}}.
 {{/if}}
 {{#if PENALI}}

@@ -47,6 +47,65 @@
     "ripeti_promemoria_custom": {
       "type": "boolean",
       "title": "Ripeti Promemoria (personalizzato)"
+    },
+    "stato": {
+      "type": "string",
+      "enum": [
+        "bozza",
+        "inviato",
+        "firmato",
+        "concluso",
+        "annullato"
+      ],
+      "default": "bozza",
+      "title": "Stato"
+    },
+    "variante": {
+      "type": "string",
+      "title": "Livello di dettaglio"
+    },
+    "data_inizio": {
+      "type": "string",
+      "format": "date",
+      "title": "Decorrenza"
+    },
+    "importo": {
+      "type": "number",
+      "title": "Valore"
+    },
+    "dipendente_id": {
+      "type": "string",
+      "title": "Dipendente"
+    },
+    "contatto_id": {
+      "type": "string",
+      "title": "Cliente/fornitore"
+    },
+    "worksite_id": {
+      "type": "string",
+      "title": "Lavoro"
+    },
+    "inviato_il": {
+      "type": "string",
+      "format": "date",
+      "title": "Inviato il"
+    },
+    "firmato_il": {
+      "type": "string",
+      "format": "date",
+      "title": "Firmato il"
+    },
+    "file_firmato_url": {
+      "type": "string",
+      "title": "Copia firmata"
+    },
+    "file_firmato_nome": {
+      "type": "string",
+      "title": "Nome file firmato"
+    },
+    "revisione_ai": {
+      "type": "object",
+      "title": "Controllo IA"
     }
   },
   "required": [
