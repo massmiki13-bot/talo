@@ -11,7 +11,7 @@
       "enum": [
         "edilizia"
       ],
-      "title": "Settore Attivit\u00e0",
+      "title": "Settore Attività",
       "default": "edilizia"
     },
     "partita_iva": {
@@ -28,7 +28,7 @@
     },
     "citta": {
       "type": "string",
-      "title": "Citt\u00e0"
+      "title": "Città"
     },
     "cap": {
       "type": "string",
@@ -200,6 +200,18 @@
       ],
       "title": "Modello Preventivo Predefinito",
       "default": "classica"
+    },
+    "obiettivo_fatturato": {
+      "type": "number",
+      "title": "Obiettivo di fatturato annuo"
+    },
+    "sicurezza": {
+      "type": "object",
+      "title": "Figure della sicurezza"
+    },
+    "regime_fiscale": {
+      "type": "string",
+      "title": "Regime fiscale"
     }
   },
   "required": [
