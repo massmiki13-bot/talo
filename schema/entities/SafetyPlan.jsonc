@@ -1,0 +1,34 @@
+{
+  "name": "SafetyPlan",
+  "type": "object",
+  "properties": {
+    "titolo": {
+      "type": "string"
+    },
+    "worksite_id": {
+      "type": "string"
+    },
+    "worksite_nome": {
+      "type": "string"
+    },
+    "stato": {
+      "type": "string",
+      "enum": [
+        "bozza",
+        "completo",
+        "consegnato"
+      ]
+    },
+    "revisione": {
+      "type": "number"
+    },
+    "data": {
+      "type": "string",
+      "format": "date"
+    },
+    "dati": {
+      "type": "object",
+      "title": "Contenuto strutturato del POS"
+    }
+  }
+}

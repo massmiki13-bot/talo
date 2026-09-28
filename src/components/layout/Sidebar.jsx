@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Building2, Users, FileText,
   UserCheck, FolderOpen, Bell, FileSignature, Bot,
   BarChart3, ChevronLeft, ChevronRight, LogOut, Briefcase, CalendarClock, UserCog,
-  User, HardHat, Mail
+  User, HardHat, Mail, BookOpenCheck, ShieldCheck
 } from "lucide-react";
 import { api } from "@/lib/db";
 
@@ -17,7 +17,9 @@ export default function Sidebar({ onNavigate, isHost = true, accessLevel = "resp
     { label: "Posta", icon: Mail, path: "/posta", perm: null },
     { label: "Clienti e Fornitori", icon: Users, path: "/contatti", perm: "contatti" },
     { label: "Preventivi", icon: FileText, path: "/preventivi", perm: "preventivi" },
+    { label: "Prezzari", icon: BookOpenCheck, path: "/prezzari", perm: "prezzari", legacyPerms: ["preventivi"] },
     { label: "Lavori", icon: Briefcase, path: "/lavori", perm: "lavori" },
+    { label: "Sicurezza (POS)", icon: ShieldCheck, path: "/sicurezza", perm: "sicurezza" },
     { label: "Dipendenti", icon: UserCheck, path: "/dipendenti", perm: "dipendenti" },
     { label: "Documenti Ditta", icon: FolderOpen, path: "/documenti-ditta", perm: "documenti_ditta" },
     { label: "Promemoria", icon: Bell, path: "/promemoria", perm: "promemoria" },

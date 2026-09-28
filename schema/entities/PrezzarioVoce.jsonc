@@ -1,0 +1,27 @@
+{
+  "name": "PrezzarioVoce",
+  "type": "object",
+  "properties": {
+    "prezzario_id": {
+      "type": "string"
+    },
+    "codice": {
+      "type": "string"
+    },
+    "capitolo": {
+      "type": "string"
+    },
+    "descrizione": {
+      "type": "string"
+    },
+    "unita_misura": {
+      "type": "string"
+    },
+    "prezzo": {
+      "type": "number"
+    },
+    "incidenza_manodopera": {
+      "type": "number"
+    }
+  }
+}

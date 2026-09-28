@@ -1,0 +1,55 @@
+{
+  "name": "Prezzario",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "title": "Nome"
+    },
+    "ente": {
+      "type": "string",
+      "title": "Ente / regione"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "regionale",
+        "comunale",
+        "ditta",
+        "altro"
+      ],
+      "title": "Tipo"
+    },
+    "anno": {
+      "type": "number",
+      "title": "Anno"
+    },
+    "file_url": {
+      "type": "string",
+      "title": "File originale"
+    },
+    "nome_file": {
+      "type": "string"
+    },
+    "n_voci": {
+      "type": "number",
+      "title": "Voci"
+    },
+    "predefinito": {
+      "type": "boolean",
+      "title": "Predefinito"
+    },
+    "attivo": {
+      "type": "boolean",
+      "default": true,
+      "title": "Usato dall'IA"
+    },
+    "ricarico_percentuale": {
+      "type": "number",
+      "title": "Ricarico/sconto %"
+    },
+    "note": {
+      "type": "string"
+    }
+  }
+}

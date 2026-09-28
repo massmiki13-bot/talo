@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Trash2, Sparkles, MoreVertical, ArrowUp, ArrowDown, Copy, BookmarkPlus, Heading, AlignLeft, BookOpen, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, Sparkles, MoreVertical, ArrowUp, ArrowDown, Copy, BookmarkPlus, Heading, AlignLeft, BookOpen, Eye, EyeOff, BookOpenCheck, Loader2, Euro } from "lucide-react";
 import AutoTextarea from "@/components/shared/AutoTextarea";
 import PriceListDialog from "./PriceListDialog";
+import PrezzarioPickDialog from "./PrezzarioPickDialog";
+import { activePrezzari, aiPriceFor, mapUnit } from "@/lib/prezzari";
 import { UNIT_OPTIONS, emptyRow, chapterRow, textRow, rowTotal, rowCost, isVoce, chapterTotals, fmtEur } from "@/lib/quotes";
 
 const num = (v) => (v === "" ? "" : Number(String(v).replace(",", ".")));
@@ -25,6 +27,39 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
   const { toast } = useToast();
   const [aiIndex, setAiIndex] = useState(null);
   const [listOpen, setListOpen] = useState(false);
+  const [prezzari, setPrezzari] = useState([]);
+  const [source, setSource] = useState("all"); // "all" o id di un prezzario
+  const [pickOpen, setPickOpen] = useState(false);
+  const [pricing, setPricing] = useState(null); // indice riga oppure { done, total }
+  useEffect(() => { activePrezzari().then((l) => { setPrezzari(l); const d = l.find((x) => x.predefinito); if (d && l.length > 1) setSource("all"); }).catch(() => {}); }, []);
+  const usedPrezzari = source === "all" ? prezzari : prezzari.filter((p) => p.id === source);
+
+  // Prezzo di una riga dal prezzario scelto: l'IA individua la voce corrispondente.
+  const priceFromPrezzario = async (i, silent = false) => {
+    const r = righe[i];
+    if (!r?.descrizione?.trim() || !usedPrezzari.length) return false;
+    const res = await aiPriceFor(r.descrizione, r.unita_misura, usedPrezzari);
+    if (!res) { if (!silent) toast({ title: "Nessuna voce adatta nel prezzario", description: "Prova a descrivere la lavorazione con più dettagli." }); return false; }
+    const um = mapUnit(res.voce.unita_misura);
+    update(i, {
+      prezzo_unitario: res.prezzo, ...(um && (!r.unita_misura || r.unita_misura === "cad") ? { unita_misura: um } : {}),
+      fonte_prezzo: { prezzario: res.prezzario?.nome || "", codice: res.voce.codice || "", prezzo_base: res.voce.prezzo, um: res.voce.unita_misura || "", affidabilita: res.affidabilita, voce: res.voce.descrizione.slice(0, 300) },
+    });
+    if (!silent) toast({ title: `Prezzo ${fmtEur(res.prezzo)} da ${res.prezzario?.nome || "prezzario"}`, description: `Voce ${res.voce.codice || ""} · affidabilità ${res.affidabilita}` });
+    return true;
+  };
+  const priceOne = async (i) => { setPricing(i); try { await priceFromPrezzario(i); } catch (e) { toast({ title: e.message || "IA non disponibile", variant: "destructive" }); } finally { setPricing(null); } };
+  const priceAll = async () => {
+    const todo = righe.map((r, i) => (isVoce(r) && r.descrizione?.trim() && !(Number(r.prezzo_unitario) > 0) ? i : -1)).filter((i) => i >= 0);
+    if (!todo.length) { toast({ title: "Tutte le voci hanno già un prezzo" }); return; }
+    let ok = 0;
+    for (let k = 0; k < todo.length; k++) {
+      setPricing({ done: k, total: todo.length });
+      try { if (await priceFromPrezzario(todo[k], true)) ok++; } catch { /* continua con le altre */ }
+    }
+    setPricing(null);
+    toast({ title: `Prezzate ${ok} voci su ${todo.length}`, description: ok < todo.length ? "Per le altre non c'era una voce adatta nel prezzario." : "Controlla i prezzi prima di inviare." });
+  };
   const chapters = chapterTotals(righe);
 
   const update = (i, patch) => setRighe((prev) => prev.map((r, j) => (j === i ? { ...r, ...patch } : r)));
@@ -135,6 +170,11 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
                 <Button type="button" size="icon" variant="ghost" onClick={() => improve(i)} disabled={aiIndex === i || !r.descrizione?.trim()} title="Riscrivi come voce di capitolato" aria-label="Migliora con AI" className="shrink-0">
                   <Sparkles className={`w-4 h-4 ${aiIndex === i ? "animate-pulse text-blue-600" : "text-slate-400"}`} />
                 </Button>
+                {prezzari.length > 0 && (
+                  <Button type="button" size="icon" variant="ghost" onClick={() => priceOne(i)} disabled={pricing != null || !r.descrizione?.trim()} title="Prezzo dal prezzario (IA)" aria-label="Prezzo dal prezzario" className="shrink-0">
+                    {pricing === i ? <Loader2 className="w-4 h-4 animate-spin text-blue-600" /> : <Euro className="w-4 h-4 text-slate-400" />}
+                  </Button>
+                )}
                 {rowMenu(r, i)}
               </div>
               <div className={`grid grid-cols-3 sm:grid-cols-6 ${showCosts ? "lg:grid-cols-8" : "lg:grid-cols-7"} gap-2 mt-2 items-end`}>
@@ -161,6 +201,12 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
                   <p className={`text-sm font-semibold tabular-nums py-2 ${r.opzionale ? "text-slate-500" : "text-slate-900"}`}>{fmtEur(total)}</p>
                 </div>
               </div>
+              {r.fonte_prezzo?.prezzario && (
+                <p className="text-xs text-slate-500 mt-1.5 flex items-center gap-1" title={r.fonte_prezzo.voce || ""}>
+                  <BookOpenCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span className="truncate">{r.fonte_prezzo.prezzario}{r.fonte_prezzo.codice ? ` · voce ${r.fonte_prezzo.codice}` : ""} · {fmtEur(r.fonte_prezzo.prezzo_base)}{r.fonte_prezzo.um ? `/${r.fonte_prezzo.um}` : ""}{r.fonte_prezzo.affidabilita && r.fonte_prezzo.affidabilita !== "alta" ? ` · corrispondenza ${r.fonte_prezzo.affidabilita}` : ""}</span>
+                </p>
+              )}
               {showCosts && cost !== null && (
                 <p className={`text-xs mt-1 text-right ${total - cost < 0 ? "text-red-700" : "text-emerald-700"}`}>
                   Margine {fmtEur(total - cost)}{total ? ` (${Math.round(((total - cost) / total) * 100)}%)` : ""}
@@ -176,8 +222,27 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
         <Button type="button" size="sm" variant="outline" onClick={() => add(chapterRow())} className="gap-1.5"><Heading className="w-4 h-4" /> Capitolo</Button>
         <Button type="button" size="sm" variant="outline" onClick={() => add(textRow())} className="gap-1.5"><AlignLeft className="w-4 h-4" /> Testo</Button>
         <Button type="button" size="sm" variant="outline" onClick={() => setListOpen(true)} className="gap-1.5"><BookOpen className="w-4 h-4" /> Dal listino</Button>
+        {prezzari.length > 0 && <Button type="button" size="sm" variant="outline" onClick={() => setPickOpen(true)} className="gap-1.5"><BookOpenCheck className="w-4 h-4" /> Dal prezzario</Button>}
       </div>
 
+      {prezzari.length > 0 && (
+        <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50/60 p-2.5 flex flex-wrap items-center gap-2">
+          <BookOpenCheck className="w-4 h-4 text-blue-700" />
+          <span className="text-sm text-slate-800">Prezzi da</span>
+          <Select value={source} onValueChange={setSource}>
+            <SelectTrigger className="h-8 w-auto min-w-[200px] bg-white text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tutti i prezzari attivi</SelectItem>
+              {prezzari.map((p) => <SelectItem key={p.id} value={p.id}>{p.nome}{p.predefinito ? " (predefinito)" : ""}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Button type="button" size="sm" onClick={priceAll} disabled={pricing != null} className="ml-auto bg-blue-600 hover:bg-blue-700 gap-1.5">
+            {pricing && typeof pricing === "object" ? <><Loader2 className="w-4 h-4 animate-spin" /> {pricing.done}/{pricing.total}</> : <><Sparkles className="w-4 h-4" /> Prezza le voci senza prezzo</>}
+          </Button>
+        </div>
+      )}
+
+      <PrezzarioPickDialog open={pickOpen} onOpenChange={setPickOpen} prezzari={usedPrezzari} defaultIva={defaultIva} onAdd={(rows) => setRighe((prev) => [...prev, ...rows])} />
       <PriceListDialog open={listOpen} onOpenChange={setListOpen} showCosts={showCosts} onAdd={(rows) => setRighe((prev) => [...prev, ...rows])} />
     </section>
   );

@@ -27,6 +27,8 @@ import QuoteEditor from '@/pages/QuoteEditor';
 import Employees from '@/pages/Employees';
 import EmployeeDetail from '@/pages/EmployeeDetail';
 import CompanyDocuments from '@/pages/CompanyDocuments';
+import Prezzari from '@/pages/Prezzari';
+import Sicurezza from '@/pages/Sicurezza';
 import Reminders from '@/pages/Reminders';
 import Contracts from '@/pages/Contracts';
 import Presenze from '@/pages/Presenze';
@@ -79,6 +81,8 @@ const AuthenticatedApp = () => {
           <Route path="/dipendenti" element={<Employees />} />
           <Route path="/dipendenti/:id" element={<EmployeeDetail />} />
           <Route path="/documenti-ditta" element={<CompanyDocuments />} />
+          <Route path="/prezzari" element={<Prezzari />} />
+          <Route path="/sicurezza" element={<Sicurezza />} />
           <Route path="/promemoria" element={<Reminders />} />
           <Route path="/contratti" element={<Contracts />} />
           <Route path="/lavori" element={<Worksites />} />
