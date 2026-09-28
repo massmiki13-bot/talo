@@ -5,6 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PERMISSION_MODULES } from "@/lib/permissions";
 import { ShieldCheck, HardHat } from "lucide-react";
 
+// Profili tipici: un clic imposta i moduli, poi si può rifinire.
+const PRESETS = [
+  { label: "Ufficio / amministrazione", perms: ["dashboard", "contatti", "preventivi", "lavori", "documenti_ditta", "promemoria", "contratti", "analisi"] },
+  { label: "Capocantiere", perms: ["dashboard", "lavori", "presenze", "promemoria", "dipendenti"] },
+  { label: "Commerciale", perms: ["dashboard", "contatti", "preventivi", "promemoria"] },
+  { label: "Tutto", perms: null },
+];
+
 // Shared component for configuring access level and permissions.
 // Used by both InviteDialog and EditCollaboratorDialog.
 export default function AccessConfigSection({
@@ -66,8 +74,15 @@ export default function AccessConfigSection({
         <>
           {/* Permission modules */}
           <div>
-            <Label className="mb-2 block">Moduli Accessibili</Label>
-            <div className="space-y-1 max-h-40 overflow-y-auto">
+            <Label className="mb-2 block">Cosa può vedere e gestire</Label>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {PRESETS.map((pr) => {
+                const keys = pr.perms || PERMISSION_MODULES.map((m) => m.key);
+                const on = keys.length === permissions.length && keys.every((k) => permissions.includes(k));
+                return <button key={pr.label} type="button" onClick={() => setPermissions(keys)} className={`text-xs px-2.5 py-1 rounded-full border ${on ? "border-blue-600 bg-blue-50 text-blue-800" : "border-slate-200 text-slate-600 hover:border-slate-300"}`}>{pr.label}</button>;
+              })}
+            </div>
+            <div className="grid sm:grid-cols-2 gap-x-2 gap-y-0.5 max-h-56 overflow-y-auto rounded-lg border border-slate-200 p-1.5">
               {PERMISSION_MODULES.map((mod) => (
                 <div key={mod.key} className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-slate-50">
                   <Checkbox
