@@ -12,6 +12,7 @@ import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { fmtEur } from "@/lib/quotes";
 import { computeDashboard, MESI } from "@/lib/dashboard";
 import ClockCard from "@/components/attendance/ClockCard";
+import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
 
 const n = (v) => Number(v) || 0;
 const eurShort = (v) => new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" }).format(n(v));
@@ -88,6 +89,8 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
+
+      {ctx.isHost && <OnboardingChecklist profile={d.profile} quotes={d.quotes} employees={d.employees} onProfileChange={(profile) => setD((x) => ({ ...x, profile }))} />}
 
       {/* ───── Tre indicatori di governo ───── */}
       <div className="grid lg:grid-cols-3 gap-5">

@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { UserCheck, Search, Plus, Download, X, Phone, ChevronRight, Archive, AlertTriangle } from "lucide-react";
+import { UserCheck, Search, Plus, Download, Upload, X, Phone, ChevronRight, Archive, AlertTriangle } from "lucide-react";
 import EmptyState from "@/components/shared/EmptyState";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import EmployeeForm from "@/components/employees/EmployeeForm";
 import { compliance, COMPLIANCE_STYLE, fullName, initials, seniority } from "@/lib/employees";
 import { phoneHref } from "@/lib/contacts";
 import { downloadCsv } from "@/lib/csv";
+import ExcelImportDialog from "@/components/shared/ExcelImportDialog";
 
 const fmtDate = (d) => (d ? new Date(d).toLocaleDateString("it-IT") : "");
 
@@ -32,6 +33,7 @@ export default function Employees() {
   const [status, setStatus] = useState("tutti");
   const [showCessati, setShowCessati] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(() => new URLSearchParams(window.location.search).get("importa") === "1");
 
   const load = async () => {
     try {
@@ -91,6 +93,7 @@ export default function Employees() {
           <p className="text-slate-500 mt-1 text-sm">Anagrafiche, contratti, formazione, visite mediche e DPI</p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setImportOpen(true)}><Upload className="w-4 h-4" /> Importa</Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
           <Button size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700" onClick={() => setFormOpen(true)}><Plus className="w-4 h-4" /> Nuovo dipendente</Button>
         </div>
@@ -201,6 +204,7 @@ export default function Employees() {
       )}
 
       <EmployeeForm open={formOpen} onOpenChange={setFormOpen} onSaved={(e) => { load(); if (e?.id) navigate(`/dipendenti/${e.id}`); }} />
+      <ExcelImportDialog kind="dipendenti" open={importOpen} onOpenChange={setImportOpen} existing={employees} onDone={load} />
     </div>
   );
 }

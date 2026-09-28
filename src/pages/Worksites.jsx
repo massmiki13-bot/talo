@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { FolderOpen, Plus, Search, X, Download, MoreHorizontal, Trash2, MapPin, CalendarDays, AlertTriangle, HardHat, ArrowUpDown } from "lucide-react";
+import { FolderOpen, Plus, Search, X, Download, Upload, MoreHorizontal, Trash2, MapPin, CalendarDays, AlertTriangle, HardHat, ArrowUpDown } from "lucide-react";
 import EmptyState from "@/components/shared/EmptyState";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
@@ -15,6 +15,7 @@ import { WORKSITE_STATES, laborFromAttendance, economics, installments, fmtDate 
 import { fmtEur } from "@/lib/quotes";
 import { fullName } from "@/lib/employees";
 import { downloadCsv } from "@/lib/csv";
+import ExcelImportDialog from "@/components/shared/ExcelImportDialog";
 
 const SORTS = {
   recenti: { label: "Più recenti", fn: (a, b) => String(b.created_date).localeCompare(String(a.created_date)) },
@@ -33,6 +34,8 @@ export default function Worksites() {
   const [capo, setCapo] = useState("tutti");
   const [sort, setSort] = useState("recenti");
   const [formOpen, setFormOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [contacts, setContacts] = useState([]);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -130,6 +133,7 @@ export default function Worksites() {
           <p className="text-slate-500 mt-1 text-sm">Cantieri, avanzamento, costi, incassi e giornale dei lavori</p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => { setContacts(await db.Contact.fields(["nome", "nome_privato"], { limit: 10000 }).catch(() => [])); setImportOpen(true); }}><Upload className="w-4 h-4" /> Importa</Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
           <Button size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700" onClick={() => setFormOpen(true)}><Plus className="w-4 h-4" /> Nuovo lavoro</Button>
         </div>
@@ -243,6 +247,7 @@ export default function Worksites() {
         confirmLabel={deleting ? "Eliminazione…" : "Elimina"}
         onConfirm={confirmDelete}
       />
+      <ExcelImportDialog kind="lavori" open={importOpen} onOpenChange={setImportOpen} existing={raw?.sites || []} context={{ contacts }} onDone={load} />
     </div>
   );
 }

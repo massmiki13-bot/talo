@@ -44,7 +44,7 @@ export default function Contacts() {
   const [sort, setSort] = useState("nome");
   const [showArchived, setShowArchived] = useState(false);
   const [form, setForm] = useState(() => (params.get("nuovo") ? {} : null)); // { contact } oppure {} per nuovo
-  const [importOpen, setImportOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(() => params.get("importa") === "1");
 
   const load = async () => {
     try {
