@@ -3,8 +3,25 @@ import ReactDOM from 'react-dom/client'
 import App from '@/App.jsx'
 import '@/index.css'
 import { installPrivateLinkHandler } from '@/lib/privateFiles'
+import { logError } from '@/api/client'
 
 installPrivateLinkHandler()
+
+// Errori non gestiti → registro errori (Supabase, tabella app_errors).
+// Esclusi i caricamenti interrotti e il rumore delle estensioni del browser.
+const IGNORE = /ResizeObserver loop|Script error\.?$|chrome-extension:|moz-extension:|Failed to fetch dynamically imported module|Load failed|NetworkError/i
+window.addEventListener('error', (e) => { const err = e.error || e.message; if (!IGNORE.test(String(err?.message || err) + (e.filename || ''))) logError(err) })
+// Dopo un aggiornamento dell'app le pagine della versione precedente non esistono più: ricarica una volta.
+window.addEventListener('vite:preloadError', (e) => {
+  try {
+    const last = Number(sessionStorage.getItem('talo.reloaded') || 0)
+    if (Date.now() - last < 30000) return
+    sessionStorage.setItem('talo.reloaded', String(Date.now()))
+  } catch { /* ignore */ }
+  e.preventDefault()
+  window.location.reload()
+})
+window.addEventListener('unhandledrejection',(e) => { const err = e.reason; if (err && !IGNORE.test(String(err?.message || err)) && !err.status) logError(err) })
 
 // Fix: NotFoundError during React commit-phase DOM operations.
 // Radix UI portals (Dialog, Select, etc.) render to document.body.

@@ -7,13 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Building2, Upload, Save, X, Plus, Trash2, Bell, Hash, Palette, Mail, Database, Search, Loader2, CheckCircle2, AlertCircle, PenLine, Stamp, Image as ImageIcon, RotateCcw, FileText,
+  Building2, Upload, Save, X, Plus, Trash2, Bell, Hash, Palette, Mail, Database, Search, Loader2, CheckCircle2, AlertCircle, PenLine, Stamp, Image as ImageIcon, RotateCcw, FileText, History,
 } from "lucide-react";
 import { QUOTE_TEMPLATES } from "@/utils/quoteTemplates";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import PageHeader from "@/components/shared/PageHeader";
 import { numerazioneOptions } from "@/utils/quoteNumbering";
 import DataPrivacy from "@/components/settings/DataPrivacy";
+import ActivityLog from "@/components/settings/ActivityLog";
 import EmailAccountsSettings from "@/components/settings/EmailAccountsSettings";
 import ColorSettings from "@/components/settings/ColorSettings";
 import DrawSignatureDialog from "@/components/settings/DrawSignatureDialog";
@@ -27,6 +28,7 @@ const SECTIONS = [
   { key: "documenti", label: "Documenti e preventivi", icon: FileText },
   { key: "posta", label: "Caselle email", icon: Mail },
   { key: "scadenze", label: "Avvisi di scadenza", icon: Bell },
+  { key: "registro", label: "Registro attività", icon: History },
   { key: "dati", label: "Dati e privacy", icon: Database },
 ];
 
@@ -378,6 +380,8 @@ export default function CompanyProfile() {
               <p className="text-sm text-slate-600 mt-5 rounded-lg bg-slate-50 border border-slate-200 p-3">Ogni mattina Talo invia a ciascun utente un'email con i promemoria del giorno; con l'app aperta arriva anche la notifica sul dispositivo.</p>
             </Panel>
           )}
+
+          {section === "registro" && <ActivityLog />}
 
           {section === "dati" && (
             <DataPrivacy profile={profile} />

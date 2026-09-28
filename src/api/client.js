@@ -341,12 +341,37 @@ const Core = {
   },
 };
 
+// ─── Registro attività e registro errori ───
+
+export const audit = {
+  list: ({ limit = 50, before = null, entity = null, user = null, record = null } = {}) =>
+    rpc("audit_list", { p_limit: limit, p_before: before, p_entity: entity, p_user: user, p_record: record }),
+};
+
+// Invia al registro errori (solo con utente collegato; mai bloccante). Evita i doppioni ravvicinati.
+const recentErrors = new Map();
+export async function logError(error, extra) {
+  try {
+    const message = String(error?.message || error || "Errore").slice(0, 1000);
+    const now = Date.now();
+    if (now - (recentErrors.get(message) || 0) < 60_000) return;
+    recentErrors.set(message, now);
+    const { data } = await supabase.auth.getSession();
+    if (!data?.session) return;
+    await supabase.rpc("log_client_error", {
+      p: { message, stack: String(error?.stack || ""), url: location.href, user_agent: navigator.userAgent, extra: extra || null },
+    });
+  } catch { /* il registro non deve mai causare altri errori */ }
+}
+
 export const api = {
   entities,
   auth,
   functions,
   integrations: { Core },
   files,
+  audit,
+  logError,
   access: () => rpc("my_access"),
 };
 

@@ -54,6 +54,9 @@ async function deleteAccount({ user, tenantId, accessLevel }, body) {
   // Le password delle caselle email (email_secrets) si cancellano a cascata con i record.
   const { error, count } = await db.from("entity_records").delete({ count: "exact" }).eq("tenant_id", tenantId);
   if (error) throw new HttpError(500, error.message);
+  // Registri dell'azienda (compresi quelli appena scritti dalla cancellazione).
+  await db.from("audit_log").delete().eq("tenant_id", tenantId);
+  await db.from("app_errors").delete().eq("tenant_id", tenantId);
   const { error: e3 } = await db.auth.admin.deleteUser(user.id);
   if (e3) throw new HttpError(500, `Dati eliminati, ma l'utente non è stato rimosso: ${e3.message}`);
   return { ok: true, records: count || 0, files };

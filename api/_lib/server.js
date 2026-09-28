@@ -92,6 +92,19 @@ export async function updateRecordData(id, patch) {
   if (error) throw new HttpError(500, error.message);
 }
 
+// Errori imprevisti delle funzioni: registrati in app_errors (senza mai bloccare la risposta).
+async function logServerError(e, req) {
+  try {
+    await admin().from("app_errors").insert({
+      source: "server",
+      message: String(e?.message || e).slice(0, 1000),
+      stack: String(e?.stack || "").slice(0, 4000),
+      url: String(req.url || "").slice(0, 500),
+      user_agent: String(req.headers?.["user-agent"] || "").slice(0, 300),
+    });
+  } catch { /* il registro non deve mai causare altri errori */ }
+}
+
 // Wrapper comune: solo POST, JSON in/out, errori uniformi.
 export function handler(fn, { methods = ["POST"] } = {}) {
   return async (req, res) => {
@@ -105,7 +118,10 @@ export function handler(fn, { methods = ["POST"] } = {}) {
       res.status(200).json(result ?? { success: true });
     } catch (e) {
       const status = e instanceof HttpError ? e.status : 500;
-      if (status >= 500) console.error(e);
+      if (status >= 500) {
+        console.error(e);
+        await logServerError(e, req);
+      }
       res.status(status).json({ error: e.message || "Errore interno", ...(e.extra || {}) });
     }
   };

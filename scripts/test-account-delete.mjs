@@ -1,5 +1,5 @@
 // Collaudo della cancellazione account: crea un'azienda usa e getta, con un record e un file privato,
-// la elimina con /api/account-delete e verifica che non resti nulla.
+// la elimina con /api/account (action delete) e verifica che non resti nulla.
 //   APP_BASE=http://localhost:5330 node scripts/test-account-delete.mjs
 import fs from "fs";
 import crypto from "crypto";
@@ -31,6 +31,8 @@ const res = await call("ELIMINA DEFINITIVAMENTE");
 check("cancellazione eseguita", res.status === 200);
 const { count } = await adminDb.from("entity_records").select("id", { count: "exact", head: true }).eq("tenant_id", uid);
 check("nessun record rimasto", count === 0);
+const { count: auditLeft } = await adminDb.from("audit_log").select("id", { count: "exact", head: true }).eq("tenant_id", uid);
+check("registro attività svuotato", auditLeft === 0);
 const { data: left } = await adminDb.storage.from("private").list(uid);
 check("nessun file rimasto", !left?.length);
 const { data: u } = await adminDb.auth.admin.getUserById(uid);
