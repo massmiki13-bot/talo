@@ -1,5 +1,6 @@
 import React from 'react';
 import { logError } from '@/api/client';
+import StatusScreen, { primaryBtn, ghostBtn } from '@/components/shared/StatusScreen';
 
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -19,16 +20,15 @@ export default class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6">
-          <p className="text-slate-700 font-medium mb-2">Qualcosa è andato storto.</p>
-          <p className="text-slate-500 text-sm mb-4">La pagina verrà ricaricata automaticamente.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700"
-          >
-            Ricarica ora
-          </button>
-        </div>
+        <StatusScreen
+          title="Qualcosa è andato storto"
+          actions={<>
+            <button type="button" onClick={() => window.location.reload()} className={primaryBtn}>Ricarica la pagina</button>
+            <a href="/" className={ghostBtn}>Vai alla dashboard</a>
+          </>}
+        >
+          <p>Si è verificato un errore imprevisto. È stato registrato automaticamente: i dati già salvati non sono stati toccati.</p>
+        </StatusScreen>
       );
     }
     return this.props.children;
