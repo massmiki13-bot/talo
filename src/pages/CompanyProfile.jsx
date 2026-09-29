@@ -377,6 +377,10 @@ export default function CompanyProfile() {
                   </div>
                 )}
               </div>
+              <label className="flex items-start gap-3 mt-5 rounded-lg border border-slate-200 p-3 cursor-pointer">
+                <Switch checked={profile.report_settimanale !== false} onCheckedChange={(v) => set("report_settimanale", v)} className="mt-0.5" />
+                <span className="text-sm"><span className="font-medium text-slate-900">Report settimanale via email</span><span className="block text-slate-600">Ogni lunedì mattina: incassi della settimana, crediti da sollecitare, lavori in ritardo o con margine a rischio e scadenze dei prossimi 14 giorni.</span></span>
+              </label>
               <p className="text-sm text-slate-600 mt-5 rounded-lg bg-slate-50 border border-slate-200 p-3">Ogni mattina Talo invia a ciascun utente un'email con i promemoria del giorno; con l'app aperta arriva anche la notifica sul dispositivo.</p>
             </Panel>
           )}

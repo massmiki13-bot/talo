@@ -50,6 +50,12 @@ export default function Fatture() {
       const p = new URLSearchParams(window.location.search);
       if (p.get("da_preventivo") || p.get("da_lavoro")) window.history.replaceState(null, "", "/fatture");
       if (p.get("da_preventivo")) { const q = (await db.Quote.get(p.get("da_preventivo")).catch(() => null)); if (q) createFrom({ quote: q }, inv); }
+      if (p.get("da_lavoro") && p.get("rata") != null) {
+        // SAL o rata scelta dal lavoro: fattura compilata subito
+        const w = await db.Worksite.get(p.get("da_lavoro")).catch(() => null);
+        const r = w?.piano_pagamenti?.[Number(p.get("rata"))];
+        if (w && r) { createFrom({ worksite: w, rata: r }, inv); return; }
+      }
       if (p.get("da_lavoro")) setFromJob(p.get("da_lavoro"));
     });
   }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -78,9 +84,37 @@ export default function Fatture() {
       extra = { preventivo_id: quote.id, cliente_id: quote.cliente_id || "", cliente_nome: quote.cliente_nome || "", oggetto: quote.oggetto ? `Preventivo n. ${quote.numero} – ${quote.oggetto}` : "", worksite_id: quote.worksite_id || "", worksite_nome: quote.worksite_nome || "" };
     }
     if (worksite) {
-      const imp = Number(rata?.importo) || 0;
-      righe = [{ descrizione: `${rata?.descrizione || "Acconto"} – lavori "${worksite.nome}"${worksite.indirizzo ? `, ${worksite.indirizzo}` : ""}`, quantita: 1, unita_misura: "corpo", prezzo_unitario: imp, sconto: 0, aliquota_key: defKey }];
-      extra = { cliente_id: worksite.cliente_id || "", cliente_nome: worksite.cliente_nome || "", oggetto: `${rata?.descrizione || "Acconto"} – ${worksite.nome}`, worksite_id: worksite.id, worksite_nome: worksite.nome, rata_rif: rata?.descrizione || "" };
+      // IVA del lavoro: quella del preventivo collegato, altrimenti l'ordinaria. Le rate sono IVA inclusa:
+      // l'imponibile si ricava in modo che il totale della fattura coincida con la rata.
+      let key = defKey;
+      if (regime !== "RF19" && worksite.preventivo_id) {
+        const q = await db.Quote.get(worksite.preventivo_id).catch(() => null);
+        const v = (q?.righe || []).find((r) => isVoce(r) && !r.opzionale);
+        if (v && ["22", "10", "5", "4"].includes(String(v.iva_percentuale))) key = String(v.iva_percentuale);
+      }
+      const aliq = aliquotaOf(key).aliquota;
+      const r2 = (x) => Math.round(x * 100) / 100;
+      const imp = r2((Number(rata?.importo) || 0) / (1 + aliq / 100));
+      let salText = "";
+      const where = `lavori "${worksite.nome}"${worksite.indirizzo ? `, ${worksite.indirizzo}` : ""}`;
+      if (rata?.sal && rata.fasi?.length) {
+        // una riga per ogni fase avanzata dal SAL precedente, con l'importo ripartito per peso × avanzamento
+        const prevOf = (nome) => Number(rata.fasi_prec?.find((p) => p.nome === nome)?.completamento) || 0;
+        const deltas = rata.fasi.map((f) => ({ ...f, da: prevOf(f.nome), quota: (Number(f.peso) || 0) * Math.max(0, (Number(f.completamento) || 0) - prevOf(f.nome)) })).filter((f) => f.quota > 0);
+        const totQuota = deltas.reduce((s, f) => s + f.quota, 0);
+        righe = [];
+        salText = `Stato di avanzamento lavori n. ${rata.sal_numero || ""} al ${rata.avanzamento ?? ""}% – ${where}. Importo contrattuale IVA inclusa ${fmtEur(rata.importo_contratto || worksite.importo_totale || 0)}.`;
+        let resto = imp;
+        deltas.forEach((f, i) => {
+          const val = i === deltas.length - 1 ? r2(resto) : r2((imp * f.quota) / totQuota);
+          resto -= val;
+          righe.push({ descrizione: `${f.nome}: avanzamento dal ${f.da}% al ${f.completamento}%`, quantita: 1, unita_misura: "corpo", prezzo_unitario: val, sconto: 0, aliquota_key: key });
+        });
+        if (!deltas.length) righe.push({ descrizione: `${rata.descrizione} – ${where}`, quantita: 1, unita_misura: "corpo", prezzo_unitario: imp, sconto: 0, aliquota_key: key });
+      } else {
+        righe = [{ descrizione: `${rata?.descrizione || "Acconto"} – ${where}`, quantita: 1, unita_misura: "corpo", prezzo_unitario: imp, sconto: 0, aliquota_key: key }];
+      }
+      extra = { cliente_id: worksite.cliente_id || "", cliente_nome: worksite.cliente_nome || "", oggetto: salText || `${rata?.descrizione || "Acconto"} – ${worksite.nome}`, worksite_id: worksite.id, worksite_nome: worksite.nome, rata_rif: rata?.descrizione || "" };
     }
     const inv = await db.Invoice.create({
       tipo_documento: "TD01", numero: nextNumber(current, y), anno: y, data: today(), scadenza: addDays(today(), 30), regime, stato: "bozza",

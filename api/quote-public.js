@@ -6,6 +6,8 @@
 // POST { documento: true, token, nome, firma, hash, accetto, firmatario_id? }
 import { admin, HttpError, rateLimit, escapeHtml } from "./_lib/server.js";
 import { getSignable, postSignature } from "./_lib/sign.js";
+import { getClientArea } from "./_lib/clientArea.js";
+// Area cliente del lavoro: GET ?c=<token>
 import { systemTransport, systemFrom, sendMail } from "./_lib/mail.js";
 
 const PUBLIC_QUOTE_FIELDS = [
@@ -61,6 +63,12 @@ export default async function quotePublic(req, res) {
   try {
     const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "anon";
     rateLimit(`pub:${ip}`, 60, 60_000);
+
+    const c = req.query?.c || new URL(req.url, "http://x").searchParams.get("c");
+    if (req.method === "GET" && c) {
+      send(200, await getClientArea(c));
+      return;
+    }
 
     if (req.method === "GET" && (req.query?.f || new URL(req.url, "http://x").searchParams.get("f"))) {
       send(200, await getSignable(req.query?.f || new URL(req.url, "http://x").searchParams.get("f")));

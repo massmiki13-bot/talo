@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { fmtEur } from "@/lib/quotes";
 // Fasi del lavoro con avanzamento pesato e SAL (stato avanzamento lavori).
 export default function WorksitePhases({ worksite, contractAmount, onSaved, readOnly }) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [fasi, setFasi] = useState(worksite.fasi || []);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -45,9 +47,19 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
     const n = (worksite.piano_pagamenti || []).filter((r) => r.sal).length + 1;
     const scadenza = new Date(); scadenza.setDate(scadenza.getDate() + 30);
     if (!confirm(`Emettere il SAL n. ${n} al ${pct}% per ${fmtEur(importo)}? Verrà aggiunto al piano pagamenti con scadenza a 30 giorni.`)) return;
-    const rata = { descrizione: `SAL n. ${n} – avanzamento ${pct}%`, importo, scadenza: scadenza.toISOString().slice(0, 10), sal: true, emesso_il: new Date().toISOString().slice(0, 10) };
-    const saved = await save(fasi, { piano_pagamenti: [...(worksite.piano_pagamenti || []), rata] });
-    if (saved) toast({ title: `SAL n. ${n} emesso`, description: `${fmtEur(importo)} nel piano pagamenti.` });
+    // fotografia delle fasi: servirà per la fattura (avanzamento di ogni fase rispetto al SAL precedente)
+    const prev = [...(worksite.piano_pagamenti || [])].reverse().find((r) => r.sal && r.fasi);
+    const rata = {
+      descrizione: `SAL n. ${n} – avanzamento ${pct}%`, importo, scadenza: scadenza.toISOString().slice(0, 10), sal: true, emesso_il: new Date().toISOString().slice(0, 10),
+      sal_numero: n, avanzamento: pct, fasi: fasi.map((f) => ({ nome: f.nome, peso: Number(f.peso) || 0, completamento: Number(f.completamento) || 0 })),
+      fasi_prec: prev?.fasi || fasi.map((f) => ({ nome: f.nome, completamento: 0 })), importo_contratto: contractAmount,
+    };
+    const piano = [...(worksite.piano_pagamenti || []), rata];
+    const saved = await save(fasi, { piano_pagamenti: piano });
+    if (saved) {
+      toast({ title: `SAL n. ${n} emesso`, description: `${fmtEur(importo)} nel piano pagamenti.` });
+      if (confirm("Vuoi preparare subito la fattura di questo SAL?")) navigate(`/fatture?da_lavoro=${worksite.id}&rata=${piano.length - 1}`);
+    }
   };
 
   return (

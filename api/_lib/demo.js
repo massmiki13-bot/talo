@@ -203,6 +203,16 @@ function build() {
     firme: { luogo: "Bolzano", data: day(-82) },
   } });
 
+  // ── Mezzi e attrezzature ──
+  add("Equipment", { nome: "Iveco Daily 35C15", tipo: "Furgone", targa: "GH123ZT", anno: "2021", ore_km: "84200", scadenze: { revisione: day(12), assicurazione: day(140), bollo: day(60) },
+    assegnazione: { worksite_id: worksites[0].id, worksite_nome: worksites[0].nome, dipendente_id: E[0].id, dipendente_nome: "Marco Ferrari", dal: worksites[0].data_inizio, al: worksites[0].data_fine_prevista },
+    manutenzioni: [{ data: day(-60), descrizione: "Tagliando 80.000 km", costo: 420 }] });
+  add("Equipment", { nome: "Escavatore Kubota KX019", tipo: "Escavatore", targa: "MAT-KX019-4471", anno: "2019", ore_km: "3120", scadenze: { verifica_periodica: day(-5), assicurazione: day(200), manutenzione: day(25) },
+    assegnazione: { worksite_id: worksites[1].id, worksite_nome: worksites[1].nome, dipendente_id: E[5].id, dipendente_nome: "Giorgio Rossi", dal: day(-20), al: day(10) },
+    manutenzioni: [{ data: day(-120), descrizione: "Cambio olio idraulico e filtri", costo: 610 }] });
+  add("Equipment", { nome: "Gru su autocarro Fassi F110", tipo: "Gru su autocarro", targa: "FL456KP", anno: "2017", scadenze: { revisione: day(90), verifica_periodica: day(170), assicurazione: day(45) }, assegnazione: {} });
+  add("Equipment", { nome: "Ponteggio a telai (600 mq)", tipo: "Ponteggio", anno: "2020", scadenze: {}, assegnazione: { worksite_id: worksites[0].id, worksite_nome: worksites[0].nome } });
+
   // ── Promemoria ──
   [["Sopralluogo Condominio Talvera con l'amministratore", 1, "09:30", "appuntamento", "alta"], ["Rinnovo DURC", 3, "", "scadenza", "alta"], ["Chiamare Würth per consegna porte", 0, "11:00", "chiamata", "normale"], ["Riunione di coordinamento sicurezza Hotel Alpenrose", 4, "14:00", "appuntamento", "normale"], ["Inviare SAL n. 2 al Comune di Laives", 6, "", "altro", "normale"]]
     .forEach(([titolo, off, ora, tipo, priorita]) => add("Reminder", { titolo, data: day(off), ora, tipo, priorita, completato: false, ricorrenza: "nessuna", descrizione: "" }));

@@ -3,6 +3,7 @@
 import { admin, escapeHtml } from "./_lib/server.js";
 import { systemTransport, systemFrom, sendMail } from "./_lib/mail.js";
 import { resetDemo, demoUserId, isDemoTenant } from "./_lib/demo.js";
+import { sendWeeklyReports } from "./_lib/weeklyReport.js";
 
 export default async function cronReminders(req, res) {
   const secret = process.env.CRON_SECRET;
@@ -15,6 +16,8 @@ export default async function cronReminders(req, res) {
     const db = admin();
     // Ogni mattina l'azienda demo torna ai suoi dati di esempio (con date aggiornate).
     if (demoUserId()) await resetDemo(demoUserId(), process.env.DEMO_EMAIL).catch((e) => console.error("Ripristino demo non riuscito:", e.message));
+    // Il lunedì: report settimanale ai titolari.
+    const weekly = new Date(`${today}T12:00:00Z`).getUTCDay() === 1 ? await sendWeeklyReports().catch((e) => { console.error("Report settimanali:", e.message); return 0; }) : 0;
 
     const { data: rows, error } = await db
       .from("entity_records").select("tenant_id, created_by_id, data")
@@ -22,7 +25,7 @@ export default async function cronReminders(req, res) {
     if (error) throw error;
     const active = rows.filter((r) => !r.data.completato && r.created_by_id && !isDemoTenant(r.tenant_id));
     if (active.length === 0) {
-      res.status(200).json({ sent: 0, total: 0, date: today });
+      res.status(200).json({ sent: 0, total: 0, date: today, weekly });
       return;
     }
 

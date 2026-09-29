@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { FolderOpen, Upload, Trash2, Loader2, FileText, AlertTriangle } from "lucide-react";
+import { FolderOpen, Upload, Trash2, Loader2, FileText, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { createDocumentReminder, getExpirationStatus, deleteRemindersForDoc } from "@/utils/expirationReminders";
 import { fmtDate } from "@/lib/worksites";
 
@@ -80,6 +80,13 @@ export default function WorksiteDocs({ worksite, readOnly }) {
                   <p className="text-xs text-slate-500">{WORKSITE_DOC_TYPES[d.tipo] || d.tipo}{d.data_scadenza ? ` · scade il ${fmtDate(d.data_scadenza)}` : ""}</p>
                 </div>
                 {st && <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${st === "expired" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{st === "expired" ? "Scaduto" : "In scadenza"}</span>}
+                {!readOnly && (
+                  <button type="button" onClick={async () => { const u = await db.CompanyDocument.update(d.id, { visibile_cliente: !d.visibile_cliente }); setDocs((l) => l.map((x) => (x.id === u.id ? u : x))); }}
+                    className={`p-1.5 rounded ${d.visibile_cliente ? "text-emerald-700 hover:bg-emerald-50" : "text-slate-400 hover:bg-slate-100"}`}
+                    aria-pressed={!!d.visibile_cliente} aria-label={d.visibile_cliente ? "Visibile nell'area cliente: nascondi" : "Mostra nell'area cliente"} title={d.visibile_cliente ? "Visibile al cliente" : "Non visibile al cliente"}>
+                    {d.visibile_cliente ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  </button>
+                )}
                 {!readOnly && <button aria-label="Elimina" onClick={() => remove(d)} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
               </li>
             );

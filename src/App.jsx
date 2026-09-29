@@ -42,6 +42,10 @@ const CollaboratorJoin = lazy(() => import("@/pages/CollaboratorJoin"));
 const Posta = lazy(() => import("@/pages/Posta"));
 const PublicQuote = lazy(() => import("@/pages/PublicQuote"));
 const PublicSign = lazy(() => import("@/pages/PublicSign"));
+const PublicWorksite = lazy(() => import("@/pages/PublicWorksite"));
+const Scadenzario = lazy(() => import("@/pages/Scadenzario"));
+const Cronoprogramma = lazy(() => import("@/pages/Cronoprogramma"));
+const Mezzi = lazy(() => import("@/pages/Mezzi"));
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -68,6 +72,7 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/p/:token" element={<PublicQuote />} />
       <Route path="/firma/:token" element={<PublicSign />} />
+      <Route path="/cantiere/:token" element={<PublicWorksite />} />
       <Route path="/legal/:doc" element={<Legal />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -90,6 +95,9 @@ const AuthenticatedApp = () => {
           <Route path="/prezzari" element={<Prezzari />} />
           <Route path="/sicurezza" element={<Sicurezza />} />
           <Route path="/fatture" element={<Fatture />} />
+          <Route path="/scadenzario" element={<Scadenzario />} />
+          <Route path="/cronoprogramma" element={<Cronoprogramma />} />
+          <Route path="/mezzi" element={<Mezzi />} />
           <Route path="/promemoria" element={<Reminders />} />
           <Route path="/contratti" element={<Contracts />} />
           <Route path="/lavori" element={<Worksites />} />

@@ -22,6 +22,9 @@ import WorksitePhotos from "@/components/worksite/WorksitePhotos";
 import WorksiteQuickNotes from "@/components/worksite/WorksiteQuickNotes";
 import LinkedEmails from "@/components/email/LinkedEmails";
 import SignStampDialog from "@/components/quotes/SignStampDialog";
+import ClientAreaDialog from "@/components/worksite/ClientAreaDialog";
+import WorksiteMaterials from "@/components/worksite/WorksiteMaterials";
+import { randomToken } from "@/lib/quotes";
 import { getAccessContext } from "@/lib/accessScope";
 import { WORKSITE_STATES, COST_CATEGORIES, laborFromAttendance, economics, installments, incomeOf, fmtDate, daysBetween } from "@/lib/worksites";
 import { fmtEur } from "@/lib/quotes";
@@ -56,6 +59,7 @@ export default function WorksiteDetail() {
   const [busy, setBusy] = useState(null);
   const [signTarget, setSignTarget] = useState(null);
   const [laborEdit, setLaborEdit] = useState(null);
+  const [clientArea, setClientArea] = useState(false);
 
   const load = async () => {
     try {
@@ -151,6 +155,7 @@ export default function WorksiteDetail() {
   const TABS = [
     ["panoramica", "Panoramica"],
     ...(readOnly ? [] : [["economia", "Costi e margine", econ.sforamenti.length], ["incassi", "Incassi", overdueRates.length]]),
+    ...(readOnly ? [] : [["materiali", "Materiali e DDT"]]),
     ["giornale", "Giornale"],
     ["foto", "Foto e documenti"],
     ...(readOnly ? [] : [["email", "Email"]]),
@@ -180,6 +185,7 @@ export default function WorksiteDetail() {
           <>
             <HeroButton primary onClick={() => setTab("economia")}><Plus className="w-4 h-4" aria-hidden="true" />Spesa</HeroButton>
             <HeroButton onClick={() => setEditOpen(true)}><Pencil className="w-4 h-4" aria-hidden="true" />Modifica</HeroButton>
+            <HeroButton onClick={async () => { if (!worksite.cliente_token) setWorksite(await db.Worksite.update(id, { cliente_token: randomToken() })); setClientArea(true); }}><Users className="w-4 h-4" aria-hidden="true" />Area cliente</HeroButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild><HeroButton>{busy ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <FileDown className="w-4 h-4" aria-hidden="true" />}Documenti</HeroButton></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -290,6 +296,8 @@ export default function WorksiteDetail() {
         </div>
       )}
 
+      {tab === "materiali" && !readOnly && <WorksiteMaterials worksite={worksite} transactions={transactions} allWorksites={allWorksites} onChanged={load} />}
+
       {tab === "incassi" && !readOnly && (
         <WorksiteMoney worksite={worksite} contractAmount={contractAmount} extraIncome={income.filter((x) => x.da_movimenti)} onSaved={(s) => s && setWorksite(s)} onPaymentsChange={setPayments} />
       )}
@@ -332,6 +340,7 @@ export default function WorksiteDetail() {
           composeDefaults={{ templateVars: { cantiere: worksite.nome, cliente: worksite.cliente_nome, totale: fmtEur(contractAmount) }, links: { contact_id: worksite.cliente_id || "" } }} />
       )}
 
+      {worksite.cliente_token && <ClientAreaDialog open={clientArea} onOpenChange={setClientArea} worksite={worksite} onChange={setWorksite} />}
       <WorksiteForm open={editOpen} onOpenChange={setEditOpen} worksite={worksite} quoteTotal={primaryQuote?.totale} onSaved={(s) => s && setWorksite(s)} />
       {signTarget && (
         <SignStampDialog open={!!signTarget} onOpenChange={(v) => { if (!v) { setSignTarget(null); load(); } }} receivedQuote={signTarget} profile={profile} onSaved={load} />

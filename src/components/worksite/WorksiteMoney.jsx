@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import React, { useState, useEffect, useMemo } from "react";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -111,6 +112,7 @@ export default function WorksiteMoney({ worksite, contractAmount, extraIncome = 
                   </div>
                   <span className="text-sm font-semibold tabular-nums">{fmtEur(r.importo)}</span>
                   <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${INSTALLMENT_STATE[r.stato].className}`}>{INSTALLMENT_STATE[r.stato].label}</span>
+                  {!readOnly && <Link to={`/fatture?da_lavoro=${worksite.id}&rata=${(worksite.piano_pagamenti || []).findIndex((x) => x.descrizione === r.descrizione && x.scadenza === r.scadenza)}`} className="h-7 px-2 inline-flex items-center text-sm font-medium rounded-md text-zinc-700 hover:bg-zinc-100">Fattura</Link>}
                   {!readOnly && r.residuo > 0.005 && <Button size="sm" variant="ghost" className="h-7 px-2 text-emerald-700" onClick={() => openPayForInstallment(r)}>Incassa</Button>}
                 </li>
               ))}

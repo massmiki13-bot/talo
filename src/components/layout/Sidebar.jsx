@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, Users, FileText, UserCheck, FolderOpen, Bell, FileSignature,
   BarChart3, ChevronsLeft, ChevronsRight, LogOut, Briefcase, CalendarClock, UserCog,
-  User, Mail, BookOpenCheck, ShieldCheck, Receipt, Search,
+  User, Mail, BookOpenCheck, ShieldCheck, Receipt, Search, Wallet, GanttChart, Truck,
 } from "lucide-react";
 import { api } from "@/lib/db";
 import TaloLogo, { TaloMark } from "@/components/brand/TaloLogo";
@@ -19,10 +19,13 @@ export const GROUPS = [
     { label: "Preventivi", icon: FileText, path: "/preventivi", perm: "preventivi" },
     { label: "Prezzari", icon: BookOpenCheck, path: "/prezzari", perm: "prezzari", legacyPerms: ["preventivi"] },
     { label: "Fatture", icon: Receipt, path: "/fatture", perm: "fatture" },
+    { label: "Scadenzario incassi", icon: Wallet, path: "/scadenzario", perm: "scadenzario", legacyPerms: ["fatture"] },
     { label: "Contratti", icon: FileSignature, path: "/contratti", perm: "contratti" },
   ] },
   { title: "Cantiere", items: [
     { label: "Lavori", icon: Briefcase, path: "/lavori", perm: "lavori" },
+    { label: "Cronoprogramma", icon: GanttChart, path: "/cronoprogramma", perm: "cronoprogramma", legacyPerms: ["lavori"] },
+    { label: "Mezzi e attrezzature", icon: Truck, path: "/mezzi", perm: "mezzi", legacyPerms: ["lavori"] },
     { label: "Sicurezza (POS)", icon: ShieldCheck, path: "/sicurezza", perm: "sicurezza" },
     { label: "Presenze", icon: CalendarClock, path: "/presenze", perm: "presenze", legacyPerms: ["giornaliere", "ore_mensili"] },
   ] },
