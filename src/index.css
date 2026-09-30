@@ -65,6 +65,10 @@
     background-attachment: fixed;
   }
   h1, h2, h3 { letter-spacing: -0.01em; }
+  /* Telefono: nessun elemento (tabelle, email lunghe, testo senza spazi) può allargare la pagina e farla rimpicciolire. */
+  html, body { max-width: 100%; overflow-x: clip; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  #root { max-width: 100vw; overflow-x: clip; }
+  main :where(p, a, dd, li, h1, h2, h3) { overflow-wrap: break-word; }
 
   /* Focus visibile da tastiera su link e pulsanti (i campi shadcn hanno già il loro anello). */
   :where(a, button, [role="button"], [role="tab"], [role="menuitem"], summary, [tabindex]:not([tabindex="-1"])):focus-visible {
