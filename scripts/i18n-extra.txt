@@ -1,0 +1,45 @@
+# Testi composti a runtime (raccolti dalle schermate): {n} = numero inserito dall'app.
+presenti
+predefinito
+ore
+e ore
+da registrare
+cantiere
+Nessun
+Copia da
+{n}% sugli incassi
+{n}% incassato
+{n} in attesa di risposta
+{n} dipendenti da registrare
+{n} cose da tenere d'occhio
+{n} cosa da tenere d'occhio
+preventivi ·
+preventivi
+lavori aperti
+incassi
+impegni
+fatturato finora (
+e altri {n}
+dipendenti
+di lavori aperti
+contatto
+completati · in {n} minuti l'azienda è pronta.
+collegato a
+attivi
+anno prima:
+ancora da registrare
+{n} ancora da registrare
+Scarica il prezzario della tua regione dal sito ufficiale (meglio in Excel, va bene anche il PDF) e caricalo qui. Da quel momento, nei preventivi, l'IA propone il prezzo delle voci citando codice e prezzario.
+Richiede attenzione
+Mancano:
+Manca:
+Le barre a righe indicano date stimate; le fasi senza date proprie sono distribuite in base al loro peso. La linea rossa è oggi.
+Lavori in perdita (
+Lavori in attivo (
+Fatturato {n} (imponibile)
+Email e PEC della ditta in un unico posto
+Codice fiscale, Indirizzo, Città, CAP
+Obiettivo
+Appalti firmati {n}
+% fatto
+date da completare

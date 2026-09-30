@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { FileText, IdCard, Megaphone, HardHat, Truck, Languages, LogOut, Loader2, CheckCircle2, ChevronRight, Wrench, ArrowLeft } from "lucide-react";
+import { FileText, IdCard, Megaphone, HardHat, Truck, Languages, LogOut, Loader2, CheckCircle2, ChevronRight, Wrench, ArrowLeft, Volume2, Square, AlertTriangle } from "lucide-react";
 import { api, db } from "@/lib/db";
 import { useToast } from "@/components/ui/use-toast";
 import SignaturePad from "@/components/shared/SignaturePad";
 import { generateBadgePdf, downloadBlob } from "@/utils/employeePdf";
 import { translate } from "@/lib/worker";
 import { LANGS } from "@/lib/workerI18n";
-import { Card, BigButton, Pill, fmtDay } from "./ui";
+import { deadlines } from "@/lib/equipment";
+import { Card, BigButton, Pill, fmtDay, inputCls, locale } from "./ui";
 
 const daysTo = (iso) => Math.ceil((new Date(iso) - new Date(new Date().toDateString())) / 86_400_000);
 
@@ -14,8 +15,38 @@ function Avvisi({ home, t, lang, onChanged }) {
   const { toast } = useToast();
   const [open, setOpen] = useState(null);
   const [firma, setFirma] = useState("");
-  const [tr, setTr] = useState({});
+  const [tr, setTr] = useState({}); // id → testo tradotto | "…" in corso
+  const [orig, setOrig] = useState({});
+  const [speaking, setSpeaking] = useState(null);
   const [busy, setBusy] = useState(false);
+
+  // Nella lingua dell'operaio gli avvisi si traducono da soli (una volta per avviso).
+  useEffect(() => {
+    if (lang === "it") return;
+    let alive = true;
+    (async () => {
+      for (const a of home.avvisi.slice(0, 10)) {
+        if (!alive) return;
+        setTr((x) => (x[a.id] ? x : { ...x, [a.id]: "…" }));
+        try { const out = await translate(`${a.titolo}\n\n${a.testo}`, lang); if (alive) setTr((x) => ({ ...x, [a.id]: out })); }
+        catch { if (alive) setTr((x) => ({ ...x, [a.id]: null })); }
+      }
+    })();
+    return () => { alive = false; };
+  }, [home.avvisi, lang]);
+  useEffect(() => () => window.speechSynthesis?.cancel(), []);
+
+  const speak = (a, text) => {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
+    if (speaking === a.id) { setSpeaking(null); return; }
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = locale(lang);
+    u.onend = () => setSpeaking(null);
+    setSpeaking(a.id);
+    synth.speak(u);
+  };
 
   const read = async (a) => {
     if (a.richiede_firma && !firma) return toast({ title: t("firma_richiesta"), variant: "destructive" });
@@ -24,28 +55,36 @@ function Avvisi({ home, t, lang, onChanged }) {
     catch (e) { toast({ title: t("errore"), description: e.message, variant: "destructive" }); }
     finally { setBusy(false); }
   };
-  const doTranslate = async (a) => { try { setTr({ ...tr, [a.id]: "…" }); setTr((x) => ({ ...x, [a.id]: null })); const out = await translate(`${a.titolo}\n\n${a.testo}`, lang); setTr((x) => ({ ...x, [a.id]: out })); } catch { setTr((x) => ({ ...x, [a.id]: null })); } };
 
   if (!home.avvisi.length) return <Card><p className="text-sm text-zinc-500">—</p></Card>;
   return (
     <div className="space-y-2">
-      {home.avvisi.map((a) => (
-        <Card key={a.id}>
-          <div className="flex items-start gap-2">
-            <p className="flex-1 font-semibold text-zinc-900">{a.titolo}</p>
-            {a.letto ? <Pill tone="green">{t("letto")}</Pill> : a.richiede_firma ? <Pill tone="amber">{t("firma")}</Pill> : <Pill tone="amber">!</Pill>}
-          </div>
-          <p className="text-xs text-zinc-500 mt-0.5">{fmtDay(a.data, lang)}</p>
-          <p className="text-[15px] text-zinc-800 mt-2 whitespace-pre-wrap">{tr[a.id] || a.testo}</p>
-          {lang !== "it" && !tr[a.id] && <button type="button" onClick={() => doTranslate(a)} disabled={translating === a.id} className="mt-2 text-sm font-medium text-brand-700 flex items-center gap-1">{translating === a.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Languages className="w-4 h-4" />}{t("traduci")}</button>}
-          {!a.letto && (open === a.id ? (
-            <div className="mt-3 space-y-2">
-              {a.richiede_firma && <div className="rounded-xl border border-zinc-200"><SignaturePad value={firma} onChange={setFirma} label={t("firma")} /></div>}
-              <BigButton onClick={() => read(a)} disabled={busy}>{busy && <Loader2 className="w-5 h-5 animate-spin" />}{t("segna_letto")}</BigButton>
+      {home.avvisi.map((a) => {
+        const translated = tr[a.id] && tr[a.id] !== "…" ? tr[a.id] : null;
+        const showOrig = orig[a.id] || !translated;
+        const text = showOrig ? `${a.titolo}\n\n${a.testo}` : translated;
+        return (
+          <Card key={a.id}>
+            <div className="flex items-start gap-2">
+              <p className="flex-1 font-semibold text-zinc-900 whitespace-pre-wrap">{showOrig ? a.titolo : translated.split("\n")[0]}</p>
+              {a.letto ? <Pill tone="green">{t("letto")}</Pill> : a.richiede_firma ? <Pill tone="amber">{t("firma")}</Pill> : <Pill tone="amber">!</Pill>}
             </div>
-          ) : <BigButton onClick={() => (a.richiede_firma ? setOpen(a.id) : read(a))} className="mt-3 border border-zinc-300 bg-white text-zinc-900">{a.richiede_firma ? t("firma") : t("segna_letto")}</BigButton>)}
-        </Card>
-      ))}
+            <p className="text-xs text-zinc-500 mt-0.5">{fmtDay(a.data, lang)}{translated && !showOrig ? ` · ${t("traduzione_auto")}` : ""}</p>
+            <p className="text-[15px] text-zinc-800 mt-2 whitespace-pre-wrap">{showOrig ? a.testo : translated.split("\n").slice(1).join("\n").trim()}</p>
+            {tr[a.id] === "…" && <p className="mt-2 text-sm text-zinc-500 flex items-center gap-1.5"><Loader2 className="w-4 h-4 animate-spin" />{t("traduci")}…</p>}
+            <div className="flex flex-wrap gap-3 mt-2">
+              {"speechSynthesis" in window && <button type="button" onClick={() => speak(a, text)} className="text-sm font-medium text-brand-700 flex items-center gap-1">{speaking === a.id ? <Square className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}{speaking === a.id ? t("ferma") : t("ascolta")}</button>}
+              {translated && <button type="button" onClick={() => setOrig({ ...orig, [a.id]: !orig[a.id] })} className="text-sm font-medium text-zinc-600 flex items-center gap-1"><Languages className="w-4 h-4" />{showOrig ? t("traduci") : t("testo_originale")}</button>}
+            </div>
+            {!a.letto && (open === a.id ? (
+              <div className="mt-3 space-y-2">
+                {a.richiede_firma && <div className="rounded-xl border border-zinc-200"><SignaturePad value={firma} onChange={setFirma} label={t("firma")} /></div>}
+                <BigButton onClick={() => read(a)} disabled={busy}>{busy && <Loader2 className="w-5 h-5 animate-spin" />}{t("segna_letto")}</BigButton>
+              </div>
+            ) : <BigButton onClick={() => (a.richiede_firma ? setOpen(a.id) : read(a))} className="mt-3 border border-zinc-300 bg-white text-zinc-900">{a.richiede_firma ? t("firma") : t("segna_letto")}</BigButton>)}
+          </Card>
+        );
+      })}
     </div>
   );
 }
@@ -124,27 +163,45 @@ function Firme({ home, t, lang, onChanged }) {
   );
 }
 
-function Mezzi({ home, t, onChanged, onGuasto }) {
+function Mezzi({ home, t, lang, onChanged, onGuasto }) {
   const { toast } = useToast();
   const [km, setKm] = useState({});
+  const [saving, setSaving] = useState(null);
+  const num = (v) => Number(String(v ?? "").replace(/\./g, "").replace(",", "."));
   const save = async (m) => {
-    try { await api.operaio.submit("km", { mezzo_id: m.id, ore_km: km[m.id] }); toast({ title: "✓" }); onChanged(); }
+    setSaving(m.id);
+    try { await api.operaio.submit("km", { mezzo_id: m.id, ore_km: km[m.id] }); toast({ title: "✓" }); setKm({ ...km, [m.id]: undefined }); onChanged(); }
     catch (e) { toast({ title: t("errore"), description: e.message, variant: "destructive" }); }
+    finally { setSaving(null); }
   };
   if (!home.mezzi_miei.length) return <Card><p className="text-sm text-zinc-500">—</p></Card>;
   return (
     <div className="space-y-2">
-      {home.mezzi_miei.map((m) => (
-        <Card key={m.id}>
-          <p className="font-semibold text-zinc-900 flex items-center gap-2"><Truck className="w-4 h-4 text-zinc-500" aria-hidden="true" />{m.nome}</p>
-          <p className="text-xs text-zinc-500">{[m.tipo, m.targa, m.worksite_nome].filter(Boolean).join(" · ")}</p>
-          <div className="flex gap-2 mt-3">
-            <input inputMode="numeric" value={km[m.id] ?? m.ore_km ?? ""} onChange={(e) => setKm({ ...km, [m.id]: e.target.value })} className="flex-1 h-12 rounded-xl border border-zinc-300 px-3 text-base" aria-label={t("km_ore")} placeholder={t("km_ore")} />
-            <button type="button" onClick={() => save(m)} className="h-12 px-4 rounded-xl bg-zinc-950 text-white font-semibold">{t("aggiorna")}</button>
-          </div>
-          <button type="button" onClick={() => onGuasto(m)} className="mt-2 w-full h-11 rounded-xl border border-red-200 text-red-700 font-semibold flex items-center justify-center gap-2"><Wrench className="w-4 h-4" aria-hidden="true" />{t("segnala_guasto")}</button>
-        </Card>
-      ))}
+      {home.mezzi_miei.map((m) => {
+        const v = km[m.id];
+        const lower = v && m.ore_km && num(v) < num(m.ore_km);
+        const sc = deadlines(m).slice(0, 4);
+        return (
+          <Card key={m.id}>
+            <p className="font-semibold text-zinc-900 flex items-center gap-2"><Truck className="w-4 h-4 text-zinc-500" aria-hidden="true" />{m.nome}</p>
+            <p className="text-xs text-zinc-500">{[m.tipo, m.targa, m.worksite_nome].filter(Boolean).join(" · ")}</p>
+            {sc.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-2" aria-label={t("scadenze")}>
+                {sc.map((d) => <Pill key={d.key} tone={d.stato === "scaduta" ? "red" : d.stato === "vicina" ? "amber" : "zinc"}>{t(`sc_${d.key}`)} · {fmtDay(d.data, lang)}</Pill>)}
+              </div>
+            )}
+            <label className="block mt-3">
+              <span className="text-sm font-medium text-zinc-800">{t("km_ore")}</span>
+              <div className="flex gap-2 mt-1">
+                <input inputMode="numeric" value={v ?? ""} onChange={(e) => setKm({ ...km, [m.id]: e.target.value })} className={`${inputCls} flex-1 ${lower ? "border-amber-500" : ""}`} placeholder={m.ore_km ? `${t("ultimo_valore")}: ${m.ore_km}` : ""} />
+                <button type="button" onClick={() => save(m)} disabled={!v || saving === m.id} className="h-12 px-4 rounded-xl bg-zinc-950 text-white font-semibold disabled:opacity-50">{saving === m.id ? <Loader2 className="w-4 h-4 animate-spin" /> : t("aggiorna")}</button>
+              </div>
+            </label>
+            {lower && <p className="text-xs text-amber-800 mt-1 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />{t("valore_basso")} ({m.ore_km})</p>}
+            <button type="button" onClick={() => onGuasto(m)} className="mt-3 w-full h-11 rounded-xl border border-red-200 text-red-700 font-semibold flex items-center justify-center gap-2"><Wrench className="w-4 h-4" aria-hidden="true" />{t("segnala_guasto")}</button>
+          </Card>
+        );
+      })}
     </div>
   );
 }
@@ -168,7 +225,7 @@ export default function MoreTab({ home, t, lang, setLang, section, setSection, o
         {section === "avvisi" && <Avvisi home={home} t={t} lang={lang} onChanged={onChanged} />}
         {section === "documenti" && <Documenti home={home} t={t} lang={lang} />}
         {section === "firme" && <Firme home={home} t={t} lang={lang} onChanged={onChanged} />}
-        {section === "mezzi" && <Mezzi home={home} t={t} onChanged={onChanged} onGuasto={onGuasto} />}
+        {section === "mezzi" && <Mezzi home={home} t={t} lang={lang} onChanged={onChanged} onGuasto={onGuasto} />}
       </div>
     );
   }

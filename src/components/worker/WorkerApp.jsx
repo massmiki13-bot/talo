@@ -3,6 +3,7 @@ import { Home, Camera, AlertTriangle, CalendarDays, Menu, Loader2 } from "lucide
 import { api } from "@/lib/db";
 import { translator, savedLang, saveLang, LANGS } from "@/lib/workerI18n";
 import TodayTab from "./TodayTab";
+import { locale } from "./ui";
 import PhotosTab from "./PhotosTab";
 import ReportTab from "./ReportTab";
 import HoursTab from "./HoursTab";
@@ -36,12 +37,12 @@ export default function WorkerApp() {
   const unread = home.avvisi.filter((a) => !a.letto).length;
 
   return (
-    <div className="-m-4 sm:-m-6 lg:-m-8 min-h-screen bg-zinc-100 pb-24">
+    <div data-no-translate className="-m-4 sm:-m-6 lg:-m-8 min-h-screen bg-zinc-100 pb-24">
       <header className="brushed text-white px-4 pt-5 pb-6">
         <div className="max-w-lg mx-auto flex items-center gap-3">
           {home.company?.logo_url ? <img src={home.company.logo_url} alt="" className="h-9 w-9 rounded-lg object-contain bg-white p-0.5" /> : null}
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-zinc-400 truncate">{home.company?.ragione_sociale}</p>
+            <p className="text-xs text-zinc-300 truncate">{home.company?.ragione_sociale}<span className="text-zinc-400"> · {new Date().toLocaleDateString(locale(lang), { weekday: "long", day: "numeric", month: "long" })}</span></p>
             <h1 className="font-display text-2xl font-bold uppercase leading-tight truncate">{t("ciao")}, {home.employee.nome}</h1>
           </div>
           <div className="flex rounded-lg bg-white/10 p-0.5" role="group" aria-label={t("lingua")}>

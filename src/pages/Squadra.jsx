@@ -12,6 +12,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { DetailCard, DetailTabs } from "@/components/shared/DetailLayout";
 import { dayEntries, saveDay, isWorkingDay, addDays } from "@/lib/attendance";
+import { detailRows } from "@/lib/workerFields";
 
 const TIPI = { materiale: ["Manca materiale", Package], guasto: ["Guasto a un mezzo", Wrench], sicurezza: ["Sicurezza / quasi incidente", ShieldAlert], infortunio: ["Infortunio", Ambulance], altro: ["Altro", MessageSquare] };
 const RICH = { ferie: "Ferie", permesso: "Permesso", malattia: "Malattia" };
@@ -37,6 +38,11 @@ function Segnalazioni({ list, onChange }) {
               <span className="text-xs text-zinc-500 ml-auto">{s.dipendente_nome} · {fmtTime(s.created_date)}</span>
             </div>
             {(s.worksite_nome || s.mezzo_nome) && <p className="text-sm text-zinc-600 mt-2">{s.worksite_id ? <Link to={`/lavori/${s.worksite_id}`} className="hover:underline">{s.worksite_nome}</Link> : null}{s.mezzo_nome ? `${s.worksite_nome ? " · " : ""}Mezzo: ${s.mezzo_nome}` : ""}</p>}
+            {detailRows(s.tipo, s.dettagli).length > 0 && (
+              <dl className="mt-2 grid grid-cols-[auto,1fr] gap-x-3 gap-y-0.5 text-sm">
+                {detailRows(s.tipo, s.dettagli).map(([k, v]) => <React.Fragment key={k}><dt className="text-zinc-500">{k}</dt><dd className="text-zinc-900 font-medium">{v}</dd></React.Fragment>)}
+              </dl>
+            )}
             {s.testo && <p className="text-[15px] text-zinc-900 mt-2 whitespace-pre-wrap">{s.testo}</p>}
             {s.testo_originale && s.testo_originale !== s.testo && <p className="text-xs text-zinc-500 mt-1 flex gap-1"><Languages className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />Originale in {LINGUE[s.lingua] || s.lingua}: {s.testo_originale}</p>}
             {s.audio_url && <audio controls src={s.audio_url} className="mt-2 w-full max-w-sm h-10" />}
@@ -68,7 +74,12 @@ function Richieste({ list, onChange }) {
         for (const d of days) {
           const existing = await db.DailyAttendance.filter({ data: d }, "-data", 200);
           const map = dayEntries(existing, d);
-          map[r.dipendente_id] = { dipendente_id: r.dipendente_id, dipendente_nome: r.dipendente_nome, stato: r.tipo, note: r.note || (r.certificato ? `Certificato ${r.certificato}` : ""), cantieri: [] };
+          const hourly = r.tipo === "permesso" && r.dalle && r.alle;
+          const nota = hourly ? `Permesso ${r.dalle}–${r.alle}${r.note ? ` (${r.note})` : ""}` : r.note || (r.certificato ? `Certificato ${r.certificato}` : "");
+          const cur = map[r.dipendente_id];
+          map[r.dipendente_id] = hourly && cur && (cur.stato || "presente") === "presente"
+            ? { ...cur, note: [cur.note, nota].filter(Boolean).join(" · ") }
+            : { dipendente_id: r.dipendente_id, dipendente_nome: r.dipendente_nome, stato: r.tipo, note: nota, cantieri: [] };
           await saveDay(db, d, Object.values(map), existing);
         }
       }
@@ -83,7 +94,7 @@ function Richieste({ list, onChange }) {
       {pending.length === 0 ? <div className="bg-white rounded-2xl border border-zinc-200 py-12 text-center text-sm text-zinc-500">Nessuna richiesta da approvare</div> : pending.map((r) => (
         <div key={r.id} className="bg-white rounded-2xl border border-amber-200 p-4">
           <p className="font-semibold text-zinc-900">{r.dipendente_nome} · {RICH[r.tipo]}</p>
-          <p className="text-sm text-zinc-700 mt-0.5">{fmt(r.dal)}{r.al && r.al !== r.dal ? ` → ${fmt(r.al)}` : ""}{r.certificato ? ` · certificato ${r.certificato}` : ""}</p>
+          <p className="text-sm text-zinc-700 mt-0.5">{fmt(r.dal)}{r.al && r.al !== r.dal ? ` → ${fmt(r.al)}` : ""}{r.dalle && r.alle ? ` · dalle ${r.dalle} alle ${r.alle}${r.ore ? ` (${String(r.ore).replace(".", ",")} h)` : ""}` : ""}{r.certificato ? ` · certificato ${r.certificato}` : ""}</p>
           {r.note && <p className="text-sm text-zinc-600 mt-1">“{r.note}”</p>}
           <Input value={note[r.id] || ""} onChange={(e) => setNote({ ...note, [r.id]: e.target.value })} placeholder="Risposta per il dipendente (facoltativa)" className="mt-3" aria-label="Risposta" />
           <div className="flex gap-2 mt-3">

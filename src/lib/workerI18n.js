@@ -1,3 +1,5 @@
+import { EXTRA } from "./workerI18nExtra";
+
 // Testi dell'app operai in italiano, rumeno e albanese.
 export const LANGS = [
   { code: "it", label: "Italiano", short: "IT" },
@@ -70,6 +72,8 @@ export const T = {
     lingua: "Gjuha", esci: "Dil", annulla: "Anulo", salva: "Ruaj", errore: "Diçka nuk funksionoi", riprova: "Provo përsëri", nessuno: "Asnjë",
   },
 };
+
+for (const l of Object.keys(EXTRA)) Object.assign(T[l], EXTRA[l]);
 
 const KEY = "talo.operaio.lingua";
 export const savedLang = () => { try { return localStorage.getItem(KEY) || ""; } catch { return ""; } };

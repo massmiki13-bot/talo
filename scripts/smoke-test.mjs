@@ -286,6 +286,15 @@ await check("segnalazione, richiesta e avviso letto", async () => {
   await O.rpc("operaio_submit", { p_kind: "segnalazione", p_data: { tipo: "sicurezza", testo: "Parapetto mancante", worksite_id: cantiere.id, urgente: true, dipendente_id: dip2.id } });
   const [seg] = await T.e("Segnalazione").list();
   assert(seg.dipendente_id === dip1.id && seg.urgente && seg.worksite_nome === "Villa Bianchi", "segnalazione: dipendente forzato dal client");
+  assert(seg.dettagli && typeof seg.dettagli === "object", "dettagli della segnalazione non salvati");
+  await O.rpc("operaio_submit", { p_kind: "segnalazione", p_data: { tipo: "materiale", testo: "Cemento", dettagli: { materiale: "Cemento", serve_entro: "entro_domani" } } });
+  const [mat] = await T.e("Segnalazione").list({ tipo: "materiale" });
+  assert(mat.dettagli?.serve_entro === "entro_domani", `dettagli: ${JSON.stringify(mat.dettagli)}`);
+  await O.rpc("operaio_submit", { p_kind: "richiesta", p_data: { tipo: "permesso", dal: "2026-10-20", dalle: "08:00", alle: "11:30", ore: 3.5 } });
+  const [perm] = await T.e("Richiesta").list({ tipo: "permesso" });
+  assert(perm.dalle === "08:00" && perm.alle === "11:30" && perm.ore === 3.5, `permesso: ${JSON.stringify(perm)}`);
+  await T.e("Richiesta").delete(perm.id);
+  await T.e("Segnalazione").delete(mat.id);
   await O.rpc("operaio_submit", { p_kind: "richiesta", p_data: { tipo: "ferie", dal: "2026-10-12", al: "2026-10-16" } });
   await expectError(O.rpc("operaio_submit", { p_kind: "richiesta", p_data: { tipo: "bonus", dal: "2026-10-12" } }), "richiesta di tipo non previsto");
   const av = await T.e("Avviso").create({ titolo: "Riunione sicurezza", testo: "Lunedì ore 7" });

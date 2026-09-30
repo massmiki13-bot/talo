@@ -4,8 +4,11 @@ import App from '@/App.jsx'
 import '@/index.css'
 import { installPrivateLinkHandler } from '@/lib/privateFiles'
 import { logError } from '@/api/client'
+import { initUiLang } from '@/lib/uiI18n'
 
 installPrivateLinkHandler()
+// Lingua dell'interfaccia scelta su questo dispositivo (rumeno o albanese; italiano di base).
+initUiLang()
 
 // App installabile e utilizzabile offline (solo nella versione pubblicata).
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {

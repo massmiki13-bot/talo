@@ -3,10 +3,31 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, Users, FileText, UserCheck, FolderOpen, Bell, FileSignature,
   BarChart3, ChevronsLeft, ChevronsRight, LogOut, Briefcase, CalendarClock, UserCog,
-  User, Mail, BookOpenCheck, ShieldCheck, Receipt, Search, Wallet, GanttChart, Truck, Megaphone,
+  User, Mail, BookOpenCheck, ShieldCheck, Receipt, Search, Wallet, GanttChart, Truck, Megaphone, Languages,
 } from "lucide-react";
 import { api } from "@/lib/db";
 import TaloLogo, { TaloMark } from "@/components/brand/TaloLogo";
+import { setUiLang, uiLang, onUiLang } from "@/lib/uiI18n";
+import { LANGS } from "@/lib/workerI18n";
+
+/** Lingua dell'interfaccia: italiano, rumeno, albanese (i nomi delle lingue non si traducono). */
+function LangSwitch({ collapsed }) {
+  const [lang, setLang] = React.useState(uiLang());
+  const [busy, setBusy] = React.useState(false);
+  React.useEffect(() => onUiLang(setLang), []);
+  const pick = async (l) => { if (l === lang) return; setBusy(true); try { await setUiLang(l); } finally { setBusy(false); } };
+  return (
+    <div data-no-translate className={`flex items-center gap-2 px-3 py-1.5 ${collapsed ? "lg:hidden" : ""}`}>
+      <Languages className="w-[18px] h-[18px] text-zinc-500 shrink-0" aria-hidden="true" />
+      <div className="flex flex-1 rounded-lg bg-white/[0.05] p-0.5" role="group" aria-label="Lingua / Limba / Gjuha">
+        {LANGS.map((l) => (
+          <button key={l.code} type="button" onClick={() => pick(l.code)} aria-pressed={lang === l.code} title={l.label} disabled={busy}
+            className={`flex-1 h-7 rounded-md text-xs font-bold transition-colors ${lang === l.code ? "bg-white text-zinc-950" : "text-zinc-400 hover:text-white"}`}>{l.short}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export const GROUPS = [
   { title: null, items: [
@@ -109,6 +130,7 @@ export default function Sidebar({ onNavigate, isHost = true, accessLevel = "resp
       </nav>
 
       <div className="p-2.5 border-t border-white/[0.06] space-y-0.5">
+        <LangSwitch collapsed={collapsed} />
         {onToggle && (
           <button onClick={onToggle} className={`hidden lg:flex items-center gap-3 w-full rounded-lg px-3 py-2 text-sm text-zinc-500 hover:text-white hover:bg-white/[0.04] ${collapsed ? "justify-center px-0" : ""}`} aria-label={collapsed ? "Espandi il menu" : "Comprimi il menu"}>
             {collapsed ? <ChevronsRight className="w-[18px] h-[18px]" /> : <><ChevronsLeft className="w-[18px] h-[18px]" /> Comprimi</>}
