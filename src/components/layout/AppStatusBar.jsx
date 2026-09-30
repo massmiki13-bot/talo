@@ -66,7 +66,7 @@ export default function AppStatusBar() {
   const punches = pendingPunches().length;
   const waiting = queue.filter((q) => !q.error).length + punches;
   const errors = queue.filter((q) => q.error);
-  const label = (q) => (q.kind === "photo" ? `Foto del ${new Date(q.data).toLocaleDateString("it-IT")}` : `Giornaliera del ${new Date(q.date).toLocaleDateString("it-IT")}`);
+  const label = (q) => (q.kind === "worker" ? `Invio (${q.submitKind})` : q.kind === "photo" ? `Foto del ${new Date(q.data).toLocaleDateString("it-IT")}` : `Giornaliera del ${new Date(q.date).toLocaleDateString("it-IT")}`);
 
   if (online && !waiting && !errors.length && !showInstall) return null;
 

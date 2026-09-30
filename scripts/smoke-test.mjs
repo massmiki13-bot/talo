@@ -273,6 +273,37 @@ await check("l'operaio vede solo le sue timbrature e non le modifica", async () 
   assert(all.length === mine.length, "il titolare non vede le timbrature");
 });
 
+console.log("\nApp operai");
+await check("home dell'operaio: i suoi cantieri senza importi", async () => {
+  await T.e("Worksite").update(cantiere.id, { squadra_ids: [dip1.id, dip2.id] });
+  const h = await O.rpc("operaio_home");
+  assert(h.employee.id === dip1.id && h.worksites.length === 1 && h.worksites[0].nome === "Villa Bianchi", JSON.stringify(h.worksites));
+  assert(h.worksites[0].squadra.length === 1, "squadra senza colleghi");
+  assert(!JSON.stringify(h).includes("importo_totale") && !JSON.stringify(h).includes("costo_orario"), "dati economici nella home operaio");
+  await expectError(T.rpc("operaio_home"), "home operaio per un account senza dipendente");
+});
+await check("segnalazione, richiesta e avviso letto", async () => {
+  await O.rpc("operaio_submit", { p_kind: "segnalazione", p_data: { tipo: "sicurezza", testo: "Parapetto mancante", worksite_id: cantiere.id, urgente: true, dipendente_id: dip2.id } });
+  const [seg] = await T.e("Segnalazione").list();
+  assert(seg.dipendente_id === dip1.id && seg.urgente && seg.worksite_nome === "Villa Bianchi", "segnalazione: dipendente forzato dal client");
+  await O.rpc("operaio_submit", { p_kind: "richiesta", p_data: { tipo: "ferie", dal: "2026-10-12", al: "2026-10-16" } });
+  await expectError(O.rpc("operaio_submit", { p_kind: "richiesta", p_data: { tipo: "bonus", dal: "2026-10-12" } }), "richiesta di tipo non previsto");
+  const av = await T.e("Avviso").create({ titolo: "Riunione sicurezza", testo: "Lunedì ore 7" });
+  await O.rpc("operaio_submit", { p_kind: "lettura", p_data: { avviso_id: av.id } });
+  const h = await O.rpc("operaio_home");
+  assert(h.avvisi[0].letto === true && h.richieste.length === 1 && h.segnalazioni.length === 1, JSON.stringify({ a: h.avvisi, r: h.richieste.length }));
+  assert((await X.e("Segnalazione").list()).length === 0, "segnalazioni visibili ad altre aziende");
+});
+await check("invii dell'operaio protetti", async () => {
+  const altro = await X.e("Worksite").create({ nome: "Cantiere altra ditta" });
+  await expectError(O.rpc("operaio_submit", { p_kind: "foto", p_data: { worksite_id: altro.id, foto_url: "x" } }), "foto su cantiere di un'altra azienda");
+  await expectError(O.rpc("operaio_submit", { p_kind: "firma_dpi", p_data: { index: 0, firma: "data:x" } }), "firma DPI senza consegne");
+  const me = await T.e("Employee").get(dip1.id);
+  assert(me.nome, "la firma DPI ha svuotato il dipendente");
+  await expectError(O.rpc("operaio_submit", { p_kind: "km", p_data: { mezzo_id: crypto.randomUUID(), ore_km: "100" } }), "km su mezzo non assegnato");
+  await expectError(O.rpc("operaio_submit", { p_kind: "boh", p_data: {} }), "operazione sconosciuta accettata");
+});
+
 console.log("\nPreventivo online (link pubblico)");
 await check("il cliente vede il preventivo senza costi interni", async () => {
   const token = "tok" + crypto.randomUUID().replace(/-/g, "");

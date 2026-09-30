@@ -13,6 +13,33 @@ import { Copy, Check, KeyRound, Link as LinkIcon, MessageCircle, Mail } from "lu
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AccessConfigSection from "./AccessConfigSection";
+import QRCode from "qrcode";
+
+// Operaio: un solo QR (o link) che contiene già il codice. Si inquadra sul posto o si manda su WhatsApp.
+function WorkerInvite({ invite }) {
+  const url = `${window.location.origin}/entra/${invite.id}?c=${invite.code}`;
+  const [qr, setQr] = useState("");
+  const [copied, setCopied] = useState(false);
+  useEffect(() => { QRCode.toDataURL(url, { width: 560, margin: 1 }).then(setQr).catch(() => {}); }, [url]);
+  const msg = `Talo – ${invite.display_name || ""}
+🇮🇹 Apri il link, crea il tuo account ed entri nell'app della nostra impresa.
+🇷🇴 Deschide linkul, creează-ți contul și intri în aplicația firmei noastre.
+🇦🇱 Hap lidhjen, krijo llogarinë dhe hyn në aplikacionin e firmës sonë.
+${url}`;
+  return (
+    <div className="space-y-4">
+      <div className="grid place-items-center">
+        {qr ? <img src={qr} alt="QR code per entrare nell'app dei dipendenti" className="w-60 h-60 rounded-xl border border-slate-200 p-2 bg-white" /> : <div className="w-60 h-60 rounded-xl bg-slate-100 animate-pulse" />}
+        <p className="text-sm text-slate-600 text-center mt-3">Fai inquadrare il QR al dipendente con la fotocamera: crea il suo account ed entra subito nell'app operai, già collegato alla sua scheda. Vale 14 giorni e per una sola persona.</p>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Button variant="outline" className="gap-1.5" asChild><a href={`https://wa.me/?text=${encodeURIComponent(msg)}`} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" /> WhatsApp</a></Button>
+        <Button variant="outline" className="gap-1.5" onClick={() => { navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 1500); }}>{copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />} Copia link</Button>
+      </div>
+      <p className="text-xs text-slate-500">Il messaggio WhatsApp è in italiano, rumeno e albanese. Chi ha il link entra come questo dipendente: invialo solo a lui.</p>
+    </div>
+  );
+}
 
 export default function InviteDialog({
   open,
@@ -129,6 +156,7 @@ export default function InviteDialog({
             <DialogHeader>
               <DialogTitle>Invito Pronto!</DialogTitle>
             </DialogHeader>
+            {invite.access_level === "operaio" ? <WorkerInvite invite={invite} /> : (
             <div className="space-y-4">
               <div className="bg-brand-50 border border-brand-200 rounded-lg p-4 text-center">
                 <p className="text-sm text-brand-600 mb-2 flex items-center justify-center gap-1">
@@ -188,6 +216,7 @@ Il codice di conferma te lo comunico a parte.`)}`}><Mail className="w-4 h-4" /> 
                 </ol>
               </div>
             </div>
+            )}
             <DialogFooter>
               <Button onClick={reset}>Fatto</Button>
             </DialogFooter>

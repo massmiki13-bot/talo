@@ -13,6 +13,7 @@ const docTypes = [
   { value: "contratto", label: "Contratto" },
   { value: "corso", label: "Corso" },
   { value: "visita_medica", label: "Visita Medica" },
+  { value: "busta_paga", label: "Busta paga / LUL" },
   { value: "documento_identita", label: "Documento d'Identità" },
   { value: "altro", label: "Altro" },
 ];

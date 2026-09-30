@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Building2, Users, FileText, UserCheck, FolderOpen, Bell, FileSignature,
   BarChart3, ChevronsLeft, ChevronsRight, LogOut, Briefcase, CalendarClock, UserCog,
-  User, Mail, BookOpenCheck, ShieldCheck, Receipt, Search, Wallet, GanttChart, Truck,
+  User, Mail, BookOpenCheck, ShieldCheck, Receipt, Search, Wallet, GanttChart, Truck, Megaphone,
 } from "lucide-react";
 import { api } from "@/lib/db";
 import TaloLogo, { TaloMark } from "@/components/brand/TaloLogo";
@@ -28,6 +28,7 @@ export const GROUPS = [
     { label: "Mezzi e attrezzature", icon: Truck, path: "/mezzi", perm: "mezzi", legacyPerms: ["lavori"] },
     { label: "Sicurezza (POS)", icon: ShieldCheck, path: "/sicurezza", perm: "sicurezza" },
     { label: "Presenze", icon: CalendarClock, path: "/presenze", perm: "presenze", legacyPerms: ["giornaliere", "ore_mensili"] },
+    { label: "Richieste e segnalazioni", icon: Megaphone, path: "/squadra", perm: "squadra", legacyPerms: ["presenze", "dipendenti"] },
   ] },
   { title: "Impresa", items: [
     { label: "Dipendenti", icon: UserCheck, path: "/dipendenti", perm: "dipendenti" },

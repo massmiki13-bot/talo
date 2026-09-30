@@ -46,6 +46,16 @@ export default function AppLayout() {
   if (!collabLoading && !canAccessPath(location.pathname)) return <Navigate to="/" replace />;
 
   const isOperaioNav = !isHost && accessLevel === "operaio";
+  // Operai: app dedicata a tutto schermo (Dashboard → WorkerApp); le altre pagine rimandano lì.
+  if (isOperaioNav) {
+    if (location.pathname !== "/") return <Navigate to={location.pathname.startsWith("/presenze") ? "/?t=ore" : "/"} replace />;
+    return (
+      <div className="min-h-screen">
+        <main id="contenuto" tabIndex={-1} className="outline-none p-4"><Suspense fallback={<LoadingSpinner />}><Outlet /></Suspense></main>
+        <AppStatusBar />
+      </div>
+    );
+  }
   const nav = { isHost, accessLevel, permissions, employeeId, companyName, onSearch: isOperaioNav ? null : () => setSearchOpen(true) };
 
   return (

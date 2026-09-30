@@ -5,6 +5,7 @@ import { supabase } from "@/api/client";
 import { saveDay } from "@/lib/attendance";
 import { enqueue, queueAll, dequeue, isNetworkError } from "@/lib/offlineStore";
 import { flushPunches } from "@/lib/timbrature";
+import { flushWorkerItem } from "@/lib/worker";
 
 const currentUid = async () => (await supabase.auth.getSession()).data?.session?.user?.id || null;
 
@@ -25,6 +26,8 @@ async function run(item) {
   if (item.kind === "attendance") {
     const existing = await db.DailyAttendance.filter({ data: item.date }, "-data", 500);
     await saveDay(db, item.date, item.entries, existing);
+  } else if (item.kind === "worker") {
+    await flushWorkerItem(item);
   } else if (item.kind === "photo") {
     const file = new File([item.blob], item.name, { type: item.type });
     const { file_url } = await api.integrations.Core.UploadFile({ file });

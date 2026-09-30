@@ -72,7 +72,7 @@ if (typeof window !== "undefined") {
 // ─── Entità ───
 
 // Le letture vengono copiate sul dispositivo: senza rete si usa l'ultima copia (app installata in cantiere).
-const CACHED_READS = new Set(["entity_list", "entity_list_fields", "entity_get", "my_access"]);
+const CACHED_READS = new Set(["entity_list", "entity_list_fields", "entity_get", "my_access", "operaio_home"]);
 const MAX_CACHED_ROWS = 3000;
 
 async function rpc(fn, params) {
@@ -398,6 +398,12 @@ export const clock = {
   }),
 };
 
+// App operai: dati propri e invii (foto, bolle, segnalazioni, richieste, letture, firme).
+export const operaio = {
+  home: () => rpc("operaio_home", {}),
+  submit: (kind, data) => rpc("operaio_submit", { p_kind: kind, p_data: data || {} }),
+};
+
 export const api = {
   entities,
   auth,
@@ -406,6 +412,7 @@ export const api = {
   files,
   audit,
   clock,
+  operaio,
   logError,
   access: () => rpc("my_access"),
 };

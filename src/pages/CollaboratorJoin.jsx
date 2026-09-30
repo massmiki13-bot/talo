@@ -163,9 +163,9 @@ export default function CollaboratorJoin() {
               id="code"
               value={code}
               onChange={(e) =>
-                setCode(e.target.value.replace(/\D/g, "").slice(0, 4))
+                setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
               }
-              placeholder="••••"
+              placeholder="••••••"
               className="text-center text-2xl tracking-[0.5em] font-bold"
               maxLength={6}
               onKeyDown={(e) => e.key === "Enter" && handleConfirm()}

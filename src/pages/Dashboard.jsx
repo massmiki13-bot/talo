@@ -3,16 +3,16 @@ import { Link } from "react-router-dom";
 import { api, db } from "@/lib/db";
 import { useAuth } from "@/lib/AuthContext";
 import { getAccessContext } from "@/lib/accessScope";
-import { ResponsiveContainer, AreaChart, Area, Line, XAxis, Tooltip, ComposedChart } from "recharts";
+import { ResponsiveContainer, Area, Line, XAxis, Tooltip, ComposedChart } from "recharts";
 import {
-  FileText, Receipt, ClipboardList, Upload, ArrowUpRight, AlertTriangle, Clock, Bell, HardHat, CheckCircle2, Users, FileWarning, Euro, ChevronRight,
+  FileText, Receipt, ClipboardList, Upload, ArrowUpRight, AlertTriangle, HardHat, CheckCircle2, FileWarning, Euro, ChevronRight,
   TrendingUp, TrendingDown, Target, Sparkles, Loader2, CalendarDays, Pencil, Check, X, Wallet, Timer,
 } from "lucide-react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { fmtEur } from "@/lib/quotes";
 import { computeDashboard, MESI } from "@/lib/dashboard";
-import ClockCard from "@/components/attendance/ClockCard";
 import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
+import WorkerApp from "@/components/worker/WorkerApp";
 
 const n = (v) => Number(v) || 0;
 const eurShort = (v) => new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" }).format(n(v));
@@ -59,7 +59,7 @@ export default function Dashboard() {
 
   const firstName = (user?.full_name || user?.email || "").split(/[\s@]/)[0];
   const dateLabel = new Date().toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  if (isOperaio) return <OperaioHome name={firstName} dateLabel={dateLabel} employeeId={ctx.employeeId} />;
+  if (isOperaio) return <WorkerApp />;
   const urgent = v.alerts.filter((a) => a.sev >= 3).length;
 
   return (
@@ -469,27 +469,5 @@ DATI: ${JSON.stringify(facts)}`,
         )}
       </div>
     </section>
-  );
-}
-
-function OperaioHome({ name, dateLabel, employeeId }) {
-  return (
-    <div className="space-y-5">
-      <section className="relative overflow-hidden rounded-3xl brushed text-white p-6 sm:p-8">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-400">{dateLabel}</p>
-        <h1 className="font-display text-4xl font-bold uppercase mt-3">{greeting()}{name ? `, ${name}` : ""}</h1>
-        <p className="text-zinc-400 mt-2">Qui timbri entrata e uscita e trovi le tue presenze, i tuoi documenti e le scadenze dei corsi.</p>
-      </section>
-      {employeeId && <ClockCard employeeId={employeeId} />}
-      <div className="grid sm:grid-cols-2 gap-3">
-        {[["/presenze", ClipboardList, "Le mie presenze", "Ore registrate e calendario"], [`/dipendenti/${employeeId}`, Users, "Il mio profilo", "Documenti, corsi e visite mediche"]].map(([to, I, t, s]) => (
-          <Link key={to} to={to} className="group bg-white rounded-2xl border border-zinc-200 p-5 hover:border-zinc-300 transition flex items-center gap-4">
-            <span className="grid place-items-center w-11 h-11 rounded-xl bg-zinc-950 text-white"><I className="w-5 h-5" /></span>
-            <span className="flex-1"><span className="block font-semibold text-zinc-900">{t}</span><span className="block text-sm text-zinc-500">{s}</span></span>
-            <ArrowUpRight className="w-5 h-5 text-zinc-300 group-hover:text-brand-600" />
-          </Link>
-        ))}
-      </div>
-    </div>
   );
 }

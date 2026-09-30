@@ -4,7 +4,7 @@ import { api } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
+import { UserPlus, Mail, Lock, Loader2, Building2, HardHat, QrCode } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import AuthLayout from "@/components/AuthLayout";
 import { LEGAL_VERSION } from "@/lib/legal";
@@ -14,7 +14,17 @@ import GoogleIcon from "@/components/GoogleIcon";
 const GOOGLE_AUTH_ENABLED = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === "true";
 import { toast } from "@/components/ui/use-toast";
 
+// Dopo la registrazione si torna solo a percorsi interni (es. il collegamento all'invito di un operaio).
+const safeFrom = () => {
+  const f = new URLSearchParams(window.location.search).get("from") || "";
+  return f.startsWith("/") && !f.startsWith("//") ? f : "";
+};
+
 export default function Register() {
+  const params = new URLSearchParams(window.location.search);
+  const from = safeFrom();
+  const invitedWorker = params.get("ruolo") === "operaio" && from.startsWith("/entra/");
+  const [role, setRole] = useState(invitedWorker ? "operaio" : "");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -58,7 +68,7 @@ export default function Register() {
       if (result?.access_token) {
         api.auth.setToken(result.access_token);
       }
-      window.location.href = "/";
+      window.location.href = from || "/";
     } catch (err) {
       setError(err.message || "Codice di verifica non valido");
     } finally {
@@ -137,15 +147,48 @@ export default function Register() {
     );
   }
 
+  // Prima scelta: titolare/ufficio oppure operaio (che entra solo con l'invito del suo datore di lavoro).
+  if (!role) {
+    return (
+      <AuthLayout icon={UserPlus} title="Crea il tuo account" subtitle="Chi sei?"
+        footer={<>Hai già un account? <Link to="/login" className="text-primary font-medium hover:underline">Accedi</Link></>}>
+        <div className="grid gap-3">
+          {[["titolare", Building2, "Sono il titolare o lavoro in ufficio", "Registri la tua impresa: preventivi, cantieri, dipendenti, fatture."], ["operaio", HardHat, "Sono un operaio / dipendente", "Entri nell'app dei dipendenti della tua impresa: timbrature, foto, ore e documenti."]].map(([k, I, title, sub]) => (
+            <button key={k} type="button" onClick={() => setRole(k)} className="w-full text-left rounded-2xl border border-zinc-200 hover:border-brand-400 hover:bg-brand-50/40 p-4 flex gap-4 items-start transition-colors">
+              <span className="grid place-items-center w-11 h-11 rounded-xl bg-zinc-950 text-white shrink-0"><I className="w-5 h-5" aria-hidden="true" /></span>
+              <span><span className="block font-semibold text-zinc-900">{title}</span><span className="block text-sm text-zinc-600 mt-0.5">{sub}</span></span>
+            </button>
+          ))}
+        </div>
+      </AuthLayout>
+    );
+  }
+
+  if (role === "operaio" && !invitedWorker) {
+    return (
+      <AuthLayout icon={HardHat} title="Serve l'invito del tuo capo" subtitle="L'app dei dipendenti si collega alla tua impresa.">
+        <div className="rounded-2xl border border-zinc-200 p-5">
+          <QrCode className="w-10 h-10 text-brand-600" aria-hidden="true" />
+          <ol className="mt-4 space-y-2 text-[15px] text-zinc-700 list-decimal list-inside">
+            <li>Chiedi al titolare o al capocantiere il <b>QR code di Talo</b> (lo trova nella tua scheda dipendente, "Invita all'app").</li>
+            <li>Inquadralo con la fotocamera del telefono, oppure apri il link che ti manda su WhatsApp.</li>
+            <li>Crea il tuo account: sarai già collegato alla tua impresa.</li>
+          </ol>
+        </div>
+        <button type="button" onClick={() => setRole("")} className="mt-6 text-sm text-zinc-600 hover:text-zinc-900">← Indietro</button>
+      </AuthLayout>
+    );
+  }
+
   return (
     <AuthLayout
       icon={UserPlus}
-      title="Crea il tuo account"
-      subtitle="Registra la tua azienda su Talo"
+      title={invitedWorker ? "Il tuo account" : "Crea il tuo account"}
+      subtitle={invitedWorker ? "Email e password: le userai per entrare nell'app della tua impresa" : "Registra la tua azienda su Talo"}
       footer={
         <>
           Hai già un account?{" "}
-          <Link to="/login" className="text-primary font-medium hover:underline">
+          <Link to={from ? `/login?from=${encodeURIComponent(from)}` : "/login"} className="text-primary font-medium hover:underline">
             Accedi
           </Link>
         </>
@@ -231,7 +274,9 @@ export default function Register() {
         </div>
         <label className="flex items-start gap-2.5 text-sm text-zinc-600 leading-snug cursor-pointer">
           <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-0.5 w-4 h-4 accent-brand-600" required />
-          <span>Accetto i <a href="/legal/termini" target="_blank" className="text-brand-700 underline">termini di servizio</a> e l'<a href="/legal/accordo-trattamento-dati" target="_blank" className="text-brand-700 underline">accordo sul trattamento dei dati</a> e ho letto l'<a href="/legal/privacy" target="_blank" className="text-brand-700 underline">informativa privacy</a>.</span>
+          {invitedWorker
+            ? <span>Accetto i <a href="/legal/termini" target="_blank" className="text-brand-700 underline">termini di servizio</a> e ho letto l'<a href="/legal/privacy" target="_blank" className="text-brand-700 underline">informativa privacy</a>.</span>
+            : <span>Accetto i <a href="/legal/termini" target="_blank" className="text-brand-700 underline">termini di servizio</a> e l'<a href="/legal/accordo-trattamento-dati" target="_blank" className="text-brand-700 underline">accordo sul trattamento dei dati</a> e ho letto l'<a href="/legal/privacy" target="_blank" className="text-brand-700 underline">informativa privacy</a>.</span>}
         </label>
         <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
           {loading ? (

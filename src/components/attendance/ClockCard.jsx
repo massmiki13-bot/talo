@@ -7,12 +7,14 @@ import { useToast } from "@/components/ui/use-toast";
 import { LogIn, LogOut, MapPin, Loader2, CloudOff, CheckCircle2, Clock } from "lucide-react";
 import { iso } from "@/lib/attendance";
 import { punch, flushPunches, pendingPunches, settingsOf, summarize, fmtTime } from "@/lib/timbrature";
+import { translator } from "@/lib/workerI18n";
 
 const NONE = "__none__";
 const INFO_KEY = (id) => `talo.timbrature.informativa.${id}`;
 
 // Timbratura dal telefono per il dipendente collegato all'account.
-export default function ClockCard({ employeeId }) {
+export default function ClockCard({ employeeId, t: tProp }) {
+  const t = tProp || translator("it");
   const { toast } = useToast();
   const [settings, setSettings] = useState(settingsOf(null));
   const [sites, setSites] = useState([]);
@@ -60,12 +62,12 @@ export default function ClockCard({ employeeId }) {
       const r = await punch({ tipo, worksiteId, gps: settings.gps });
       setPending(pendingPunches().length);
       toast({
-        title: tipo === "entrata" ? "Entrata registrata" : "Uscita registrata",
-        description: r.queued ? "Sei senza rete: la timbratura partirà da sola appena torna la connessione." : settings.gps && !r.position ? "Posizione non disponibile: timbratura registrata senza posizione." : undefined,
+        title: tipo === "entrata" ? t("entrata_ok") : t("uscita_ok"),
+        description: r.queued ? t("offline_ok") : settings.gps && !r.position ? "Posizione non disponibile: timbratura registrata senza posizione." : undefined,
       });
       await load();
     } catch (e) {
-      toast({ title: "Timbratura non riuscita", description: e.message, variant: "destructive" });
+      toast({ title: t("errore"), description: e.message, variant: "destructive" });
     } finally { setBusy(false); }
   };
 
@@ -81,20 +83,20 @@ export default function ClockCard({ employeeId }) {
     <section className="bg-white rounded-2xl border border-zinc-200 p-5 sm:p-6" aria-labelledby="clock-title">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 id="clock-title" className="font-display text-xl font-bold uppercase text-zinc-950">Timbratura</h2>
+          <h2 id="clock-title" className="font-display text-xl font-bold uppercase text-zinc-950">{t("timbratura")}</h2>
           <p className="text-sm text-zinc-600 mt-0.5 flex items-center gap-1.5">
-            {inside ? <><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />Entrato alle {fmtTime(last.at)}{last.worksite_nome ? ` · ${last.worksite_nome}` : ""}</> : last ? <>Uscito alle {fmtTime(last.at)}</> : "Non hai ancora timbrato oggi"}
+            {inside ? <><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />{t("entrato_alle")} {fmtTime(last.at)}{last.worksite_nome ? ` · ${last.worksite_nome}` : ""}</> : last ? <>{t("uscito_alle")} {fmtTime(last.at)}</> : t("non_timbrato")}
           </p>
         </div>
-        {day?.ore > 0 && <p className="text-right"><span className="block font-display text-3xl font-bold tabular-nums text-zinc-950">{String(day.ore).replace(".", ",")}</span><span className="text-xs text-zinc-500">ore oggi</span></p>}
+        {day?.ore > 0 && <p className="text-right"><span className="block font-display text-3xl font-bold tabular-nums text-zinc-950">{String(day.ore).replace(".", ",")}</span><span className="text-xs text-zinc-500">{t("ore_oggi")}</span></p>}
       </div>
 
       <div className="mt-4">
-        <label htmlFor="clock-site" className="text-sm font-medium text-zinc-800">Cantiere</label>
+        <label htmlFor="clock-site" className="text-sm font-medium text-zinc-800">{t("cantiere")}</label>
         <Select value={site} onValueChange={setSite} disabled={inside}>
           <SelectTrigger id="clock-site" className="mt-1 h-11"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value={NONE}>Nessun cantiere (magazzino, ufficio…)</SelectItem>
+            <SelectItem value={NONE}>{t("nessun_cantiere")}</SelectItem>
             {sites.map((s) => <SelectItem key={s.id} value={s.id}>{s.nome}</SelectItem>)}
           </SelectContent>
         </Select>
@@ -102,12 +104,12 @@ export default function ClockCard({ employeeId }) {
 
       <Button onClick={() => start(next)} disabled={busy} className={`w-full h-16 mt-4 text-lg font-semibold gap-2.5 ${inside ? "bg-zinc-900 hover:bg-zinc-800" : "bg-brand-600 hover:bg-brand-700"}`}>
         {busy ? <Loader2 className="w-6 h-6 animate-spin" /> : inside ? <LogOut className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
-        {inside ? "Timbra l'uscita" : "Timbra l'entrata"}
+        {inside ? t("uscita") : t("entrata")}
       </Button>
 
       <div className="mt-3 space-y-1.5 text-xs text-zinc-500">
-        {settings.gps && <p className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" aria-hidden="true" />Alla timbratura viene registrata la tua posizione, solo in quel momento.</p>}
-        {pending > 0 && <p className="flex items-center gap-1.5 text-amber-800"><CloudOff className="w-3.5 h-3.5" aria-hidden="true" />{pending} timbrature in attesa di connessione</p>}
+        {settings.gps && <p className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" aria-hidden="true" />{t("posizione_info")}</p>}
+        {pending > 0 && <p className="flex items-center gap-1.5 text-amber-800"><CloudOff className="w-3.5 h-3.5" aria-hidden="true" />{pending} · {t("in_attesa_rete")}</p>}
       </div>
 
       {all.length > 0 && (
@@ -116,7 +118,7 @@ export default function ClockCard({ employeeId }) {
             <li key={e.id} className="flex items-center gap-2 text-sm">
               {e.tipo === "entrata" ? <LogIn className="w-4 h-4 text-emerald-600" aria-hidden="true" /> : <LogOut className="w-4 h-4 text-zinc-500" aria-hidden="true" />}
               <span className="tabular-nums font-medium text-zinc-900">{fmtTime(e.at)}</span>
-              <span className="text-zinc-600 truncate">{e.tipo === "entrata" ? "Entrata" : "Uscita"}{e.worksite_nome ? ` · ${e.worksite_nome}` : ""}</span>
+              <span className="text-zinc-600 truncate">{e.tipo === "entrata" ? t("ev_entrata") : t("ev_uscita")}{e.worksite_nome ? ` · ${e.worksite_nome}` : ""}</span>
               <span className="ml-auto shrink-0">{e.offline ? <Clock className="w-4 h-4 text-amber-600" aria-label="In attesa di invio" /> : e.stato === "confermata" ? <CheckCircle2 className="w-4 h-4 text-emerald-600" aria-label="Confermata" /> : null}</span>
             </li>
           ))}

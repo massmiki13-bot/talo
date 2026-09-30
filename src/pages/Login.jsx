@@ -63,7 +63,7 @@ export default function Login() {
       footer={
         <>
           Non hai un account?{" "}
-          <Link to="/register" className="text-primary font-medium hover:underline">
+          <Link to={(() => { const f = new URLSearchParams(window.location.search).get("from") || ""; return f.startsWith("/entra/") ? `/register?ruolo=operaio&from=${encodeURIComponent(f)}` : "/register"; })()} className="text-primary font-medium hover:underline">
             Registrati
           </Link>
         </>

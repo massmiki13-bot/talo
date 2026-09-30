@@ -16,11 +16,11 @@ const MAX_FILE_BYTES = 18 * 1024 * 1024;
 const MODEL_TIMEOUT_MS = 30_000;
 const MODEL_TIMEOUT_FILES_MS = 90_000;
 const TOTAL_BUDGET_MS = 240_000;
-const SUPPORTED = /^(application\/pdf|image\/(png|jpe?g|webp|heic|heif)|text\/.+|application\/json)$/i;
+const SUPPORTED = /^(application\/pdf|image\/(png|jpe?g|webp|heic|heif)|audio\/(webm|ogg|mpeg|mp3|mp4|m4a|wav|aac|x-m4a)|text\/.+|application\/json)$/i;
 
 const MIME_BY_EXT = {
   pdf: "application/pdf", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp",
-  heic: "image/heic", heif: "image/heif", txt: "text/plain", csv: "text/csv", html: "text/html", json: "application/json",
+  heic: "image/heic", heif: "image/heif", webm: "audio/webm", ogg: "audio/ogg", mp3: "audio/mpeg", m4a: "audio/mp4", wav: "audio/wav", aac: "audio/aac", txt: "text/plain", csv: "text/csv", html: "text/html", json: "application/json",
 };
 
 async function loadFiles(urls, tenantId) {

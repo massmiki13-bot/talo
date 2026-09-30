@@ -14,6 +14,7 @@ export const PERMISSION_MODULES = [
   { key: "promemoria", label: "Promemoria", path: "/promemoria" },
   { key: "contratti", label: "Contratti", path: "/contratti" },
   { key: "presenze", label: "Presenze", path: "/presenze" },
+  { key: "squadra", label: "Richieste e segnalazioni", path: "/squadra", legacyPerms: ["presenze", "dipendenti"] },
   { key: "analisi", label: "Analisi", path: "/analisi", legacyPerms: ["report_annuale"] },
 ];
 

@@ -46,6 +46,8 @@ const PublicWorksite = lazy(() => import("@/pages/PublicWorksite"));
 const Scadenzario = lazy(() => import("@/pages/Scadenzario"));
 const Cronoprogramma = lazy(() => import("@/pages/Cronoprogramma"));
 const Mezzi = lazy(() => import("@/pages/Mezzi"));
+const Squadra = lazy(() => import("@/pages/Squadra"));
+const JoinWorker = lazy(() => import("@/pages/JoinWorker"));
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -73,6 +75,7 @@ const AuthenticatedApp = () => {
       <Route path="/p/:token" element={<PublicQuote />} />
       <Route path="/firma/:token" element={<PublicSign />} />
       <Route path="/cantiere/:token" element={<PublicWorksite />} />
+      <Route path="/entra/:inviteId" element={<JoinWorker />} />
       <Route path="/legal/:doc" element={<Legal />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -98,6 +101,7 @@ const AuthenticatedApp = () => {
           <Route path="/scadenzario" element={<Scadenzario />} />
           <Route path="/cronoprogramma" element={<Cronoprogramma />} />
           <Route path="/mezzi" element={<Mezzi />} />
+          <Route path="/squadra" element={<Squadra />} />
           <Route path="/promemoria" element={<Reminders />} />
           <Route path="/contratti" element={<Contracts />} />
           <Route path="/lavori" element={<Worksites />} />
