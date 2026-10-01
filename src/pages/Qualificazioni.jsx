@@ -10,6 +10,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { DetailCard, DetailTabs } from "@/components/shared/DetailLayout";
 import { downloadWordDoc } from "@/utils/wordExport";
+import Pratica from "@/components/qualifications/Pratica";
 import {
   SOA_CATEGORIES, CLASSIFICHE, categoryName, classLimit, needsIso, soaDeadlines, isoDeadlines, deadlineState, canBid,
   requirementsByCategory, missingCel, qualityRecords, readCertificate, classifyWorksites, writeQualityDocument, readTender, syncReminders,
@@ -330,7 +331,7 @@ export default function Qualificazioni() {
   return (
     <div>
       <PageHeader title="ISO e SOA" subtitle="Le qualificazioni per gli appalti pubblici: carichi i certificati, l'IA fa il resto (scadenze, requisiti, gare, documenti ISO)." />
-      <div className="mb-5"><DetailTabs tabs={[["panoramica", "Panoramica"], ["soa", "SOA e requisiti"], ["iso", "ISO 9001", records.nonConformita.aperte], ["gare", "Verifica gara"]]} value={tab} onChange={setTab} /></div>
+      <div className="mb-5"><DetailTabs tabs={[["panoramica", "Panoramica"], ["pratica_soa", "Pratica SOA"], ["pratica_iso", "Pratica ISO"], ["soa", "SOA e requisiti"], ["iso", "ISO 9001", records.nonConformita.aperte], ["gare", "Verifica gara"]]} value={tab} onChange={setTab} /></div>
 
       {tab === "panoramica" && (
         <div className="space-y-5">
@@ -343,12 +344,23 @@ export default function Qualificazioni() {
             <CertCard tipo="soa" q={soa} onUpload={upload} busy={busy} />
             <CertCard tipo="iso9001" q={iso} onUpload={upload} busy={busy} />
           </div>
+          {(!soa || !iso) && (
+            <button type="button" onClick={() => setTab(!soa ? "pratica_soa" : "pratica_iso")} className="w-full text-left rounded-2xl bg-zinc-950 text-white p-5 flex items-center gap-4 hover:bg-zinc-900">
+              <span className="grid place-items-center w-11 h-11 rounded-xl bg-brand-600 shrink-0"><Sparkles className="w-5 h-5" /></span>
+              <span className="flex-1"><span className="block font-semibold">{!soa ? "Non hai ancora la SOA? Prepara la pratica con l'IA" : "Prepara la certificazione ISO 9001 con l'IA"}</span><span className="block text-sm text-zinc-400">Carichi visura, bilanci, CEL e gli altri documenti: l'IA compila i dati, il resto te lo chiede passo passo.</span></span>
+            </button>
+          )}
           {all.length > 0 && <DetailCard title="Prossime scadenze (già nei promemoria)" icon={CalendarClock}><Deadlines items={all} /></DetailCard>}
         </div>
       )}
       {tab === "soa" && <SoaTab soa={soa} worksites={data.worksites} setWorksites={(fn) => setData((d) => ({ ...d, worksites: fn(d.worksites) }))} />}
       {tab === "iso" && <IsoTab iso={iso} records={records} profile={data.profile} ctx={ctx} />}
       {tab === "gare" && <TenderCheck soa={soa} />}
+      {(tab === "pratica_soa" || tab === "pratica_iso") && (
+        <Pratica key={tab} tipo={tab === "pratica_soa" ? "soa" : "iso"} record={data.quals.find((q) => q.tipo === tab)}
+          ctx={{ profile: data.profile || {}, employees: data.employees, equipment: data.equipment, worksites: data.worksites, soa, iso, summary: ctx }}
+          onSaved={(saved) => setData((d) => ({ ...d, quals: [...d.quals.filter((q) => q.id !== saved.id), saved] }))} />
+      )}
     </div>
   );
 }
