@@ -11,6 +11,7 @@ export const PERMISSION_MODULES = [
   { key: "dipendenti", label: "Dipendenti", path: "/dipendenti" },
   { key: "sicurezza", label: "Sicurezza (POS)", path: "/sicurezza" },
   { key: "documenti_ditta", label: "Documenti Ditta", path: "/documenti-ditta" },
+  { key: "qualificazioni", label: "ISO e SOA", path: "/qualificazioni", legacyPerms: ["documenti_ditta"] },
   { key: "promemoria", label: "Promemoria", path: "/promemoria" },
   { key: "contratti", label: "Contratti", path: "/contratti" },
   { key: "presenze", label: "Presenze", path: "/presenze" },

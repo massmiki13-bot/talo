@@ -46,6 +46,7 @@ const PublicWorksite = lazy(() => import("@/pages/PublicWorksite"));
 const Scadenzario = lazy(() => import("@/pages/Scadenzario"));
 const Cronoprogramma = lazy(() => import("@/pages/Cronoprogramma"));
 const Mezzi = lazy(() => import("@/pages/Mezzi"));
+const Qualificazioni = lazy(() => import("@/pages/Qualificazioni"));
 const Squadra = lazy(() => import("@/pages/Squadra"));
 const JoinWorker = lazy(() => import("@/pages/JoinWorker"));
 
@@ -101,6 +102,7 @@ const AuthenticatedApp = () => {
           <Route path="/scadenzario" element={<Scadenzario />} />
           <Route path="/cronoprogramma" element={<Cronoprogramma />} />
           <Route path="/mezzi" element={<Mezzi />} />
+          <Route path="/qualificazioni" element={<Qualificazioni />} />
           <Route path="/squadra" element={<Squadra />} />
           <Route path="/promemoria" element={<Reminders />} />
           <Route path="/contratti" element={<Contracts />} />

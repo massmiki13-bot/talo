@@ -7,7 +7,7 @@ export const ENTITIES = [
   "CompanyProfile", "Branch", "Collaborator", "Contact", "Quote", "QuoteFormat", "ReceivedQuote", "PriceItem", "Prezzario", "PrezzarioVoce",
   "Invoice", "Worksite", "WorksiteLog", "WorksitePayment", "WorksitePhoto", "WorksiteTransaction", "SafetyPlan", "Employee", "EmployeeDocument",
   "DailyAttendance", "CompanyDocument", "DocumentFolder", "GeneratedContract", "ContractTemplate", "Reminder", "EmailAccount", "EmailMessage",
-  "EmailTemplate", "SavedTemplate",
+  "EmailTemplate", "SavedTemplate", "Equipment", "ClockEvent", "Segnalazione", "Richiesta", "Avviso", "Qualificazione",
 ];
 
 const STORAGE = "/storage/v1/object/";
