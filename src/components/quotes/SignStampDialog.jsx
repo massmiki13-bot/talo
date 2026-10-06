@@ -241,7 +241,7 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
             </div>
           ) : loadingDoc ? (
             <div className="py-12 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              <Loader2 className="w-6 h-6 animate-spin text-slate-500" />
             </div>
           ) : (
             <div className="space-y-4 mt-4">
@@ -265,11 +265,11 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
               {/* Page navigation */}
               {pageCount > 1 && (
                 <div className="flex items-center justify-center gap-3 bg-slate-50 rounded-lg py-2">
-                  <Button size="icon" variant="ghost" onClick={() => setCurrentPage(p => Math.max(0, p - 1))} disabled={currentPage === 0}>
+                  <Button size="icon" variant="ghost" aria-label="Pagina precedente" onClick={() => setCurrentPage(p => Math.max(0, p - 1))} disabled={currentPage === 0}>
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
                   <span className="text-sm font-medium text-slate-700">Pagina {currentPage + 1} di {pageCount}</span>
-                  <Button size="icon" variant="ghost" onClick={() => setCurrentPage(p => Math.min(pageCount - 1, p + 1))} disabled={currentPage === pageCount - 1}>
+                  <Button size="icon" variant="ghost" aria-label="Pagina successiva" onClick={() => setCurrentPage(p => Math.min(pageCount - 1, p + 1))} disabled={currentPage === pageCount - 1}>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>

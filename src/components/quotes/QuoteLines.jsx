@@ -116,7 +116,7 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
           </>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => remove(i)} className="text-red-600 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => remove(i)} className="text-red-700 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -143,7 +143,7 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
               <div key={i} className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2 mt-3 first:mt-0">
                 <Heading className="w-4 h-4 text-slate-300 shrink-0" />
                 <Input value={r.descrizione} onChange={(e) => update(i, { descrizione: e.target.value })} placeholder="Titolo capitolo (es. Demolizioni)" aria-label="Titolo capitolo"
-                  className="h-8 bg-transparent border-0 text-white placeholder:text-slate-400 font-semibold uppercase tracking-wide focus-visible:ring-1 focus-visible:ring-slate-500" />
+                  className="h-8 bg-transparent border-0 text-white placeholder:text-slate-500 font-semibold uppercase tracking-wide focus-visible:ring-1 focus-visible:ring-slate-500" />
                 <span className="text-sm text-slate-200 tabular-nums shrink-0">{fmtEur(tot)}</span>
                 <div className="[&_button]:text-slate-300 [&_button:hover]:bg-slate-700">{rowMenu(r, i)}</div>
               </div>
@@ -152,7 +152,7 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
           if (r.tipo === "testo") {
             return (
               <div key={i} className="flex items-start gap-2 rounded-lg border border-dashed border-slate-300 px-3 py-2">
-                <AlignLeft className="w-4 h-4 text-slate-400 mt-2 shrink-0" />
+                <AlignLeft className="w-4 h-4 text-slate-500 mt-2 shrink-0" />
                 <AutoTextarea value={r.descrizione} onChange={(e) => update(i, { descrizione: e.target.value })} placeholder="Testo descrittivo (senza prezzo)" className="flex-1 border-0 shadow-none px-0 focus-visible:ring-0" />
                 {rowMenu(r, i)}
               </div>
@@ -168,11 +168,11 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
                   <AutoTextarea value={r.descrizione} onChange={(e) => update(i, { descrizione: e.target.value })} placeholder="Descrizione della voce…" aria-label="Descrizione" />
                 </div>
                 <Button type="button" size="icon" variant="ghost" onClick={() => improve(i)} disabled={aiIndex === i || !r.descrizione?.trim()} title="Riscrivi come voce di capitolato" aria-label="Migliora con AI" className="shrink-0">
-                  <Sparkles className={`w-4 h-4 ${aiIndex === i ? "animate-pulse text-brand-600" : "text-slate-400"}`} />
+                  <Sparkles className={`w-4 h-4 ${aiIndex === i ? "animate-pulse text-brand-600" : "text-slate-500"}`} />
                 </Button>
                 {prezzari.length > 0 && (
                   <Button type="button" size="icon" variant="ghost" onClick={() => priceOne(i)} disabled={pricing != null || !r.descrizione?.trim()} title="Prezzo dal prezzario (IA)" aria-label="Prezzo dal prezzario" className="shrink-0">
-                    {pricing === i ? <Loader2 className="w-4 h-4 animate-spin text-brand-600" /> : <Euro className="w-4 h-4 text-slate-400" />}
+                    {pricing === i ? <Loader2 className="w-4 h-4 animate-spin text-brand-600" /> : <Euro className="w-4 h-4 text-slate-500" />}
                   </Button>
                 )}
                 {rowMenu(r, i)}

@@ -117,10 +117,10 @@ export default function AnnualReport({ embedded = false }) {
     doc.setFont(undefined, "normal");
 
     const rows = [
-      ["Totale entrate", formatEuro(yearData.entrate), "text-emerald-600"],
-      ["Totale uscite", formatEuro(yearData.uscite), "text-red-600"],
-      ["Costo manodopera", formatEuro(yearData.laborCost), "text-red-600"],
-      ["Margine complessivo", formatEuro(yearData.margine), yearData.margine >= 0 ? "text-emerald-600" : "text-red-600"],
+      ["Totale entrate", formatEuro(yearData.entrate), "text-emerald-700"],
+      ["Totale uscite", formatEuro(yearData.uscite), "text-red-700"],
+      ["Costo manodopera", formatEuro(yearData.laborCost), "text-red-700"],
+      ["Margine complessivo", formatEuro(yearData.margine), yearData.margine >= 0 ? "text-emerald-700" : "text-red-700"],
       ["Totale incassato (pagamenti)", formatEuro(yearData.incassato), "text-brand-600"],
     ];
     rows.forEach((r, i) => {
@@ -174,7 +174,7 @@ export default function AnnualReport({ embedded = false }) {
 
       <div className="flex items-center gap-3 mb-6">
         <Select value={String(anno)} onValueChange={v => setAnno(parseInt(v))}>
-          <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+          <SelectTrigger aria-label="Anno" className="w-32"><SelectValue /></SelectTrigger>
           <SelectContent>{[0,1,2].map(i => { const y = new Date().getFullYear() - i; return <SelectItem key={y} value={String(y)}>{y}</SelectItem>; })}</SelectContent>
         </Select>
         <Button onClick={handleExport} variant="outline" className="gap-2 ml-auto">
@@ -185,18 +185,18 @@ export default function AnnualReport({ embedded = false }) {
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card><CardContent className="pt-6">
-          <TrendingUp className="w-5 h-5 text-emerald-600 mb-2" />
-          <p className="text-xl font-bold text-emerald-600">{formatEuro(yearData.entrate)}</p>
+          <TrendingUp className="w-5 h-5 text-emerald-700 mb-2" />
+          <p className="text-xl font-bold text-emerald-700">{formatEuro(yearData.entrate)}</p>
           <p className="text-xs text-slate-500">Totale entrate</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6">
-          <TrendingDown className="w-5 h-5 text-red-600 mb-2" />
-          <p className="text-xl font-bold text-red-600">{formatEuro(yearData.uscite + yearData.laborCost)}</p>
+          <TrendingDown className="w-5 h-5 text-red-700 mb-2" />
+          <p className="text-xl font-bold text-red-700">{formatEuro(yearData.uscite + yearData.laborCost)}</p>
           <p className="text-xs text-slate-500">Totale uscite + manodopera</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6">
-          <Wallet className={`w-5 h-5 mb-2 ${yearData.margine >= 0 ? "text-emerald-600" : "text-red-600"}`} />
-          <p className={`text-xl font-bold ${yearData.margine >= 0 ? "text-emerald-600" : "text-red-600"}`}>{formatEuro(yearData.margine)}</p>
+          <Wallet className={`w-5 h-5 mb-2 ${yearData.margine >= 0 ? "text-emerald-700" : "text-red-700"}`} />
+          <p className={`text-xl font-bold ${yearData.margine >= 0 ? "text-emerald-700" : "text-red-700"}`}>{formatEuro(yearData.margine)}</p>
           <p className="text-xs text-slate-500">Margine complessivo</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6">
@@ -210,32 +210,32 @@ export default function AnnualReport({ embedded = false }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-700" />
             <h3 className="text-sm font-semibold text-emerald-800">Lavori in attivo ({yearData.inAttivo.length})</h3>
           </div>
           <div className="space-y-1 max-h-40 overflow-y-auto">
             {yearData.inAttivo.map(w => (
               <Link key={w.id} to={`/lavori/${w.id}`} className="flex justify-between text-sm p-1.5 rounded hover:bg-emerald-100">
                 <span className="text-slate-700 truncate">{w.nome}</span>
-                <span className="font-medium text-emerald-600">+{formatEuro(w.margine)}</span>
+                <span className="font-medium text-emerald-700">+{formatEuro(w.margine)}</span>
               </Link>
             ))}
-            {yearData.inAttivo.length === 0 && <p className="text-sm text-emerald-600">Nessun lavoro in attivo</p>}
+            {yearData.inAttivo.length === 0 && <p className="text-sm text-emerald-700">Nessun lavoro in attivo</p>}
           </div>
         </div>
         <div className="bg-red-50 border border-red-200 rounded-xl p-5">
           <div className="flex items-center gap-2 mb-3">
-            <XCircle className="w-5 h-5 text-red-600" />
+            <XCircle className="w-5 h-5 text-red-700" />
             <h3 className="text-sm font-semibold text-red-800">Lavori in perdita ({yearData.inPerdita.length})</h3>
           </div>
           <div className="space-y-1 max-h-40 overflow-y-auto">
             {yearData.inPerdita.map(w => (
               <Link key={w.id} to={`/lavori/${w.id}`} className="flex justify-between text-sm p-1.5 rounded hover:bg-red-100">
                 <span className="text-slate-700 truncate">{w.nome}</span>
-                <span className="font-medium text-red-600">{formatEuro(w.margine)}</span>
+                <span className="font-medium text-red-700">{formatEuro(w.margine)}</span>
               </Link>
             ))}
-            {yearData.inPerdita.length === 0 && <p className="text-sm text-red-600">Nessun lavoro in perdita</p>}
+            {yearData.inPerdita.length === 0 && <p className="text-sm text-red-700">Nessun lavoro in perdita</p>}
           </div>
         </div>
       </div>
@@ -256,10 +256,10 @@ export default function AnnualReport({ embedded = false }) {
             {yearData.worksiteBreakdown.map(w => (
               <tr key={w.id} className="hover:bg-slate-50">
                 <td className="px-4 py-3 text-sm font-medium text-slate-900">{w.nome}</td>
-                <td className="px-4 py-3 text-sm text-right text-emerald-600 hidden sm:table-cell">{formatEuro(w.entrate)}</td>
-                <td className="px-4 py-3 text-sm text-right text-red-600 hidden md:table-cell">{formatEuro(w.uscite)}</td>
-                <td className="px-4 py-3 text-sm text-right text-orange-600 hidden md:table-cell">{formatEuro(w.labor)}</td>
-                <td className={`px-4 py-3 text-sm font-bold text-right ${w.margine >= 0 ? "text-emerald-600" : "text-red-600"}`}>{formatEuro(w.margine)}</td>
+                <td className="px-4 py-3 text-sm text-right text-emerald-700 hidden sm:table-cell">{formatEuro(w.entrate)}</td>
+                <td className="px-4 py-3 text-sm text-right text-red-700 hidden md:table-cell">{formatEuro(w.uscite)}</td>
+                <td className="px-4 py-3 text-sm text-right text-orange-700 hidden md:table-cell">{formatEuro(w.labor)}</td>
+                <td className={`px-4 py-3 text-sm font-bold text-right ${w.margine >= 0 ? "text-emerald-700" : "text-red-700"}`}>{formatEuro(w.margine)}</td>
               </tr>
             ))}
           </tbody>

@@ -246,7 +246,7 @@ export default function Posta() {
             <div className="hidden xl:block mt-4">
               <p className="text-xs font-medium text-slate-500 px-1 mb-1">Casella</p>
               <Select value={accountFilter} onValueChange={setAccountFilter}>
-                <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Filtra per casella" className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tutte le caselle</SelectItem>
                   {accounts.map((a) => <SelectItem key={a.id} value={a.id}>{a.is_pec ? "PEC · " : ""}{a.email_address}</SelectItem>)}
@@ -263,13 +263,13 @@ export default function Posta() {
         <section className={`${selected ? "hidden lg:flex" : "flex"} flex-col bg-white sm:rounded-xl border-y sm:border border-slate-200 min-h-[60vh]`}>
           <div className="p-3 border-b border-slate-100">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cerca per nome, email, oggetto…" className="pl-9 pr-8" aria-label="Cerca nella posta" />
               {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-slate-100"><X className="w-3.5 h-3.5 text-slate-500" /></button>}
             </div>
           </div>
           {loading ? (
-            <div className="flex-1 flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-slate-400" /></div>
+            <div className="flex-1 flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>
           ) : messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-16 px-6">
               <folder.icon className="w-10 h-10 text-slate-300 mb-3" />
@@ -302,7 +302,7 @@ export default function Posta() {
                         {m.is_pec && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded px-1 py-px shrink-0">{m.pec_tipo && m.pec_tipo !== "posta-certificata" ? PEC_LABELS[m.pec_tipo] || "PEC" : "PEC"}</span>}
                         {m.stato === "errore" && <span className="text-[10px] font-bold bg-red-100 text-red-700 rounded px-1 py-px shrink-0">NON INVIATA</span>}
                         <p className={`text-sm truncate ${unreadRow ? "font-semibold text-slate-900" : "text-slate-800"}`}>{m.subject || "(senza oggetto)"}</p>
-                        {(m.allegati || []).length > 0 && <Paperclip className="w-3.5 h-3.5 text-slate-400 shrink-0" aria-label="Con allegati" />}
+                        {(m.allegati || []).length > 0 && <Paperclip className="w-3.5 h-3.5 text-slate-500 shrink-0" aria-label="Con allegati" />}
                       </div>
                       <p className="text-xs text-slate-500 truncate mt-0.5">{m.snippet}</p>
                     </button>

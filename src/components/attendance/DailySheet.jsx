@@ -152,7 +152,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
       {/* Giorno */}
       <div className="bg-white rounded-xl border border-slate-200 p-2.5 flex flex-wrap items-center gap-2">
         <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => go(addDays(date, -1))} aria-label="Giorno precedente"><ChevronLeft className="w-4 h-4" /></Button>
-        <Input type="date" value={date} onChange={(e) => e.target.value && go(e.target.value)} className="h-9 w-[150px]" />
+        <Input type="date" aria-label="Giorno" value={date} onChange={(e) => e.target.value && go(e.target.value)} className="h-9 w-[150px]" />
         <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => go(addDays(date, 1))} aria-label="Giorno successivo"><ChevronRight className="w-4 h-4" /></Button>
         <Button variant="ghost" size="sm" onClick={() => go(iso(new Date()))}>Oggi</Button>
         <p className="text-sm font-semibold text-slate-900 capitalize ml-1">{parseIso(date).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</p>
@@ -163,7 +163,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
       {!readOnly && (
         <div className="bg-white rounded-xl border border-slate-200 p-2.5 flex flex-wrap items-center gap-2">
           <div className="relative min-w-[160px] flex-1 sm:flex-none">
-            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cerca dipendente" aria-label="Cerca dipendente" className="pl-8 h-9 sm:w-[180px]" />
           </div>
           <Select value={defaultSite || NONE} onValueChange={(v) => { const s = v === NONE ? "" : v; setDefaultSite(s); savePref("site", s); }}>

@@ -70,7 +70,7 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
 
         {!loading && extracted?.error && (
           <div className="py-6 text-center">
-            <p className="text-sm text-red-600 mb-3">Impossibile leggere il documento.</p>
+            <p className="text-sm text-red-700 mb-3">Impossibile leggere il documento.</p>
             <Button variant="outline" onClick={readDocument}>Riprova</Button>
           </div>
         )}
@@ -95,7 +95,7 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
               <div>
                 <Label htmlFor="aidocumentreader-data-scadenza-verifica">Data Scadenza (verifica!)</Label>
                 <Input id="aidocumentreader-data-scadenza-verifica" type="date" value={extracted.data_scadenza || ""} onChange={e => setExtracted({ ...extracted, data_scadenza: e.target.value })} />
-                <p className="text-xs text-amber-600 mt-1">Controlla che la data sia corretta</p>
+                <p className="text-xs text-amber-700 mt-1">Controlla che la data sia corretta</p>
               </div>
             </div>
 

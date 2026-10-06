@@ -110,7 +110,7 @@ export default function QuoteTemplatePicker({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_pdf")}>
-                  <FileText className="w-4 h-4 mr-2 text-red-600" /> PDF
+                  <FileText className="w-4 h-4 mr-2 text-red-700" /> PDF
                   <span className="ml-auto text-xs text-slate-500">Pronto da inviare</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_word")}>
@@ -118,7 +118,7 @@ export default function QuoteTemplatePicker({
                   <span className="ml-auto text-xs text-slate-500">Modificabile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_excel")}>
-                  <FileSpreadsheet className="w-4 h-4 mr-2 text-green-600" /> Excel (.xls)
+                  <FileSpreadsheet className="w-4 h-4 mr-2 text-green-700" /> Excel (.xls)
                   <span className="ml-auto text-xs text-slate-500">Tabelle e calcoli</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

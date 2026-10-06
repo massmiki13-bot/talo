@@ -142,12 +142,12 @@ export default function AiOrganizeDialog({ open, onOpenChange, documents, folder
                 {rows.map((r) => (
                   <div key={r.id} className="p-2.5 text-sm">
                     <div className="flex items-center gap-2 min-w-0">
-                      <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+                      <FileText className="w-4 h-4 text-slate-500 shrink-0" />
                       <span className="font-medium text-slate-800 truncate">{r.doc.titolo}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-1.5">
                       <span className="text-xs text-slate-500 truncate shrink-0 max-w-[40%]">{r.now || "Senza cartella"}</span>
-                      <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" />
+                      <ArrowRight className="w-3 h-3 text-slate-500 shrink-0" />
                       <Input value={r.cartella} onChange={(e) => setEdits({ ...edits, [r.id]: e.target.value })} className="h-7 text-xs" disabled={phase === "applying"} />
                     </div>
                     {r.motivo && <p className="text-xs text-slate-500 mt-1">{r.motivo}</p>}

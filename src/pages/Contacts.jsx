@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { onEnter } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -115,7 +116,7 @@ export default function Contacts() {
         {c.archiviato
           ? <DropdownMenuItem onClick={() => setArchived(c, false)}><ArchiveRestore className="w-4 h-4 mr-2" /> Ripristina</DropdownMenuItem>
           : <DropdownMenuItem onClick={() => setArchived(c, true)}><Archive className="w-4 h-4 mr-2" /> Archivia</DropdownMenuItem>}
-        <DropdownMenuItem onClick={() => remove(c)} className="text-red-600 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => remove(c)} className="text-red-700 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -158,12 +159,12 @@ export default function Contacts() {
 
       <div className="flex flex-col sm:flex-row gap-2 mb-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input placeholder="Cerca per nome, P.IVA, email, telefono, città, referente…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-10" aria-label="Cerca contatti" />
           {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-slate-100"><X className="w-3.5 h-3.5 text-slate-500" /></button>}
         </div>
         <Select value={sort} onValueChange={setSort}>
-          <SelectTrigger className="sm:w-52 h-10"><SelectValue /></SelectTrigger>
+          <SelectTrigger aria-label="Ordina per" className="sm:w-52 h-10"><SelectValue /></SelectTrigger>
           <SelectContent>{Object.entries(SORTS).map(([k, s]) => <SelectItem key={k} value={k}>{s.label}</SelectItem>)}</SelectContent>
         </Select>
       </div>
@@ -203,7 +204,7 @@ export default function Contacts() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filtered.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate(`/contatti/${c.id}`)}>
+                  <tr key={c.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate(`/contatti/${c.id}`)} tabIndex={0} onKeyDown={onEnter(() => navigate(`/contatti/${c.id}`))}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-semibold text-slate-900">{displayName(c)}</span>
@@ -236,7 +237,7 @@ export default function Contacts() {
 
           <div className="md:hidden space-y-2">
             {filtered.map((c) => (
-              <div key={c.id} className="bg-white rounded-xl border border-slate-200 p-3.5 cursor-pointer active:bg-slate-50" onClick={() => navigate(`/contatti/${c.id}`)}>
+              <div key={c.id} className="bg-white rounded-xl border border-slate-200 p-3.5 cursor-pointer active:bg-slate-50" onClick={() => navigate(`/contatti/${c.id}`)} role="link" tabIndex={0} onKeyDown={onEnter(() => navigate(`/contatti/${c.id}`))}>
                 <div className="flex items-start gap-2">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-slate-900 truncate">{displayName(c)}</p>

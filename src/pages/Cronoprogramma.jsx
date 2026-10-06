@@ -12,13 +12,14 @@ const COLORS = ["#c3122a", "#18181b", "#0f766e", "#b45309", "#4338ca", "#be185d"
 const LABEL_W = "w-40 sm:w-56";
 const fmt = (s) => toDate(s).toLocaleDateString("it-IT", { day: "numeric", month: "short" });
 
-function Bar({ from, days, start, end, color, children, title, striped }) {
+// `soft`: barra chiara con testo scuro (fasi), per restare leggibile su ogni colore.
+function Bar({ from, days, start, end, color, children, title, striped, soft }) {
   const a = Math.max(0, diffDays(from, start));
   const b = Math.min(days - 1, diffDays(from, end));
   if (b < 0 || a > days - 1) return null;
   return (
-    <div className="absolute top-1 bottom-1 rounded-md text-[11px] text-white font-medium px-1.5 flex items-center overflow-hidden whitespace-nowrap" title={title}
-      style={{ left: `${(a / days) * 100}%`, width: `${((b - a + 1) / days) * 100}%`, background: striped ? `repeating-linear-gradient(135deg, ${color}, ${color} 6px, ${color}cc 6px, ${color}cc 12px)` : color }}>
+    <div className={`absolute top-1 bottom-1 rounded-md text-[11px] font-medium px-1.5 flex items-center overflow-hidden whitespace-nowrap ${soft ? "text-zinc-900" : "text-white"}`} title={title}
+      style={{ left: `${(a / days) * 100}%`, width: `${((b - a + 1) / days) * 100}%`, border: soft ? `1px solid ${color}99` : undefined, background: soft ? `${color}33` : striped ? `repeating-linear-gradient(135deg, ${color}, ${color} 6px, ${color}cc 6px, ${color}cc 12px)` : color }}>
       {children}
     </div>
   );
@@ -107,7 +108,7 @@ export default function Cronoprogramma() {
                 </Row>
                 {phaseSpans(w, today).map((f) => (
                   <Row key={f.nome} label={<span className="pl-3 text-zinc-600">{f.nome}</span>}>
-                    <Bar from={from} days={days} start={f.start} end={f.end} color={`${c}99`} title={`${f.nome}: ${fmt(f.start)} → ${fmt(f.end)}${f.stimato ? " (stimata dal peso della fase)" : ""}`}>{f.completamento ? `${f.completamento}%` : ""}</Bar>
+                    <Bar from={from} days={days} start={f.start} end={f.end} color={c} soft title={`${f.nome}: ${fmt(f.start)} → ${fmt(f.end)}${f.stimato ? " (stimata dal peso della fase)" : ""}`}>{f.completamento ? `${f.completamento}%` : ""}</Bar>
                   </Row>
                 ))}
               </React.Fragment>

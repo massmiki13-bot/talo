@@ -20,9 +20,9 @@ export default function TodayTab({ home, t, go }) {
         </button>
       )}
 
-      <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-500 pt-2 px-1">{t("i_tuoi_cantieri")}</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-600 pt-2 px-1">{t("i_tuoi_cantieri")}</h2>
       {home.worksites.length === 0 ? (
-        <Card><p className="text-sm text-zinc-600 flex items-center gap-2"><HardHat className="w-5 h-5 text-zinc-400" aria-hidden="true" />{t("nessun_cantiere_assegnato")}</p></Card>
+        <Card><p className="text-sm text-zinc-600 flex items-center gap-2"><HardHat className="w-5 h-5 text-zinc-500" aria-hidden="true" />{t("nessun_cantiere_assegnato")}</p></Card>
       ) : home.worksites.map((w) => (
         <Card key={w.id}>
           <p className="font-display text-xl font-bold uppercase leading-tight text-zinc-950">{w.nome}</p>

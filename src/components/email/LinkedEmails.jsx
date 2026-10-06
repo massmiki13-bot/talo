@@ -42,7 +42,7 @@ export default function LinkedEmails({ field, id, composeDefaults = {}, title = 
         </Button>
       </div>
       {loading ? (
-        <div className="py-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div>
+        <div className="py-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-500" /></div>
       ) : messages.length === 0 ? (
         <p className="text-sm text-slate-500 py-3">Nessuna email collegata. Quelle inviate da qui o collegate dalla Posta compariranno in questo elenco.</p>
       ) : (
@@ -51,7 +51,7 @@ export default function LinkedEmails({ field, id, composeDefaults = {}, title = 
             <li key={m.id}>
               <button onClick={() => setReading(m)} className="w-full text-left flex items-center gap-3 px-1 py-2.5 rounded hover:bg-slate-50">
                 {m.direzione === "in"
-                  ? <ArrowDownLeft className="w-4 h-4 text-emerald-600 shrink-0" aria-label="Ricevuta" />
+                  ? <ArrowDownLeft className="w-4 h-4 text-emerald-700 shrink-0" aria-label="Ricevuta" />
                   : <ArrowUpRight className="w-4 h-4 text-brand-600 shrink-0" aria-label="Inviata" />}
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-slate-800 truncate">
@@ -61,7 +61,7 @@ export default function LinkedEmails({ field, id, composeDefaults = {}, title = 
                   </p>
                   <p className="text-xs text-slate-500 truncate">{m.direzione === "in" ? m.from_email : `A: ${(m.to || []).join(", ")}`}</p>
                 </div>
-                {(m.allegati || []).length > 0 && <Paperclip className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
+                {(m.allegati || []).length > 0 && <Paperclip className="w-3.5 h-3.5 text-slate-500 shrink-0" />}
                 <span className="text-xs text-slate-500 shrink-0">{formatDate(m.data)}</span>
               </button>
             </li>

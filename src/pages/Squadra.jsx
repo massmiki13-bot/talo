@@ -145,7 +145,7 @@ function Bacheca({ list, worksites, employeesCount, onChange, onDelete }) {
         </DetailCard>
       ) : <Button onClick={() => setF({ titolo: "", testo: "", worksite_id: "", richiede_firma: false })} className="gap-1.5 bg-brand-600 hover:bg-brand-700"><Plus className="w-4 h-4" />Nuovo avviso</Button>}
       {list.map((a) => (
-        <DetailCard key={a.id} title={a.titolo} action={<button type="button" onClick={() => onDelete(a)} className="text-zinc-400 hover:text-red-600" aria-label="Elimina avviso"><Trash2 className="w-4 h-4" /></button>}>
+        <DetailCard key={a.id} title={a.titolo} action={<button type="button" onClick={() => onDelete(a)} className="text-zinc-500 hover:text-red-600" aria-label="Elimina avviso"><Trash2 className="w-4 h-4" /></button>}>
           <p className="text-xs text-zinc-500 -mt-2">{fmtTime(a.created_date)} · {a.worksite_nome ? `squadra di ${a.worksite_nome}` : "tutti"}{a.richiede_firma ? " · con firma" : ""}</p>
           <p className="text-sm text-zinc-800 mt-2 whitespace-pre-wrap">{a.testo}</p>
           <p className="text-sm font-medium text-zinc-900 mt-3">Letto da {(a.letture || []).length}{!a.worksite_id ? ` di ${employeesCount}` : ""}</p>

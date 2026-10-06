@@ -147,7 +147,7 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
               <div className="rounded-lg border-2 border-dashed border-slate-300 p-3">
                 <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
                   <label className="flex-1 flex items-center gap-2 cursor-pointer text-sm text-slate-700">
-                    {uploading ? <Loader2 className="w-5 h-5 animate-spin text-slate-400" /> : <Camera className="w-5 h-5 text-slate-500" />}
+                    {uploading ? <Loader2 className="w-5 h-5 animate-spin text-slate-500" /> : <Camera className="w-5 h-5 text-slate-500" />}
                     {fileUrl ? "Documento caricato · tocca per cambiarlo" : "Fotografa o carica bolla, scontrino o fattura"}
                     <input type="file" accept="image/*,application/pdf" capture="environment" className="hidden" onChange={(e) => upload(e.target.files[0])} />
                   </label>

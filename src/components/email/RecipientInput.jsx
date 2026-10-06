@@ -135,7 +135,7 @@ export default function RecipientInput({ label, value = [], onChange, placeholde
           autoComplete="off"
         />
       </div>
-      {invalidText && <p className="text-[11px] text-red-600 mt-1">Indirizzo non valido</p>}
+      {invalidText && <p className="text-[11px] text-red-700 mt-1">Indirizzo non valido</p>}
       {open && suggestions.length > 0 && (
         <ul role="listbox" className="absolute z-50 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg py-1 max-h-72 overflow-y-auto">
           {suggestions.map((s, i) => {
@@ -149,7 +149,7 @@ export default function RecipientInput({ label, value = [], onChange, placeholde
                 onMouseEnter={() => setActive(i)}
                 className={`flex items-center gap-2.5 px-3 py-2 cursor-pointer ${i === active ? "bg-brand-50" : ""}`}
               >
-                <K.icon className="w-4 h-4 text-slate-400 shrink-0" />
+                <K.icon className="w-4 h-4 text-slate-500 shrink-0" />
                 <div className="min-w-0 flex-1">
                   {s.name && <p className="text-sm text-slate-800 truncate">{s.name}</p>}
                   <p className={`truncate ${s.name ? "text-xs text-slate-500" : "text-sm text-slate-800"}`}>{s.email}</p>

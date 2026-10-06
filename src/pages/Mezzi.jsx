@@ -55,7 +55,7 @@ function EquipmentForm({ open, onOpenChange, item, worksites, employees, onSaved
         <div className="grid sm:grid-cols-2 gap-3">
           <Field label="Nome" className="sm:col-span-2"><Input value={f.nome} onChange={(e) => set({ nome: e.target.value })} placeholder="Es. Iveco Daily 35C, Escavatore Kubota KX019" /></Field>
           <Field label="Tipo">
-            <Select value={f.tipo} onValueChange={(v) => set({ tipo: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{TIPI_MEZZO.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select>
+            <Select value={f.tipo} onValueChange={(v) => set({ tipo: v })}><SelectTrigger aria-label="Tipo di mezzo"><SelectValue /></SelectTrigger><SelectContent>{TIPI_MEZZO.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select>
           </Field>
           <Field label="Targa / matricola"><Input value={f.targa} onChange={(e) => set({ targa: e.target.value.toUpperCase() })} /></Field>
           <Field label="Anno"><Input inputMode="numeric" value={f.anno} onChange={(e) => set({ anno: e.target.value })} /></Field>
@@ -73,13 +73,13 @@ function EquipmentForm({ open, onOpenChange, item, worksites, employees, onSaved
         <div className="grid sm:grid-cols-2 gap-3">
           <Field label="Cantiere">
             <Select value={f.assegnazione.worksite_id || NONE} onValueChange={(v) => set({ assegnazione: { ...f.assegnazione, worksite_id: v === NONE ? "" : v } })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Cantiere assegnato"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value={NONE}>In deposito</SelectItem>{worksites.map((w) => <SelectItem key={w.id} value={w.id}>{w.nome}</SelectItem>)}</SelectContent>
             </Select>
           </Field>
           <Field label="In uso a">
             <Select value={f.assegnazione.dipendente_id || NONE} onValueChange={(v) => set({ assegnazione: { ...f.assegnazione, dipendente_id: v === NONE ? "" : v } })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Persona assegnata"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value={NONE}>Nessuno</SelectItem>{employees.map((e) => <SelectItem key={e.id} value={e.id}>{e.nome} {e.cognome}</SelectItem>)}</SelectContent>
             </Select>
           </Field>
@@ -161,7 +161,7 @@ export default function Mezzi() {
         </div>
       ) : (
         <>
-          <div className="relative max-w-sm"><Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" aria-hidden="true" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cerca per nome, targa, cantiere…" className="pl-9" aria-label="Cerca mezzi" /></div>
+          <div className="relative max-w-sm"><Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" aria-hidden="true" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cerca per nome, targa, cantiere…" className="pl-9" aria-label="Cerca mezzi" /></div>
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
             {list.map((m) => {
               const st = statusOf(m);
@@ -178,10 +178,10 @@ export default function Mezzi() {
                     <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 shrink-0 ${st.cls}`}>{st.label}</span>
                   </div>
                   <div className="text-sm space-y-1">
-                    <p className="flex items-center gap-2 text-zinc-700"><HardHat className="w-4 h-4 text-zinc-400" aria-hidden="true" />{m.assegnazione?.worksite_id ? <Link to={`/lavori/${m.assegnazione.worksite_id}`} className="hover:underline truncate">{m.assegnazione.worksite_nome}</Link> : "In deposito"}{m.assegnazione?.al ? <span className="text-xs text-zinc-500">fino al {fmt(m.assegnazione.al)}</span> : null}</p>
-                    {m.assegnazione?.dipendente_nome && <p className="flex items-center gap-2 text-zinc-700"><User className="w-4 h-4 text-zinc-400" aria-hidden="true" />{m.assegnazione.dipendente_nome}</p>}
-                    {next && <p className="flex items-center gap-2 text-zinc-700"><AlertTriangle className={`w-4 h-4 ${next.stato === "ok" ? "text-zinc-400" : "text-amber-600"}`} aria-hidden="true" />{next.label}: {fmt(next.data)}</p>}
-                    {spese > 0 && <p className="flex items-center gap-2 text-zinc-700"><Wrench className="w-4 h-4 text-zinc-400" aria-hidden="true" />{m.manutenzioni.length} interventi · {eur(spese)}</p>}
+                    <p className="flex items-center gap-2 text-zinc-700"><HardHat className="w-4 h-4 text-zinc-500" aria-hidden="true" />{m.assegnazione?.worksite_id ? <Link to={`/lavori/${m.assegnazione.worksite_id}`} className="hover:underline truncate">{m.assegnazione.worksite_nome}</Link> : "In deposito"}{m.assegnazione?.al ? <span className="text-xs text-zinc-500">fino al {fmt(m.assegnazione.al)}</span> : null}</p>
+                    {m.assegnazione?.dipendente_nome && <p className="flex items-center gap-2 text-zinc-700"><User className="w-4 h-4 text-zinc-500" aria-hidden="true" />{m.assegnazione.dipendente_nome}</p>}
+                    {next && <p className="flex items-center gap-2 text-zinc-700"><AlertTriangle className={`w-4 h-4 ${next.stato === "ok" ? "text-zinc-500" : "text-amber-700"}`} aria-hidden="true" />{next.label}: {fmt(next.data)}</p>}
+                    {spese > 0 && <p className="flex items-center gap-2 text-zinc-700"><Wrench className="w-4 h-4 text-zinc-500" aria-hidden="true" />{m.manutenzioni.length} interventi · {eur(spese)}</p>}
                   </div>
                   <div className="flex gap-2 mt-auto">
                     <Button size="sm" variant="outline" className="gap-1.5 flex-1" onClick={() => setForm(m)}><Pencil className="w-4 h-4" />Modifica</Button>

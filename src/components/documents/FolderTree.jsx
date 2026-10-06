@@ -53,7 +53,7 @@ function Node({ f, byParent, counts, currentId, onOpen, onDropDocs, onAction, de
             <DropdownMenuItem onClick={() => onAction("edit", f)}>Rinomina / colore</DropdownMenuItem>
             <DropdownMenuItem onClick={() => onAction("move", f)}>Sposta in…</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onAction("delete", f)} className="text-red-600">Elimina cartella</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onAction("delete", f)} className="text-red-700">Elimina cartella</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -181,7 +181,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
                   {vies.loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />} Compila da P.IVA
                 </Button>
                 {vies.result && (
-                  <p className={`sm:col-span-2 -mt-2 text-xs flex items-center gap-1 ${vies.result.ok ? "text-emerald-700" : "text-red-600"}`}>
+                  <p className={`sm:col-span-2 -mt-2 text-xs flex items-center gap-1 ${vies.result.ok ? "text-emerald-700" : "text-red-700"}`}>
                     {vies.result.ok ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />} {vies.result.message}
                   </p>
                 )}
@@ -249,7 +249,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
             <p className="text-sm text-slate-500">Le persone da contattare: amministrazione, ufficio tecnico, direttore lavori…</p>
             {form.referenti.map((r, i) => (
               <div key={i} className="rounded-lg border border-slate-200 p-3 grid sm:grid-cols-2 gap-2 relative">
-                <button type="button" aria-label="Rimuovi referente" onClick={() => removeFromList("referenti", i)} className="absolute top-2 right-2 p-1 rounded hover:bg-slate-100"><Trash2 className="w-4 h-4 text-red-600" /></button>
+                <button type="button" aria-label="Rimuovi referente" onClick={() => removeFromList("referenti", i)} className="absolute top-2 right-2 p-1 rounded hover:bg-slate-100"><Trash2 className="w-4 h-4 text-red-700" /></button>
                 <Input placeholder="Nome e cognome" value={r.nome || ""} onChange={(e) => updateList("referenti", i, { nome: e.target.value })} />
                 <Input placeholder="Ruolo (es. Amministrazione)" value={r.ruolo || ""} onChange={(e) => updateList("referenti", i, { ruolo: e.target.value })} className="sm:mr-8" />
                 <Input placeholder="Telefono" value={r.telefono || ""} onChange={(e) => updateList("referenti", i, { telefono: e.target.value })} inputMode="tel" />
@@ -265,7 +265,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
             <p className="text-sm text-slate-500">Altre sedi, magazzini o indirizzi dei cantieri di questo cliente.</p>
             {form.indirizzi.map((a, i) => (
               <div key={i} className="rounded-lg border border-slate-200 p-3 space-y-2 relative">
-                <button type="button" aria-label="Rimuovi indirizzo" onClick={() => removeFromList("indirizzi", i)} className="absolute top-2 right-2 p-1 rounded hover:bg-slate-100"><Trash2 className="w-4 h-4 text-red-600" /></button>
+                <button type="button" aria-label="Rimuovi indirizzo" onClick={() => removeFromList("indirizzi", i)} className="absolute top-2 right-2 p-1 rounded hover:bg-slate-100"><Trash2 className="w-4 h-4 text-red-700" /></button>
                 <Input placeholder="Etichetta (es. Cantiere Via Roma, Magazzino)" value={a.etichetta || ""} onChange={(e) => updateList("indirizzi", i, { etichetta: e.target.value })} className="pr-10" />
                 <Input placeholder="Indirizzo" value={a.indirizzo || ""} onChange={(e) => updateList("indirizzi", i, { indirizzo: e.target.value })} />
                 <div className="grid grid-cols-[90px_1fr_70px] gap-2">

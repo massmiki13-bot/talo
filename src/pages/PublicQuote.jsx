@@ -53,7 +53,7 @@ export default function PublicQuote() {
       </div>
     );
   }
-  if (!q) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-7 h-7 animate-spin text-slate-400" /></div>;
+  if (!q) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-7 h-7 animate-spin text-slate-500" /></div>;
 
   const color = p.colore_principale || "#1d4ed8";
   const exp = expiryDate(q);
@@ -99,7 +99,7 @@ export default function PublicQuote() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 py-6 sm:py-10 px-3">
+    <main className="min-h-screen bg-slate-100 py-6 sm:py-10 px-3">
       <article className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div style={{ background: color }} className="h-2" />
         {/* Intestazione azienda */}
@@ -191,7 +191,7 @@ export default function PublicQuote() {
         <footer className="border-t border-slate-200 bg-slate-50 px-5 sm:px-8 py-6">
           {answered === "approvato" ? (
             <div className="flex gap-3 items-start">
-              <CheckCircle2 className="w-7 h-7 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-7 h-7 text-emerald-700 shrink-0" />
               <div>
                 <p className="font-semibold text-slate-900">Preventivo accettato</p>
                 <p className="text-sm text-slate-600">Grazie! {p.ragione_sociale} ha ricevuto la conferma e ti contatterà per i prossimi passi.</p>
@@ -207,7 +207,7 @@ export default function PublicQuote() {
             </div>
           ) : expired ? (
             <div className="flex gap-3 items-start">
-              <Clock className="w-6 h-6 text-amber-600 shrink-0" />
+              <Clock className="w-6 h-6 text-amber-700 shrink-0" />
               <p className="text-sm text-slate-700">L'offerta è scaduta. Contatta {p.ragione_sociale} per ricevere un preventivo aggiornato.</p>
             </div>
           ) : !mode ? (
@@ -249,6 +249,6 @@ export default function PublicQuote() {
         </footer>
       </article>
       <p className="text-center text-xs text-slate-500 mt-4">Documento inviato con Talo</p>
-    </div>
+    </main>
   );
 }

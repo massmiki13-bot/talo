@@ -33,7 +33,7 @@ export default function PrezzarioPickDialog({ open, onOpenChange, prezzari, defa
         </DialogHeader>
         <form onSubmit={run} className="flex gap-2">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
             <Input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder="es. tramezzo forato, pittura lavabile, codice voce" className="pl-8" />
           </div>
           <Button type="submit" disabled={busy || !query.trim()} className="bg-brand-600 hover:bg-brand-700">{busy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Cerca"}</Button>

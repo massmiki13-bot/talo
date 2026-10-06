@@ -132,7 +132,7 @@ export default function CommandPalette({ open, onOpenChange, canAccessPath = () 
           <div className="flex items-center gap-3 px-4 border-b border-zinc-200">
             <Search className="w-5 h-5 text-zinc-400 shrink-0" aria-hidden="true" />
             <Cmdk.Input value={query} onValueChange={setQuery} autoFocus placeholder="Cerca clienti, lavori, preventivi, documenti…"
-              className="h-14 flex-1 bg-transparent text-base text-zinc-900 placeholder:text-zinc-400 outline-none" />
+              className="h-14 flex-1 bg-transparent text-base text-zinc-900 placeholder:text-zinc-500 outline-none" />
             {loading && <Loader2 className="w-4 h-4 animate-spin text-zinc-400" aria-label="Caricamento" />}
             <kbd className="hidden sm:inline text-[11px] font-medium text-zinc-500 border border-zinc-200 rounded px-1.5 py-0.5">Esc</kbd>
           </div>

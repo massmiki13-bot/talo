@@ -105,10 +105,10 @@ export default function Collaborators() {
                     <p className="text-xs text-slate-500">{i.access_level === "operaio" ? "Operaio" : "Responsabile"} · scade tra {daysLeft(i)} {daysLeft(i) === 1 ? "giorno" : "giorni"}{i.tentativi_falliti ? ` · ${i.tentativi_falliti} codici errati` : ""}</p>
                   </div>
                   <button onClick={() => copy(i.code, `c${i.id}`)} className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 h-8 text-sm hover:bg-slate-50" title="Copia il codice">
-                    <KeyRound className="w-3.5 h-3.5 text-slate-500" /><span className="font-mono font-semibold tracking-widest">{i.code}</span>{copied === `c${i.id}` ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+                    <KeyRound className="w-3.5 h-3.5 text-slate-500" /><span className="font-mono font-semibold tracking-widest">{i.code}</span>{copied === `c${i.id}` ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5 text-slate-500" />}
                   </button>
-                  <Button size="sm" variant="outline" className="gap-1.5" onClick={() => copy(link, `l${i.id}`)}>{copied === `l${i.id}` ? <Check className="w-4 h-4 text-emerald-600" /> : <LinkIcon className="w-4 h-4" />} Copia link</Button>
-                  <button onClick={() => cancelInvite(i)} className="p-1.5 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50" aria-label="Annulla invito" title="Annulla invito"><X className="w-4 h-4" /></button>
+                  <Button size="sm" variant="outline" className="gap-1.5" onClick={() => copy(link, `l${i.id}`)}>{copied === `l${i.id}` ? <Check className="w-4 h-4 text-emerald-700" /> : <LinkIcon className="w-4 h-4" />} Copia link</Button>
+                  <button onClick={() => cancelInvite(i)} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Annulla invito" title="Annulla invito"><X className="w-4 h-4" /></button>
                 </li>
               );
             })}
@@ -178,7 +178,7 @@ function Row({ c, empName, muted, onEdit, onRevoke, onRestore }) {
       </div>
       <div className="flex gap-1.5 ml-auto">
         {onEdit && <Button size="sm" variant="outline" className="gap-1.5" onClick={onEdit}><Pencil className="w-3.5 h-3.5" /> Permessi</Button>}
-        {onRevoke && <Button size="sm" variant="ghost" className="gap-1.5 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={onRevoke}><Ban className="w-3.5 h-3.5" /> Revoca</Button>}
+        {onRevoke && <Button size="sm" variant="ghost" className="gap-1.5 text-red-700 hover:text-red-700 hover:bg-red-50" onClick={onRevoke}><Ban className="w-3.5 h-3.5" /> Revoca</Button>}
         {onRestore && <Button size="sm" variant="outline" className="gap-1.5" onClick={onRestore}><RotateCcw className="w-3.5 h-3.5" /> Riattiva</Button>}
       </div>
     </li>

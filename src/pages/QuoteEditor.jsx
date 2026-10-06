@@ -624,7 +624,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
                   <Label>Clausole e condizioni generali</Label>
                   <button type="button" className="text-xs text-brand-700 hover:underline" onClick={() => set({ clausole: DEFAULT_CLAUSOLE })}>Ripristina le clausole standard</button>
                 </div>
-                <textarea value={quote.clausole || ""} onChange={(e) => set({ clausole: e.target.value })} rows={5} className="mt-1 w-full rounded-md border border-input p-2 text-sm" />
+                <textarea aria-label="Clausole e condizioni" value={quote.clausole || ""} onChange={(e) => set({ clausole: e.target.value })} rows={5} className="mt-1 w-full rounded-md border border-input p-2 text-sm" />
               </div>
               <div className="md:col-span-2"><Label htmlFor="quoteeditor-note-per-il-cliente">Note per il cliente</Label><textarea id="quoteeditor-note-per-il-cliente" value={quote.note || ""} onChange={(e) => set({ note: e.target.value })} rows={3} className="mt-1 w-full rounded-md border border-input p-2 text-sm" placeholder="Note aggiuntive…" /></div>
             </div>

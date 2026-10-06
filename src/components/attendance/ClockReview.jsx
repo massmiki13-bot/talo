@@ -145,10 +145,10 @@ export default function ClockReview({ date, setDate, records, isHost, onSaved })
       </div>
 
       {loading ? (
-        <div className="py-16 grid place-items-center"><Loader2 className="w-6 h-6 animate-spin text-zinc-400" /></div>
+        <div className="py-16 grid place-items-center"><Loader2 className="w-6 h-6 animate-spin text-zinc-500" /></div>
       ) : !rows.length ? (
         <div className="bg-white rounded-2xl border border-zinc-200 p-8 text-center">
-          <Smartphone className="w-8 h-8 text-zinc-400 mx-auto" aria-hidden="true" />
+          <Smartphone className="w-8 h-8 text-zinc-500 mx-auto" aria-hidden="true" />
           <p className="font-semibold text-zinc-900 mt-3">Nessuna timbratura in questa giornata</p>
           <p className="text-sm text-zinc-500 mt-1 max-w-md mx-auto">Gli operai collegati al loro account timbrano entrata e uscita dal telefono, nella schermata iniziale di Talo. Qui confermi le ore e finiscono nel foglio presenze.</p>
         </div>
@@ -167,7 +167,7 @@ export default function ClockReview({ date, setDate, records, isHost, onSaved })
                   <ol className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
                     {r.events.map((e) => (
                       <li key={e.id} className="flex items-center gap-1.5 text-sm">
-                        {e.tipo === "entrata" ? <LogIn className="w-3.5 h-3.5 text-emerald-600" aria-label="Entrata" /> : <LogOut className="w-3.5 h-3.5 text-zinc-500" aria-label="Uscita" />}
+                        {e.tipo === "entrata" ? <LogIn className="w-3.5 h-3.5 text-emerald-700" aria-label="Entrata" /> : <LogOut className="w-3.5 h-3.5 text-zinc-500" aria-label="Uscita" />}
                         <span className="tabular-nums font-medium text-zinc-900">{fmtTime(e.at)}</span>
                         {e.worksite_nome && <span className="text-zinc-600">{e.worksite_nome}</span>}
                         <Distance e={e} raggio={settings.raggio_m} />

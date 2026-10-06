@@ -206,12 +206,9 @@ export default function ContactDetail() {
             {info.length ? (
               <dl className="grid sm:grid-cols-2 gap-x-4 gap-y-3">
                 {info.map((r) => (
-                  <div key={r.label} className="flex gap-2 min-w-0">
-                    <r.icon className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
-                    <div className="min-w-0">
-                      <dt className="text-xs text-slate-500">{r.label}</dt>
+                  <div key={r.label} className="relative pl-6 min-w-0">
+                      <dt className="text-xs text-slate-500"><r.icon className="w-4 h-4 text-slate-500 absolute left-0 top-0.5" aria-hidden="true" />{r.label}</dt>
                       <dd className="text-sm text-slate-800 break-words">{r.href ? <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="text-brand-700 hover:underline">{r.value}</a> : r.value}</dd>
-                    </div>
                   </div>
                 ))}
               </dl>

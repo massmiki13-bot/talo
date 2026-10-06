@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { onEnter } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -174,7 +175,7 @@ export default function Quotes() {
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
         <DropdownMenuItem onClick={() => navigate(`/preventivi/${q.id}`)}><Eye className="w-4 h-4 mr-2" /> Apri</DropdownMenuItem>
         <DropdownMenuItem onClick={() => duplicate(q)}><Copy className="w-4 h-4 mr-2" /> Duplica</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setDeleteTarget({ ids: [q.id] })} className="text-red-600 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setDeleteTarget({ ids: [q.id] })} className="text-red-700 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -233,12 +234,12 @@ export default function Quotes() {
           {/* Filtri */}
           <div className="flex flex-col xl:flex-row gap-2 mb-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <Input placeholder="Cerca per numero, cliente, oggetto, lavoro…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-10" aria-label="Cerca preventivi" />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 xl:flex gap-2">
               <Select value={stateFilter} onValueChange={setStateFilter}>
-                <SelectTrigger className="xl:w-44 h-10"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Filtra per stato" className="xl:w-44 h-10"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="tutti">Tutti gli stati</SelectItem>
                   <SelectItem value="aperti">Aperti (senza risposta)</SelectItem>
@@ -246,18 +247,18 @@ export default function Quotes() {
                 </SelectContent>
               </Select>
               <Select value={period} onValueChange={setPeriod}>
-                <SelectTrigger className="xl:w-40 h-10"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Filtra per periodo" className="xl:w-40 h-10"><SelectValue /></SelectTrigger>
                 <SelectContent>{Object.entries(PERIODS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
               </Select>
               <Select value={clientFilter} onValueChange={setClientFilter}>
-                <SelectTrigger className="xl:w-48 h-10"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Filtra per cliente" className="xl:w-48 h-10"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="tutti">Tutti i clienti</SelectItem>
                   {clients.map(([k, name]) => <SelectItem key={k} value={k}>{name}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Select value={sort} onValueChange={setSort}>
-                <SelectTrigger className="xl:w-40 h-10"><ArrowUpDown className="w-4 h-4 text-slate-500" /><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Ordina per" className="xl:w-40 h-10"><ArrowUpDown className="w-4 h-4 text-slate-500" /><SelectValue /></SelectTrigger>
                 <SelectContent>{Object.entries(SORTS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
@@ -306,7 +307,7 @@ export default function Quotes() {
                       const e = expiryDate(q);
                       const days = e ? Math.ceil((e - new Date(new Date().toDateString())) / 86_400_000) : null;
                       return (
-                        <tr key={q.id} className={`cursor-pointer ${selectedIds.has(q.id) ? "bg-brand-50" : "hover:bg-slate-50"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))}>
+                        <tr key={q.id} className={`cursor-pointer ${selectedIds.has(q.id) ? "bg-brand-50" : "hover:bg-slate-50"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))} tabIndex={0} onKeyDown={onEnter(() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`)))}>
                           {selectMode && <td className="px-3 py-3"><input type="checkbox" checked={selectedIds.has(q.id)} onChange={() => toggleSelect(q.id)} onClick={(ev) => ev.stopPropagation()} className="w-4 h-4" aria-label={`Seleziona ${q.numero}`} /></td>}
                           <td className="px-4 py-3">
                             <p className="text-sm font-semibold text-slate-900">{q.numero || "—"}{q.revisione ? <span className="text-xs text-slate-500 font-normal"> · Rev.{q.revisione}</span> : null}</p>
@@ -333,7 +334,7 @@ export default function Quotes() {
 
               <div className="md:hidden space-y-2">
                 {filtered.map((q) => (
-                  <div key={q.id} className={`bg-white rounded-xl border p-3.5 ${selectedIds.has(q.id) ? "border-brand-400 bg-brand-50" : "border-slate-200"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))}>
+                  <div key={q.id} className={`bg-white rounded-xl border p-3.5 ${selectedIds.has(q.id) ? "border-brand-400 bg-brand-50" : "border-slate-200"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))} role="link" tabIndex={0} onKeyDown={onEnter(() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`)))}>
                     <div className="flex items-start gap-2">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-slate-900 truncate">{q.cliente_nome || "—"}</p>
@@ -369,7 +370,7 @@ export default function Quotes() {
                 </div>
                 <div className="flex gap-1 shrink-0">
                   <Button asChild size="sm"><Link to={`/preventivi/nuovo?template=${tpl.id}`} onClick={() => setTplDialog(false)}>Usa</Link></Button>
-                  <Button size="icon" variant="ghost" aria-label="Elimina modello" onClick={async () => { if (confirm("Eliminare questo modello?")) { await db.SavedTemplate.delete(tpl.id); load(); } }}><Trash2 className="w-4 h-4 text-red-600" /></Button>
+                  <Button size="icon" variant="ghost" aria-label="Elimina modello" onClick={async () => { if (confirm("Eliminare questo modello?")) { await db.SavedTemplate.delete(tpl.id); load(); } }}><Trash2 className="w-4 h-4 text-red-700" /></Button>
                 </div>
               </div>
             ))}

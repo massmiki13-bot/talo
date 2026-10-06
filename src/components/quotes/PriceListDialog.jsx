@@ -59,7 +59,7 @@ export default function PriceListDialog({ open, onOpenChange, onAdd, showCosts }
           <DialogDescription>Le voci che usi spesso, con prezzo e unità di misura. Per aggiungerne una: nel preventivo, menu della riga → "Salva nel listino".</DialogDescription>
         </DialogHeader>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cerca nel listino…" className="pl-9" autoFocus aria-label="Cerca nel listino" />
         </div>
         {categories.length > 0 && (
@@ -71,7 +71,7 @@ export default function PriceListDialog({ open, onOpenChange, onAdd, showCosts }
         )}
         <div className="flex-1 overflow-y-auto min-h-[200px] rounded-lg border border-slate-200">
           {loading ? (
-            <div className="py-10 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div>
+            <div className="py-10 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-500" /></div>
           ) : filtered.length === 0 ? (
             <p className="text-sm text-slate-500 text-center py-10 px-6">{items.length ? "Nessuna voce trovata." : "Il listino è vuoto. Salva qui le voci che ripeti spesso dal menu di ogni riga del preventivo."}</p>
           ) : (

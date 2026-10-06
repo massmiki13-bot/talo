@@ -65,7 +65,7 @@ export default function WorksiteMoney({ worksite, contractAmount, extraIncome = 
     <div className="space-y-4">
       <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
         <div className="flex items-center gap-2 mb-3">
-          <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><Euro className="w-4 h-4 text-emerald-600" /> Incassi</h3>
+          <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><Euro className="w-4 h-4 text-emerald-700" /> Incassi</h3>
           {!readOnly && <Button size="sm" className="gap-1.5 bg-emerald-600 hover:bg-emerald-700" onClick={() => setPayOpen(true)}><Plus className="w-4 h-4" /> Registra incasso</Button>}
         </div>
         {contractAmount > 0 ? (

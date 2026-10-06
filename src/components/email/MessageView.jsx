@@ -113,7 +113,7 @@ export default function MessageView({ message, onReply, onReplyAll, onForward, o
             <Button size="sm" variant="outline" className="gap-1.5" onClick={onReplyAll}><ReplyAll className="w-4 h-4" /> Rispondi a tutti</Button>
           )}
           <Button size="sm" variant="outline" className="gap-1.5" onClick={onForward}><Forward className="w-4 h-4" /> Inoltra</Button>
-          <Button size="sm" variant="ghost" className="gap-1.5 text-red-600 hover:text-red-700 ml-auto" onClick={onDelete}><Trash2 className="w-4 h-4" /> Elimina</Button>
+          <Button size="sm" variant="ghost" className="gap-1.5 text-red-700 hover:text-red-700 ml-auto" onClick={onDelete}><Trash2 className="w-4 h-4" /> Elimina</Button>
         </div>
       </div>
 
@@ -125,10 +125,10 @@ export default function MessageView({ message, onReply, onReplyAll, onForward, o
               onClick={() => download(a)}
               className="flex items-center gap-2 rounded-lg border border-slate-200 px-2.5 py-1.5 text-left hover:bg-slate-50 max-w-full"
             >
-              {downloading === a.index ? <Loader2 className="w-4 h-4 animate-spin text-slate-400" /> : <Paperclip className="w-4 h-4 text-slate-500" />}
+              {downloading === a.index ? <Loader2 className="w-4 h-4 animate-spin text-slate-500" /> : <Paperclip className="w-4 h-4 text-slate-500" />}
               <span className="text-sm text-slate-800 truncate max-w-[220px]">{a.name}</span>
               {a.size ? <span className="text-xs text-slate-500">{formatBytes(a.size)}</span> : null}
-              <Download className="w-3.5 h-3.5 text-slate-400" />
+              <Download className="w-3.5 h-3.5 text-slate-500" />
             </button>
           ))}
         </div>

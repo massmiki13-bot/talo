@@ -97,7 +97,7 @@ export default function DocumentPreviewDialog({ open, onOpenChange, fileUrl, tit
             <iframe src={viewUrl || undefined} className="w-full" style={{ height: "60vh", border: "none" }} title={titolo} />
           ) : (
             <div className="p-8 text-center">
-              <FileText className="w-12 h-12 text-slate-400 mx-auto mb-2" />
+              <FileText className="w-12 h-12 text-slate-500 mx-auto mb-2" />
               <p className="text-sm text-slate-500">Anteprima non disponibile per questo formato</p>
             </div>
           )}

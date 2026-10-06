@@ -119,7 +119,7 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
         <div className="flex flex-wrap items-end gap-4">
           <div className="flex-1 min-w-[220px]">
             <p className="text-[11px] uppercase tracking-[0.18em] text-brand-300">{tipo === "soa" ? "Pratica SOA" : "Pratica ISO 9001"}</p>
-            <p className="font-display text-4xl font-bold mt-1 tabular-nums">{prog.pct}%<span className="text-base font-sans font-normal text-zinc-400 ml-2">{prog.done} di {prog.tot} dati pronti</span></p>
+            <p className="font-display text-4xl font-bold mt-1 tabular-nums">{prog.pct}%<span className="text-base font-sans font-normal text-zinc-500 ml-2">{prog.done} di {prog.tot} dati pronti</span></p>
             <div className="h-2 rounded-full bg-zinc-800 mt-3 overflow-hidden"><div className="h-full rounded-full bg-brand-500 transition-all" style={{ width: `${prog.pct}%` }} /></div>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -131,14 +131,14 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
             <Button onClick={exportDoc} variant="secondary" className="gap-2"><Download className="w-4 h-4" />Scarica dossier</Button>
           </div>
         </div>
-        <p className="text-sm text-zinc-400 mt-4">Carica tutti i documenti che hai, anche insieme: l'IA riconosce di cosa si tratta e compila i campi. I dati già presenti in Talo (profilo ditta, dipendenti, mezzi, lavori) sono già inseriti. Non sovrascrive mai quello che hai scritto tu.</p>
+        <p className="text-sm text-zinc-500 mt-4">Carica tutti i documenti che hai, anche insieme: l'IA riconosce di cosa si tratta e compila i campi. I dati già presenti in Talo (profilo ditta, dipendenti, mezzi, lavori) sono già inseriti. Non sovrascrive mai quello che hai scritto tu.</p>
         {queue.length > 0 && (
           <ul className="mt-4 grid sm:grid-cols-2 gap-2">
             {queue.map((q, i) => (
               <li key={`${q.name}-${i}`} className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm">
                 {q.stato === "letto" ? <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> : q.stato === "errore" ? <XCircle className="w-4 h-4 text-red-400 shrink-0" /> : <Loader2 className={`w-4 h-4 shrink-0 ${q.stato === "lettura" ? "animate-spin text-brand-300" : "text-zinc-500"}`} />}
                 <span className="truncate flex-1">{q.name}</span>
-                <span className="text-xs text-zinc-400 shrink-0">{q.stato === "letto" ? `${q.n} dati trovati` : q.stato === "lettura" ? "l'IA sta leggendo…" : q.stato === "errore" ? "non letto" : "in coda"}</span>
+                <span className="text-xs text-zinc-500 shrink-0">{q.stato === "letto" ? `${q.n} dati trovati` : q.stato === "lettura" ? "l'IA sta leggendo…" : q.stato === "errore" ? "non letto" : "in coda"}</span>
               </li>
             ))}
           </ul>
@@ -170,7 +170,7 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
                   return (
                     <label key={f.k} className={`block ${f.type === "textarea" ? "sm:col-span-2" : ""}`}>
                       <span className="flex items-center gap-2 text-xs font-medium text-zinc-600 mb-1">
-                        {String(c?.value ?? "").trim() ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <Circle className="w-3.5 h-3.5 text-zinc-300" />}
+                        {String(c?.value ?? "").trim() ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" /> : <Circle className="w-3.5 h-3.5 text-zinc-300" />}
                         {f.label}
                         {c?.fonte && FONTE[c.fonte] !== "" && <span className={`ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${c.fonte === "ia" ? "bg-violet-100 text-violet-800" : "bg-zinc-100 text-zinc-600"}`}>{FONTE[c.fonte] ?? `da ${c.fonte}`}</span>}
                       </span>
@@ -212,7 +212,7 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
                 const have = (p.documenti || []).filter((x) => x.tipo_documento === d.k);
                 return (
                   <li key={d.k} className="flex gap-2.5">
-                    {have.length ? <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" /> : <Circle className="w-4 h-4 text-zinc-300 mt-0.5 shrink-0" />}
+                    {have.length ? <CheckCircle2 className="w-4 h-4 text-emerald-700 mt-0.5 shrink-0" /> : <Circle className="w-4 h-4 text-zinc-300 mt-0.5 shrink-0" />}
                     <span className="text-sm"><span className={`font-medium ${have.length ? "text-zinc-900" : "text-zinc-700"}`}>{d.label}</span><span className="block text-xs text-zinc-500">{have.length ? have.map((h) => h.nome).join(", ") : d.why}</span></span>
                   </li>
                 );
@@ -237,7 +237,7 @@ function RowsTable({ cols, rows, onChange, onDelete }) {
           {rows.map((r, i) => (
             <tr key={i}>
               {cols.map(([k, l]) => <td key={k} className="px-1 py-1"><Input value={r[k] ?? ""} onChange={(e) => onChange(i, k, e.target.value)} aria-label={l} className={`h-8 text-sm ${["oggetto", "committente"].includes(k) ? "min-w-[160px]" : "min-w-[90px]"}`} /></td>)}
-              <td className="px-1"><button type="button" onClick={() => onDelete(i)} className="p-1.5 text-zinc-400 hover:text-red-600" aria-label="Elimina riga"><Trash2 className="w-4 h-4" /></button></td>
+              <td className="px-1"><button type="button" onClick={() => onDelete(i)} className="p-1.5 text-zinc-500 hover:text-red-600" aria-label="Elimina riga"><Trash2 className="w-4 h-4" /></button></td>
             </tr>
           ))}
         </tbody>

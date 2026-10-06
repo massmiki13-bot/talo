@@ -367,9 +367,9 @@ export default function CompanyDocuments() {
         {VIEWS.map((v) => (
           <li key={v.key}>
             <button onClick={() => openView(v.key)} className={`w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-sm ${view.type === "view" && view.key === v.key ? "bg-brand-50 text-brand-800 font-medium" : "text-slate-700 hover:bg-slate-100"}`}>
-              <v.icon className={`w-4 h-4 ${v.key === "expired" && viewCounts.expired ? "text-red-600" : v.key === "expiring" && viewCounts.expiring ? "text-amber-600" : ""}`} />
+              <v.icon className={`w-4 h-4 ${v.key === "expired" && viewCounts.expired ? "text-red-700" : v.key === "expiring" && viewCounts.expiring ? "text-amber-700" : ""}`} />
               <span className="flex-1 text-left">{v.label}</span>
-              {viewCounts[v.key] > 0 && <span className={`text-xs tabular-nums ${v.key === "expired" ? "text-red-600 font-semibold" : "text-slate-500"}`}>{viewCounts[v.key]}</span>}
+              {viewCounts[v.key] > 0 && <span className={`text-xs tabular-nums ${v.key === "expired" ? "text-red-700 font-semibold" : "text-slate-500"}`}>{viewCounts[v.key]}</span>}
             </button>
           </li>
         ))}
@@ -411,19 +411,19 @@ export default function CompanyDocuments() {
           <div className="bg-white rounded-xl border border-slate-200 p-2.5 flex flex-wrap items-center gap-2">
             <Button variant="outline" size="icon" className="lg:hidden h-9 w-9" onClick={() => setTreeOpen(true)} aria-label="Cartelle"><PanelLeft className="w-4 h-4" /></Button>
             <div className="relative flex-1 min-w-[180px]">
-              <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
               <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={currentFolderId ? "Cerca in questa cartella…" : "Cerca per nome, contenuto, numero, cliente…"} className="pl-8 h-9" />
-              {query && <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" aria-label="Cancella ricerca"><X className="w-4 h-4" /></button>}
+              {query && <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600" aria-label="Cancella ricerca"><X className="w-4 h-4" /></button>}
             </div>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="h-9 w-[160px]"><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Filtra per tipo di documento" className="h-9 w-[160px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tutti i tipi</SelectItem>
                 {DOC_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={sort} onValueChange={(v) => { setSort(v); savePref("sort", v); }}>
-              <SelectTrigger className="h-9 w-[150px]"><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Ordina per" className="h-9 w-[150px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="recent">Più recenti</SelectItem>
                 <SelectItem value="name">Nome A–Z</SelectItem>
@@ -444,11 +444,11 @@ export default function CompanyDocuments() {
               <button onClick={() => openView("all")} className="flex items-center gap-1 text-slate-500 hover:text-slate-900"><Home className="w-4 h-4" /> Archivio</button>
               {crumbs.map((c, i) => (
                 <React.Fragment key={c.id}>
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
                   <button onClick={() => openFolder(c.id)} className={i === crumbs.length - 1 ? "font-semibold text-slate-900" : "text-slate-500 hover:text-slate-900"}>{c.nome}</button>
                 </React.Fragment>
               ))}
-              {!crumbs.length && view.key !== "all" && <><ChevronRight className="w-3.5 h-3.5 text-slate-400" /><span className="font-semibold text-slate-900">{title}</span></>}
+              {!crumbs.length && view.key !== "all" && <><ChevronRight className="w-3.5 h-3.5 text-slate-500" /><span className="font-semibold text-slate-900">{title}</span></>}
             </div>
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer" title="Ogni file caricato viene letto, rinominato e archiviato dall'IA">
@@ -470,7 +470,7 @@ export default function CompanyDocuments() {
               <ul className="space-y-1.5 max-h-48 overflow-y-auto">
                 {queue.map((x) => (
                   <li key={x.id} className="flex items-center gap-2 text-sm">
-                    {x.status === "done" ? <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> : x.status === "error" ? <XCircle className="w-4 h-4 text-red-600 shrink-0" /> : x.status === "partial" ? <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" /> : <Loader2 className="w-4 h-4 animate-spin text-brand-600 shrink-0" />}
+                    {x.status === "done" ? <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" /> : x.status === "error" ? <XCircle className="w-4 h-4 text-red-700 shrink-0" /> : x.status === "partial" ? <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" /> : <Loader2 className="w-4 h-4 animate-spin text-brand-600 shrink-0" />}
                     <button disabled={!x.docId} onClick={() => x.docId && setDetailId(x.docId)} className="truncate text-left text-slate-800 enabled:hover:underline">{x.title || x.name}</button>
                     <span className="ml-auto text-xs text-slate-500 shrink-0 truncate max-w-[45%]">
                       {x.status === "wait" ? "In attesa" : x.status === "upload" ? "Carico…" : x.status === "ai" ? "L'IA sta leggendo…" : x.info}
@@ -597,7 +597,7 @@ function DocRow({ d, folders, showFolder, selected, onSelect, onOpen, onDragStar
     <div draggable onDragStart={onDragStart} onClick={onOpen} className={`grid grid-cols-[28px_1fr] md:grid-cols-[28px_1fr_150px_170px_130px] gap-x-3 gap-y-1 px-3 py-2.5 items-center cursor-pointer ${selected ? "bg-brand-50" : "hover:bg-slate-50"}`}>
       <input type="checkbox" checked={selected} onClick={(e) => e.stopPropagation()} onChange={onSelect} aria-label={`Seleziona ${d.titolo}`} />
       <div className="min-w-0 flex items-center gap-2.5">
-        <Icon className="w-5 h-5 text-slate-400 shrink-0" />
+        <Icon className="w-5 h-5 text-slate-500 shrink-0" />
         <div className="min-w-0">
           <p className="text-sm font-medium text-slate-900 truncate flex items-center gap-1">
             {d.preferito && <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500 shrink-0" />}
@@ -617,7 +617,7 @@ function DocRow({ d, folders, showFolder, selected, onSelect, onOpen, onDragStar
         {showFolder ? (d.cartella_id && folders.some((f) => f.id === d.cartella_id) ? pathLabel(d.cartella_id, folders) : <span className="text-amber-700">Da archiviare</span>) : linked || "—"}
       </span>
       <span className="hidden md:block">
-        {exp ? <span className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${exp.className}`}>{exp.key === "valido" ? new Date(d.data_scadenza).toLocaleDateString("it-IT") : exp.label}</span> : <span className="text-sm text-slate-400">—</span>}
+        {exp ? <span className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${exp.className}`}>{exp.key === "valido" ? new Date(d.data_scadenza).toLocaleDateString("it-IT") : exp.label}</span> : <span className="text-sm text-slate-500">—</span>}
       </span>
     </div>
   );

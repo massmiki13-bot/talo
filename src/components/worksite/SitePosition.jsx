@@ -33,7 +33,7 @@ export default function SitePosition({ lat, lng, indirizzo, onChange }) {
   return (
     <div className="rounded-lg border border-slate-200 p-3">
       <div className="flex flex-wrap items-center gap-2">
-        <MapPin className={`w-4 h-4 ${has ? "text-emerald-600" : "text-slate-500"}`} aria-hidden="true" />
+        <MapPin className={`w-4 h-4 ${has ? "text-emerald-700" : "text-slate-500"}`} aria-hidden="true" />
         <span className="text-sm font-medium text-slate-900">Posizione per le timbrature</span>
         {has && (
           <a href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-700 hover:underline tabular-nums">{lat}, {lng}</a>

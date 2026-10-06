@@ -24,7 +24,7 @@ const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").
 function UploadBox({ label, hint, busy, onFile, accept = "application/pdf,image/*" }) {
   return (
     <label className={`block rounded-2xl border-2 border-dashed border-zinc-300 hover:border-brand-400 hover:bg-brand-50/30 transition-colors p-5 text-center ${busy ? "pointer-events-none opacity-70" : "cursor-pointer"}`}>
-      {busy ? <Loader2 className="w-7 h-7 mx-auto animate-spin text-brand-600" /> : <Upload className="w-7 h-7 mx-auto text-zinc-400" aria-hidden="true" />}
+      {busy ? <Loader2 className="w-7 h-7 mx-auto animate-spin text-brand-600" /> : <Upload className="w-7 h-7 mx-auto text-zinc-500" aria-hidden="true" />}
       <span className="block font-semibold text-zinc-900 mt-2">{busy ? "L'IA sta leggendo il documento…" : label}</span>
       <span className="block text-sm text-zinc-500 mt-0.5">{hint}</span>
       <input type="file" accept={accept} className="hidden" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) onFile(f); }} />
@@ -40,7 +40,7 @@ function Deadlines({ items }) {
         const st = deadlineState(d.data);
         return (
           <li key={`${d.tipo}-${d.key}`} className="py-2.5 flex items-start gap-3">
-            <CalendarClock className="w-4 h-4 text-zinc-400 mt-0.5 shrink-0" aria-hidden="true" />
+            <CalendarClock className="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" aria-hidden="true" />
             <div className="flex-1 min-w-0"><p className="text-sm font-medium text-zinc-900">{d.titolo}</p>{d.nota && <p className="text-xs text-zinc-500">{d.nota}</p>}</div>
             <div className="text-right shrink-0"><p className="text-sm tabular-nums text-zinc-800">{fmt(d.data)}</p><span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${TONE[st.tone]}`}>{st.label}</span></div>
           </li>
@@ -80,7 +80,7 @@ function TenderCheck({ soa }) {
                   const r = canBid(soa, c.codice, c.importo);
                   return (
                     <li key={c.codice} className="flex items-start gap-2 text-sm">
-                      {r.ok ? <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" /> : <XCircle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />}
+                      {r.ok ? <CheckCircle2 className="w-4 h-4 text-emerald-700 mt-0.5 shrink-0" /> : <XCircle className="w-4 h-4 text-red-700 mt-0.5 shrink-0" />}
                       <span><b>{c.codice}</b>{c.prevalente ? " (prevalente)" : ""} · {eur(c.importo)}<span className="block text-zinc-600">{r.motivo}</span></span>
                     </li>
                   );
@@ -240,7 +240,7 @@ function IsoTab({ iso: isoCert, records, profile, ctx }) {
             <button key={k} type="button" onClick={() => gen(k, title)} disabled={!!busy} className="text-left rounded-xl border border-zinc-200 p-4 hover:border-brand-400 hover:bg-brand-50/30 transition-colors flex items-start gap-3 disabled:opacity-60">
               <span className="grid place-items-center w-10 h-10 rounded-xl bg-zinc-950 shrink-0">{busy === k ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <FileText className="w-5 h-5 text-white" />}</span>
               <span className="flex-1"><span className="block font-semibold text-zinc-900">{title}</span><span className="block text-sm text-zinc-500">{busy === k ? "L'IA sta scrivendo…" : sub}</span></span>
-              <Download className="w-4 h-4 text-zinc-400 mt-1" aria-hidden="true" />
+              <Download className="w-4 h-4 text-zinc-500 mt-1" aria-hidden="true" />
             </button>
           ))}
         </div>
@@ -271,7 +271,7 @@ function CertCard({ tipo, q, onUpload, busy }) {
             {!isSoa && q.scopo && <><dt className="text-zinc-500">Campo</dt><dd className="text-zinc-900">{q.scopo}</dd></>}
           </dl>
           {isSoa && q.categorie?.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">{q.categorie.map((c) => <span key={c.codice} title={categoryName(c.codice)} className="rounded-lg bg-zinc-950 text-white text-xs font-semibold px-2.5 py-1">{c.codice} · {c.classifica} <span className="text-zinc-400 font-normal">fino a {eur(classLimit(c.classifica))}</span></span>)}</div>
+            <div className="flex flex-wrap gap-1.5">{q.categorie.map((c) => <span key={c.codice} title={categoryName(c.codice)} className="rounded-lg bg-zinc-950 text-white text-xs font-semibold px-2.5 py-1">{c.codice} · {c.classifica} <span className="text-zinc-500 font-normal">fino a {eur(classLimit(c.classifica))}</span></span>)}</div>
           )}
           {next && <p className={`rounded-xl px-3 py-2 text-sm ${TONE[deadlineState(next.data).tone]}`}><b>{next.titolo}</b> entro il {fmt(next.data)} · {deadlineState(next.data).label}</p>}
         </div>

@@ -57,7 +57,7 @@ export default function WorksiteLog({ worksite, attendance, employees, readOnly 
         <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><BookOpen className="w-4 h-4 text-brand-600" /> Giornale dei lavori</h3>
         {!readOnly && <Button size="sm" className="gap-1.5" onClick={openNew}><Plus className="w-4 h-4" /> Oggi</Button>}
       </div>
-      {loading ? <div className="py-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div>
+      {loading ? <div className="py-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-500" /></div>
         : entries.length === 0 ? <p className="text-sm text-slate-500 py-3">Annota ogni giorno cosa si è fatto, chi c'era e cosa è successo: è la memoria del cantiere e la prova in caso di contestazioni.</p>
         : (
           <ol className="relative border-l border-slate-200 ml-2 space-y-4">
@@ -80,7 +80,7 @@ export default function WorksiteLog({ worksite, attendance, employees, readOnly 
                   )}
                 </div>
                 {e.attivita && <p className="text-sm text-slate-800 mt-1 whitespace-pre-wrap">{e.attivita}</p>}
-                {e.forniture && <p className="text-sm text-slate-600 mt-1 flex gap-1.5"><Truck className="w-4 h-4 shrink-0 mt-0.5 text-slate-400" /><span className="whitespace-pre-wrap">{e.forniture}</span></p>}
+                {e.forniture && <p className="text-sm text-slate-600 mt-1 flex gap-1.5"><Truck className="w-4 h-4 shrink-0 mt-0.5 text-slate-500" /><span className="whitespace-pre-wrap">{e.forniture}</span></p>}
                 {e.problemi && <p className="text-sm text-amber-900 bg-amber-50 rounded px-2 py-1 mt-1 flex gap-1.5"><AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /><span className="whitespace-pre-wrap">{e.problemi}</span></p>}
                 {e.foto?.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">

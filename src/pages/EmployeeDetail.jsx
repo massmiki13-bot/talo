@@ -195,7 +195,7 @@ export default function EmployeeDetail() {
                 <DropdownMenuSeparator />
                 {cessato
                   ? <DropdownMenuItem onClick={() => setCessato(false)}><UserCheck className="w-4 h-4 mr-2" /> Riattiva</DropdownMenuItem>
-                  : <DropdownMenuItem onClick={() => setCessato(true)} className="text-red-600 focus:text-red-700"><UserMinus className="w-4 h-4 mr-2" /> Segna come cessato</DropdownMenuItem>}
+                  : <DropdownMenuItem onClick={() => setCessato(true)} className="text-red-700 focus:text-red-700"><UserMinus className="w-4 h-4 mr-2" /> Segna come cessato</DropdownMenuItem>}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -265,7 +265,7 @@ export default function EmployeeDetail() {
           {!readOnly && (
             <Card icon={Smartphone} title="Accesso all'app">
               {collab ? (
-                <p className="text-sm text-slate-700 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Collegato come <strong>{collab.access_level === "operaio" ? "operaio" : "responsabile"}</strong> ({collab.email})</p>
+                <p className="text-sm text-slate-700 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-700" /> Collegato come <strong>{collab.access_level === "operaio" ? "operaio" : "responsabile"}</strong> ({collab.email})</p>
               ) : (
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                   <p className="text-sm text-slate-600 flex-1">Con l'accesso vede solo le sue ore, i suoi documenti e le sue scadenze.</p>

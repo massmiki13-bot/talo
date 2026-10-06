@@ -1,8 +1,10 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { useAutoLabel } from "@/lib/autoLabel"
 
-const Textarea = React.forwardRef(({ className, ...props }, ref) => {
+const Textarea = React.forwardRef(({ className, ...props }, forwardedRef) => {
+  const ref = useAutoLabel(forwardedRef)
   return (
     (<textarea
       className={cn(

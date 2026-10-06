@@ -113,7 +113,7 @@ export default function TemplatesDialog({ open, onOpenChange }) {
             </div>
           </div>
         ) : loading ? (
-          <div className="py-10 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-400" /></div>
+          <div className="py-10 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>
         ) : (
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
@@ -133,7 +133,7 @@ export default function TemplatesDialog({ open, onOpenChange }) {
                       <p className="text-xs text-slate-500 truncate">{TEMPLATE_TYPES.find((x) => x.value === t.tipo)?.label || "Generico"} · {t.oggetto}</p>
                     </div>
                     <Button size="icon" variant="ghost" aria-label="Modifica" onClick={() => setEditing({ ...EMPTY, ...t })}><Pencil className="w-4 h-4" /></Button>
-                    <Button size="icon" variant="ghost" aria-label="Elimina" onClick={() => remove(t)}><Trash2 className="w-4 h-4 text-red-600" /></Button>
+                    <Button size="icon" variant="ghost" aria-label="Elimina" onClick={() => remove(t)}><Trash2 className="w-4 h-4 text-red-700" /></Button>
                   </li>
                 ))}
               </ul>

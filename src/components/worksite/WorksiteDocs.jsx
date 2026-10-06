@@ -82,7 +82,7 @@ export default function WorksiteDocs({ worksite, readOnly }) {
                 {st && <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${st === "expired" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{st === "expired" ? "Scaduto" : "In scadenza"}</span>}
                 {!readOnly && (
                   <button type="button" onClick={async () => { const u = await db.CompanyDocument.update(d.id, { visibile_cliente: !d.visibile_cliente }); setDocs((l) => l.map((x) => (x.id === u.id ? u : x))); }}
-                    className={`p-1.5 rounded ${d.visibile_cliente ? "text-emerald-700 hover:bg-emerald-50" : "text-slate-400 hover:bg-slate-100"}`}
+                    className={`p-1.5 rounded ${d.visibile_cliente ? "text-emerald-700 hover:bg-emerald-50" : "text-slate-500 hover:bg-slate-100"}`}
                     aria-pressed={!!d.visibile_cliente} aria-label={d.visibile_cliente ? "Visibile nell'area cliente: nascondi" : "Mostra nell'area cliente"} title={d.visibile_cliente ? "Visibile al cliente" : "Non visibile al cliente"}>
                     {d.visibile_cliente ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                   </button>

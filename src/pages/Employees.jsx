@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { onEnter } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -113,13 +114,13 @@ export default function Employees() {
 
       <div className="flex flex-col sm:flex-row gap-2 mb-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input placeholder="Cerca per nome, codice fiscale, mansione…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-10" aria-label="Cerca dipendenti" />
           {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-slate-100"><X className="w-3.5 h-3.5 text-slate-500" /></button>}
         </div>
         {roles.length > 0 && (
           <Select value={role} onValueChange={setRole}>
-            <SelectTrigger className="sm:w-52 h-10"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Filtra per mansione" className="sm:w-52 h-10"><SelectValue /></SelectTrigger>
             <SelectContent><SelectItem value="tutte">Tutte le mansioni</SelectItem>{roles.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
           </Select>
         )}
@@ -150,7 +151,7 @@ export default function Employees() {
                 {filtered.map((e) => {
                   const st = COMPLIANCE_STYLE[e._c.livello];
                   return (
-                    <tr key={e.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate(`/dipendenti/${e.id}`)}>
+                    <tr key={e.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate(`/dipendenti/${e.id}`)} tabIndex={0} onKeyDown={onEnter(() => navigate(`/dipendenti/${e.id}`))}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <Avatar e={e} />
@@ -186,14 +187,14 @@ export default function Employees() {
             {filtered.map((e) => {
               const st = COMPLIANCE_STYLE[e._c.livello];
               return (
-                <div key={e.id} onClick={() => navigate(`/dipendenti/${e.id}`)} className="bg-white rounded-xl border border-slate-200 p-3.5 flex items-center gap-3 active:bg-slate-50">
+                <div key={e.id} onClick={() => navigate(`/dipendenti/${e.id}`)} role="link" tabIndex={0} onKeyDown={onEnter(() => navigate(`/dipendenti/${e.id}`))} className="bg-white rounded-xl border border-slate-200 p-3.5 flex items-center gap-3 active:bg-slate-50">
                   <Avatar e={e} size="w-11 h-11" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-slate-900 truncate">{fullName(e)}</p>
                     <p className="text-xs text-slate-500 truncate">{e.ruolo || "—"}</p>
                     <p className="text-xs mt-0.5 flex items-center gap-1.5 text-slate-700"><span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />{e._c.problemi[0]?.testo || st.label}</p>
                   </div>
-                  {e._c.livello === "critico" && <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" aria-label="Non in regola" />}
+                  {e._c.livello === "critico" && <AlertTriangle className="w-4 h-4 text-red-700 shrink-0" aria-label="Non in regola" />}
                   <ChevronRight className="w-4 h-4 text-slate-300" />
                 </div>
               );

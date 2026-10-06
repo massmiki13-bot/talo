@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { onEnter } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -161,13 +162,13 @@ export default function Worksites() {
 
       <div className="flex flex-col lg:flex-row gap-2 mb-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input placeholder="Cerca per lavoro, cliente, indirizzo…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-10" aria-label="Cerca lavori" />
           {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-slate-100"><X className="w-3.5 h-3.5 text-slate-500" /></button>}
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:flex gap-2">
           <Select value={state} onValueChange={setState}>
-            <SelectTrigger className="lg:w-44 h-10"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Filtra per stato" className="lg:w-44 h-10"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="attivi">Non finiti</SelectItem>
               <SelectItem value="tutti">Tutti</SelectItem>
@@ -178,12 +179,12 @@ export default function Worksites() {
           </Select>
           {capi.length > 0 && (
             <Select value={capo} onValueChange={setCapo}>
-              <SelectTrigger className="lg:w-48 h-10"><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Filtra per capocantiere" className="lg:w-48 h-10"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="tutti">Tutti i capocantiere</SelectItem>{capi.map((c) => <SelectItem key={c.id} value={c.id}>{fullName(c)}</SelectItem>)}</SelectContent>
             </Select>
           )}
           <Select value={sort} onValueChange={setSort}>
-            <SelectTrigger className="lg:w-44 h-10"><ArrowUpDown className="w-4 h-4 text-slate-500" /><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Ordina per" className="lg:w-44 h-10"><ArrowUpDown className="w-4 h-4 text-slate-500" /><SelectValue /></SelectTrigger>
             <SelectContent>{Object.entries(SORTS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
           </Select>
         </div>
@@ -199,7 +200,7 @@ export default function Worksites() {
             const st = WORKSITE_STATES[w.stato] || WORKSITE_STATES.da_iniziare;
             const loss = w._econ.margineReale < 0 && w._econ.costi > 0;
             return (
-              <div key={w.id} onClick={() => navigate(`/lavori/${w.id}`)} className="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-brand-300 hover:shadow-sm transition">
+              <div key={w.id} onClick={() => navigate(`/lavori/${w.id}`)} role="link" tabIndex={0} onKeyDown={onEnter(() => navigate(`/lavori/${w.id}`))} className="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-brand-300 hover:shadow-sm transition">
                 <div className="flex items-start gap-2">
                   <div className="min-w-0 flex-1">
                     <h3 className="font-semibold text-slate-900 truncate">{w.nome}</h3>
@@ -209,7 +210,7 @@ export default function Worksites() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild><button onClick={(e) => e.stopPropagation()} aria-label="Azioni" className="p-1 rounded hover:bg-slate-100 text-slate-500"><MoreHorizontal className="w-4 h-4" /></button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenuItem onClick={() => setDeleteTarget(w)} className="text-red-600 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setDeleteTarget(w)} className="text-red-700 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

@@ -117,7 +117,7 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
             <div className="flex items-start gap-2 pr-8">
               <SheetTitle className="text-lg leading-snug flex-1">{doc.titolo}</SheetTitle>
               <button onClick={toggleFav} className="p-1 rounded hover:bg-slate-100" aria-label={doc.preferito ? "Togli dai preferiti" : "Aggiungi ai preferiti"}>
-                <Star className={`w-5 h-5 ${doc.preferito ? "fill-amber-400 text-amber-500" : "text-slate-400"}`} />
+                <Star className={`w-5 h-5 ${doc.preferito ? "fill-amber-400 text-amber-500" : "text-slate-500"}`} />
               </button>
             </div>
             <p className="text-sm text-slate-500">
@@ -196,7 +196,7 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
             )}
 
             <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100 sticky bottom-0 bg-white pb-1">
-              <Button variant="ghost" className="text-red-600 hover:text-red-700 hover:bg-red-50 gap-1.5" onClick={() => onDelete(doc)}><Trash2 className="w-4 h-4" /> Elimina</Button>
+              <Button variant="ghost" className="text-red-700 hover:text-red-700 hover:bg-red-50 gap-1.5" onClick={() => onDelete(doc)}><Trash2 className="w-4 h-4" /> Elimina</Button>
               <Button onClick={save} disabled={!dirty || saving} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva</Button>
             </div>
           </div>

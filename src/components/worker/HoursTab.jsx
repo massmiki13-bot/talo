@@ -97,7 +97,7 @@ export default function HoursTab({ home, t, lang, onSent }) {
           <div className="rounded-xl bg-zinc-50 p-2.5"><p className="font-display text-2xl font-bold tabular-nums">{tot.giorni}</p><p className="text-xs text-zinc-600">{t("giorni_lavorati")}</p></div>
           <div className="rounded-xl bg-zinc-50 p-2.5"><p className="font-display text-2xl font-bold tabular-nums">{tot.extra.toLocaleString("it-IT")}</p><p className="text-xs text-zinc-600">{t("straordinari")}</p></div>
         </div>
-        {records === null ? <div className="py-8 grid place-items-center"><Loader2 className="w-6 h-6 animate-spin text-zinc-400" /></div> : (
+        {records === null ? <div className="py-8 grid place-items-center"><Loader2 className="w-6 h-6 animate-spin text-zinc-500" /></div> : (
           <div className="grid grid-cols-7 gap-1 mt-3">
             {["L", "M", "M", "G", "V", "S", "D"].map((d, i) => <span key={i} className="text-center text-[11px] text-zinc-500 font-medium">{d}</span>)}
             {cells.map((d, i) => d ? (

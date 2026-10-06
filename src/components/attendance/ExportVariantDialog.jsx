@@ -59,7 +59,7 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
             className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-colors ${format === "pdf" ? "border-red-500 bg-red-50/50" : "border-slate-200 hover:bg-slate-50"}`}
           >
             <div className="w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
-              <FileText className="w-5 h-5 text-red-600" />
+              <FileText className="w-5 h-5 text-red-700" />
             </div>
             <div className="text-left">
               <p className="text-sm font-semibold text-slate-800">PDF</p>
@@ -71,7 +71,7 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
             className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-colors ${format === "excel" ? "border-green-500 bg-green-50/50" : "border-slate-200 hover:bg-slate-50"}`}
           >
             <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
-              <FileSpreadsheet className="w-5 h-5 text-green-600" />
+              <FileSpreadsheet className="w-5 h-5 text-green-700" />
             </div>
             <div className="text-left">
               <p className="text-sm font-semibold text-slate-800">Excel (.xls)</p>
@@ -120,7 +120,7 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
           <div className="mt-2 space-y-3">
             <div className="rounded-xl border-2 border-slate-200 p-4 flex items-start gap-3">
               <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
-                <FileSpreadsheet className="w-5 h-5 text-green-600" />
+                <FileSpreadsheet className="w-5 h-5 text-green-700" />
               </div>
               <div>
                 <h3 className="font-semibold text-slate-900 text-sm">Foglio di calcolo Excel</h3>

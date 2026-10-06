@@ -213,7 +213,7 @@ export default function EmailAccountsSettings({ profile }) {
   };
 
   const providerIcon = (a) => {
-    if (a.provider === 'gmail_oauth') return <Shield className="w-4 h-4 text-green-600" />;
+    if (a.provider === 'gmail_oauth') return <Shield className="w-4 h-4 text-green-700" />;
     return <Mail className="w-4 h-4 text-slate-500" />;
   };
 
@@ -268,7 +268,7 @@ export default function EmailAccountsSettings({ profile }) {
       ) : accounts.length === 0 ? (
         <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-xl mt-4">
           <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
-            <Mail className="w-6 h-6 text-slate-400" />
+            <Mail className="w-6 h-6 text-slate-500" />
           </div>
           <p className="text-sm font-medium text-slate-700">Nessuna email collegata</p>
           <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">Collega la tua casella per inviare documenti direttamente dal tuo indirizzo (amministrazione, preventivi, direzione…)</p>
@@ -362,7 +362,7 @@ export default function EmailAccountsSettings({ profile }) {
             </div>
           </div>
           <div className="flex gap-2.5 items-start bg-amber-50 border border-amber-100 rounded-lg p-2.5 mt-2">
-            <Shield className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+            <Shield className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-amber-700">
               Per SMTP (Aruba, Outlook, PEC…) usa una <strong>password per app</strong> dedicata, mai la password principale.
               Su Gmail: Impostazioni → Sicurezza → Verifica in 2 passaggi → Password per app.
@@ -393,7 +393,7 @@ export default function EmailAccountsSettings({ profile }) {
 
             {form.provider === "gmail_oauth" && (
               <div className="bg-green-50 border border-green-100 rounded-lg p-3 flex gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-green-700 flex-shrink-0 mt-0.5" />
                 <div className="text-xs text-green-700 space-y-1">
                   <p className="font-semibold">Permesso di invio attivo ✓</p>
                   <p>L'app è autorizzata a inviare email dal tuo indirizzo Gmail tramite OAuth sicuro (nessuna password richiesta). Inserisci qui sotto il tuo indirizzo Gmail.</p>

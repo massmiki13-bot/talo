@@ -255,7 +255,7 @@ Cordiali saluti`,
 
             <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-100">
               <div className="flex gap-1">
-                <Button variant="ghost" className="text-red-600 hover:text-red-700 hover:bg-red-50 gap-1.5" onClick={() => onDelete(contract)}><Trash2 className="w-4 h-4" /> Elimina</Button>
+                <Button variant="ghost" className="text-red-700 hover:text-red-700 hover:bg-red-50 gap-1.5" onClick={() => onDelete(contract)}><Trash2 className="w-4 h-4" /> Elimina</Button>
                 {contract.stato !== "annullato" && <Button variant="ghost" className="text-slate-600" onClick={() => confirm("Segnare il contratto come annullato?") && setStato("annullato")}>Annulla contratto</Button>}
               </div>
               <Button variant="outline" className="gap-1.5" onClick={() => onDuplicate(contract)}><Copy className="w-4 h-4" /> Duplica</Button>

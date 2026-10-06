@@ -314,17 +314,17 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
         <DialogContent className="max-w-3xl w-[calc(100vw-1.5rem)] max-h-[92vh] overflow-y-auto p-0 gap-0">
           <DialogHeader className="px-5 pt-5 pb-3 border-b border-slate-100">
             <DialogTitle className="flex items-center gap-2">
-              {isPec ? <ShieldCheck className="w-5 h-5 text-emerald-600" /> : <Send className="w-5 h-5 text-brand-600" />}
+              {isPec ? <ShieldCheck className="w-5 h-5 text-emerald-700" /> : <Send className="w-5 h-5 text-brand-600" />}
               {draftId ? "Bozza" : isPec ? "Nuova PEC" : "Nuovo messaggio"}
             </DialogTitle>
             <DialogDescription className="sr-only">Scrivi e invia un messaggio di posta</DialogDescription>
           </DialogHeader>
 
           {loadingAccounts ? (
-            <div className="py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-400" /></div>
+            <div className="py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>
           ) : accounts.length === 0 ? (
             <div className="p-8 text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mx-auto"><AlertTriangle className="w-6 h-6 text-amber-600" /></div>
+              <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mx-auto"><AlertTriangle className="w-6 h-6 text-amber-700" /></div>
               <p className="font-semibold text-slate-800">Nessuna casella collegata</p>
               <p className="text-sm text-slate-500 max-w-sm mx-auto">Per inviare email o PEC dal tuo indirizzo collega prima una casella in Profilo Ditta. Bastano indirizzo e password per app.</p>
               <Button asChild className="gap-2"><Link to="/profilo-ditta#caselle-email" onClick={() => onOpenChange(false)}><Settings className="w-4 h-4" /> Collega una casella</Link></Button>
@@ -449,7 +449,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
                   </Button>
                   <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
                   {files.length > 0 && (
-                    <span className={`text-xs ml-auto ${totalSize > MAX_ATTACHMENTS_BYTES * 0.9 ? "text-red-600" : "text-slate-500"}`}>
+                    <span className={`text-xs ml-auto ${totalSize > MAX_ATTACHMENTS_BYTES * 0.9 ? "text-red-700" : "text-slate-500"}`}>
                       {formatBytes(totalSize)} di 20 MB
                     </span>
                   )}

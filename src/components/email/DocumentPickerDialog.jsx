@@ -115,7 +115,7 @@ export default function DocumentPickerDialog({ open, onOpenChange, onSelect, pro
 
   const renderDocList = (items, type) => {
     if (loading) {
-      return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-slate-400" /></div>;
+      return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>;
     }
     if (!items || items.length === 0) {
       return <p className="text-sm text-slate-500 text-center py-8">Nessun documento disponibile</p>;
@@ -137,9 +137,9 @@ export default function DocumentPickerDialog({ open, onOpenChange, onSelect, pro
               {isGenerating ? (
                 <Loader2 className="w-4 h-4 animate-spin text-brand-500 flex-shrink-0" />
               ) : isSelected ? (
-                <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <Check className="w-4 h-4 text-green-700 flex-shrink-0" />
               ) : (
-                <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                <FileText className="w-4 h-4 text-slate-500 flex-shrink-0" />
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-700 truncate">

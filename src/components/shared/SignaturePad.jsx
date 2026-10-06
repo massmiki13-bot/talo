@@ -131,7 +131,7 @@ export default function SignaturePad({ value, onChange, label = "Firma" }) {
         <p className="text-xs text-slate-500 mt-1 text-center">Firma con il dito/mouse o carica un'immagine</p>
       )}
       {hasDrawn && (
-        <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1">
+        <p className="text-xs text-emerald-700 mt-1 flex items-center gap-1">
           <Check className="w-3 h-3" /> Firma apposta
         </p>
       )}

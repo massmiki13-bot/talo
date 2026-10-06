@@ -201,17 +201,17 @@ export default function Reminders() {
 
       {/* Riepilogo */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat icon={AlertTriangle} label="In ritardo" value={stats.overdue} tone={stats.overdue ? "text-red-600" : "text-slate-400"} />
+        <Stat icon={AlertTriangle} label="In ritardo" value={stats.overdue} tone={stats.overdue ? "text-red-700" : "text-slate-500"} />
         <Stat icon={Bell} label="Oggi" value={stats.today} tone="text-brand-600" />
         <Stat icon={CalendarIcon} label="Prossimi 7 giorni" value={stats.week} tone="text-slate-700" />
-        <Stat icon={CheckCircle2} label="Completati (30 gg)" value={stats.done30} tone="text-emerald-600" />
+        <Stat icon={CheckCircle2} label="Completati (30 gg)" value={stats.done30} tone="text-emerald-700" />
       </div>
 
       {/* Inserimento rapido */}
       <form onSubmit={quickAdd} className="bg-white rounded-xl border border-slate-200 p-2 flex items-center gap-2 mb-4">
         <Sparkles className="w-4 h-4 text-brand-600 ml-2 shrink-0" />
-        <Input value={quick} onChange={(e) => setQuick(e.target.value)} placeholder='Scrivi come parli: "chiamare Bianchi venerdì alle 10", "pagare F24 il 16 ogni mese"…' className="border-0 shadow-none focus-visible:ring-0 h-9" />
-        <Button type="submit" disabled={!quick.trim() || quickBusy} className="bg-brand-600 hover:bg-brand-700 shrink-0 gap-1.5">
+        <Input value={quick} onChange={(e) => setQuick(e.target.value)} aria-label="Nuovo promemoria in parole tue" placeholder='Scrivi come parli: "chiamare Bianchi venerdì alle 10", "pagare F24 il 16 ogni mese"…' className="border-0 shadow-none focus-visible:ring-0 h-9" />
+        <Button type="submit" aria-label="Aggiungi promemoria" disabled={!quick.trim() || quickBusy} className="bg-brand-600 hover:bg-brand-700 shrink-0 gap-1.5">
           {quickBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}<span className="hidden sm:inline">Aggiungi</span>
         </Button>
       </form>
@@ -225,15 +225,15 @@ export default function Reminders() {
         </div>
         <div className="flex flex-wrap gap-2 md:ml-auto">
           <div className="relative flex-1 min-w-[160px]">
-            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cerca…" className="pl-8 h-9" />
           </div>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="h-9 w-[170px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Filtra per categoria" className="h-9 w-[170px]"><SelectValue /></SelectTrigger>
             <SelectContent><SelectItem value="all">Tutte le categorie</SelectItem>{REMINDER_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
           </Select>
           <Select value={prioFilter} onValueChange={setPrioFilter}>
-            <SelectTrigger className="h-9 w-[140px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Filtra per priorità" className="h-9 w-[140px]"><SelectValue /></SelectTrigger>
             <SelectContent><SelectItem value="all">Ogni priorità</SelectItem>{PRIORITIES.map((p) => <SelectItem key={p.value} value={p.value}>Priorità {p.label.toLowerCase()}</SelectItem>)}</SelectContent>
           </Select>
         </div>
@@ -330,11 +330,11 @@ function ReminderRow({ r, today, showDate, onComplete, onSnooze, onEdit, onDelet
         {r.completato && <Check className="w-3 h-3" />}
       </button>
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${r.completato ? "line-through text-slate-400" : "text-slate-900"}`}>
-          {r.priorita === "alta" && !r.completato && <span className="text-red-600 mr-1">!</span>}{r.titolo}
+        <p className={`text-sm font-medium ${r.completato ? "line-through text-slate-500" : "text-slate-900"}`}>
+          {r.priorita === "alta" && !r.completato && <span className="text-red-700 mr-1">!</span>}{r.titolo}
         </p>
         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1 text-xs text-slate-500">
-          {(showDate || overdue) && <span className={overdue ? "text-red-600 font-medium" : ""}>{fmtDay(r.data)}</span>}
+          {(showDate || overdue) && <span className={overdue ? "text-red-700 font-medium" : ""}>{fmtDay(r.data)}</span>}
           {r.ora && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{r.ora}</span>}
           <span className={`px-1.5 py-0.5 rounded ${t.color}`}>{t.label}</span>
           {r.ricorrenza && r.ricorrenza !== "nessuna" && <span className="flex items-center gap-1"><Repeat className="w-3 h-3" />{RECURRENCES.find((x) => x.value === r.ricorrenza)?.label}</span>}
@@ -368,7 +368,7 @@ function ReminderRow({ r, today, showDate, onComplete, onSnooze, onEdit, onDelet
             <DropdownMenuItem onClick={() => onEdit(r)}><Pencil className="w-4 h-4 mr-2" /> Modifica</DropdownMenuItem>
             {r.completato && <DropdownMenuItem onClick={() => onComplete(r)}><RotateCcw className="w-4 h-4 mr-2" /> Riapri</DropdownMenuItem>}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onDelete(r)} className="text-red-600"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onDelete(r)} className="text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -413,7 +413,7 @@ function MonthCalendar({ month, setMonth, reminders, today, onDay, onNew }) {
                   <span className={`inline-grid place-items-center w-6 h-6 text-xs rounded-full ${d === today ? "bg-brand-600 text-white font-semibold" : "text-slate-700"}`}>{Number(d.slice(8))}</span>
                   <div className="hidden sm:block space-y-0.5 mt-0.5">
                     {list.slice(0, 3).map((r) => (
-                      <p key={r.id} className={`text-[11px] leading-tight truncate px-1 py-0.5 rounded ${r.completato ? "line-through text-slate-400" : r.data < today ? "bg-red-50 text-red-700" : reminderType(r.tipo).color}`}>{r.ora ? `${r.ora} ` : ""}{r.titolo}</p>
+                      <p key={r.id} className={`text-[11px] leading-tight truncate px-1 py-0.5 rounded ${r.completato ? "line-through text-slate-500" : r.data < today ? "bg-red-50 text-red-700" : reminderType(r.tipo).color}`}>{r.ora ? `${r.ora} ` : ""}{r.titolo}</p>
                     ))}
                     {list.length > 3 && <p className="text-[11px] text-slate-500 px-1">+{list.length - 3} altri</p>}
                   </div>

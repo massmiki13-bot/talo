@@ -379,7 +379,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                 ))}
               </div>
               <Select onValueChange={(id) => { const e = ctx.employees.find((x) => x.id === id); if (e && !(d.lavoratori || []).some((l) => l.id === id)) set("lavoratori", [...(d.lavoratori || []), workerRow(e, ctx.empDocs)]); }}>
-                <SelectTrigger className="mt-3 w-64"><SelectValue placeholder="+ Aggiungi un dipendente" /></SelectTrigger>
+                <SelectTrigger aria-label="Aggiungi un dipendente" className="mt-3 w-64"><SelectValue placeholder="+ Aggiungi un dipendente" /></SelectTrigger>
                 <SelectContent>{ctx.employees.filter((e) => !(d.lavoratori || []).some((l) => l.id === e.id)).map((e) => <SelectItem key={e.id} value={e.id}>{`${e.nome || ""} ${e.cognome || ""}`}</SelectItem>)}</SelectContent>
               </Select>
               <Area label="Note su informazione e formazione fornite ai lavoratori" v={d.formazione_note} on={(v) => set("formazione_note", v)} rows={3} />

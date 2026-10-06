@@ -70,7 +70,7 @@ export default function ExcelImportDialog({ kind, open, onOpenChange, existing =
           <div className="space-y-4">
             <button type="button" onClick={() => inputRef.current?.click()} disabled={!!busy}
               className="w-full rounded-2xl border-2 border-dashed border-zinc-300 hover:border-brand-400 hover:bg-brand-50/40 p-8 text-center transition-colors">
-              {busy === "read" ? <Loader2 className="w-10 h-10 text-zinc-400 mx-auto mb-2 animate-spin" /> : <FileSpreadsheet className="w-10 h-10 text-zinc-400 mx-auto mb-2" aria-hidden="true" />}
+              {busy === "read" ? <Loader2 className="w-10 h-10 text-zinc-500 mx-auto mb-2 animate-spin" /> : <FileSpreadsheet className="w-10 h-10 text-zinc-500 mx-auto mb-2" aria-hidden="true" />}
               <p className="font-medium text-zinc-900">Scegli il file</p>
               <p className="text-sm text-zinc-500 mt-1">Le colonne vengono riconosciute dai nomi (es. {cfg.template.headers.slice(0, 3).join(", ")}…); quelle in più vengono ignorate.</p>
             </button>
@@ -94,7 +94,7 @@ export default function ExcelImportDialog({ kind, open, onOpenChange, existing =
                 </thead>
                 <tbody className="divide-y divide-zinc-100">
                   {rows.map((r, i) => (
-                    <tr key={i} className={r.skip ? "bg-zinc-50 text-zinc-400" : ""}>
+                    <tr key={i} className={r.skip ? "bg-zinc-50 text-zinc-500" : ""}>
                       {cfg.preview.map(([h, fn]) => <td key={h} className={`px-3 py-1.5 ${r.skip ? "line-through" : ""}`}>{fn(r.data) || "—"}</td>)}
                       <td className="px-3 py-1.5 text-xs text-amber-800">{r.issues.join(", ")}</td>
                     </tr>

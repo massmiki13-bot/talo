@@ -190,7 +190,7 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
                   <td className="px-4 py-3 text-sm hidden md:table-cell">
                     {doc.data_scadenza ? (
                       <div className="space-y-1.5">
-                        <span className={`flex items-center gap-1 ${isExpired(doc.data_scadenza) ? "text-red-600" : isExpiringSoon(doc.data_scadenza) ? "text-amber-600" : "text-slate-600"}`}>
+                        <span className={`flex items-center gap-1 ${isExpired(doc.data_scadenza) ? "text-red-700" : isExpiringSoon(doc.data_scadenza) ? "text-amber-700" : "text-slate-600"}`}>
                           {(isExpired(doc.data_scadenza) || isExpiringSoon(doc.data_scadenza)) && <AlertTriangle className="w-3 h-3" />}
                           {new Date(doc.data_scadenza).toLocaleDateString("it-IT")}
                         </span>
@@ -292,7 +292,7 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
                     onChange={e => setForm(prev => ({ ...prev, data_scadenza: e.target.value }))}
                   />
                   {form.scadenza_mode === "ia" && form.data_scadenza && (
-                    <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                    <p className="text-xs text-amber-700 mt-1 flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />
                       Data rilevata dall'IA — verifica e correggi se necessario.
                     </p>
@@ -316,7 +316,7 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
               {uploading && <p className="text-xs text-slate-500 mt-1">Caricamento...</p>}
               {form.file_url && (
                 <div className="flex items-center gap-2 mt-2">
-                  <p className="text-xs text-emerald-600">File caricato ✓</p>
+                  <p className="text-xs text-emerald-700">File caricato ✓</p>
                   <Button size="sm" variant="outline" onClick={() => openReader(form.file_url)} className="h-7 text-xs gap-1">
                     <ScanLine className="w-3 h-3" /> Leggi con IA
                   </Button>

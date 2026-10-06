@@ -60,7 +60,7 @@ export default function PublicSign() {
       </main>
     );
   }
-  if (!data) return <main className="min-h-screen grid place-items-center"><Loader2 className="w-7 h-7 animate-spin text-zinc-400" aria-label="Caricamento" /></main>;
+  if (!data) return <main className="min-h-screen grid place-items-center"><Loader2 className="w-7 h-7 animate-spin text-zinc-500" aria-label="Caricamento" /></main>;
 
   const p = data.profile || {};
   const alreadySigned = !pos && data.firmato;
@@ -145,14 +145,14 @@ export default function PublicSign() {
         <div className="border-t border-zinc-200 bg-zinc-50 px-5 py-6">
           {done ? (
             <div className="text-center py-4">
-              <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" aria-hidden="true" />
+              <CheckCircle2 className="w-12 h-12 text-emerald-700 mx-auto" aria-hidden="true" />
               <h2 className="text-lg font-semibold text-zinc-900 mt-3">Firma registrata</h2>
               <p className="text-sm text-zinc-600 mt-1">{pos ? "Grazie: la tua presa visione è stata inviata all'impresa." : "Grazie: il contratto firmato è stato inviato all'impresa."}</p>
               {pos && <Button variant="outline" className="mt-5" onClick={signAnother}>Firma per un'altra persona</Button>}
             </div>
           ) : alreadySigned ? (
             <div className="text-center py-4">
-              <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" aria-hidden="true" />
+              <CheckCircle2 className="w-12 h-12 text-emerald-700 mx-auto" aria-hidden="true" />
               <h2 className="text-lg font-semibold text-zinc-900 mt-3">Contratto già firmato</h2>
               <p className="text-sm text-zinc-600 mt-1">Firmato da {data.firmato.nome} il {dt(data.firmato.data)}.</p>
             </div>

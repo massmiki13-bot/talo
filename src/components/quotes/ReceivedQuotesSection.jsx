@@ -204,7 +204,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
     <div>
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input placeholder="Cerca per mittente o descrizione..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10 h-10" />
         </div>
         <Button
@@ -381,7 +381,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
               <div className="mt-1">
                 <label className="cursor-pointer">
                   <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:border-brand-400 transition-colors min-h-[56px] flex items-center justify-center">
-                    {uploading ? <p className="text-xs text-slate-500">Caricamento...</p> : fileUrl ? <p className="text-xs text-emerald-600">✓ File caricato — tocca per cambiare</p> : <><Upload className="w-6 h-6 text-slate-400 mx-auto mb-1" /><p className="text-xs text-slate-500">Carica PDF, immagine o documento</p></>}
+                    {uploading ? <p className="text-xs text-slate-500">Caricamento...</p> : fileUrl ? <p className="text-xs text-emerald-700">✓ File caricato — tocca per cambiare</p> : <><Upload className="w-6 h-6 text-slate-500 mx-auto mb-1" /><p className="text-xs text-slate-500">Carica PDF, immagine o documento</p></>}
                   </div>
                   <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx" className="hidden" onChange={handleFileUpload} />
                 </label>

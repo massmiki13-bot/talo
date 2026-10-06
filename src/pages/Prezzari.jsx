@@ -102,11 +102,11 @@ export default function Prezzari() {
             <h2 className="text-sm font-semibold text-slate-900 mb-3">Cerca nelle voci</h2>
             <form onSubmit={search} className="flex flex-wrap gap-2">
               <div className="relative flex-1 min-w-[220px]">
-                <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
                 <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="es. intonaco civile, massetto sabbia cemento, oppure un codice" className="pl-8" />
               </div>
               <Select value={scope} onValueChange={setScope}>
-                <SelectTrigger className="w-[220px]"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Prezzario in cui cercare" className="w-[220px]"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="all">Tutti i prezzari</SelectItem>{list.map((p) => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent>
               </Select>
               <Button type="submit" disabled={searching || !query.trim()} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />} Cerca</Button>
@@ -227,7 +227,7 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
               <Label>{meta.tipo === "comunale" ? "Comune" : "Ente / regione"}</Label>
               {meta.tipo === "regionale" ? (
                 <Select value={meta.ente || undefined} onValueChange={(v) => setMeta({ ...meta, ente: v })}>
-                  <SelectTrigger className="mt-1"><SelectValue placeholder="Scegli" /></SelectTrigger>
+                  <SelectTrigger aria-label="Ente" className="mt-1"><SelectValue placeholder="Scegli" /></SelectTrigger>
                   <SelectContent>{REGIONI.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
                 </Select>
               ) : <Input value={meta.ente} onChange={(e) => setMeta({ ...meta, ente: e.target.value })} className="mt-1" />}
@@ -244,7 +244,7 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
             <input ref={input} type="file" className="hidden" accept=".xlsx,.xls,.csv,.ods,.pdf" onChange={(e) => { choose(e.target.files?.[0]); e.target.value = ""; }} />
           </button>
         )}
-        {err && <p className="text-sm text-red-600 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" />{err}</p>}
+        {err && <p className="text-sm text-red-700 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" />{err}</p>}
 
         {phase === "pdf" && (
           <div className="rounded-xl border border-slate-200 p-4 space-y-3">

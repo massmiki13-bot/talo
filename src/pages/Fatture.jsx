@@ -164,8 +164,8 @@ export default function Fatture() {
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
         <Kpi icon={Euro} label={`Fatturato ${anno} (imponibile)`} value={fmtEur(kpi.fatturato)} tone="text-brand-600" />
-        <Kpi icon={Clock} label="Da incassare" value={fmtEur(kpi.daIncassare)} tone="text-amber-600" />
-        <Kpi icon={AlertTriangle} label="Fatture scadute" value={kpi.scadute} tone={kpi.scadute ? "text-red-600" : "text-slate-400"} onClick={() => setStato("scadute")} />
+        <Kpi icon={Clock} label="Da incassare" value={fmtEur(kpi.daIncassare)} tone="text-amber-700" />
+        <Kpi icon={AlertTriangle} label="Fatture scadute" value={kpi.scadute} tone={kpi.scadute ? "text-red-700" : "text-slate-500"} onClick={() => setStato("scadute")} />
         <Kpi icon={Landmark} label="IVA a debito nel trimestre" value={fmtEur(kpi.iva)} tone="text-violet-600" />
       </div>
 
@@ -176,11 +176,11 @@ export default function Fatture() {
           ))}
         </div>
         <Select value={anno} onValueChange={setAnno}>
-          <SelectTrigger className="w-24 h-9"><SelectValue /></SelectTrigger>
+          <SelectTrigger aria-label="Anno" className="w-24 h-9"><SelectValue /></SelectTrigger>
           <SelectContent>{years.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent>
         </Select>
         <div className="relative ml-auto w-full sm:w-64">
-          <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
           <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Numero, cliente, oggetto" className="pl-8 h-9" />
         </div>
       </div>
@@ -205,7 +205,7 @@ export default function Fatture() {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-sm font-semibold tabular-nums text-slate-900">{fmtEur(c.totale)}</p>
-                  <p className={`text-xs ${late ? "text-red-600 font-medium" : "text-slate-500"}`}>{i.stato === "pagata" ? `pagata${i.data_pagamento ? ` il ${new Date(i.data_pagamento).toLocaleDateString("it-IT")}` : ""}` : i.scadenza ? `scade ${new Date(i.scadenza).toLocaleDateString("it-IT")}` : ""}</p>
+                  <p className={`text-xs ${late ? "text-red-700 font-medium" : "text-slate-500"}`}>{i.stato === "pagata" ? `pagata${i.data_pagamento ? ` il ${new Date(i.data_pagamento).toLocaleDateString("it-IT")}` : ""}` : i.scadenza ? `scade ${new Date(i.scadenza).toLocaleDateString("it-IT")}` : ""}</p>
                 </div>
                 <span className={`hidden sm:inline text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${(STATI[i.stato] || STATI.bozza).className}`}>{(STATI[i.stato] || STATI.bozza).label}</span>
               </button>
@@ -440,14 +440,14 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
                 <div key={i} className="rounded-xl border border-slate-200 p-3">
                   <div className="flex gap-2">
                     <Textarea value={r.descrizione} onChange={(e) => setRow(i, { descrizione: e.target.value })} rows={2} disabled={locked} placeholder="Descrizione" className="min-h-[44px]" />
-                    {!locked && <button onClick={() => set("righe", f.righe.filter((_, j) => j !== i))} className="p-1.5 text-slate-400 hover:text-red-600 self-start" aria-label="Rimuovi riga"><X className="w-4 h-4" /></button>}
+                    {!locked && <button onClick={() => set("righe", f.righe.filter((_, j) => j !== i))} className="p-1.5 text-slate-500 hover:text-red-600 self-start" aria-label="Rimuovi riga"><X className="w-4 h-4" /></button>}
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-[80px_100px_120px_80px_1fr_110px] gap-2 mt-2 items-end">
                     <Num label="Quantità" v={r.quantita} on={(v) => setRow(i, { quantita: v })} dis={locked} />
                     <div>
                       <label className="text-[11px] text-slate-500">U.M.</label>
                       <Select value={r.unita_misura || "cad"} onValueChange={(v) => setRow(i, { unita_misura: v })} disabled={locked}>
-                        <SelectTrigger className="h-9 mt-0.5"><SelectValue /></SelectTrigger>
+                        <SelectTrigger aria-label="Unità di misura" className="h-9 mt-0.5"><SelectValue /></SelectTrigger>
                         <SelectContent>{UNIT_OPTIONS.map((u) => <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
@@ -456,7 +456,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
                     <div className="col-span-2 sm:col-span-1">
                       <label className="text-[11px] text-slate-500">IVA</label>
                       <Select value={String(r.aliquota_key ?? "22")} onValueChange={(v) => setRow(i, { aliquota_key: v })} disabled={locked}>
-                        <SelectTrigger className="h-9 mt-0.5 min-w-0 [&>span]:truncate"><SelectValue /></SelectTrigger>
+                        <SelectTrigger aria-label="Aliquota IVA" className="h-9 mt-0.5 min-w-0 [&>span]:truncate"><SelectValue /></SelectTrigger>
                         <SelectContent className="max-h-[60vh]">{ALIQUOTE_GROUPS.map((g) => <SelectGroup key={g}><SelectLabel className="text-[11px] uppercase tracking-wide text-zinc-500">{g}</SelectLabel>{ALIQUOTE.filter((a) => a.group === g).map((a) => <SelectItem key={a.key} value={a.key}>{a.label}</SelectItem>)}</SelectGroup>)}</SelectContent>
                       </Select>
                     </div>
@@ -487,7 +487,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
               <div className="flex items-center gap-2 text-sm text-slate-700">
                 Bollo 2 €
                 <Select value={f.bollo || "auto"} onValueChange={(v) => set("bollo", v)} disabled={locked}>
-                  <SelectTrigger className="h-8 w-44"><SelectValue /></SelectTrigger>
+                  <SelectTrigger aria-label="Imposta di bollo" className="h-8 w-44"><SelectValue /></SelectTrigger>
                   <SelectContent><SelectItem value="auto">Automatico (oltre 77,47 € senza IVA)</SelectItem><SelectItem value="si">Sempre</SelectItem><SelectItem value="no">Mai</SelectItem></SelectContent>
                 </Select>
               </div>
@@ -529,7 +529,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
             {f.stato === "emessa" && <Button variant="outline" onClick={() => set("stato", "inviata")} className="gap-1.5 justify-start"><Check className="w-4 h-4" /> Segna come trasmessa allo SdI</Button>}
             {f.stato === "pagata" && <Button variant="outline" onClick={() => setF((x) => ({ ...x, stato: "emessa", data_pagamento: null }))} className="gap-1.5 justify-start"><RotateCcw className="w-4 h-4" /> Annulla pagamento</Button>}
             {locked && f.tipo_documento !== "TD04" && <Button variant="outline" onClick={creditNote} disabled={busy === "nc"} className="gap-1.5 justify-start"><FileText className="w-4 h-4" /> Crea nota di credito</Button>}
-            <Button variant="ghost" onClick={remove} className="gap-1.5 justify-start text-red-600 hover:text-red-700 hover:bg-red-50"><Trash2 className="w-4 h-4" /> Elimina</Button>
+            <Button variant="ghost" onClick={remove} className="gap-1.5 justify-start text-red-700 hover:text-red-700 hover:bg-red-50"><Trash2 className="w-4 h-4" /> Elimina</Button>
           </section>
         </aside>
       </div>
@@ -576,7 +576,7 @@ function CopyDialog({ f, c, client, profile, onClose }) {
     <div className="flex items-center gap-2 py-1.5 border-b border-slate-100 last:border-0">
       <span className="w-40 shrink-0 text-xs text-slate-500">{label}</span>
       <span className="flex-1 min-w-0 text-sm text-slate-900 truncate">{String(value)}</span>
-      <button onClick={() => cp(k, value)} className="p-1.5 rounded-md hover:bg-slate-100 text-slate-500" aria-label={`Copia ${label}`}>{copied === k ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}</button>
+      <button onClick={() => cp(k, value)} className="p-1.5 rounded-md hover:bg-slate-100 text-slate-500" aria-label={`Copia ${label}`}>{copied === k ? <Check className="w-4 h-4 text-emerald-700" /> : <Copy className="w-4 h-4" />}</button>
     </div>
   ));
   const tsv = c.righe.map((r) => [r.descrizione, r.quantita, r.unita_misura, String(r.prezzo_unitario).replace(".", ","), r.sconto || 0, aliquotaOf(r.aliquota_key).natura || aliquotaOf(r.aliquota_key).aliquota, String(lineTotal(r)).replace(".", ",")].join("\t")).join("\n");

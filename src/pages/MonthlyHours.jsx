@@ -176,11 +176,11 @@ export default function MonthlyHours({ onOpenDay } = {}) {
     <div>
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <Select value={String(mese)} onValueChange={v => setMese(parseInt(v))}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectTrigger aria-label="Mese" className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>{MESI.map((m, i) => <SelectItem key={i} value={String(i)}>{m}</SelectItem>)}</SelectContent>
         </Select>
         <Select value={String(anno)} onValueChange={v => setAnno(parseInt(v))}>
-          <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+          <SelectTrigger aria-label="Anno" className="w-28"><SelectValue /></SelectTrigger>
           <SelectContent>{[0,1,2].map(i => { const y = new Date().getFullYear() - i; return <SelectItem key={y} value={String(y)}>{y}</SelectItem>; })}</SelectContent>
         </Select>
         {canSeeCosts && (
@@ -206,7 +206,7 @@ export default function MonthlyHours({ onOpenDay } = {}) {
             </div>
           ) : (
             <Select value={selectedEmpId} onValueChange={setSelectedEmpId}>
-              <SelectTrigger><SelectValue placeholder="Seleziona dipendente per PDF dettagliato..." /></SelectTrigger>
+              <SelectTrigger aria-label="Dipendente"><SelectValue placeholder="Seleziona dipendente per PDF dettagliato..." /></SelectTrigger>
               <SelectContent>
                 {employeeSummary.map(e => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}
               </SelectContent>
@@ -226,7 +226,7 @@ export default function MonthlyHours({ onOpenDay } = {}) {
           <p className="text-xs text-slate-500">Dipendenti con ore</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6">
-          <Clock className="w-5 h-5 text-amber-600 mb-2" />
+          <Clock className="w-5 h-5 text-amber-700 mb-2" />
           <p className="text-2xl font-bold text-slate-900">{totaleOreMese.toFixed(1)}h</p>
           <p className="text-xs text-slate-500">Totale ore del mese</p>
         </CardContent></Card>
@@ -247,13 +247,13 @@ export default function MonthlyHours({ onOpenDay } = {}) {
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Tabellone delle ore del mese (scorri in orizzontale)">
             <table className="border-collapse text-sm">
               <thead>
                 <tr>
                   <th className="sticky left-0 z-10 bg-slate-50 border-b border-r border-slate-200 px-2 py-1.5 text-left text-xs font-medium text-slate-500 uppercase min-w-[120px] max-w-[180px]">Dipendente</th>
                   {days.map(d => (
-                    <th key={d.dateStr} className={`border-b border-r border-slate-200 px-0.5 py-1 text-center text-xs font-medium min-w-[28px] w-7 ${d.isSunday ? "bg-red-50 text-red-600" : d.isSaturday ? "bg-slate-100 text-slate-400" : "bg-slate-50 text-slate-600"}`}>
+                    <th key={d.dateStr} className={`border-b border-r border-slate-200 px-0.5 py-1 text-center text-xs font-medium min-w-[28px] w-7 ${d.isSunday ? "bg-red-50 text-red-700" : d.isSaturday ? "bg-slate-100 text-slate-600" : "bg-slate-50 text-slate-600"}`}>
                       {d.day}
                     </th>
                   ))}
@@ -263,7 +263,7 @@ export default function MonthlyHours({ onOpenDay } = {}) {
                 <tr>
                   <th className="sticky left-0 z-10 bg-slate-50 border-b border-r border-slate-200"></th>
                   {days.map(d => (
-                    <th key={d.dateStr} className={`border-b border-r border-slate-200 px-0.5 py-0.5 text-center text-[10px] font-medium ${d.isSunday ? "bg-red-50 text-red-500" : d.isSaturday ? "bg-slate-100 text-slate-400" : "bg-slate-50 text-slate-400"}`}>
+                    <th key={d.dateStr} className={`border-b border-r border-slate-200 px-0.5 py-0.5 text-center text-[10px] font-medium ${d.isSunday ? "bg-red-50 text-red-500" : d.isSaturday ? "bg-slate-100 text-slate-600" : "bg-slate-50 text-slate-500"}`}>
                       {d.letter}
                     </th>
                   ))}
@@ -305,7 +305,7 @@ export default function MonthlyHours({ onOpenDay } = {}) {
                     <td className="border-b border-slate-200 text-center font-bold text-slate-900 bg-slate-50 px-2 py-1.5">
                       {emp.totaleOre.toFixed(1)}
                     </td>
-                    <td className={`border-b border-l border-slate-200 text-center px-2 py-1.5 bg-slate-50 tabular-nums ${emp.straordinari ? "font-semibold text-amber-700" : "text-slate-400"}`}>{emp.straordinari ? fmtH(emp.straordinari) : "—"}</td>
+                    <td className={`border-b border-l border-slate-200 text-center px-2 py-1.5 bg-slate-50 tabular-nums ${emp.straordinari ? "font-semibold text-amber-700" : "text-slate-500"}`}>{emp.straordinari ? fmtH(emp.straordinari) : "—"}</td>
                   </tr>
                 ))}
               </tbody>

@@ -51,10 +51,10 @@ export default function AttendanceCalendar({ month, setMonth, records, employees
               <button key={ds} onClick={() => onOpenDay(ds)}
                 className={`min-h-[72px] sm:min-h-[96px] border-b border-r border-slate-100 p-1.5 text-left hover:bg-brand-50/50 transition-colors ${!v.working ? "bg-slate-50" : ""} ${ds === today ? "ring-2 ring-inset ring-brand-500" : ""}`}>
                 <div className="flex items-center justify-between">
-                  <span className={`text-xs font-semibold ${v.hol ? "text-red-600" : !v.working ? "text-slate-400" : "text-slate-800"}`}>{i + 1}</span>
+                  <span className={`text-xs font-semibold ${v.hol ? "text-red-700" : !v.working ? "text-slate-500" : "text-slate-800"}`}>{i + 1}</span>
                   {incomplete && <span className="w-2 h-2 rounded-full bg-amber-500" title="Giornata incompleta" />}
                 </div>
-                {v.hol && <p className="text-[10px] leading-tight text-red-600 truncate">{v.hol}</p>}
+                {v.hol && <p className="text-[10px] leading-tight text-red-700 truncate">{v.hol}</p>}
                 {v.n > 0 && (
                   <div className="mt-1 space-y-1">
                     <p className="text-[11px] text-slate-700 tabular-nums"><span className="hidden sm:inline">{v.n}/{v.expected} · </span>{fmtH(v.ore)}h</p>

@@ -160,7 +160,7 @@ export default function CompanyProfile() {
       <Label htmlFor={`p-${key}`} className="text-sm font-medium text-slate-700">{label}</Label>
       <Input id={`p-${key}`} value={profile[key] ?? ""} onChange={(e) => set(key, e.target.value)} className={`mt-1 ${errors[key] ? "border-red-400 focus-visible:ring-red-400" : ""}`}
         placeholder={props.placeholder} inputMode={props.inputMode} autoComplete="off" spellCheck={false} />
-      {errors[key] ? <p className="text-xs text-red-600 mt-1">{errors[key]}</p> : props.hint ? <p className="text-xs text-slate-500 mt-1">{props.hint}</p> : null}
+      {errors[key] ? <p className="text-xs text-red-700 mt-1">{errors[key]}</p> : props.hint ? <p className="text-xs text-slate-500 mt-1">{props.hint}</p> : null}
     </div>
   );
 
@@ -205,7 +205,7 @@ export default function CompanyProfile() {
                     {vies.loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />} Cerca
                   </Button>
                 </div>
-                {errors.partita_iva && <p className="text-xs text-red-600 mt-1">{errors.partita_iva}</p>}
+                {errors.partita_iva && <p className="text-xs text-red-700 mt-1">{errors.partita_iva}</p>}
                 {vies.msg && <p className={`text-xs mt-1.5 flex items-center gap-1 ${vies.ok ? "text-emerald-700" : "text-amber-800"}`}>{vies.ok ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}{vies.msg}</p>}
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
@@ -222,7 +222,7 @@ export default function CompanyProfile() {
                 <div>
                   <Label htmlFor="p-iban" className="text-sm font-medium text-slate-700">IBAN</Label>
                   <Input id="p-iban" value={profile.iban || ""} onChange={(e) => set("iban", e.target.value)} onBlur={() => profile.iban && isValidIban(profile.iban) && set("iban", formatIban(profile.iban))} className={`mt-1 font-mono ${errors.iban ? "border-red-400" : ""}`} placeholder="IT60 X054 2811 1010 0000 0123 456" />
-                  {errors.iban ? <p className="text-xs text-red-600 mt-1">{errors.iban}</p> : <p className="text-xs text-slate-500 mt-1">Compare nei preventivi per i pagamenti</p>}
+                  {errors.iban ? <p className="text-xs text-red-700 mt-1">{errors.iban}</p> : <p className="text-xs text-slate-500 mt-1">Compare nei preventivi per i pagamenti</p>}
                 </div>
                 <div>
                   <Label htmlFor="companyprofile-regime-fiscale" className="text-sm font-medium text-slate-700">Regime fiscale</Label>
@@ -262,7 +262,7 @@ export default function CompanyProfile() {
                     {profile.emails_extra.map((em, i) => (
                       <div key={i} className="flex gap-2">
                         <Input value={em} onChange={(e) => set("emails_extra", profile.emails_extra.map((x, j) => (j === i ? e.target.value : x)))} placeholder="amministrazione@edilrossi.it" className={em && !isValidEmail(em) ? "border-red-400" : ""} />
-                        <button onClick={() => set("emails_extra", profile.emails_extra.filter((_, j) => j !== i))} className="p-2 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label="Rimuovi"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => set("emails_extra", profile.emails_extra.filter((_, j) => j !== i))} className="p-2 rounded-lg text-slate-500 hover:bg-red-50 hover:text-red-600" aria-label="Rimuovi"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     ))}
                   </div>
@@ -447,7 +447,7 @@ function Letterhead({ p }) {
         </div>
         <div className="mt-auto flex justify-end items-end gap-4">
           {p.timbro_url && <img src={p.timbro_url} alt="" className="h-12 object-contain opacity-90" />}
-          {p.firma_url ? <img src={p.firma_url} alt="" className="h-10 object-contain" /> : <div className="w-24 border-t border-slate-300 text-[10px] text-slate-400 text-center pt-0.5">Firma</div>}
+          {p.firma_url ? <img src={p.firma_url} alt="" className="h-10 object-contain" /> : <div className="w-24 border-t border-slate-300 text-[10px] text-slate-500 text-center pt-0.5">Firma</div>}
         </div>
       </div>
     </div>

@@ -116,10 +116,10 @@ export default function ClockCard({ employeeId, t: tProp }) {
         <ol className="mt-4 pt-4 border-t border-zinc-100 space-y-1.5">
           {all.map((e) => (
             <li key={e.id} className="flex items-center gap-2 text-sm">
-              {e.tipo === "entrata" ? <LogIn className="w-4 h-4 text-emerald-600" aria-hidden="true" /> : <LogOut className="w-4 h-4 text-zinc-500" aria-hidden="true" />}
+              {e.tipo === "entrata" ? <LogIn className="w-4 h-4 text-emerald-700" aria-hidden="true" /> : <LogOut className="w-4 h-4 text-zinc-500" aria-hidden="true" />}
               <span className="tabular-nums font-medium text-zinc-900">{fmtTime(e.at)}</span>
               <span className="text-zinc-600 truncate">{e.tipo === "entrata" ? t("ev_entrata") : t("ev_uscita")}{e.worksite_nome ? ` · ${e.worksite_nome}` : ""}</span>
-              <span className="ml-auto shrink-0">{e.offline ? <Clock className="w-4 h-4 text-amber-600" aria-label="In attesa di invio" /> : e.stato === "confermata" ? <CheckCircle2 className="w-4 h-4 text-emerald-600" aria-label="Confermata" /> : null}</span>
+              <span className="ml-auto shrink-0">{e.offline ? <Clock className="w-4 h-4 text-amber-700" aria-label="In attesa di invio" /> : e.stato === "confermata" ? <CheckCircle2 className="w-4 h-4 text-emerald-700" aria-label="Confermata" /> : null}</span>
             </li>
           ))}
         </ol>

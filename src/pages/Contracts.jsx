@@ -135,9 +135,9 @@ export default function Contracts() {
       </PageHeader>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-        <Kpi icon={PenLine} label="Da firmare" value={kpi.daFirmare} tone="text-amber-600" onClick={() => setStatoFilter("inviato")} />
-        <Kpi icon={CheckCircle2} label="Firmati in corso" value={kpi.firmati} tone="text-emerald-600" onClick={() => setStatoFilter("firmato")} />
-        <Kpi icon={Clock} label="In scadenza (60 gg)" value={kpi.inScadenza} tone={kpi.inScadenza ? "text-red-600" : "text-slate-400"} onClick={() => setStatoFilter("scadenza")} />
+        <Kpi icon={PenLine} label="Da firmare" value={kpi.daFirmare} tone="text-amber-700" onClick={() => setStatoFilter("inviato")} />
+        <Kpi icon={CheckCircle2} label="Firmati in corso" value={kpi.firmati} tone="text-emerald-700" onClick={() => setStatoFilter("firmato")} />
+        <Kpi icon={Clock} label="In scadenza (60 gg)" value={kpi.inScadenza} tone={kpi.inScadenza ? "text-red-700" : "text-slate-500"} onClick={() => setStatoFilter("scadenza")} />
         <Kpi icon={Euro} label={`Appalti firmati ${new Date().getFullYear()}`} value={formatEuro(kpi.valore)} tone="text-brand-600" />
       </div>
 
@@ -149,11 +149,11 @@ export default function Contracts() {
         </div>
         <div className="flex gap-2 lg:ml-auto">
           <div className="relative flex-1 lg:w-64">
-            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cerca per titolo o controparte" className="pl-8 h-9" />
           </div>
           <Select value={statoFilter} onValueChange={setStatoFilter}>
-            <SelectTrigger className="h-9 w-[150px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Filtra per stato" className="h-9 w-[150px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Ogni stato</SelectItem>
               {STATI.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
@@ -221,7 +221,7 @@ export default function Contracts() {
                 <li key={t.id} className="flex items-center gap-2 px-2 py-2">
                   <span className="flex-1 text-sm text-slate-900 truncate">{t.nome}</span>
                   <Button size="sm" variant="outline" onClick={() => { setTemplatesOpen(false); setWizard({ initial: { tipo: `custom_${t.id}` } }); }}>Usa</Button>
-                  <button onClick={async () => { if (!confirm(`Eliminare il modello "${t.nome}"?`)) return; await db.ContractTemplate.delete(t.id); setTemplates((l) => l.filter((x) => x.id !== t.id)); }} className="p-1.5 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50" aria-label="Elimina modello"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={async () => { if (!confirm(`Eliminare il modello "${t.nome}"?`)) return; await db.ContractTemplate.delete(t.id); setTemplates((l) => l.filter((x) => x.id !== t.id)); }} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina modello"><Trash2 className="w-4 h-4" /></button>
                 </li>
               ))}
             </ul>
