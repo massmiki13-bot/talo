@@ -82,17 +82,23 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
 
   const toggleCat = (c) => set({ categorie: form.categorie.includes(c) ? form.categorie.filter((x) => x !== c) : [...form.categorie, c] });
 
+  const missingName = touched && !form.nome.trim() && !form.nome_privato.trim();
+  // Porta in vista e mette a fuoco il primo campo con errore (dopo che la scheda giusta è stata mostrata).
+  const focusFirstInvalid = () => setTimeout(() => document.querySelector('[role="dialog"] [aria-invalid="true"]')?.focus(), 60);
+
   const save = async () => {
     setTouched(true);
     if (!form.nome.trim() && !form.nome_privato.trim()) {
       setTab("anagrafica");
       toast({ title: isPrivato ? "Inserisci nome e cognome" : "Inserisci la ragione sociale", variant: "destructive" });
+      focusFirstInvalid();
       return;
     }
     if (Object.keys(errors).length) {
       const inCond = ["iban"].some((k) => errors[k]);
       setTab(inCond ? "condizioni" : "anagrafica");
       toast({ title: "Controlla i campi evidenziati", description: Object.values(errors).join(" · "), variant: "destructive" });
+      focusFirstInvalid();
       return;
     }
     setSaving(true);
@@ -189,11 +195,11 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
             )}
             <div className="grid sm:grid-cols-2 gap-4">
               {!isPrivato && (
-                <Field label={form.tipo_soggetto === "ente" ? "Denominazione" : "Ragione sociale"} className="sm:col-span-2">
+                <Field label={form.tipo_soggetto === "ente" ? "Denominazione" : "Ragione sociale"} className="sm:col-span-2" error={missingName ? "Campo obbligatorio" : undefined}>
                   <Input value={form.nome} onChange={(e) => set({ nome: e.target.value })} />
                 </Field>
               )}
-              <Field label={isPrivato ? "Nome e cognome" : "Nome del titolare (facoltativo)"} className={isPrivato ? "sm:col-span-2" : ""}>
+              <Field label={isPrivato ? "Nome e cognome" : "Nome del titolare (facoltativo)"} className={isPrivato ? "sm:col-span-2" : ""} error={isPrivato && missingName ? "Campo obbligatorio" : undefined}>
                 <Input value={form.nome_privato} onChange={(e) => set({ nome_privato: e.target.value })} autoComplete="name" />
               </Field>
               <Field label="Codice fiscale" error={err("codice_fiscale")}>
