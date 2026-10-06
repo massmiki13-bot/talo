@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,7 +86,7 @@ export default function Sicurezza() {
   };
 
   const remove = async (p) => {
-    if (!confirm(`Eliminare "${p.titolo}"?`)) return;
+    if (!(await confirmDialog(`Eliminare "${p.titolo}"?`))) return;
     await db.SafetyPlan.delete(p.id);
     setPlans((l) => l.filter((x) => x.id !== p.id));
   };
@@ -491,7 +492,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                   <Label htmlFor="sicurezza-revisione" className="text-sm text-slate-700">Revisione</Label>
                   <div className="flex gap-2 mt-1">
                     <Input id="sicurezza-revisione" readOnly value={`Rev. ${meta.revisione} del ${new Date(meta.data).toLocaleDateString("it-IT")}`} />
-                    <Button variant="outline" onClick={() => confirm("Creare una nuova revisione? Numero e data verranno aggiornati.") && setMeta({ ...meta, revisione: meta.revisione + 1, data: new Date().toISOString().slice(0, 10) })}>Nuova</Button>
+                    <Button variant="outline" onClick={async () => (await confirmDialog("Creare una nuova revisione? Numero e data verranno aggiornati.")) && setMeta({ ...meta, revisione: meta.revisione + 1, data: new Date().toISOString().slice(0, 10) })}>Nuova</Button>
                   </div>
                 </div>
               </Grid>

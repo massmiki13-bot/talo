@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -295,7 +296,7 @@ export default function CompanyDocuments() {
   const deleteFolder = async (folder) => {
     const n = counts[folder.id] || 0;
     const subs = byParent.get(folder.id) || [];
-    if (!confirm(`Eliminare la cartella "${folder.nome}"?${n || subs.length ? `\n\nIl contenuto (${n} documenti, ${subs.length} sottocartelle) verrà spostato nella cartella superiore.` : ""}`)) return;
+    if (!(await confirmDialog(`Eliminare la cartella "${folder.nome}"?${n || subs.length ? `\n\nIl contenuto (${n} documenti, ${subs.length} sottocartelle) verrà spostato nella cartella superiore.` : ""}`))) return;
     try {
       const parent = folder.parent_id || null;
       const parentName = folders.find((f) => f.id === parent)?.nome || "";
@@ -338,7 +339,7 @@ export default function CompanyDocuments() {
   };
 
   const deleteDocs = async (list) => {
-    if (!confirm(list.length === 1 ? `Eliminare "${list[0].titolo}"?` : `Eliminare ${list.length} documenti?`)) return;
+    if (!(await confirmDialog(list.length === 1 ? `Eliminare "${list[0].titolo}"?` : `Eliminare ${list.length} documenti?`))) return;
     try {
       for (const d of list) { await deleteRemindersForDoc(d.id).catch(() => null); await db.CompanyDocument.delete(d.id); }
       const ids = new Set(list.map((d) => d.id));

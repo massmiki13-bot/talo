@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { db } from "@/lib/db";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -118,7 +119,7 @@ export default function Contracts() {
   };
 
   const remove = async (c) => {
-    if (!confirm(`Eliminare "${c.titolo}"? L'operazione non si può annullare.`)) return;
+    if (!(await confirmDialog(`Eliminare "${c.titolo}"? L'operazione non si può annullare.`))) return;
     await deleteRemindersForDoc(c.id).catch(() => null);
     await db.GeneratedContract.delete(c.id);
     setContracts((all) => all.filter((x) => x.id !== c.id));
@@ -221,7 +222,7 @@ export default function Contracts() {
                 <li key={t.id} className="flex items-center gap-2 px-2 py-2">
                   <span className="flex-1 text-sm text-slate-900 truncate">{t.nome}</span>
                   <Button size="sm" variant="outline" onClick={() => { setTemplatesOpen(false); setWizard({ initial: { tipo: `custom_${t.id}` } }); }}>Usa</Button>
-                  <button onClick={async () => { if (!confirm(`Eliminare il modello "${t.nome}"?`)) return; await db.ContractTemplate.delete(t.id); setTemplates((l) => l.filter((x) => x.id !== t.id)); }} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina modello"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={async () => { if (!(await confirmDialog(`Eliminare il modello "${t.nome}"?`))) return; await db.ContractTemplate.delete(t.id); setTemplates((l) => l.filter((x) => x.id !== t.id)); }} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina modello"><Trash2 className="w-4 h-4" /></button>
                 </li>
               ))}
             </ul>

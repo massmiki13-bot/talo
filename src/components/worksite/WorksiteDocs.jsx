@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,7 +54,7 @@ export default function WorksiteDocs({ worksite, readOnly }) {
   };
 
   const remove = async (d) => {
-    if (!confirm(`Eliminare "${d.titolo}"?`)) return;
+    if (!(await confirmDialog(`Eliminare "${d.titolo}"?`))) return;
     await deleteRemindersForDoc(d.id).catch(() => {});
     await db.CompanyDocument.delete(d.id);
     load();

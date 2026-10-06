@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,7 +103,7 @@ export default function CompanyProfile() {
   const completeness = profile ? Math.round(((REQUIRED.length - missing.length) / REQUIRED.length) * 100) : 0;
 
   const save = async () => {
-    if (Object.keys(errors).length && !confirm(`Ci sono ${Object.keys(errors).length} dati da correggere (${Object.values(errors)[0]}). Salvare comunque?`)) return;
+    if (Object.keys(errors).length && !(await confirmDialog(`Ci sono ${Object.keys(errors).length} dati da correggere (${Object.values(errors)[0]}). Salvare comunque?`))) return;
     setSaving(true);
     try {
       const data = { ...profile };

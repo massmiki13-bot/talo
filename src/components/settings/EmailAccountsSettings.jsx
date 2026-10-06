@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { db } from "@/lib/db";
 import { api } from "@/api/client";
 import { Button } from "@/components/ui/button";
@@ -183,7 +184,7 @@ export default function EmailAccountsSettings({ profile }) {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Rimuovere questo account email?")) return;
+    if (!(await confirmDialog("Rimuovere questo account email?"))) return;
     await db.EmailAccount.delete(id);
     load();
     toast({ title: "Account rimosso", className: "bg-green-600 text-white" });

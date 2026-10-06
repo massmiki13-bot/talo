@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,8 +60,8 @@ export default function DailySheet({ date, setDate, records, employees, worksite
     return () => window.removeEventListener("beforeunload", h);
   }, [dirty]);
 
-  const go = (d) => {
-    if (dirty && !confirm("Ci sono modifiche non salvate. Cambiare giorno e perderle?")) return;
+  const go = async (d) => {
+    if (dirty && !(await confirmDialog("Ci sono modifiche non salvate. Cambiare giorno e perderle?"))) return;
     setDate(d);
   };
 
@@ -106,7 +107,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
 
   const save = async () => {
     const bad = rows.find((r) => r.stato === "presente" && !r.cantieri.some((c) => c.ore > 0));
-    if (bad && !confirm(`${bad.dipendente_nome} risulta presente con 0 ore. Salvare comunque?`)) return;
+    if (bad && !(await confirmDialog(`${bad.dipendente_nome} risulta presente con 0 ore. Salvare comunque?`))) return;
     setSaving(true);
     try {
       const entries = rows.filter((r) => r.stato).map((r) => ({ ...r, cantieri: r.cantieri.filter((c) => c.ore > 0 || c.cantiere_id) }));

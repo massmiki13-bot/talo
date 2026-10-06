@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,7 +84,7 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
   };
 
   const handleDeleteDoc = async (docId) => {
-    if (!confirm("Eliminare questo documento?")) return;
+    if (!(await confirmDialog("Eliminare questo documento?"))) return;
     try {
       await deleteRemindersForDoc(docId);
       await db.EmployeeDocument.delete(docId);

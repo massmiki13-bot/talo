@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import React, { useState, useEffect, useMemo } from "react";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -51,7 +52,7 @@ export default function WorksiteMoney({ worksite, contractAmount, extraIncome = 
   };
 
   const removePayment = async (p) => {
-    if (!confirm(`Eliminare l'incasso di ${fmtEur(p.importo)} del ${fmtDate(p.data)}?`)) return;
+    if (!(await confirmDialog(`Eliminare l'incasso di ${fmtEur(p.importo)} del ${fmtDate(p.data)}?`))) return;
     await db.WorksitePayment.delete(p.id);
     load();
   };

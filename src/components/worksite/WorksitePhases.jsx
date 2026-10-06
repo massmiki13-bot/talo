@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import React, { useState, useEffect } from "react";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,7 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
     if (importo <= 0) return toast({ title: "Nessun nuovo importo maturato", description: `Avanzamento ${pct}%: i SAL già emessi coprono ${fmtEur(already)}.` });
     const n = (worksite.piano_pagamenti || []).filter((r) => r.sal).length + 1;
     const scadenza = new Date(); scadenza.setDate(scadenza.getDate() + 30);
-    if (!confirm(`Emettere il SAL n. ${n} al ${pct}% per ${fmtEur(importo)}? Verrà aggiunto al piano pagamenti con scadenza a 30 giorni.`)) return;
+    if (!(await confirmDialog(`Emettere il SAL n. ${n} al ${pct}% per ${fmtEur(importo)}? Verrà aggiunto al piano pagamenti con scadenza a 30 giorni.`))) return;
     // fotografia delle fasi: servirà per la fattura (avanzamento di ogni fase rispetto al SAL precedente)
     const prev = [...(worksite.piano_pagamenti || [])].reverse().find((r) => r.sal && r.fasi);
     const rata = {
@@ -58,7 +59,7 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
     const saved = await save(fasi, { piano_pagamenti: piano });
     if (saved) {
       toast({ title: `SAL n. ${n} emesso`, description: `${fmtEur(importo)} nel piano pagamenti.` });
-      if (confirm("Vuoi preparare subito la fattura di questo SAL?")) navigate(`/fatture?da_lavoro=${worksite.id}&rata=${piano.length - 1}`);
+      if ((await confirmDialog("Vuoi preparare subito la fattura di questo SAL?"))) navigate(`/fatture?da_lavoro=${worksite.id}&rata=${piano.length - 1}`);
     }
   };
 

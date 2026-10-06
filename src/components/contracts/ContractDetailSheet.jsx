@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { Link } from "react-router-dom";
 import { api, db } from "@/lib/db";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -70,7 +71,7 @@ export default function ContractDetailSheet({ contract, open, onOpenChange, prof
     if (!contract.firma_token || !contract.stato || contract.stato === "bozza") await update({ firma_token: token, ...(!contract.stato || contract.stato === "bozza" ? { stato: "inviato", inviato_il: new Date().toISOString().slice(0, 10) } : {}) });
     setSignOpen(true);
   });
-  const revokeSign = () => confirm("Revocare il link di firma? Chi lo ha ricevuto non potrà più firmare.") && run("sign", () => update({ firma_token: null }, "Link di firma revocato"));
+  const revokeSign = async () => (await confirmDialog("Revocare il link di firma? Chi lo ha ricevuto non potrà più firmare.")) && run("sign", () => update({ firma_token: null }, "Link di firma revocato"));
   const emailSignLink = () => {
     const to = contacts.find((c) => c.id === contract.contatto_id)?.email || employees.find((e) => e.id === contract.dipendente_id)?.email || "";
     setSignOpen(false);
@@ -238,7 +239,7 @@ Cordiali saluti`,
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-slate-900">Testo del contratto</p>
                 {!editing ? (
-                  <Button size="sm" variant="ghost" className="gap-1.5" onClick={() => { if (locked && !confirm("Il contratto risulta firmato: modificare il testo lo renderà diverso dalla copia firmata. Continuare?")) return; setText(contract.contenuto_finale || ""); setEditing(true); }}>
+                  <Button size="sm" variant="ghost" className="gap-1.5" onClick={async () => { if (locked && !(await confirmDialog("Il contratto risulta firmato: modificare il testo lo renderà diverso dalla copia firmata. Continuare?"))) return; setText(contract.contenuto_finale || ""); setEditing(true); }}>
                     {locked ? <Lock className="w-4 h-4" /> : <Pencil className="w-4 h-4" />} Modifica
                   </Button>
                 ) : (
@@ -256,7 +257,7 @@ Cordiali saluti`,
             <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-100">
               <div className="flex gap-1">
                 <Button variant="ghost" className="text-red-700 hover:text-red-700 hover:bg-red-50 gap-1.5" onClick={() => onDelete(contract)}><Trash2 className="w-4 h-4" /> Elimina</Button>
-                {contract.stato !== "annullato" && <Button variant="ghost" className="text-slate-600" onClick={() => confirm("Segnare il contratto come annullato?") && setStato("annullato")}>Annulla contratto</Button>}
+                {contract.stato !== "annullato" && <Button variant="ghost" className="text-slate-600" onClick={async () => (await confirmDialog("Segnare il contratto come annullato?")) && setStato("annullato")}>Annulla contratto</Button>}
               </div>
               <Button variant="outline" className="gap-1.5" onClick={() => onDuplicate(contract)}><Copy className="w-4 h-4" /> Duplica</Button>
             </div>

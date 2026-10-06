@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { useNavigate } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -117,7 +118,7 @@ export default function Reminders() {
   };
 
   const remove = async (r) => {
-    if (!confirm(`Eliminare "${r.titolo}"?`)) return;
+    if (!(await confirmDialog(`Eliminare "${r.titolo}"?`))) return;
     try {
       for (const s of siblingsOf(r)) await db.Reminder.delete(s.id);
       await db.Reminder.delete(r.id);

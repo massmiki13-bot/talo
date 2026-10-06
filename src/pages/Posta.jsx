@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { useSearchParams, Link } from "react-router-dom";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -175,7 +176,7 @@ export default function Posta() {
   });
 
   const remove = async (m) => {
-    if (!confirm("Eliminare il messaggio da Talo? Nella casella di posta originale resta dov'è.")) return;
+    if (!(await confirmDialog("Eliminare il messaggio da Talo? Nella casella di posta originale resta dov'è."))) return;
     await db.EmailMessage.delete(m.id);
     setSelected(null);
     load();

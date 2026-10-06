@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { Link } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -176,7 +177,7 @@ export default function Squadra() {
       <DetailTabs tabs={[["segnalazioni", "Segnalazioni", counts.s], ["richieste", "Ferie e permessi", counts.r], ["bacheca", "Bacheca"]]} value={tab} onChange={setTab} />
       {tab === "segnalazioni" && <Segnalazioni list={data.s} onChange={upd("s")} />}
       {tab === "richieste" && <Richieste list={data.r} onChange={upd("r")} />}
-      {tab === "bacheca" && <Bacheca list={data.a} worksites={data.w} employeesCount={data.eCount} onChange={upd("a")} onDelete={async (a) => { if (!confirm("Eliminare l'avviso?")) return; await db.Avviso.delete(a.id); setData((d) => ({ ...d, a: d.a.filter((x) => x.id !== a.id) })); }} />}
+      {tab === "bacheca" && <Bacheca list={data.a} worksites={data.w} employeesCount={data.eCount} onChange={upd("a")} onDelete={async (a) => { if (!(await confirmDialog("Eliminare l'avviso?"))) return; await db.Avviso.delete(a.id); setData((d) => ({ ...d, a: d.a.filter((x) => x.id !== a.id) })); }} />}
     </div>
   );
 }

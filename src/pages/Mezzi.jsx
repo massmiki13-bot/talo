@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { Link } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -133,7 +134,7 @@ export default function Mezzi() {
   const alerts = useMemo(() => (items || []).flatMap((m) => deadlines(m).filter((d) => d.stato !== "ok").map((d) => ({ ...d, m }))), [items]);
 
   const saved = (u) => setItems((l) => (l.some((x) => x.id === u.id) ? l.map((x) => (x.id === u.id ? u : x)) : [...l, u]));
-  const remove = async (m) => { if (!confirm(`Eliminare ${m.nome}?`)) return; await db.Equipment.delete(m.id); setItems((l) => l.filter((x) => x.id !== m.id)); };
+  const remove = async (m) => { if (!(await confirmDialog(`Eliminare ${m.nome}?`))) return; await db.Equipment.delete(m.id); setItems((l) => l.filter((x) => x.id !== m.id)); };
 
   if (!items) return <LoadingSpinner />;
 

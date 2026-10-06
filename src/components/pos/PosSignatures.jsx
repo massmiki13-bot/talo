@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -25,7 +26,7 @@ export default function PosSignatures({ plan, dati, revisione, onChange }) {
     setOpen(true);
   });
   const refresh = () => run("refresh", async () => onChange(await db.SafetyPlan.get(plan.id)));
-  const revoke = () => confirm("Revocare il link? Chi non ha ancora firmato non potrà più farlo.") && run("link", async () => onChange(await db.SafetyPlan.update(plan.id, { firma_token: null })));
+  const revoke = async () => (await confirmDialog("Revocare il link? Chi non ha ancora firmato non potrà più farlo.")) && run("link", async () => onChange(await db.SafetyPlan.update(plan.id, { firma_token: null })));
 
   return (
     <div className="rounded-xl border border-slate-200 p-4 mt-5">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +47,7 @@ export default function WorksiteLog({ worksite, attendance, employees, readOnly 
   };
 
   const remove = async (e) => {
-    if (!confirm(`Eliminare la voce del ${fmtDate(e.data)}?`)) return;
+    if (!(await confirmDialog(`Eliminare la voce del ${fmtDate(e.data)}?`))) return;
     await db.WorksiteLog.delete(e.id);
     load();
   };

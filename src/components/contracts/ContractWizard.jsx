@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -134,7 +135,7 @@ export default function ContractWizard({ open, onOpenChange, customTemplates, em
 
   const submit = async () => {
     setTouched(true);
-    if (missing.length && !confirm(`Mancano ${missing.length} campi principali (${missing.slice(0, 3).map(fieldLabel).join(", ")}${missing.length > 3 ? "…" : ""}). Salvare comunque come bozza?`)) return;
+    if (missing.length && !(await confirmDialog(`Mancano ${missing.length} campi principali (${missing.slice(0, 3).map(fieldLabel).join(", ")}${missing.length > 3 ? "…" : ""}). Salvare comunque come bozza?`))) return;
     setSaving(true);
     try {
       await onSave({ tipo, variant, fields, links, content, templateText, saveAsTemplate: asTemplate && templateName.trim(), templateName: templateName.trim() });

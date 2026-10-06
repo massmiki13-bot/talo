@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +44,7 @@ export default function PriceListDialog({ open, onOpenChange, onAdd, showCosts }
   };
 
   const remove = async (i) => {
-    if (!confirm(`Togliere "${i.descrizione.slice(0, 60)}" dal listino?`)) return;
+    if (!(await confirmDialog(`Togliere "${i.descrizione.slice(0, 60)}" dal listino?`))) return;
     await db.PriceItem.delete(i.id);
     setItems((prev) => prev.filter((x) => x.id !== i.id));
     toast({ title: "Voce rimossa dal listino" });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { onEnter } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { db } from "@/lib/db";
@@ -94,7 +95,7 @@ export default function Contacts() {
       toast({ title: "Contatto con preventivi collegati", description: "Archivialo invece di eliminarlo, così lo storico resta intatto.", variant: "destructive" });
       return;
     }
-    if (!confirm(`Eliminare definitivamente ${displayName(c)}?`)) return;
+    if (!(await confirmDialog(`Eliminare definitivamente ${displayName(c)}?`))) return;
     await db.Contact.delete(c.id);
     load();
   };

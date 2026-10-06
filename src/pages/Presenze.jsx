@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { db } from "@/lib/db";
 import { getAccessContext } from "@/lib/accessScope";
 import { ClipboardList, CalendarDays, Table2, Smartphone } from "lucide-react";
@@ -51,8 +52,8 @@ export default function Presenze() {
 
   useEffect(() => { load(); }, [load]);
 
-  const switchTab = (k) => {
-    if (dirty && tab === "giornaliera" && !confirm("Ci sono modifiche non salvate nella giornaliera. Uscire e perderle?")) return;
+  const switchTab = async (k) => {
+    if (dirty && tab === "giornaliera" && !(await confirmDialog("Ci sono modifiche non salvate nella giornaliera. Uscire e perderle?"))) return;
     setTab(k);
     const u = new URL(window.location.href);
     u.searchParams.set("tab", k);

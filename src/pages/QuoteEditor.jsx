@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -386,8 +387,8 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
     toast({ title: `Revisione ${patch.revisione} creata`, description: "La versione precedente è nello storico." });
   };
 
-  const restoreRevision = (r) => {
-    if (!confirm(`Riportare nell'editor il contenuto della Rev. ${r.rev}? Le modifiche diventano definitive quando salvi.`)) return;
+  const restoreRevision = async (r) => {
+    if (!(await confirmDialog(`Riportare nell'editor il contenuto della Rev. ${r.rev}? Le modifiche diventano definitive quando salvi.`))) return;
     setRighe(r.righe || []);
     set({ oggetto: r.oggetto, note: r.note, condizioni_pagamento: r.condizioni_pagamento, tempi_esecuzione: r.tempi_esecuzione, clausole: r.clausole, sconto_globale: r.sconto_globale || 0 });
     setRevisionsOpen(false);

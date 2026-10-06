@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,7 +83,7 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
   };
 
   const remove = async (t) => {
-    if (!confirm(`Eliminare "${t.descrizione || t.categoria}" di ${fmtEur(t.importo)}?`)) return;
+    if (!(await confirmDialog(`Eliminare "${t.descrizione || t.categoria}" di ${fmtEur(t.importo)}?`))) return;
     await db.WorksiteTransaction.delete(t.id);
     onChanged?.();
   };

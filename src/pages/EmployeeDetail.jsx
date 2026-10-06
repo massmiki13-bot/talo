@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -145,7 +146,7 @@ export default function EmployeeDetail() {
 
   const setCessato = async (value) => {
     const data_cessazione = value ? new Date().toISOString().slice(0, 10) : null;
-    if (value && !confirm(`Segnare ${fullName(employee)} come cessato? Resterà in archivio con tutti i documenti.`)) return;
+    if (value && !(await confirmDialog(`Segnare ${fullName(employee)} come cessato? Resterà in archivio con tutti i documenti.`))) return;
     const saved = await db.Employee.update(id, { stato: value ? "cessato" : "attivo", data_cessazione });
     setEmployee(saved);
     toast({ title: value ? "Dipendente archiviato" : "Dipendente riattivato" });

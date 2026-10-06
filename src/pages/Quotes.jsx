@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { onEnter } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { db } from "@/lib/db";
@@ -370,7 +371,7 @@ export default function Quotes() {
                 </div>
                 <div className="flex gap-1 shrink-0">
                   <Button asChild size="sm"><Link to={`/preventivi/nuovo?template=${tpl.id}`} onClick={() => setTplDialog(false)}>Usa</Link></Button>
-                  <Button size="icon" variant="ghost" aria-label="Elimina modello" onClick={async () => { if (confirm("Eliminare questo modello?")) { await db.SavedTemplate.delete(tpl.id); load(); } }}><Trash2 className="w-4 h-4 text-red-700" /></Button>
+                  <Button size="icon" variant="ghost" aria-label="Elimina modello" onClick={async () => { if ((await confirmDialog("Eliminare questo modello?"))) { await db.SavedTemplate.delete(tpl.id); load(); } }}><Trash2 className="w-4 h-4 text-red-700" /></Button>
                 </div>
               </div>
             ))}

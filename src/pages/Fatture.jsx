@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { Link } from "react-router-dom";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -362,7 +363,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
   });
 
   const remove = async () => {
-    if (!confirm(locked ? "Questa fattura è già stata emessa: eliminarla la toglie solo da Talo. Continuare?" : "Eliminare la bozza?")) return;
+    if (!(await confirmDialog(locked ? "Questa fattura è già stata emessa: eliminarla la toglie solo da Talo. Continuare?" : "Eliminare la bozza?"))) return;
     await db.Invoice.delete(inv.id);
     onDeleted(inv.id);
   };
@@ -385,7 +386,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
 
       <div className="grid xl:grid-cols-[minmax(0,1fr)_340px] gap-4 items-start">
         <div className="space-y-4 min-w-0">
-          {locked && <p className="text-sm text-brand-900 bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />Fattura emessa: numero, data e righe sono bloccati. Per correggerla emetti una nota di credito. <button className="ml-auto underline" onClick={() => confirm("Rimettere la fattura in bozza? Fallo solo se non l'hai ancora trasmessa.") && set("stato", "bozza")}>Riporta in bozza</button></p>}
+          {locked && <p className="text-sm text-brand-900 bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />Fattura emessa: numero, data e righe sono bloccati. Per correggerla emetti una nota di credito. <button className="ml-auto underline" onClick={async () => (await confirmDialog("Rimettere la fattura in bozza? Fallo solo se non l'hai ancora trasmessa.")) && set("stato", "bozza")}>Riporta in bozza</button></p>}
 
           <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5">
             <div className="grid sm:grid-cols-4 gap-3">

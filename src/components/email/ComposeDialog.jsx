@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { Link } from "react-router-dom";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
@@ -145,7 +146,7 @@ export default function ComposeDialog({
   const applyTemplate = async (id) => {
     const t = templates.find((x) => x.id === id);
     if (!t) return;
-    if (htmlToText(body).trim() && !confirm("Sostituire il testo attuale con il modello?")) return;
+    if (htmlToText(body).trim() && !(await confirmDialog("Sostituire il testo attuale con il modello?"))) return;
     // Il nome del cliente, se manca, lo prendiamo dalla rubrica del primo destinatario.
     const book = await loadAddressBook().catch(() => []);
     const recipientName = book.find((b) => b.email === to[0])?.name;
@@ -285,7 +286,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
     if (missing.length) {
       return toast({ title: "Completa i campi del modello", description: `Sostituisci nel testo: ${missing.map((k) => `{{${k}}}`).join(", ")}`, variant: "destructive" });
     }
-    if (!htmlToText(body).trim() && !confirm("Il messaggio è vuoto. Inviare comunque?")) return;
+    if (!htmlToText(body).trim() && !(await confirmDialog("Il messaggio è vuoto. Inviare comunque?"))) return;
     setSending(true);
     try {
       const uploaded = await uploadPending();

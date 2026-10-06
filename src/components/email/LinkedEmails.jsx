@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -81,7 +82,7 @@ export default function LinkedEmails({ field, id, composeDefaults = {}, title = 
               onReply={() => { const m = reading; setReading(null); setCompose({ defaultTo: m.direzione === "in" ? [m.from_email] : m.to, defaultSubject: `Re: ${m.subject || ""}`, accountId: m.account_id, links }); }}
               onReplyAll={() => { const m = reading; setReading(null); setCompose({ defaultTo: m.direzione === "in" ? [m.from_email] : m.to, defaultCc: m.cc, defaultSubject: `Re: ${m.subject || ""}`, accountId: m.account_id, links }); }}
               onForward={() => { const m = reading; setReading(null); setCompose({ defaultSubject: `I: ${m.subject || ""}`, defaultBody: m.html || m.text, attachments: (m.allegati || []).filter((a) => a.url), accountId: m.account_id }); }}
-              onDelete={async () => { if (!confirm("Eliminare il messaggio da Talo?")) return; await db.EmailMessage.delete(reading.id); setReading(null); load(); }}
+              onDelete={async () => { if (!(await confirmDialog("Eliminare il messaggio da Talo?"))) return; await db.EmailMessage.delete(reading.id); setReading(null); load(); }}
             />
           )}
         </DialogContent>

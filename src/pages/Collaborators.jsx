@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { useAuth } from "@/lib/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -53,7 +54,7 @@ export default function Collaborators() {
   const empName = useMemo(() => Object.fromEntries(employees.map((e) => [e.id, `${e.nome || ""} ${e.cognome || ""}`.trim()])), [employees]);
 
   const revoke = async (c) => {
-    if (!confirm(`Revocare l'accesso a ${c.display_name || c.email}? Non potrà più entrare nei dati dell'impresa.`)) return;
+    if (!(await confirmDialog(`Revocare l'accesso a ${c.display_name || c.email}? Non potrà più entrare nei dati dell'impresa.`))) return;
     try { await api.entities.Collaborator.update(c.id, { status: "revoked" }); toast({ title: "Accesso revocato" }); load(); }
     catch { toast({ title: "Revoca non riuscita", variant: "destructive" }); }
   };
@@ -62,7 +63,7 @@ export default function Collaborators() {
     catch { toast({ title: "Operazione non riuscita", variant: "destructive" }); }
   };
   const cancelInvite = async (i) => {
-    if (!confirm("Annullare questo invito? Il link smetterà di funzionare.")) return;
+    if (!(await confirmDialog("Annullare questo invito? Il link smetterà di funzionare."))) return;
     try { await api.entities.CollaboratorInvite.update(i.id, { status: "revoked" }); load(); }
     catch { toast({ title: "Operazione non riuscita", variant: "destructive" }); }
   };

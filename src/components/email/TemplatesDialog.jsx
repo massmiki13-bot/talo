@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,7 +58,7 @@ export default function TemplatesDialog({ open, onOpenChange }) {
   };
 
   const remove = async (t) => {
-    if (!confirm(`Eliminare il modello "${t.nome}"?`)) return;
+    if (!(await confirmDialog(`Eliminare il modello "${t.nome}"?`))) return;
     await db.EmailTemplate.delete(t.id);
     load();
   };

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +47,7 @@ export default function Prezzari() {
   };
   const patch = async (p, data) => { await db.Prezzario.update(p.id, data); load(); };
   const remove = async (p) => {
-    if (!confirm(`Eliminare "${p.nome}" e le sue ${p.n_voci || 0} voci?`)) return;
+    if (!(await confirmDialog(`Eliminare "${p.nome}" e le sue ${p.n_voci || 0} voci?`))) return;
     try { await deletePrezzario(p); toast({ title: "Prezzario eliminato" }); load(); }
     catch { toast({ title: "Eliminazione non riuscita", variant: "destructive" }); }
   };
