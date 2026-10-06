@@ -17,7 +17,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import ComposeDialog from "@/components/email/ComposeDialog";
 import { UNIT_OPTIONS, fmtEur, isVoce } from "@/lib/quotes";
-import { TIPI_DOC, REGIMI, ALIQUOTE, ALIQUOTE_GROUPS, PAGAMENTI, STATI, aliquotaOf, lineTotal, computeInvoice, nextNumber, validateInvoice, buildFatturaXml, aiSuggestVat } from "@/lib/invoices";
+import { TIPI_DOC, REGIMI, ALIQUOTE, ALIQUOTE_GROUPS, PAGAMENTI, STATI, aliquotaOf, lineTotal, computeInvoice, createNumbered, validateInvoice, buildFatturaXml, aiSuggestVat } from "@/lib/invoices";
 import { buildInvoicePdf } from "@/lib/invoicePdf";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -116,10 +116,10 @@ export default function Fatture() {
       }
       extra = { cliente_id: worksite.cliente_id || "", cliente_nome: worksite.cliente_nome || "", oggetto: salText || `${rata?.descrizione || "Acconto"} – ${worksite.nome}`, worksite_id: worksite.id, worksite_nome: worksite.nome, rata_rif: rata?.descrizione || "" };
     }
-    const inv = await db.Invoice.create({
-      tipo_documento: "TD01", numero: nextNumber(current, y), anno: y, data: today(), scadenza: addDays(today(), 30), regime, stato: "bozza",
+    const inv = await createNumbered(db.Invoice, {
+      tipo_documento: "TD01", data: today(), scadenza: addDays(today(), 30), regime, stato: "bozza",
       modalita_pagamento: "MP05", iban: profile?.iban || "", bollo: "auto", split_payment: false, righe, ...extra,
-    });
+    }, y);
     setList((l) => [inv, ...l]);
     setFromQuote(false); setFromJob(false);
     open(inv.id);
@@ -357,7 +357,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
 
   const creditNote = () => run("nc", async () => {
     const { id, created_date, updated_date, created_by_id, numero, stato, data_pagamento, progressivo_invio, ...rest } = f; // eslint-disable-line no-unused-vars
-    const x = await db.Invoice.create({ ...rest, tipo_documento: "TD04", numero: nextNumber(all, f.anno, "TD04"), data: today(), stato: "bozza", fattura_collegata: f.numero, oggetto: `Storno fattura n. ${f.numero} del ${new Date(f.data).toLocaleDateString("it-IT")}` });
+    const x = await createNumbered(db.Invoice, { ...rest, tipo_documento: "TD04", data: today(), stato: "bozza", fattura_collegata: f.numero, oggetto: `Storno fattura n. ${f.numero} del ${new Date(f.data).toLocaleDateString("it-IT")}` }, f.anno, "TD04");
     onCreated(x);
   });
 

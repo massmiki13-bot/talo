@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster"
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { PERMISSION_MODULES } from '@/lib/permissions';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -10,7 +11,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AppLayout from '@/components/layout/AppLayout';
 
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
 // Pagine caricate solo quando servono: l'avvio (soprattutto da telefono in cantiere) resta leggero.
@@ -49,6 +50,24 @@ const Mezzi = lazy(() => import("@/pages/Mezzi"));
 const Qualificazioni = lazy(() => import("@/pages/Qualificazioni"));
 const Squadra = lazy(() => import("@/pages/Squadra"));
 const JoinWorker = lazy(() => import("@/pages/JoinWorker"));
+
+// Titolo della scheda per pagina (le pagine pubbliche con link impostano il proprio).
+const EXTRA_TITLES = [
+  ["/login", "Accedi"], ["/register", "Crea il tuo account"], ["/forgot-password", "Password dimenticata"], ["/reset-password", "Nuova password"],
+  ["/legal", "Documenti legali"], ["/profilo-ditta", "Profilo ditta"], ["/collaboratori", "Collaboratori"], ["/posta", "Posta"], ["/entra", "Entra in Talo"],
+];
+const SELF_TITLED = /^\/(p|firma|cantiere)\//;
+function RouteTitle() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (SELF_TITLED.test(pathname)) return;
+    const extra = EXTRA_TITLES.find(([p]) => pathname.startsWith(p));
+    const mod = PERMISSION_MODULES.find((m) => (m.path === "/" ? pathname === "/" : pathname.startsWith(m.path)));
+    const label = extra?.[1] || mod?.label;
+    document.title = label ? `${label} · Talo` : "Talo";
+  }, [pathname]);
+  return null;
+}
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -133,6 +152,7 @@ function App() {
         <ErrorBoundary>
           <Router>
             <ScrollToTop />
+            <RouteTitle />
             <AuthenticatedApp />
             <Toaster />
           </Router>

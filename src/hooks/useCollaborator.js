@@ -6,21 +6,26 @@ import { setAccessContext } from "@/lib/accessScope";
 export function useCollaborator(user) {
   const [collaborator, setCollaborator] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (!user?.id) {
       setLoading(false);
       return;
     }
+    setLoading(true);
+    setError(false);
     api.entities.Collaborator.filter(
       { collaborator_user_id: user.id, status: "active" },
       "-created_date",
       1
     )
       .then((results) => setCollaborator(results[0] || null))
-      .catch(() => setCollaborator(null))
+      // Se il ruolo non si riesce a leggere non si assume quello di titolare: si chiede di riprovare.
+      .catch(() => { setCollaborator(null); setError(true); })
       .finally(() => setLoading(false));
-  }, [user?.id]);
+  }, [user?.id, attempt]);
 
   const isHost = !collaborator;
   const accessLevel = collaborator?.access_level || "responsabile";
@@ -76,5 +81,7 @@ export function useCollaborator(user) {
     hasPermission,
     canAccessPath,
     loading,
+    error,
+    retry: () => setAttempt((n) => n + 1),
   };
 }

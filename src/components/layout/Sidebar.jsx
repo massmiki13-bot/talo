@@ -61,6 +61,8 @@ export const GROUPS = [
   ] },
 ];
 
+const SEARCH_KEYS = typeof navigator !== "undefined" && /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent) ? "⌘ K" : "Ctrl K";
+
 export default function Sidebar({ onNavigate, isHost = true, accessLevel = "responsabile", permissions = [], employeeId = null, companyName = "", collapsed = false, onToggle, onSearch }) {
   const location = useLocation();
   const isOperaio = !isHost && accessLevel === "operaio";
@@ -87,11 +89,11 @@ export default function Sidebar({ onNavigate, isHost = true, accessLevel = "resp
 
       {onSearch && (
         <div className="px-2.5 pt-3">
-          <button type="button" onClick={() => { onNavigate?.(); onSearch(); }} title={collapsed ? "Cerca (Ctrl K)" : undefined} aria-label="Cerca in Talo (Ctrl K)"
+          <button type="button" onClick={() => { onNavigate?.(); onSearch(); }} title={collapsed ? `Cerca (${SEARCH_KEYS})` : undefined} aria-label="Cerca in Talo"
             className={`flex items-center gap-2.5 w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 h-10 text-sm text-zinc-400 hover:text-white hover:bg-white/[0.06] hover:border-white/[0.14] transition-colors ${collapsed ? "lg:justify-center lg:px-0" : ""}`}>
             <Search className="w-4 h-4 shrink-0" aria-hidden="true" />
             <span className={`flex-1 text-left ${collapsed ? "lg:hidden" : ""}`}>Cerca…</span>
-            <kbd className={`text-[10.5px] font-medium text-zinc-500 border border-white/10 rounded px-1.5 py-0.5 ${collapsed ? "lg:hidden" : ""}`}>Ctrl K</kbd>
+            <kbd className={`text-[10.5px] font-medium text-zinc-500 border border-white/10 rounded px-1.5 py-0.5 ${collapsed ? "lg:hidden" : ""}`}>{SEARCH_KEYS}</kbd>
           </button>
         </div>
       )}

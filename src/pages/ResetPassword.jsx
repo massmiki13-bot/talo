@@ -73,7 +73,7 @@ export default function ResetPassword() {
       subtitle="Scegli una nuova password (almeno 8 caratteri)"
     >
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+        <div role="alert" className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
           {error}
         </div>
       )}

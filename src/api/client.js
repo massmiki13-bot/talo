@@ -28,6 +28,7 @@ export class ApiError extends Error {
 }
 
 function fail(error, fallback = "Errore di comunicazione con il server") {
+  if (error?.code === "23505") throw new ApiError("Questo numero è già usato da un altro documento: scegline uno diverso", 409, error);
   const status = error?.code === "28000" ? 401 : error?.code === "42501" ? 403 : (error?.code === "P0002" || error?.code === "PT404") ? 404 : error?.status || 500;
   throw new ApiError(error?.message || fallback, status, error);
 }
@@ -222,6 +223,10 @@ const auth = {
       options: { data: { ...(full_name ? { full_name } : {}), ...(consent || {}) }, emailRedirectTo: appUrl("/") },
     });
     if (error) throw new ApiError(/already registered/i.test(error.message) ? "Esiste già un account con questa email" : error.message, 400, error);
+    // Per un'email già registrata Supabase risponde senza errore ma con un utente senza identità: nessun codice partirà.
+    if (data.user && !data.session && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      throw new ApiError("Esiste già un account con questa email: accedi oppure recupera la password", 400);
+    }
     return { user: toUser(data.user), needsConfirmation: !data.session };
   },
   async verifyOtp({ email, otpCode }) {

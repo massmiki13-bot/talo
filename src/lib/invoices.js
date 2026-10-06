@@ -87,6 +87,21 @@ export function computeInvoice(inv) {
   return { righe, riepilogo, imponibile, iva, bollo, totale, daPagare, splitPayment };
 }
 
+/**
+ * Crea una fattura con il primo numero libero, riletto dal database al momento della creazione.
+ * Se nel frattempo un collega ha usato lo stesso numero (indice univoco, errore 23505) riprova col successivo.
+ */
+export async function createNumbered(Invoice, data, anno, tipo = "TD01") {
+  for (let attempt = 0; ; attempt++) {
+    const existing = await Invoice.fields(["numero", "anno", "tipo_documento"]);
+    try {
+      return await Invoice.create({ ...data, anno: Number(anno), numero: nextNumber(existing, anno, tipo) });
+    } catch (e) {
+      if (e?.status !== 409 || attempt >= 4) throw e;
+    }
+  }
+}
+
 /** Numero successivo nell'anno: "1/2026", "2/2026"… (rispetta un eventuale prefisso). */
 export function nextNumber(invoices, anno, tipo = "TD01") {
   const same = invoices.filter((i) => Number(i.anno) === Number(anno) && (tipo === "TD04" ? i.tipo_documento === "TD04" : i.tipo_documento !== "TD04"));

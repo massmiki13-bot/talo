@@ -549,7 +549,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
       )}
       {quote.worksite_id && (
         <Link to={`/lavori/${quote.worksite_id}`} className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 mb-4 text-sm hover:bg-emerald-100">
-          <FolderOpen className="w-4 h-4 text-emerald-700" /> <span className="text-emerald-900">Lavoro collegato: <strong>{quote.worksite_nome}</strong></span>
+          <FolderOpen className="w-4 h-4 text-emerald-700" /> <span className="text-emerald-900">Lavoro collegato: <strong>{quote.worksite_nome || worksites.find((w) => w.id === quote.worksite_id)?.nome || ""}</strong></span>
           <span className="ml-auto text-emerald-700 text-xs">Apri →</span>
         </Link>
       )}

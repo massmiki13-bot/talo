@@ -290,8 +290,8 @@ export default function MonthlyHours({ onOpenDay } = {}) {
                       const info = getStatoInfo(dayData.stato);
                       if (dayData.stato === "presente") {
                         return (
-                          <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-slate-200 text-center text-xs font-semibold ${info.bgClass} min-w-[28px] w-7 h-8`}
-                            title={dayData.cantieri.map(c => `${c.cantiere_nome}: ${c.ore}h`).join(", ")}>
+                          <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-slate-200 text-center text-xs font-semibold ${info.bgClass} min-w-[28px] w-7 h-8`}
+                            title={[d.hol, dayData.cantieri.map(c => `${c.cantiere_nome}: ${c.ore}h`).join(", ")].filter(Boolean).join(" · ")}>
                             {dayData.ore.toFixed(0)}
                           </td>
                         );
