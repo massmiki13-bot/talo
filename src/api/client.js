@@ -28,7 +28,7 @@ export class ApiError extends Error {
 }
 
 function fail(error, fallback = "Errore di comunicazione con il server") {
-  const status = error?.code === "28000" ? 401 : error?.code === "42501" ? 403 : error?.code === "P0002" ? 404 : error?.status || 500;
+  const status = error?.code === "28000" ? 401 : error?.code === "42501" ? 403 : (error?.code === "P0002" || error?.code === "PT404") ? 404 : error?.status || 500;
   throw new ApiError(error?.message || fallback, status, error);
 }
 
