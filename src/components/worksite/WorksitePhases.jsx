@@ -96,9 +96,9 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
                 </label>
                 {!readOnly && <button aria-label="Elimina fase" onClick={() => { setFasi((x) => x.filter((_, j) => j !== i)); setDirty(true); }} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
               </div>
-              <div className="flex items-center gap-3 mt-2">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2">
                 <input type="range" min="0" max="100" step="5" value={Number(f.completamento) || 0} onChange={(e) => update(i, { completamento: Number(e.target.value) })} disabled={readOnly}
-                  className="flex-1 accent-brand-600" aria-label={`Completamento ${f.nome}`} />
+                  className="flex-1 min-w-[120px] accent-brand-600" aria-label={`Completamento ${f.nome}`} />
                 <span className={`text-sm font-semibold tabular-nums w-12 text-right ${Number(f.completamento) >= 100 ? "text-emerald-700" : "text-slate-800"}`}>{Number(f.completamento) || 0}%</span>
                 <Input type="date" value={f.data_prevista || ""} onChange={(e) => update(i, { data_prevista: e.target.value })} disabled={readOnly} className="h-8 w-36" aria-label="Data prevista" title="Data prevista di fine fase" />
               </div>

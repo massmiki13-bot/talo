@@ -170,7 +170,7 @@ export default function Fatture() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex rounded-lg border border-slate-200 bg-white p-0.5">
+        <div className="flex max-w-full overflow-x-auto rounded-lg border border-slate-200 bg-white p-0.5">
           {[["all", "Tutte"], ["bozza", "Bozze"], ["emessa", "Emesse"], ["inviata", "Inviate"], ["pagata", "Pagate"], ["scadute", "Scadute"]].map(([k, l]) => (
             <button key={k} onClick={() => setStato(k)} className={`px-3 h-8 rounded-md text-sm ${stato === k ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>
           ))}

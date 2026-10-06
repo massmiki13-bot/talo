@@ -218,7 +218,7 @@ export default function Reminders() {
 
       {/* Strumenti */}
       <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
-        <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit">
+        <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit max-w-full overflow-x-auto">
           {[["agenda", "Agenda", ListTodo], ["calendario", "Calendario", CalendarIcon], ["completati", "Completati", CheckCircle2]].map(([k, l, I]) => (
             <button key={k} onClick={() => setTab(k)} className={`flex items-center gap-1.5 px-3 h-8 rounded-md text-sm ${tab === k ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}><I className="w-4 h-4" /> {l}</button>
           ))}

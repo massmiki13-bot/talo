@@ -135,7 +135,7 @@ export default function Worksites() {
           <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Lavori</h1>
           <p className="text-slate-500 mt-1 text-sm">Cantieri, avanzamento, costi, incassi e giornale dei lavori</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => { setContacts(await db.Contact.fields(["nome", "nome_privato"], { limit: 10000 }).catch(() => [])); setImportOpen(true); }}><Upload className="w-4 h-4" /> Importa</Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setDdtOpen(true)}><Camera className="w-4 h-4" /> Carica bolla</Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
