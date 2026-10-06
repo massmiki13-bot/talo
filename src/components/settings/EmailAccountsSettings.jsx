@@ -215,14 +215,14 @@ export default function EmailAccountsSettings({ profile }) {
 
   const providerIcon = (a) => {
     if (a.provider === 'gmail_oauth') return <Shield className="w-4 h-4 text-green-700" />;
-    return <Mail className="w-4 h-4 text-slate-500" />;
+    return <Mail className="w-4 h-4 text-zinc-500" />;
   };
 
   const statusBadge = (a) => {
     const st = verifyStatus[a.id];
     if (!st || st.loading) {
       return (
-        <span className="inline-flex items-center gap-1 text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500">
+        <span className="inline-flex items-center gap-1 text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-500">
           <RefreshCw className="w-3 h-3 animate-spin" /> Verifica…
         </span>
       );
@@ -244,7 +244,7 @@ export default function EmailAccountsSettings({ profile }) {
   };
 
   return (
-    <div id="caselle-email" className="mt-6 bg-white rounded-xl border border-slate-200 p-5 sm:p-6 scroll-mt-20">
+    <div id="caselle-email" className="mt-6 bg-white rounded-xl border border-zinc-200 p-5 sm:p-6 scroll-mt-20">
       {/* Header */}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2.5">
@@ -252,8 +252,8 @@ export default function EmailAccountsSettings({ profile }) {
             <Mail className="w-5 h-5 text-brand-600" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-900">Caselle email e PEC</h3>
-            <p className="text-xs text-slate-500">Invia e ricevi dalla sezione Posta con i tuoi indirizzi</p>
+            <h3 className="text-base font-bold text-zinc-900">Caselle email e PEC</h3>
+            <p className="text-xs text-zinc-500">Invia e ricevi dalla sezione Posta con i tuoi indirizzi</p>
           </div>
         </div>
       </div>
@@ -264,15 +264,15 @@ export default function EmailAccountsSettings({ profile }) {
       {/* Empty state */}
       {loading ? (
         <div className="flex items-center justify-center py-10">
-          <div className="w-6 h-6 border-2 border-slate-200 border-t-brand-600 rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-zinc-200 border-t-brand-600 rounded-full animate-spin" />
         </div>
       ) : accounts.length === 0 ? (
-        <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-xl mt-4">
-          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
-            <Mail className="w-6 h-6 text-slate-500" />
+        <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-xl mt-4">
+          <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mx-auto mb-3">
+            <Mail className="w-6 h-6 text-zinc-500" />
           </div>
-          <p className="text-sm font-medium text-slate-700">Nessuna email collegata</p>
-          <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">Collega la tua casella per inviare documenti direttamente dal tuo indirizzo (amministrazione, preventivi, direzione…)</p>
+          <p className="text-sm font-medium text-zinc-700">Nessuna email collegata</p>
+          <p className="text-xs text-zinc-500 mt-1 max-w-xs mx-auto">Collega la tua casella per inviare documenti direttamente dal tuo indirizzo (amministrazione, preventivi, direzione…)</p>
         </div>
       ) : (
         <>
@@ -281,16 +281,16 @@ export default function EmailAccountsSettings({ profile }) {
             {accounts.map(a => {
               const connected = isConnected(a);
               return (
-                <div key={a.id} className={`rounded-xl border p-3.5 transition-colors ${a.is_default ? "border-amber-300 bg-amber-50/40" : "border-slate-200 bg-white"}`}>
+                <div key={a.id} className={`rounded-xl border p-3.5 transition-colors ${a.is_default ? "border-amber-300 bg-amber-50/40" : "border-zinc-200 bg-white"}`}>
                   <div className="flex items-start gap-3">
                     {/* Icona provider */}
-                    <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center flex-shrink-0">
                       {providerIcon(a)}
                     </div>
                     {/* Info principali */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-semibold text-slate-900 truncate">{a.email_address}</p>
+                        <p className="text-sm font-semibold text-zinc-900 truncate">{a.email_address}</p>
                         {a.is_pec && (
                           <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded px-1.5 py-0.5 flex-shrink-0">PEC</span>
                         )}
@@ -301,30 +301,30 @@ export default function EmailAccountsSettings({ profile }) {
                         )}
                       </div>
                       {a.display_name && (
-                        <p className="text-xs text-slate-500 mt-0.5">{a.display_name}</p>
+                        <p className="text-xs text-zinc-500 mt-0.5">{a.display_name}</p>
                       )}
                       <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                         {/* Stato collegamento */}
                         {statusBadge(a)}
                         {/* Provider */}
-                        <span className="text-[11px] text-slate-500">{providerLabel(a)}</span>
+                        <span className="text-[11px] text-zinc-500">{providerLabel(a)}</span>
                       </div>
                     </div>
                   </div>
                   {/* Azioni */}
-                  <div className="flex items-center gap-1 mt-2.5 pt-2.5 border-t border-slate-100">
+                  <div className="flex items-center gap-1 mt-2.5 pt-2.5 border-t border-zinc-100">
                     {!a.is_default && (
-                      <button onClick={() => setDefault(a.id)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-amber-600 px-2 py-1.5 rounded-lg hover:bg-amber-50 transition-colors">
+                      <button onClick={() => setDefault(a.id)} className="flex items-center gap-1 text-xs text-zinc-500 hover:text-amber-600 px-2 py-1.5 rounded-lg hover:bg-amber-50 transition-colors">
                         <Star className="w-3.5 h-3.5" /> Imposta predefinita
                       </button>
                     )}
-                    <button onClick={() => verifyAccount(a.id)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-green-600 px-2 py-1.5 rounded-lg hover:bg-green-50 transition-colors">
+                    <button onClick={() => verifyAccount(a.id)} className="flex items-center gap-1 text-xs text-zinc-500 hover:text-green-600 px-2 py-1.5 rounded-lg hover:bg-green-50 transition-colors">
                       <RefreshCw className="w-3.5 h-3.5" /> Verifica
                     </button>
-                    <button onClick={() => openEdit(a)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-brand-600 px-2 py-1.5 rounded-lg hover:bg-brand-50 transition-colors">
+                    <button onClick={() => openEdit(a)} className="flex items-center gap-1 text-xs text-zinc-500 hover:text-brand-600 px-2 py-1.5 rounded-lg hover:bg-brand-50 transition-colors">
                       <Settings2 className="w-3.5 h-3.5" /> Modifica
                     </button>
-                    <button onClick={() => handleDelete(a.id)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-600 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-colors ml-auto">
+                    <button onClick={() => handleDelete(a.id)} className="flex items-center gap-1 text-xs text-zinc-500 hover:text-red-600 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-colors ml-auto">
                       <Trash2 className="w-3.5 h-3.5" /> Elimina
                     </button>
                   </div>
@@ -340,26 +340,26 @@ export default function EmailAccountsSettings({ profile }) {
         <summary className="flex items-center gap-2 cursor-pointer text-sm font-medium text-brand-600 hover:text-brand-700 select-none">
           <HelpCircle className="w-4 h-4" /> Come collegare la mia email?
         </summary>
-        <div className="mt-3 bg-slate-50 rounded-xl p-4 space-y-3">
+        <div className="mt-3 bg-zinc-50 rounded-xl p-4 space-y-3">
           <div className="flex gap-3">
             <div className="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">1</div>
             <div>
-              <p className="text-sm font-medium text-slate-700">Scegli il tipo di collegamento</p>
-              <p className="text-xs text-slate-500 mt-0.5">Scegli il preset del tuo provider (<strong>Gmail</strong>, <strong>Aruba</strong>, <strong>Outlook</strong>, <strong>PEC</strong>…): server e porta si compilano da soli. Serve solo una <strong>password per app</strong>.</p>
+              <p className="text-sm font-medium text-zinc-700">Scegli il tipo di collegamento</p>
+              <p className="text-xs text-zinc-500 mt-0.5">Scegli il preset del tuo provider (<strong>Gmail</strong>, <strong>Aruba</strong>, <strong>Outlook</strong>, <strong>PEC</strong>…): server e porta si compilano da soli. Serve solo una <strong>password per app</strong>.</p>
             </div>
           </div>
           <div className="flex gap-3">
             <div className="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">2</div>
             <div>
-              <p className="text-sm font-medium text-slate-700">Inserisci i dati della casella</p>
-              <p className="text-xs text-slate-500 mt-0.5">Indirizzo email, nome mittente (es. "Amministrazione") e — per SMTP — server e password per app.</p>
+              <p className="text-sm font-medium text-zinc-700">Inserisci i dati della casella</p>
+              <p className="text-xs text-zinc-500 mt-0.5">Indirizzo email, nome mittente (es. "Amministrazione") e — per SMTP — server e password per app.</p>
             </div>
           </div>
           <div className="flex gap-3">
             <div className="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">3</div>
             <div>
-              <p className="text-sm font-medium text-slate-700">Verifica lo stato</p>
-              <p className="text-xs text-slate-500 mt-0.5">Dopo il salvataggio, l'app verifica automaticamente il permesso di invio. Il badge verde "Pronta per l'invio" conferma che tutto funziona.</p>
+              <p className="text-sm font-medium text-zinc-700">Verifica lo stato</p>
+              <p className="text-xs text-zinc-500 mt-0.5">Dopo il salvataggio, l'app verifica automaticamente il permesso di invio. Il badge verde "Pronta per l'invio" conferma che tutto funziona.</p>
             </div>
           </div>
           <div className="flex gap-2.5 items-start bg-amber-50 border border-amber-100 rounded-lg p-2.5 mt-2">
@@ -383,7 +383,7 @@ export default function EmailAccountsSettings({ profile }) {
           <div className="space-y-4 mt-2">
             {/* Tipo connessione */}
             <div>
-              <Label htmlFor="emailaccountssettings-tipo-di-collegamento" className="text-sm font-medium text-slate-700">Tipo di collegamento</Label>
+              <Label htmlFor="emailaccountssettings-tipo-di-collegamento" className="text-sm font-medium text-zinc-700">Tipo di collegamento</Label>
               <Select value={form.provider} onValueChange={handleProviderChange}>
                 <SelectTrigger id="emailaccountssettings-tipo-di-collegamento" className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -405,7 +405,7 @@ export default function EmailAccountsSettings({ profile }) {
             {form.provider === "smtp" && (
               <>
                 <div>
-                  <Label htmlFor="emailaccountssettings-provider-preset" className="text-sm font-medium text-slate-700">Provider / Preset</Label>
+                  <Label htmlFor="emailaccountssettings-provider-preset" className="text-sm font-medium text-zinc-700">Provider / Preset</Label>
                   <Select value={preset} onValueChange={handlePresetChange}>
                     <SelectTrigger id="emailaccountssettings-provider-preset" className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -415,11 +415,11 @@ export default function EmailAccountsSettings({ profile }) {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label htmlFor="emailaccountssettings-server-smtp" className="text-sm font-medium text-slate-700">Server SMTP</Label>
+                    <Label htmlFor="emailaccountssettings-server-smtp" className="text-sm font-medium text-zinc-700">Server SMTP</Label>
                     <Input id="emailaccountssettings-server-smtp" value={form.smtp_host} onChange={e => setForm(prev => ({ ...prev, smtp_host: e.target.value }))} className="mt-1" placeholder="smtp.aruba.it" />
                   </div>
                   <div>
-                    <Label htmlFor="emailaccountssettings-porta" className="text-sm font-medium text-slate-700">Porta</Label>
+                    <Label htmlFor="emailaccountssettings-porta" className="text-sm font-medium text-zinc-700">Porta</Label>
                     <Input id="emailaccountssettings-porta" type="number" value={form.smtp_port} onChange={e => setForm(prev => ({ ...prev, smtp_port: parseInt(e.target.value) || 587 }))} className="mt-1" />
                   </div>
                 </div>
@@ -427,27 +427,27 @@ export default function EmailAccountsSettings({ profile }) {
             )}
 
             <div>
-              <Label htmlFor="emailaccountssettings-indirizzo-email" className="text-sm font-medium text-slate-700">Indirizzo Email</Label>
+              <Label htmlFor="emailaccountssettings-indirizzo-email" className="text-sm font-medium text-zinc-700">Indirizzo Email</Label>
               <Input id="emailaccountssettings-indirizzo-email" value={form.email_address} onChange={e => setForm(prev => ({ ...prev, email_address: e.target.value }))} className="mt-1" placeholder="email@esempio.it" />
             </div>
             <div>
-              <Label htmlFor="emailaccountssettings-nome-mittente" className="text-sm font-medium text-slate-700">Nome Mittente</Label>
+              <Label htmlFor="emailaccountssettings-nome-mittente" className="text-sm font-medium text-zinc-700">Nome Mittente</Label>
               <Input id="emailaccountssettings-nome-mittente" value={form.display_name} onChange={e => setForm(prev => ({ ...prev, display_name: e.target.value }))} className="mt-1" placeholder="Mario Rossi S.r.l." />
-              <p className="text-xs text-slate-500 mt-1">Il nome che appare come mittente nelle email</p>
+              <p className="text-xs text-zinc-500 mt-1">Il nome che appare come mittente nelle email</p>
             </div>
 
             {form.provider === "smtp" && (
               <>
                 <div>
-                  <Label htmlFor="emailaccountssettings-username-smtp" className="text-sm font-medium text-slate-700">Username SMTP</Label>
+                  <Label htmlFor="emailaccountssettings-username-smtp" className="text-sm font-medium text-zinc-700">Username SMTP</Label>
                   <Input id="emailaccountssettings-username-smtp" value={form.smtp_username} onChange={e => setForm(prev => ({ ...prev, smtp_username: e.target.value }))} className="mt-1" placeholder="Di solito uguale all'email" />
                 </div>
                 <div>
-                  <Label htmlFor="emailaccountssettings-password-per-app" className="text-sm font-medium text-slate-700">Password per App</Label>
+                  <Label htmlFor="emailaccountssettings-password-per-app" className="text-sm font-medium text-zinc-700">Password per App</Label>
                   <Input id="emailaccountssettings-password-per-app" type="password" value={form.smtp_password} onChange={e => setForm(prev => ({ ...prev, smtp_password: e.target.value }))} className="mt-1" placeholder="Password per app dedicata" />
                   <div className="flex gap-1.5 mt-1.5">
                     <AlertCircle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-zinc-500">
                       Usa una <strong>password per app</strong>, non la password principale.
                       Gmail: attiva la verifica in 2 passaggi → crea password per app.
                       Aruba: usa la password della casella o una dedicata dalle impostazioni.
@@ -458,20 +458,20 @@ export default function EmailAccountsSettings({ profile }) {
             )}
 
             {form.provider === "smtp" && (
-              <div className="rounded-lg border border-slate-200 p-3 space-y-3">
+              <div className="rounded-lg border border-zinc-200 p-3 space-y-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" className="w-4 h-4" checked={form.ricezione_attiva}
                     onChange={e => setForm(prev => ({ ...prev, ricezione_attiva: e.target.checked }))} />
-                  <span className="text-sm text-slate-700">Mostra anche la posta in arrivo nella sezione Posta</span>
+                  <span className="text-sm text-zinc-700">Mostra anche la posta in arrivo nella sezione Posta</span>
                 </label>
                 {form.ricezione_attiva && (
                   <div className="grid grid-cols-[1fr_90px] gap-3">
                     <div>
-                      <Label htmlFor="emailaccountssettings-server-imap" className="text-sm font-medium text-slate-700">Server IMAP</Label>
+                      <Label htmlFor="emailaccountssettings-server-imap" className="text-sm font-medium text-zinc-700">Server IMAP</Label>
                       <Input id="emailaccountssettings-server-imap" value={form.imap_host} onChange={e => setForm(prev => ({ ...prev, imap_host: e.target.value }))} className="mt-1" placeholder="imaps.aruba.it" />
                     </div>
                     <div>
-                      <Label htmlFor="emailaccountssettings-porta-2" className="text-sm font-medium text-slate-700">Porta</Label>
+                      <Label htmlFor="emailaccountssettings-porta-2" className="text-sm font-medium text-zinc-700">Porta</Label>
                       <Input id="emailaccountssettings-porta-2" type="number" value={form.imap_port} onChange={e => setForm(prev => ({ ...prev, imap_port: parseInt(e.target.value) || 993 }))} className="mt-1" />
                     </div>
                   </div>
@@ -479,16 +479,16 @@ export default function EmailAccountsSettings({ profile }) {
                 <label className="flex items-start gap-2 cursor-pointer">
                   <input type="checkbox" className="w-4 h-4 mt-0.5" checked={form.is_pec}
                     onChange={e => setForm(prev => ({ ...prev, is_pec: e.target.checked }))} />
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-zinc-700">
                     È una casella <strong>PEC</strong>
-                    <span className="block text-xs text-slate-500">I messaggi inviati da qui vengono segnati come PEC e le ricevute di consegna compaiono nella Posta.</span>
+                    <span className="block text-xs text-zinc-500">I messaggi inviati da qui vengono segnati come PEC e le ricevute di consegna compaiono nella Posta.</span>
                   </span>
                 </label>
               </div>
             )}
 
             <div>
-              <Label htmlFor="emailaccountssettings-firma-personalizzata-facolta" className="text-sm font-medium text-slate-700">Firma personalizzata (facoltativa)</Label>
+              <Label htmlFor="emailaccountssettings-firma-personalizzata-facolta" className="text-sm font-medium text-zinc-700">Firma personalizzata (facoltativa)</Label>
               <textarea id="emailaccountssettings-firma-personalizzata-facolta"
                 value={form.firma_html}
                 onChange={e => setForm(prev => ({ ...prev, firma_html: e.target.value }))}
@@ -496,7 +496,7 @@ export default function EmailAccountsSettings({ profile }) {
                 className="mt-1 w-full rounded-md border border-input p-2 text-sm"
                 placeholder={"Es. Ufficio Amministrazione\nTel. 0471 000000"}
               />
-              <p className="text-xs text-slate-500 mt-1">Se vuota si usa la firma automatica con logo e dati della ditta.</p>
+              <p className="text-xs text-zinc-500 mt-1">Se vuota si usa la firma automatica con logo e dati della ditta.</p>
             </div>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -506,7 +506,7 @@ export default function EmailAccountsSettings({ profile }) {
                 onChange={e => setForm(prev => ({ ...prev, is_default: e.target.checked }))}
                 className="w-4 h-4"
               />
-              <span className="text-sm text-slate-700">Usa come mittente predefinito</span>
+              <span className="text-sm text-zinc-700">Usa come mittente predefinito</span>
             </label>
           </div>
           <DialogFooter className="mt-4">

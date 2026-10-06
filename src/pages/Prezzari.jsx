@@ -63,47 +63,47 @@ export default function Prezzari() {
       <PageHeader title="Prezzari" subtitle="Carica i prezzari ufficiali (regione, comune) o i tuoi listini: l'IA li usa per mettere il prezzo giusto alle voci dei preventivi." actionLabel="Importa prezzario" actionIcon={Upload} onAction={() => setImportOpen(true)} />
 
       {list.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-14 px-6 text-center">
-          <BookOpenCheck className="w-10 h-10 text-slate-300 mx-auto" />
-          <p className="mt-3 font-semibold text-slate-900">Nessun prezzario caricato</p>
-          <p className="text-sm text-slate-500 mt-1 max-w-lg mx-auto">Scarica il prezzario della tua regione dal sito ufficiale (meglio in Excel, va bene anche il PDF) e caricalo qui. Da quel momento, nei preventivi, l'IA propone il prezzo delle voci citando codice e prezzario.</p>
+        <div className="bg-white rounded-2xl border border-dashed border-zinc-300 py-14 px-6 text-center">
+          <BookOpenCheck className="w-10 h-10 text-zinc-300 mx-auto" />
+          <p className="mt-3 font-semibold text-zinc-900">Nessun prezzario caricato</p>
+          <p className="text-sm text-zinc-500 mt-1 max-w-lg mx-auto">Scarica il prezzario della tua regione dal sito ufficiale (meglio in Excel, va bene anche il PDF) e caricalo qui. Da quel momento, nei preventivi, l'IA propone il prezzo delle voci citando codice e prezzario.</p>
           <Button onClick={() => setImportOpen(true)} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2"><Upload className="w-4 h-4" /> Importa prezzario</Button>
         </div>
       ) : (
         <>
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
             {list.map((p) => (
-              <div key={p.id} className={`bg-white rounded-2xl border p-4 ${p.predefinito ? "border-brand-300 ring-1 ring-brand-200" : "border-slate-200"}`}>
+              <div key={p.id} className={`bg-white rounded-2xl border p-4 ${p.predefinito ? "border-brand-300 ring-1 ring-brand-200" : "border-zinc-200"}`}>
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl bg-brand-50 grid place-items-center shrink-0"><BookOpenCheck className="w-5 h-5 text-brand-700" /></div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-900 truncate">{p.nome}</p>
-                    <p className="text-xs text-slate-500 truncate">{[p.ente, p.anno].filter(Boolean).join(" · ") || TIPI.find((t) => t.value === p.tipo)?.label}</p>
+                    <p className="text-sm font-semibold text-zinc-900 truncate">{p.nome}</p>
+                    <p className="text-xs text-zinc-500 truncate">{[p.ente, p.anno].filter(Boolean).join(" · ") || TIPI.find((t) => t.value === p.tipo)?.label}</p>
                   </div>
-                  <button onClick={() => setDefault(p)} className="p-1 rounded hover:bg-slate-100" title={p.predefinito ? "Predefinito" : "Rendi predefinito"} aria-label="Predefinito">
-                    <Star className={`w-5 h-5 ${p.predefinito ? "fill-amber-400 text-amber-500" : "text-slate-300"}`} />
+                  <button onClick={() => setDefault(p)} className="p-1 rounded hover:bg-zinc-100" title={p.predefinito ? "Predefinito" : "Rendi predefinito"} aria-label="Predefinito">
+                    <Star className={`w-5 h-5 ${p.predefinito ? "fill-amber-400 text-amber-500" : "text-zinc-300"}`} />
                   </button>
                 </div>
                 <div className="flex items-center gap-4 mt-4 text-sm">
-                  <span className="text-slate-900 font-semibold tabular-nums">{(p.n_voci || 0).toLocaleString("it-IT")}</span><span className="text-slate-500 -ml-3">voci</span>
-                  <label className="flex items-center gap-1.5 text-slate-600 ml-auto" title="Ricarico o sconto applicato ai prezzi proposti">
+                  <span className="text-zinc-900 font-semibold tabular-nums">{(p.n_voci || 0).toLocaleString("it-IT")}</span><span className="text-zinc-500 -ml-3">voci</span>
+                  <label className="flex items-center gap-1.5 text-zinc-600 ml-auto" title="Ricarico o sconto applicato ai prezzi proposti">
                     <Percent className="w-3.5 h-3.5" />
                     <Input type="number" className="h-7 w-16 text-xs" defaultValue={p.ricarico_percentuale ?? 0} onBlur={(e) => Number(e.target.value) !== Number(p.ricarico_percentuale || 0) && patch(p, { ricarico_percentuale: Number(e.target.value) || 0 })} />
                   </label>
                 </div>
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-                  <label className="flex items-center gap-2 text-sm text-slate-700"><Switch checked={p.attivo !== false} onCheckedChange={(v) => patch(p, { attivo: v })} /> Usato dall'IA</label>
-                  <button onClick={() => remove(p)} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina"><Trash2 className="w-4 h-4" /></button>
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-100">
+                  <label className="flex items-center gap-2 text-sm text-zinc-700"><Switch checked={p.attivo !== false} onCheckedChange={(v) => patch(p, { attivo: v })} /> Usato dall'IA</label>
+                  <button onClick={() => remove(p)} className="p-1.5 rounded-md text-zinc-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina"><Trash2 className="w-4 h-4" /></button>
                 </div>
               </div>
             ))}
           </div>
 
-          <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5">
-            <h2 className="text-sm font-semibold text-slate-900 mb-3">Cerca nelle voci</h2>
+          <section className="bg-white rounded-2xl border border-zinc-200 p-4 sm:p-5">
+            <h2 className="text-sm font-semibold text-zinc-900 mb-3">Cerca nelle voci</h2>
             <form onSubmit={search} className="flex flex-wrap gap-2">
               <div className="relative flex-1 min-w-[220px]">
-                <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
                 <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="es. intonaco civile, massetto sabbia cemento, oppure un codice" className="pl-8" />
               </div>
               <Select value={scope} onValueChange={setScope}>
@@ -113,17 +113,17 @@ export default function Prezzari() {
               <Button type="submit" disabled={searching || !query.trim()} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />} Cerca</Button>
             </form>
             {results && (
-              results.length === 0 ? <p className="text-sm text-slate-500 mt-4">Nessuna voce trovata. Prova con parole diverse o più generiche.</p> : (
-                <ul className="mt-4 divide-y divide-slate-100 border-t border-slate-100">
+              results.length === 0 ? <p className="text-sm text-zinc-500 mt-4">Nessuna voce trovata. Prova con parole diverse o più generiche.</p> : (
+                <ul className="mt-4 divide-y divide-zinc-100 border-t border-zinc-100">
                   {results.map((v) => (
                     <li key={v.id} className="py-3 flex gap-3">
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-slate-500"><span className="font-mono text-slate-700">{v.codice || "—"}</span> · {byId[v.prezzario_id]?.nome}{v.capitolo ? ` · ${v.capitolo}` : ""}</p>
-                        <p className="text-sm text-slate-800 mt-0.5 line-clamp-3">{v.descrizione}</p>
+                        <p className="text-xs text-zinc-500"><span className="font-mono text-zinc-700">{v.codice || "—"}</span> · {byId[v.prezzario_id]?.nome}{v.capitolo ? ` · ${v.capitolo}` : ""}</p>
+                        <p className="text-sm text-zinc-800 mt-0.5 line-clamp-3">{v.descrizione}</p>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-sm font-semibold tabular-nums text-slate-900">{fmtEur(v.prezzo)}</p>
-                        <p className="text-xs text-slate-500">al {v.unita_misura || "—"}</p>
+                        <p className="text-sm font-semibold tabular-nums text-zinc-900">{fmtEur(v.prezzo)}</p>
+                        <p className="text-xs text-zinc-500">al {v.unita_misura || "—"}</p>
                         <button onClick={() => toListino(v)} className="text-xs text-brand-700 hover:underline mt-1 inline-flex items-center gap-0.5"><Plus className="w-3 h-3" />listino</button>
                       </div>
                     </li>
@@ -238,49 +238,49 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
         </div>
 
         {phase === "pick" && (
-          <button onClick={() => input.current?.click()} className="w-full mt-2 rounded-xl border-2 border-dashed border-slate-300 hover:border-brand-500 hover:bg-brand-50/40 py-10 text-center transition-colors">
-            <div className="flex justify-center gap-3 text-slate-500"><FileSpreadsheet className="w-8 h-8" /><FileText className="w-8 h-8" /></div>
-            <p className="mt-2 text-sm font-medium text-slate-800">Scegli il file del prezzario</p>
-            <p className="text-xs text-slate-500">.xlsx .xls .csv .ods .pdf</p>
+          <button onClick={() => input.current?.click()} className="w-full mt-2 rounded-xl border-2 border-dashed border-zinc-300 hover:border-brand-500 hover:bg-brand-50/40 py-10 text-center transition-colors">
+            <div className="flex justify-center gap-3 text-zinc-500"><FileSpreadsheet className="w-8 h-8" /><FileText className="w-8 h-8" /></div>
+            <p className="mt-2 text-sm font-medium text-zinc-800">Scegli il file del prezzario</p>
+            <p className="text-xs text-zinc-500">.xlsx .xls .csv .ods .pdf</p>
             <input ref={input} type="file" className="hidden" accept=".xlsx,.xls,.csv,.ods,.pdf" onChange={(e) => { choose(e.target.files?.[0]); e.target.value = ""; }} />
           </button>
         )}
         {err && <p className="text-sm text-red-700 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" />{err}</p>}
 
         {phase === "pdf" && (
-          <div className="rounded-xl border border-slate-200 p-4 space-y-3">
-            <p className="text-sm text-slate-800"><b>{file?.name}</b> · {pages.total} pagine</p>
+          <div className="rounded-xl border border-zinc-200 p-4 space-y-3">
+            <p className="text-sm text-zinc-800"><b>{file?.name}</b> · {pages.total} pagine</p>
             <div className="flex flex-wrap items-end gap-3">
               <div><Label htmlFor="prezzari-dalla-pagina">Dalla pagina</Label><Input id="prezzari-dalla-pagina" type="number" min={1} max={pages.total} value={pages.from} onChange={(e) => setPages({ ...pages, from: Math.max(1, Number(e.target.value) || 1) })} className="mt-1 w-24" /></div>
               <div><Label htmlFor="prezzari-alla-pagina">Alla pagina</Label><Input id="prezzari-alla-pagina" type="number" min={1} max={pages.total} value={pages.to} onChange={(e) => setPages({ ...pages, to: Math.min(pages.total, Number(e.target.value) || 1) })} className="mt-1 w-24" /></div>
               <Button onClick={readPdf} disabled={pages.to < pages.from} className="bg-brand-600 hover:bg-brand-700 gap-1.5"><Sparkles className="w-4 h-4" /> Leggi con l'IA</Button>
             </div>
-            <p className="text-xs text-slate-500">Circa 10 secondi ogni 3 pagine. Per prezzari molto lunghi importa i capitoli che usi davvero, oppure cerca la versione Excel sul sito della regione: è più veloce e precisa.</p>
+            <p className="text-xs text-zinc-500">Circa 10 secondi ogni 3 pagine. Per prezzari molto lunghi importa i capitoli che usi davvero, oppure cerca la versione Excel sul sito della regione: è più veloce e precisa.</p>
           </div>
         )}
 
         {phase === "analyzing" && (
           <div className="py-8 text-center">
             <Loader2 className="w-7 h-7 animate-spin text-brand-600 mx-auto" />
-            <p className="text-sm text-slate-600 mt-2">{progress ? `Pagine lette: gruppo ${progress.done} di ${progress.total} · ${progress.found} voci trovate` : "Sto leggendo il file…"}</p>
-            {progress && <div className="h-1.5 rounded-full bg-slate-100 max-w-sm mx-auto mt-3 overflow-hidden"><div className="h-full bg-brand-600" style={{ width: `${(progress.done / progress.total) * 100}%` }} /></div>}
+            <p className="text-sm text-zinc-600 mt-2">{progress ? `Pagine lette: gruppo ${progress.done} di ${progress.total} · ${progress.found} voci trovate` : "Sto leggendo il file…"}</p>
+            {progress && <div className="h-1.5 rounded-full bg-zinc-100 max-w-sm mx-auto mt-3 overflow-hidden"><div className="h-full bg-brand-600" style={{ width: `${(progress.done / progress.total) * 100}%` }} /></div>}
           </div>
         )}
 
         {(phase === "preview" || phase === "saving") && (
           <div className="space-y-3">
             <p className="text-sm text-emerald-800 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> {voci.length.toLocaleString("it-IT")} voci riconosciute. Controlla le prime prima di importare:</p>
-            <div className="rounded-xl border border-slate-200 overflow-hidden">
+            <div className="rounded-xl border border-zinc-200 overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-xs text-slate-500"><tr><th className="text-left font-medium px-3 py-2">Codice</th><th className="text-left font-medium px-3 py-2">Descrizione</th><th className="text-left font-medium px-3 py-2">U.M.</th><th className="text-right font-medium px-3 py-2">Prezzo</th></tr></thead>
-                <tbody className="divide-y divide-slate-100">
+                <thead className="bg-zinc-50 text-xs text-zinc-500"><tr><th className="text-left font-medium px-3 py-2">Codice</th><th className="text-left font-medium px-3 py-2">Descrizione</th><th className="text-left font-medium px-3 py-2">U.M.</th><th className="text-right font-medium px-3 py-2">Prezzo</th></tr></thead>
+                <tbody className="divide-y divide-zinc-100">
                   {voci.slice(0, 8).map((v, i) => (
-                    <tr key={i}><td className="px-3 py-2 font-mono text-xs text-slate-700 whitespace-nowrap">{v.codice || "—"}</td><td className="px-3 py-2 text-slate-800"><span className="line-clamp-2">{v.descrizione}</span></td><td className="px-3 py-2 text-slate-600">{v.unita_misura || "—"}</td><td className="px-3 py-2 text-right tabular-nums">{fmtEur(v.prezzo)}</td></tr>
+                    <tr key={i}><td className="px-3 py-2 font-mono text-xs text-zinc-700 whitespace-nowrap">{v.codice || "—"}</td><td className="px-3 py-2 text-zinc-800"><span className="line-clamp-2">{v.descrizione}</span></td><td className="px-3 py-2 text-zinc-600">{v.unita_misura || "—"}</td><td className="px-3 py-2 text-right tabular-nums">{fmtEur(v.prezzo)}</td></tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            {phase === "saving" && progress && <p className="text-sm text-slate-600">Salvataggio: {progress.done.toLocaleString("it-IT")} / {progress.total.toLocaleString("it-IT")}</p>}
+            {phase === "saving" && progress && <p className="text-sm text-zinc-600">Salvataggio: {progress.done.toLocaleString("it-IT")} / {progress.total.toLocaleString("it-IT")}</p>}
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => { setPhase("pick"); setVoci([]); }} disabled={phase === "saving"}>Cambia file</Button>
               <Button onClick={save} disabled={phase === "saving" || !meta.nome.trim()} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{phase === "saving" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />} Importa {voci.length.toLocaleString("it-IT")} voci</Button>

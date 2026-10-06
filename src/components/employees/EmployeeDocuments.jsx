@@ -160,7 +160,7 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-slate-900">Documenti</h2>
+        <h2 className="text-lg font-semibold text-zinc-900">Documenti</h2>
         {!readOnly && <Button onClick={() => { setForm(emptyDoc); setDialogOpen(true); }} className="bg-brand-600 hover:bg-brand-700 gap-2">
           <Upload className="w-4 h-4" /> Carica documento
         </Button>}
@@ -169,29 +169,29 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
       {docs.length === 0 ? (
         <EmptyState icon={FileText} title="Nessun documento" description="Carica il primo documento per questo dipendente" />
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-zinc-50 border-b border-zinc-200">
               <tr>
-                <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Titolo</th>
-                <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Tipo</th>
-                <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3 hidden md:table-cell">Scadenza</th>
-                <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">Azioni</th>
+                <th className="text-left text-xs font-medium text-zinc-500 uppercase px-4 py-3">Titolo</th>
+                <th className="text-left text-xs font-medium text-zinc-500 uppercase px-4 py-3">Tipo</th>
+                <th className="text-left text-xs font-medium text-zinc-500 uppercase px-4 py-3 hidden md:table-cell">Scadenza</th>
+                <th className="text-right text-xs font-medium text-zinc-500 uppercase px-4 py-3">Azioni</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-zinc-100">
               {docs.map(doc => (
-                <tr key={doc.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 text-sm font-medium text-slate-900">
+                <tr key={doc.id} className="hover:bg-zinc-50">
+                  <td className="px-4 py-3 text-sm font-medium text-zinc-900">
                     {doc.file_url ? (
                       <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="text-brand-600 hover:underline">{doc.titolo}</a>
                     ) : doc.titolo}
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{docTypes.find(t => t.value === doc.tipo)?.label || doc.tipo}</td>
+                  <td className="px-4 py-3 text-sm text-zinc-600">{docTypes.find(t => t.value === doc.tipo)?.label || doc.tipo}</td>
                   <td className="px-4 py-3 text-sm hidden md:table-cell">
                     {doc.data_scadenza ? (
                       <div className="space-y-1.5">
-                        <span className={`flex items-center gap-1 ${isExpired(doc.data_scadenza) ? "text-red-700" : isExpiringSoon(doc.data_scadenza) ? "text-amber-700" : "text-slate-600"}`}>
+                        <span className={`flex items-center gap-1 ${isExpired(doc.data_scadenza) ? "text-red-700" : isExpiringSoon(doc.data_scadenza) ? "text-amber-700" : "text-zinc-600"}`}>
                           {(isExpired(doc.data_scadenza) || isExpiringSoon(doc.data_scadenza)) && <AlertTriangle className="w-3 h-3" />}
                           {new Date(doc.data_scadenza).toLocaleDateString("it-IT")}
                         </span>
@@ -208,23 +208,23 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      {!readOnly && <button onClick={() => setEditDoc(doc)} className="p-1.5 rounded-lg hover:bg-brand-50 text-slate-500 hover:text-brand-600" title="Modifica documento">
+                      {!readOnly && <button onClick={() => setEditDoc(doc)} className="p-1.5 rounded-lg hover:bg-brand-50 text-zinc-500 hover:text-brand-600" title="Modifica documento">
                         <Pencil className="w-4 h-4" />
                       </button>}
                       {doc.file_url && (
                         <>
-                          <button onClick={() => openReader(doc.file_url)} className="p-1.5 rounded-lg hover:bg-brand-50 text-slate-500 hover:text-brand-600" title="Leggi con IA">
+                          <button onClick={() => openReader(doc.file_url)} className="p-1.5 rounded-lg hover:bg-brand-50 text-zinc-500 hover:text-brand-600" title="Leggi con IA">
                             <ScanLine className="w-4 h-4" />
                           </button>
-                          <button onClick={() => setPreviewDoc(doc)} className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-500 hover:text-indigo-600" title="Anteprima">
+                          <button onClick={() => setPreviewDoc(doc)} className="p-1.5 rounded-lg hover:bg-indigo-50 text-zinc-500 hover:text-indigo-600" title="Anteprima">
                             <Eye className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDownloadPdf(doc)} disabled={downloadingId === doc.id} className="p-1.5 rounded-lg hover:bg-emerald-50 text-slate-500 hover:text-emerald-600 disabled:opacity-50" title="Scarica PDF">
+                          <button onClick={() => handleDownloadPdf(doc)} disabled={downloadingId === doc.id} className="p-1.5 rounded-lg hover:bg-emerald-50 text-zinc-500 hover:text-emerald-600 disabled:opacity-50" title="Scarica PDF">
                             {downloadingId === doc.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
                           </button>
                         </>
                       )}
-                      {!readOnly && <button onClick={() => handleDeleteDoc(doc.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600">
+                      {!readOnly && <button onClick={() => handleDeleteDoc(doc.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-zinc-500 hover:text-red-600">
                         <Trash2 className="w-4 h-4" />
                       </button>}
                     </div>
@@ -261,19 +261,19 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
             </div>
 
             {/* Scadenza — tre opzioni coerenti con AIAssistant */}
-            <div className="border-t border-slate-100 pt-3">
-              <Label className="text-xs font-medium text-slate-600">Data scadenza</Label>
+            <div className="border-t border-zinc-100 pt-3">
+              <Label className="text-xs font-medium text-zinc-600">Data scadenza</Label>
               <div className="flex flex-wrap gap-1.5 mt-1.5">
                 <button
                   type="button"
                   onClick={() => setForm(prev => ({ ...prev, scadenza_mode: "manuale" }))}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "manuale" ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "manuale" ? "bg-brand-600 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
                 >Manuale</button>
                 <button
                   type="button"
                   onClick={handleReadWithAi}
                   disabled={readingDate}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${form.scadenza_mode === "ia" ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"} disabled:opacity-60`}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${form.scadenza_mode === "ia" ? "bg-brand-600 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"} disabled:opacity-60`}
                 >
                   {readingDate && <Loader2 className="w-3 h-3 animate-spin" />}
                   Lettura IA
@@ -281,7 +281,7 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
                 <button
                   type="button"
                   onClick={() => setForm(prev => ({ ...prev, scadenza_mode: "nessuna", data_scadenza: "" }))}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "nessuna" ? "bg-slate-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "nessuna" ? "bg-zinc-600 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
                 >Nessuna scadenza</button>
               </div>
 
@@ -299,22 +299,22 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
                     </p>
                   )}
                   {form.scadenza_mode === "ia" && !form.data_scadenza && !readingDate && (
-                    <p className="text-xs text-slate-500 mt-1">L'IA non ha trovato una scadenza. Inseriscila manualmente sopra.</p>
+                    <p className="text-xs text-zinc-500 mt-1">L'IA non ha trovato una scadenza. Inseriscila manualmente sopra.</p>
                   )}
                   {form.scadenza_mode === "manuale" && (
-                    <p className="text-xs text-slate-500 mt-1">Inserisci la data di scadenza manualmente.</p>
+                    <p className="text-xs text-zinc-500 mt-1">Inserisci la data di scadenza manualmente.</p>
                   )}
                 </div>
               )}
 
               {form.scadenza_mode === "nessuna" && (
-                <p className="text-xs text-slate-500 mt-2">Il documento non ha scadenza — nessun promemoria verrà creato.</p>
+                <p className="text-xs text-zinc-500 mt-2">Il documento non ha scadenza — nessun promemoria verrà creato.</p>
               )}
             </div>
             <div>
               <Label htmlFor="employeedocuments-file">File</Label>
               <Input id="employeedocuments-file" type="file" accept="image/*,application/pdf" onChange={handleFileUpload} disabled={uploading} />
-              {uploading && <p className="text-xs text-slate-500 mt-1">Caricamento...</p>}
+              {uploading && <p className="text-xs text-zinc-500 mt-1">Caricamento...</p>}
               {form.file_url && (
                 <div className="flex items-center gap-2 mt-2">
                   <p className="text-xs text-emerald-700">File caricato ✓</p>
@@ -327,10 +327,10 @@ export default function EmployeeDocuments({ employee, docs, onChanged, highlight
 
             {/* Anticipo + ripetizione — coerente con AIAssistant */}
             {form.data_scadenza && (
-              <div className="border-t border-slate-100 pt-3 space-y-2">
+              <div className="border-t border-zinc-100 pt-3 space-y-2">
                 <div className="flex items-center gap-2">
                   <Bell className="w-3.5 h-3.5 text-brand-600" />
-                  <span className="text-xs font-medium text-slate-600">Avvisa con anticipo</span>
+                  <span className="text-xs font-medium text-zinc-600">Avvisa con anticipo</span>
                 </div>
                 <Select value={form.anticipo || "0"} onValueChange={v => setForm({ ...form, anticipo: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>

@@ -171,7 +171,7 @@ export default function Quotes() {
   const actions = (q) => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button onClick={(e) => e.stopPropagation()} aria-label="Azioni" className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"><MoreHorizontal className="w-4 h-4" /></button>
+        <button onClick={(e) => e.stopPropagation()} aria-label="Azioni" className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500"><MoreHorizontal className="w-4 h-4" /></button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
         <DropdownMenuItem onClick={() => navigate(`/preventivi/${q.id}`)}><Eye className="w-4 h-4 mr-2" /> Apri</DropdownMenuItem>
@@ -186,7 +186,7 @@ export default function Quotes() {
       <div className="mb-4 sm:mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
           <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Preventivi</h1>
-          <p className="text-slate-500 mt-1 text-sm">Emessi ai clienti e ricevuti dai fornitori</p>
+          <p className="text-zinc-500 mt-1 text-sm">Emessi ai clienti e ricevuti dai fornitori</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {templates.length > 0 && <Button variant="outline" size="sm" onClick={() => setTplDialog(true)} className="gap-1.5"><Bookmark className="w-4 h-4" /> Modelli</Button>}
@@ -195,10 +195,10 @@ export default function Quotes() {
         </div>
       </div>
 
-      <div className="flex gap-1 mb-4 border-b border-slate-200">
+      <div className="flex gap-1 mb-4 border-b border-zinc-200">
         {[["emessi", "Emessi", FileText], ["ricevuti", "Ricevuti dai fornitori", Inbox]].map(([k, l, Icon]) => (
           <button key={k} onClick={() => setParams(k === "emessi" ? {} : { tab: k })}
-            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px ${tab === k ? "border-brand-600 text-brand-700" : "border-transparent text-zinc-500 hover:text-zinc-800"}`}>
             <Icon className="w-4 h-4" /> {l}
           </button>
         ))}
@@ -210,32 +210,32 @@ export default function Quotes() {
         <>
           {/* Indicatori */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-            <button onClick={() => setFilterState("aperti")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
-              <p className="text-xs text-slate-500">In attesa di risposta</p>
-              <p className="text-lg font-bold text-slate-900 tabular-nums">{fmtEur(kpi.open.v)}</p>
-              <p className="text-xs text-slate-500">{kpi.open.n} preventivi</p>
+            <button onClick={() => setFilterState("aperti")} className="text-left bg-white rounded-xl border border-zinc-200 p-3.5 hover:border-brand-300">
+              <p className="text-xs text-zinc-500">In attesa di risposta</p>
+              <p className="text-lg font-bold text-zinc-900 tabular-nums">{fmtEur(kpi.open.v)}</p>
+              <p className="text-xs text-zinc-500">{kpi.open.n} preventivi</p>
             </button>
-            <button onClick={() => setFilterState("approvato")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
-              <p className="text-xs text-slate-500">Accettati</p>
+            <button onClick={() => setFilterState("approvato")} className="text-left bg-white rounded-xl border border-zinc-200 p-3.5 hover:border-brand-300">
+              <p className="text-xs text-zinc-500">Accettati</p>
               <p className="text-lg font-bold text-emerald-700 tabular-nums">{fmtEur(kpi.won.v)}</p>
-              <p className="text-xs text-slate-500">{kpi.won.n} preventivi</p>
+              <p className="text-xs text-zinc-500">{kpi.won.n} preventivi</p>
             </button>
-            <div className="bg-white rounded-xl border border-slate-200 p-3.5">
-              <p className="text-xs text-slate-500">Tasso di accettazione</p>
-              <p className="text-lg font-bold text-slate-900">{kpi.rate === null ? "—" : `${kpi.rate}%`}</p>
-              <p className="text-xs text-slate-500">su accettati e rifiutati</p>
+            <div className="bg-white rounded-xl border border-zinc-200 p-3.5">
+              <p className="text-xs text-zinc-500">Tasso di accettazione</p>
+              <p className="text-lg font-bold text-zinc-900">{kpi.rate === null ? "—" : `${kpi.rate}%`}</p>
+              <p className="text-xs text-zinc-500">su accettati e rifiutati</p>
             </div>
-            <button onClick={() => { setFilterState("aperti"); setSort("scadenza"); }} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
-              <p className="text-xs text-slate-500">In scadenza entro 7 giorni</p>
-              <p className={`text-lg font-bold ${kpi.soon ? "text-amber-700" : "text-slate-900"}`}>{kpi.soon}</p>
-              <p className="text-xs text-slate-500">da sollecitare</p>
+            <button onClick={() => { setFilterState("aperti"); setSort("scadenza"); }} className="text-left bg-white rounded-xl border border-zinc-200 p-3.5 hover:border-brand-300">
+              <p className="text-xs text-zinc-500">In scadenza entro 7 giorni</p>
+              <p className={`text-lg font-bold ${kpi.soon ? "text-amber-700" : "text-zinc-900"}`}>{kpi.soon}</p>
+              <p className="text-xs text-zinc-500">da sollecitare</p>
             </button>
           </div>
 
           {/* Filtri */}
           <div className="flex flex-col xl:flex-row gap-2 mb-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <Input placeholder="Cerca per numero, cliente, oggetto, lavoro…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-10" aria-label="Cerca preventivi" />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 xl:flex gap-2">
@@ -259,13 +259,13 @@ export default function Quotes() {
                 </SelectContent>
               </Select>
               <Select value={sort} onValueChange={setSort}>
-                <SelectTrigger aria-label="Ordina per" className="xl:w-40 h-10"><ArrowUpDown className="w-4 h-4 text-slate-500" /><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Ordina per" className="xl:w-40 h-10"><ArrowUpDown className="w-4 h-4 text-zinc-500" /><SelectValue /></SelectTrigger>
                 <SelectContent>{Object.entries(SORTS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 mb-3 text-sm">
-            <span className="text-slate-600">{filtered.length} preventivi · <strong className="tabular-nums">{fmtEur(filtered.reduce((s, q) => s + (Number(q.totale) || 0), 0))}</strong></span>
+            <span className="text-zinc-600">{filtered.length} preventivi · <strong className="tabular-nums">{fmtEur(filtered.reduce((s, q) => s + (Number(q.totale) || 0), 0))}</strong></span>
             {activeFilters > 0 && <button onClick={resetFilters} className="flex items-center gap-1 text-xs text-brand-700 hover:underline"><X className="w-3.5 h-3.5" /> Azzera filtri</button>}
             <div className="flex-1" />
             <Button variant="ghost" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
@@ -290,10 +290,10 @@ export default function Quotes() {
               : <EmptyState icon={FileText} title="Nessun preventivo" description="Crea il primo preventivo o importane uno da PDF." actionLabel="Nuovo preventivo" onAction={() => navigate("/preventivi/nuovo")} />
           ) : (
             <>
-              <div className="hidden md:block bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <div className="hidden md:block bg-white rounded-xl border border-zinc-200 overflow-hidden">
                 <table className="w-full">
-                  <thead className="bg-slate-50 border-b border-slate-200">
-                    <tr className="text-left text-xs font-medium text-slate-500 uppercase">
+                  <thead className="bg-zinc-50 border-b border-zinc-200">
+                    <tr className="text-left text-xs font-medium text-zinc-500 uppercase">
                       {selectMode && <th className="px-3 py-3 w-10" />}
                       <th className="px-4 py-3">N° / data</th>
                       <th className="px-4 py-3">Cliente e oggetto</th>
@@ -303,27 +303,27 @@ export default function Quotes() {
                       <th className="px-2 py-3 w-10" />
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-zinc-100">
                     {filtered.map((q) => {
                       const e = expiryDate(q);
                       const days = e ? Math.ceil((e - new Date(new Date().toDateString())) / 86_400_000) : null;
                       return (
-                        <tr key={q.id} className={`cursor-pointer ${selectedIds.has(q.id) ? "bg-brand-50" : "hover:bg-slate-50"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))} tabIndex={0} onKeyDown={onEnter(() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`)))}>
+                        <tr key={q.id} className={`cursor-pointer ${selectedIds.has(q.id) ? "bg-brand-50" : "hover:bg-zinc-50"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))} tabIndex={0} onKeyDown={onEnter(() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`)))}>
                           {selectMode && <td className="px-3 py-3"><input type="checkbox" checked={selectedIds.has(q.id)} onChange={() => toggleSelect(q.id)} onClick={(ev) => ev.stopPropagation()} className="w-4 h-4" aria-label={`Seleziona ${q.numero}`} /></td>}
                           <td className="px-4 py-3">
-                            <p className="text-sm font-semibold text-slate-900">{q.numero || "—"}{q.revisione ? <span className="text-xs text-slate-500 font-normal"> · Rev.{q.revisione}</span> : null}</p>
-                            <p className="text-xs text-slate-500">{q.data ? new Date(q.data).toLocaleDateString("it-IT") : ""}</p>
+                            <p className="text-sm font-semibold text-zinc-900">{q.numero || "—"}{q.revisione ? <span className="text-xs text-zinc-500 font-normal"> · Rev.{q.revisione}</span> : null}</p>
+                            <p className="text-xs text-zinc-500">{q.data ? new Date(q.data).toLocaleDateString("it-IT") : ""}</p>
                           </td>
                           <td className="px-4 py-3 max-w-[340px]">
-                            <p className="text-sm text-slate-900 truncate">{q.cliente_nome || "—"}</p>
-                            <p className="text-xs text-slate-500 truncate">{q.oggetto || ""}</p>
+                            <p className="text-sm text-zinc-900 truncate">{q.cliente_nome || "—"}</p>
+                            <p className="text-xs text-zinc-500 truncate">{q.oggetto || ""}</p>
                           </td>
-                          <td className="px-4 py-3 text-right text-sm font-semibold text-slate-900 tabular-nums">{fmtEur(q.totale)}</td>
+                          <td className="px-4 py-3 text-right text-sm font-semibold text-zinc-900 tabular-nums">{fmtEur(q.totale)}</td>
                           <td className="px-4 py-3"><StateBadge state={q._state} /></td>
                           <td className="px-4 py-3 hidden lg:table-cell text-sm">
                             {e && OPEN_STATES.includes(q._state)
-                              ? <span className={days <= 7 ? "text-amber-700 font-medium" : "text-slate-600"}>{days === 0 ? "oggi" : days === 1 ? "domani" : `tra ${days} gg`}</span>
-                              : <span className="text-slate-500">—</span>}
+                              ? <span className={days <= 7 ? "text-amber-700 font-medium" : "text-zinc-600"}>{days === 0 ? "oggi" : days === 1 ? "domani" : `tra ${days} gg`}</span>
+                              : <span className="text-zinc-500">—</span>}
                           </td>
                           <td className="px-2 py-3">{actions(q)}</td>
                         </tr>
@@ -335,18 +335,18 @@ export default function Quotes() {
 
               <div className="md:hidden space-y-2">
                 {filtered.map((q) => (
-                  <div key={q.id} className={`bg-white rounded-xl border p-3.5 ${selectedIds.has(q.id) ? "border-brand-400 bg-brand-50" : "border-slate-200"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))} role="link" tabIndex={0} onKeyDown={onEnter(() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`)))}>
+                  <div key={q.id} className={`bg-white rounded-xl border p-3.5 ${selectedIds.has(q.id) ? "border-brand-400 bg-brand-50" : "border-zinc-200"}`} onClick={() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`))} role="link" tabIndex={0} onKeyDown={onEnter(() => (selectMode ? toggleSelect(q.id) : navigate(`/preventivi/${q.id}`)))}>
                     <div className="flex items-start gap-2">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-slate-900 truncate">{q.cliente_nome || "—"}</p>
-                        <p className="text-xs text-slate-500 truncate">{q.numero}{q.revisione ? ` Rev.${q.revisione}` : ""} · {q.oggetto || "senza oggetto"}</p>
+                        <p className="text-sm font-semibold text-zinc-900 truncate">{q.cliente_nome || "—"}</p>
+                        <p className="text-xs text-zinc-500 truncate">{q.numero}{q.revisione ? ` Rev.${q.revisione}` : ""} · {q.oggetto || "senza oggetto"}</p>
                       </div>
                       <StateBadge state={q._state} />
                       {actions(q)}
                     </div>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-xs text-slate-500">{q.data ? new Date(q.data).toLocaleDateString("it-IT") : ""}</span>
-                      <span className="text-base font-bold text-slate-900 tabular-nums">{fmtEur(q.totale)}</span>
+                      <span className="text-xs text-zinc-500">{q.data ? new Date(q.data).toLocaleDateString("it-IT") : ""}</span>
+                      <span className="text-base font-bold text-zinc-900 tabular-nums">{fmtEur(q.totale)}</span>
                     </div>
                   </div>
                 ))}
@@ -364,10 +364,10 @@ export default function Quotes() {
           </DialogHeader>
           <div className="space-y-2">
             {templates.map((tpl) => (
-              <div key={tpl.id} className="flex items-center justify-between gap-2 border border-slate-200 rounded-lg p-3">
+              <div key={tpl.id} className="flex items-center justify-between gap-2 border border-zinc-200 rounded-lg p-3">
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">{tpl.nome}</p>
-                  <p className="text-xs text-slate-500 truncate">{tpl.oggetto ? `${tpl.oggetto} · ` : ""}{tpl.righe?.length || 0} voci</p>
+                  <p className="text-sm font-medium text-zinc-900 truncate">{tpl.nome}</p>
+                  <p className="text-xs text-zinc-500 truncate">{tpl.oggetto ? `${tpl.oggetto} · ` : ""}{tpl.righe?.length || 0} voci</p>
                 </div>
                 <div className="flex gap-1 shrink-0">
                   <Button asChild size="sm"><Link to={`/preventivi/nuovo?template=${tpl.id}`} onClick={() => setTplDialog(false)}>Usa</Link></Button>

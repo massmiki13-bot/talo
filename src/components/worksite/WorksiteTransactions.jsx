@@ -95,9 +95,9 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
   const cats = [...new Set(transactions.map((t) => t.categoria).filter(Boolean))];
 
   return (
-    <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+    <section className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5">
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><Wallet className="w-4 h-4 text-slate-500" /> Movimenti</h3>
+        <h3 className="text-sm font-semibold text-zinc-800 flex items-center gap-2 flex-1"><Wallet className="w-4 h-4 text-zinc-500" /> Movimenti</h3>
         {transactions.length > 0 && <Button size="sm" variant="ghost" className="gap-1" onClick={exportCsv}><Download className="w-4 h-4" /> Esporta</Button>}
         {!readOnly && <Button size="sm" className="gap-1.5" onClick={() => { reset(); setOpen(true); }}><Plus className="w-4 h-4" /> Spesa o entrata</Button>}
       </div>
@@ -105,7 +105,7 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
       {transactions.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {[["tutti", "Tutti"], ["uscita", "Uscite"], ["entrata", "Entrate"]].map(([k, l]) => (
-            <button key={k} onClick={() => setFilter(k)} className={`rounded-full border px-3 py-1 text-xs ${filter === k ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>{l}</button>
+            <button key={k} onClick={() => setFilter(k)} className={`rounded-full border px-3 py-1 text-xs ${filter === k ? "border-brand-600 bg-brand-600 text-white" : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"}`}>{l}</button>
           ))}
           {cats.length > 1 && (
             <Select value={category} onValueChange={setCategory}>
@@ -117,18 +117,18 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
       )}
 
       {list.length === 0 ? (
-        <p className="text-sm text-slate-500 py-4 text-center">{transactions.length ? "Nessun movimento con questi filtri." : "Registra spese e incassi: fotografa la bolla o lo scontrino e l'AI compila i dati."}</p>
+        <p className="text-sm text-zinc-500 py-4 text-center">{transactions.length ? "Nessun movimento con questi filtri." : "Registra spese e incassi: fotografa la bolla o lo scontrino e l'AI compila i dati."}</p>
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-zinc-100">
           {list.map((t) => (
             <li key={t.id} className="py-2.5 flex items-center gap-3">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-slate-900 truncate">{t.descrizione || t.categoria}</p>
-                <p className="text-xs text-slate-500 truncate">{fmtDate(t.data)} · {t.categoria}{t.fornitore ? ` · ${t.fornitore}` : ""}</p>
+                <p className="text-sm text-zinc-900 truncate">{t.descrizione || t.categoria}</p>
+                <p className="text-xs text-zinc-500 truncate">{fmtDate(t.data)} · {t.categoria}{t.fornitore ? ` · ${t.fornitore}` : ""}</p>
               </div>
               <span className={`text-sm font-semibold tabular-nums ${t.tipo === "entrata" ? "text-emerald-700" : "text-red-700"}`}>{t.tipo === "entrata" ? "+" : "−"}{fmtEur(t.importo)}</span>
-              {t.file_url && <a href={t.file_url} target="_blank" rel="noopener noreferrer" aria-label="Vedi documento" className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Eye className="w-4 h-4" /></a>}
-              {!readOnly && <button aria-label="Elimina" onClick={() => remove(t)} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
+              {t.file_url && <a href={t.file_url} target="_blank" rel="noopener noreferrer" aria-label="Vedi documento" className="p-1.5 rounded hover:bg-zinc-100 text-zinc-500"><Eye className="w-4 h-4" /></a>}
+              {!readOnly && <button aria-label="Elimina" onClick={() => remove(t)} className="p-1.5 rounded hover:bg-red-50 text-zinc-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
             </li>
           ))}
         </ul>
@@ -141,14 +141,14 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
             <div className="grid grid-cols-2 gap-2">
               {[["uscita", "Spesa"], ["entrata", "Entrata"]].map(([k, l]) => (
                 <button key={k} type="button" onClick={() => setForm({ ...form, tipo: k, categoria: k === "entrata" ? INCOME_CATEGORIES[0] : COST_CATEGORIES[0] })}
-                  className={`rounded-lg border py-2 text-sm font-medium ${form.tipo === k ? (k === "uscita" ? "border-red-500 bg-red-50 text-red-800" : "border-emerald-500 bg-emerald-50 text-emerald-800") : "border-slate-200 text-slate-600"}`}>{l}</button>
+                  className={`rounded-lg border py-2 text-sm font-medium ${form.tipo === k ? (k === "uscita" ? "border-red-500 bg-red-50 text-red-800" : "border-emerald-500 bg-emerald-50 text-emerald-800") : "border-zinc-200 text-zinc-600"}`}>{l}</button>
               ))}
             </div>
             {form.tipo === "uscita" && (
-              <div className="rounded-lg border-2 border-dashed border-slate-300 p-3">
+              <div className="rounded-lg border-2 border-dashed border-zinc-300 p-3">
                 <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-                  <label className="flex-1 flex items-center gap-2 cursor-pointer text-sm text-slate-700">
-                    {uploading ? <Loader2 className="w-5 h-5 animate-spin text-slate-500" /> : <Camera className="w-5 h-5 text-slate-500" />}
+                  <label className="flex-1 flex items-center gap-2 cursor-pointer text-sm text-zinc-700">
+                    {uploading ? <Loader2 className="w-5 h-5 animate-spin text-zinc-500" /> : <Camera className="w-5 h-5 text-zinc-500" />}
                     {fileUrl ? "Documento caricato · tocca per cambiarlo" : "Fotografa o carica bolla, scontrino o fattura"}
                     <input type="file" accept="image/*,application/pdf" capture="environment" className="hidden" onChange={(e) => upload(e.target.files[0])} />
                   </label>

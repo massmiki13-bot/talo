@@ -236,39 +236,39 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
           <DialogHeader><DialogTitle>Firma e Timbro - {receivedQuote?.fornitore}</DialogTitle></DialogHeader>
 
           {!canSign ? (
-            <div className="py-8 text-center text-sm text-slate-500">
+            <div className="py-8 text-center text-sm text-zinc-500">
               Per firmare serve almeno una firma o un timbro nel Profilo Ditta, e il file deve essere un'immagine o un PDF.
             </div>
           ) : loadingDoc ? (
             <div className="py-12 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-slate-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
             </div>
           ) : (
             <div className="space-y-4 mt-4">
               {/* Controls */}
               <div className="flex items-center gap-4 flex-wrap">
                 {hasFirma && (
-                  <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+                  <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
                     <input type="checkbox" checked={firma.enabled} onChange={e => setFirma(f => ({ ...f, enabled: e.target.checked }))} className="w-4 h-4 rounded" />
                     <span>Firma</span>
                   </label>
                 )}
                 {hasTimbro && (
-                  <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+                  <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
                     <input type="checkbox" checked={timbro.enabled} onChange={e => setTimbro(t => ({ ...t, enabled: e.target.checked }))} className="w-4 h-4 rounded" />
                     <span>Timbro</span>
                   </label>
                 )}
-                <p className="text-xs text-slate-500 ml-auto hidden sm:block">Trascina per spostare · Pallino per ridimensionare</p>
+                <p className="text-xs text-zinc-500 ml-auto hidden sm:block">Trascina per spostare · Pallino per ridimensionare</p>
               </div>
 
               {/* Page navigation */}
               {pageCount > 1 && (
-                <div className="flex items-center justify-center gap-3 bg-slate-50 rounded-lg py-2">
+                <div className="flex items-center justify-center gap-3 bg-zinc-50 rounded-lg py-2">
                   <Button size="icon" variant="ghost" aria-label="Pagina precedente" onClick={() => setCurrentPage(p => Math.max(0, p - 1))} disabled={currentPage === 0}>
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  <span className="text-sm font-medium text-slate-700">Pagina {currentPage + 1} di {pageCount}</span>
+                  <span className="text-sm font-medium text-zinc-700">Pagina {currentPage + 1} di {pageCount}</span>
                   <Button size="icon" variant="ghost" aria-label="Pagina successiva" onClick={() => setCurrentPage(p => Math.min(pageCount - 1, p + 1))} disabled={currentPage === pageCount - 1}>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -278,7 +278,7 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
               {/* Preview with overlays */}
               <div
                 ref={containerRef}
-                className="relative w-full border border-slate-200 rounded-lg overflow-hidden bg-slate-100 select-none"
+                className="relative w-full border border-zinc-200 rounded-lg overflow-hidden bg-zinc-100 select-none"
                 style={{ minHeight: "400px" }}
               >
                 {fileType === "pdf" ? (
@@ -332,21 +332,21 @@ export default function SignStampDialog({ open, onOpenChange, receivedQuote, pro
 
               {/* Multi-page hint */}
               {pageCount > 1 && (firma.enabled || timbro.enabled) && (
-                <p className="text-xs text-slate-500 text-center">
+                <p className="text-xs text-zinc-500 text-center">
                   Naviga le pagine e posiziona firma/timbro sulla pagina desiderata. Ogni elemento resta sulla pagina in cui lo posizioni.
                 </p>
               )}
 
               {/* Result preview */}
               {signedUrl && (
-                <div className="border-t border-slate-100 pt-4">
-                  <p className="text-sm font-medium text-slate-700 mb-2 flex items-center gap-1">
+                <div className="border-t border-zinc-100 pt-4">
+                  <p className="text-sm font-medium text-zinc-700 mb-2 flex items-center gap-1">
                     <FileCheck className="w-4 h-4 text-brand-600" /> Anteprima firmata
                   </p>
                   {signedUrl.match(/\.(pdf)$/i) || signedBlob?.type === "application/pdf" ? (
-                    <iframe src={signedUrl} className="w-full h-[300px] border border-slate-200 rounded-lg" title="firmato" />
+                    <iframe src={signedUrl} className="w-full h-[300px] border border-zinc-200 rounded-lg" title="firmato" />
                   ) : (
-                    <img src={signedUrl} alt="firmato" className="w-full max-h-[300px] object-contain border border-slate-200 rounded-lg" />
+                    <img src={signedUrl} alt="firmato" className="w-full max-h-[300px] object-contain border border-zinc-200 rounded-lg" />
                   )}
                 </div>
               )}

@@ -63,32 +63,32 @@ export default function WorksiteDocs({ worksite, readOnly }) {
   const missingPos = !docs.some((d) => d.tipo === "pos") && worksite.stato !== "finito";
 
   return (
-    <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+    <section className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5">
       <div className="flex items-center gap-2 mb-3">
-        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><FolderOpen className="w-4 h-4 text-slate-500" /> Documenti di cantiere</h3>
+        <h3 className="text-sm font-semibold text-zinc-800 flex items-center gap-2 flex-1"><FolderOpen className="w-4 h-4 text-zinc-500" /> Documenti di cantiere</h3>
         {!readOnly && <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setOpen(true)}><Upload className="w-4 h-4" /> Carica</Button>}
       </div>
       {missingPos && <p className="text-xs text-amber-900 bg-amber-50 rounded px-2 py-1.5 mb-2 flex gap-1.5"><AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" /> Manca il POS: è obbligatorio per ogni cantiere (D.Lgs. 81/08, art. 96).</p>}
-      {docs.length === 0 ? <p className="text-sm text-slate-500">POS, PSC, titolo edilizio, DDT, dichiarazioni di conformità: tutto in un posto, con le scadenze.</p> : (
-        <ul className="divide-y divide-slate-100">
+      {docs.length === 0 ? <p className="text-sm text-zinc-500">POS, PSC, titolo edilizio, DDT, dichiarazioni di conformità: tutto in un posto, con le scadenze.</p> : (
+        <ul className="divide-y divide-zinc-100">
           {docs.map((d) => {
             const st = getExpirationStatus(d.data_scadenza);
             return (
               <li key={d.id} className="py-2.5 flex items-center gap-3">
                 <FileText className="w-4 h-4 text-brand-600 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="text-sm text-slate-900 hover:underline truncate block">{d.titolo}</a>
-                  <p className="text-xs text-slate-500">{WORKSITE_DOC_TYPES[d.tipo] || d.tipo}{d.data_scadenza ? ` · scade il ${fmtDate(d.data_scadenza)}` : ""}</p>
+                  <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-900 hover:underline truncate block">{d.titolo}</a>
+                  <p className="text-xs text-zinc-500">{WORKSITE_DOC_TYPES[d.tipo] || d.tipo}{d.data_scadenza ? ` · scade il ${fmtDate(d.data_scadenza)}` : ""}</p>
                 </div>
                 {st && <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${st === "expired" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{st === "expired" ? "Scaduto" : "In scadenza"}</span>}
                 {!readOnly && (
                   <button type="button" onClick={async () => { const u = await db.CompanyDocument.update(d.id, { visibile_cliente: !d.visibile_cliente }); setDocs((l) => l.map((x) => (x.id === u.id ? u : x))); }}
-                    className={`p-1.5 rounded ${d.visibile_cliente ? "text-emerald-700 hover:bg-emerald-50" : "text-slate-500 hover:bg-slate-100"}`}
+                    className={`p-1.5 rounded ${d.visibile_cliente ? "text-emerald-700 hover:bg-emerald-50" : "text-zinc-500 hover:bg-zinc-100"}`}
                     aria-pressed={!!d.visibile_cliente} aria-label={d.visibile_cliente ? "Visibile nell'area cliente: nascondi" : "Mostra nell'area cliente"} title={d.visibile_cliente ? "Visibile al cliente" : "Non visibile al cliente"}>
                     {d.visibile_cliente ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                   </button>
                 )}
-                {!readOnly && <button aria-label="Elimina" onClick={() => remove(d)} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                {!readOnly && <button aria-label="Elimina" onClick={() => remove(d)} className="p-1.5 rounded hover:bg-red-50 text-zinc-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
               </li>
             );
           })}

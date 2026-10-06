@@ -65,7 +65,7 @@ export default function CollaboratorJoin() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50">
         <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
       </div>
     );
@@ -73,14 +73,14 @@ export default function CollaboratorJoin() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-4">
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-slate-900 mb-2">
+            <h2 className="text-xl font-bold text-zinc-900 mb-2">
               Accesso Confermato!
             </h2>
-            <p className="text-slate-500">
+            <p className="text-zinc-500">
               Verrai reindirizzato alla dashboard...
             </p>
           </CardContent>
@@ -91,14 +91,14 @@ export default function CollaboratorJoin() {
 
   if (!invite || invite.status === "used" || invite.status === "expired") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-4">
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center">
-            <Building2 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-slate-900 mb-2">
+            <Building2 className="w-16 h-16 text-zinc-300 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-zinc-900 mb-2">
               Invito non disponibile
             </h2>
-            <p className="text-slate-500">
+            <p className="text-zinc-500">
               {!invite
                 ? "Il link non è valido."
                 : "Questo invito è già stato utilizzato o è scaduto."}
@@ -114,39 +114,39 @@ export default function CollaboratorJoin() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-4">
       <Card className="max-w-md w-full">
         <CardContent className="p-6 sm:p-8">
           <div className="text-center mb-6">
             <div className="w-14 h-14 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-3">
               <ShieldCheck className="w-7 h-7 text-brand-600" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Conferma Invito</h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <h1 className="text-xl font-bold text-zinc-900">Conferma Invito</h1>
+            <p className="text-sm text-zinc-500 mt-1">
               Inserisci il codice a 6 cifre comunicato dall'host per attivare il
               tuo accesso.
             </p>
           </div>
 
           {invite.access_level === "operaio" ? (
-            <div className="bg-slate-50 border rounded-lg p-3 mb-4">
-              <p className="text-xs font-semibold text-slate-600 mb-1.5">
+            <div className="bg-zinc-50 border rounded-lg p-3 mb-4">
+              <p className="text-xs font-semibold text-zinc-600 mb-1.5">
                 Accesso come Operaio/Dipendente:
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-zinc-500">
                 Vedrai solo i tuoi documenti personali, le tue presenze e le tue ore lavorate.
               </p>
             </div>
           ) : grantedModules.length > 0 && (
-            <div className="bg-slate-50 border rounded-lg p-3 mb-4">
-              <p className="text-xs font-semibold text-slate-600 mb-1.5">
+            <div className="bg-zinc-50 border rounded-lg p-3 mb-4">
+              <p className="text-xs font-semibold text-zinc-600 mb-1.5">
                 Avrai accesso a:
               </p>
               <div className="flex flex-wrap gap-1">
                 {grantedModules.map((m) => (
                   <span
                     key={m.key}
-                    className="text-xs bg-white border rounded px-2 py-0.5 text-slate-600"
+                    className="text-xs bg-white border rounded px-2 py-0.5 text-zinc-600"
                   >
                     {m.label}
                   </span>

@@ -73,8 +73,8 @@ export default function WorksitePhotos({ worksiteId }) {
   if (loading) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+    <div className="bg-white rounded-xl border border-zinc-200 p-5">
+      <h3 className="text-sm font-semibold text-zinc-700 mb-3 flex items-center gap-2">
         <Camera className="w-4 h-4 text-brand-600" /> Foto di Avanzamento
       </h3>
 
@@ -85,7 +85,7 @@ export default function WorksitePhotos({ worksiteId }) {
             <button
               key={f.value}
               onClick={() => setActiveFase(f.value)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors flex-1 sm:flex-none ${activeFase === f.value ? f.color : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"}`}
+              className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors flex-1 sm:flex-none ${activeFase === f.value ? f.color : "bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-50"}`}
             >
               {f.label}
             </button>
@@ -96,7 +96,7 @@ export default function WorksitePhotos({ worksiteId }) {
           value={didascalia}
           onChange={e => setDidascalia(e.target.value)}
           placeholder="Didascalia (opzionale)…"
-          className="flex-1 min-w-0 border border-slate-200 rounded-lg px-3 py-2 text-xs h-10"
+          className="flex-1 min-w-0 border border-zinc-200 rounded-lg px-3 py-2 text-xs h-10"
         />
         <label className="cursor-pointer flex-shrink-0">
           <div className="flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10">
@@ -114,7 +114,7 @@ export default function WorksitePhotos({ worksiteId }) {
             {pending.map((p) => (
               <div key={p.id} className="relative rounded-lg overflow-hidden border border-amber-200">
                 <img src={p.url} alt={p.didascalia || "Foto in attesa di caricamento"} className="w-full h-32 object-cover opacity-80" />
-                <p className="text-xs text-slate-600 px-2 py-1 truncate">{FASI.find((f) => f.value === p.fase)?.label}{p.didascalia ? ` · ${p.didascalia}` : ""}</p>
+                <p className="text-xs text-zinc-600 px-2 py-1 truncate">{FASI.find((f) => f.value === p.fase)?.label}{p.didascalia ? ` · ${p.didascalia}` : ""}</p>
               </div>
             ))}
           </div>
@@ -128,15 +128,15 @@ export default function WorksitePhotos({ worksiteId }) {
           if (fasePhotos.length === 0) return null;
           return (
             <div key={fase.value}>
-              <p className="text-xs font-semibold text-slate-500 uppercase mb-2">{fase.label}</p>
+              <p className="text-xs font-semibold text-zinc-500 uppercase mb-2">{fase.label}</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {fasePhotos.map(photo => (
-                  <div key={photo.id} className="relative group rounded-lg overflow-hidden border border-slate-200">
+                  <div key={photo.id} className="relative group rounded-lg overflow-hidden border border-zinc-200">
                     <img src={photo.foto_url} alt={photo.didascalia || ""} className="w-full h-32 object-cover" />
                     {photo.didascalia && (
-                      <p className="text-xs text-slate-600 px-2 py-1 truncate">{photo.didascalia}</p>
+                      <p className="text-xs text-zinc-600 px-2 py-1 truncate">{photo.didascalia}</p>
                     )}
-                    <p className="text-[10px] text-slate-500 px-2 pb-1">{photo.data ? new Date(photo.data).toLocaleDateString("it-IT") : ""}</p>
+                    <p className="text-[10px] text-zinc-500 px-2 pb-1">{photo.data ? new Date(photo.data).toLocaleDateString("it-IT") : ""}</p>
                     <button
                       onClick={() => handleDelete(photo.id)}
                       aria-label="Elimina la foto"
@@ -151,7 +151,7 @@ export default function WorksitePhotos({ worksiteId }) {
           );
         })}
         {photos.length === 0 && pending.length === 0 && (
-          <p className="text-sm text-slate-500 text-center py-6">Nessuna foto. Carica la prima foto di avanzamento.</p>
+          <p className="text-sm text-zinc-500 text-center py-6">Nessuna foto. Carica la prima foto di avanzamento.</p>
         )}
       </div>
     </div>

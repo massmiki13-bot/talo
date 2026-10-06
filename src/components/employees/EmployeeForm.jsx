@@ -117,15 +117,15 @@ export default function EmployeeForm({ open, onOpenChange, employee = null, onSa
             <div className="flex items-center gap-4">
               <div className="relative">
                 {form.foto_url
-                  ? <img src={form.foto_url} alt="Foto del dipendente" className="w-20 h-20 rounded-full object-cover border border-slate-200" />
-                  : <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center text-xl font-semibold text-slate-600">{initials(form)}</div>}
-                {form.foto_url && <button type="button" aria-label="Rimuovi foto" onClick={() => set({ foto_url: "" })} className="absolute -top-1 -right-1 rounded-full bg-white border border-slate-200 p-0.5"><X className="w-3.5 h-3.5" /></button>}
+                  ? <img src={form.foto_url} alt="Foto del dipendente" className="w-20 h-20 rounded-full object-cover border border-zinc-200" />
+                  : <div className="w-20 h-20 rounded-full bg-zinc-100 flex items-center justify-center text-xl font-semibold text-zinc-600">{initials(form)}</div>}
+                {form.foto_url && <button type="button" aria-label="Rimuovi foto" onClick={() => set({ foto_url: "" })} className="absolute -top-1 -right-1 rounded-full bg-white border border-zinc-200 p-0.5"><X className="w-3.5 h-3.5" /></button>}
               </div>
               <label className="inline-flex items-center gap-1.5 text-sm text-brand-700 cursor-pointer hover:underline">
                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />} {form.foto_url ? "Cambia foto" : "Aggiungi foto"}
                 <input type="file" accept="image/*" capture="user" className="hidden" onChange={(e) => { uploadPhoto(e.target.files[0]); e.target.value = ""; }} />
               </label>
-              <p className="text-xs text-slate-500 flex-1">Serve per il tesserino di riconoscimento di cantiere.</p>
+              <p className="text-xs text-zinc-500 flex-1">Serve per il tesserino di riconoscimento di cantiere.</p>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Nome"><Input value={form.nome} onChange={(e) => set({ nome: e.target.value })} autoComplete="given-name" /></Field>
@@ -180,7 +180,7 @@ export default function EmployeeForm({ open, onOpenChange, employee = null, onSa
               <div className="flex flex-wrap gap-1.5 mt-1.5">
                 {PATENTI.map((p) => (
                   <button key={p} type="button" onClick={() => togglePatente(p)}
-                    className={`rounded-full border px-2.5 py-1 text-xs ${form.patenti.includes(p) ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>{p}</button>
+                    className={`rounded-full border px-2.5 py-1 text-xs ${form.patenti.includes(p) ? "border-brand-600 bg-brand-600 text-white" : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"}`}>{p}</button>
                 ))}
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function EmployeeForm({ open, onOpenChange, employee = null, onSa
           </TabsContent>
 
           <TabsContent value="emergenza" className="space-y-4 pt-3">
-            <p className="text-sm text-slate-500">Chi avvisare in caso di infortunio in cantiere.</p>
+            <p className="text-sm text-zinc-500">Chi avvisare in caso di infortunio in cantiere.</p>
             <div className="grid sm:grid-cols-3 gap-4">
               <Field label="Nome"><Input value={form.contatto_emergenza.nome || ""} onChange={(e) => set({ contatto_emergenza: { ...form.contatto_emergenza, nome: e.target.value } })} /></Field>
               <Field label="Relazione"><Input value={form.contatto_emergenza.relazione || ""} onChange={(e) => set({ contatto_emergenza: { ...form.contatto_emergenza, relazione: e.target.value } })} placeholder="Es. moglie, fratello" /></Field>
@@ -205,7 +205,7 @@ export default function EmployeeForm({ open, onOpenChange, employee = null, onSa
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <div className="flex justify-end gap-2 pt-2 border-t border-zinc-100">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
           <Button onClick={save} disabled={saving} className="bg-brand-600 hover:bg-brand-700">{saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}{employee?.id ? "Salva modifiche" : "Crea dipendente"}</Button>
         </div>

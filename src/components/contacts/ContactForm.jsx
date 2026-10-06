@@ -144,7 +144,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[["cliente", "Cliente"], ["fornitore", "Fornitore"], ["entrambi", "Entrambi"]].map(([v, l]) => (
             <button key={v} type="button" onClick={() => set({ tipo: v })}
-              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${form.tipo === v ? "border-brand-600 bg-brand-50 text-brand-800" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${form.tipo === v ? "border-brand-600 bg-brand-50 text-brand-800" : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"}`}>
               {l}
             </button>
           ))}
@@ -232,7 +232,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
               <div className="flex flex-wrap gap-1.5 mt-1.5">
                 {categoryOptions.map((c) => (
                   <button key={c} type="button" onClick={() => toggleCat(c)}
-                    className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${form.categorie.includes(c) ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+                    className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${form.categorie.includes(c) ? "border-brand-600 bg-brand-600 text-white" : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"}`}>
                     {c}
                   </button>
                 ))}
@@ -252,10 +252,10 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
           </TabsContent>
 
           <TabsContent value="referenti" className="space-y-3 pt-3">
-            <p className="text-sm text-slate-500">Le persone da contattare: amministrazione, ufficio tecnico, direttore lavori…</p>
+            <p className="text-sm text-zinc-500">Le persone da contattare: amministrazione, ufficio tecnico, direttore lavori…</p>
             {form.referenti.map((r, i) => (
-              <div key={i} className="rounded-lg border border-slate-200 p-3 grid sm:grid-cols-2 gap-2 relative">
-                <button type="button" aria-label="Rimuovi referente" onClick={() => removeFromList("referenti", i)} className="absolute top-2 right-2 p-1 rounded hover:bg-slate-100"><Trash2 className="w-4 h-4 text-red-700" /></button>
+              <div key={i} className="rounded-lg border border-zinc-200 p-3 grid sm:grid-cols-2 gap-2 relative">
+                <button type="button" aria-label="Rimuovi referente" onClick={() => removeFromList("referenti", i)} className="absolute top-2 right-2 p-1 rounded hover:bg-zinc-100"><Trash2 className="w-4 h-4 text-red-700" /></button>
                 <Input placeholder="Nome e cognome" value={r.nome || ""} onChange={(e) => updateList("referenti", i, { nome: e.target.value })} />
                 <Input placeholder="Ruolo (es. Amministrazione)" value={r.ruolo || ""} onChange={(e) => updateList("referenti", i, { ruolo: e.target.value })} className="sm:mr-8" />
                 <Input placeholder="Telefono" value={r.telefono || ""} onChange={(e) => updateList("referenti", i, { telefono: e.target.value })} inputMode="tel" />
@@ -268,10 +268,10 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
           </TabsContent>
 
           <TabsContent value="sedi" className="space-y-3 pt-3">
-            <p className="text-sm text-slate-500">Altre sedi, magazzini o indirizzi dei cantieri di questo cliente.</p>
+            <p className="text-sm text-zinc-500">Altre sedi, magazzini o indirizzi dei cantieri di questo cliente.</p>
             {form.indirizzi.map((a, i) => (
-              <div key={i} className="rounded-lg border border-slate-200 p-3 space-y-2 relative">
-                <button type="button" aria-label="Rimuovi indirizzo" onClick={() => removeFromList("indirizzi", i)} className="absolute top-2 right-2 p-1 rounded hover:bg-slate-100"><Trash2 className="w-4 h-4 text-red-700" /></button>
+              <div key={i} className="rounded-lg border border-zinc-200 p-3 space-y-2 relative">
+                <button type="button" aria-label="Rimuovi indirizzo" onClick={() => removeFromList("indirizzi", i)} className="absolute top-2 right-2 p-1 rounded hover:bg-zinc-100"><Trash2 className="w-4 h-4 text-red-700" /></button>
                 <Input placeholder="Etichetta (es. Cantiere Via Roma, Magazzino)" value={a.etichetta || ""} onChange={(e) => updateList("indirizzi", i, { etichetta: e.target.value })} className="pr-10" />
                 <Input placeholder="Indirizzo" value={a.indirizzo || ""} onChange={(e) => updateList("indirizzi", i, { indirizzo: e.target.value })} />
                 <div className="grid grid-cols-[90px_1fr_70px] gap-2">
@@ -287,7 +287,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
           </TabsContent>
 
           <TabsContent value="condizioni" className="space-y-4 pt-3">
-            <p className="text-sm text-slate-500">Si applicano in automatico ai nuovi preventivi per questo {form.tipo === "fornitore" ? "fornitore" : "cliente"}.</p>
+            <p className="text-sm text-zinc-500">Si applicano in automatico ai nuovi preventivi per questo {form.tipo === "fornitore" ? "fornitore" : "cliente"}.</p>
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Modalità di pagamento">
                 <Select value={form.pagamento_default || "none"} onValueChange={(v) => set({ pagamento_default: v === "none" ? "" : v })}>
@@ -319,7 +319,7 @@ export default function ContactForm({ open, onOpenChange, contact = null, defaul
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <div className="flex justify-end gap-2 pt-2 border-t border-zinc-100">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
           <Button onClick={save} disabled={saving} className="bg-brand-600 hover:bg-brand-700">
             {saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}{contact?.id ? "Salva modifiche" : "Crea contatto"}

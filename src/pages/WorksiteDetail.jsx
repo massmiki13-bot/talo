@@ -215,36 +215,36 @@ export default function WorksiteDetail() {
           <div className="space-y-4">
             <Card icon={Users} title="Squadra">
               {team.length ? (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-zinc-100">
                   {team.map((e) => (
                     <li key={e.id} className="py-2 flex items-center gap-3">
-                      <Link to={`/dipendenti/${e.id}`} className="text-sm text-slate-900 hover:underline flex-1">{fullName(e)}{e.id === worksite.responsabile_id && <span className="ml-2 text-[10px] font-bold uppercase bg-zinc-200 text-zinc-800 rounded px-1.5">Capocantiere</span>}</Link>
-                      <span className="text-xs text-slate-500">{e.ruolo}</span>
-                      <span className="text-xs text-slate-700 tabular-nums w-14 text-right">{labor.persone.get(e.id) || 0} h</span>
+                      <Link to={`/dipendenti/${e.id}`} className="text-sm text-zinc-900 hover:underline flex-1">{fullName(e)}{e.id === worksite.responsabile_id && <span className="ml-2 text-[10px] font-bold uppercase bg-zinc-200 text-zinc-800 rounded px-1.5">Capocantiere</span>}</Link>
+                      <span className="text-xs text-zinc-500">{e.ruolo}</span>
+                      <span className="text-xs text-zinc-700 tabular-nums w-14 text-right">{labor.persone.get(e.id) || 0} h</span>
                     </li>
                   ))}
                 </ul>
-              ) : <p className="text-sm text-slate-500">Nessuna squadra assegnata.{!readOnly && <> <button className="text-brand-700 underline" onClick={() => setEditOpen(true)}>Assegnala</button></>}</p>}
+              ) : <p className="text-sm text-zinc-500">Nessuna squadra assegnata.{!readOnly && <> <button className="text-brand-700 underline" onClick={() => setEditOpen(true)}>Assegnala</button></>}</p>}
             </Card>
             <Card icon={ClipboardList} title="Pratiche e figure">
               <dl className="grid grid-cols-2 gap-3 text-sm">
-                <div><dt className="text-xs text-slate-500">Titolo edilizio</dt><dd>{worksite.titolo_edilizio?.tipo ? `${worksite.titolo_edilizio.tipo}${worksite.titolo_edilizio.numero ? ` n. ${worksite.titolo_edilizio.numero}` : ""}` : "—"}</dd></div>
-                <div><dt className="text-xs text-slate-500">Tipo intervento</dt><dd>{worksite.tipo_intervento || "—"}</dd></div>
-                <div><dt className="text-xs text-slate-500">Direttore lavori</dt><dd>{worksite.direttore_lavori || "—"}</dd></div>
-                <div><dt className="text-xs text-slate-500">Coordinatore sicurezza</dt><dd>{worksite.coordinatore_sicurezza || "—"}</dd></div>
+                <div><dt className="text-xs text-zinc-500">Titolo edilizio</dt><dd>{worksite.titolo_edilizio?.tipo ? `${worksite.titolo_edilizio.tipo}${worksite.titolo_edilizio.numero ? ` n. ${worksite.titolo_edilizio.numero}` : ""}` : "—"}</dd></div>
+                <div><dt className="text-xs text-zinc-500">Tipo intervento</dt><dd>{worksite.tipo_intervento || "—"}</dd></div>
+                <div><dt className="text-xs text-zinc-500">Direttore lavori</dt><dd>{worksite.direttore_lavori || "—"}</dd></div>
+                <div><dt className="text-xs text-zinc-500">Coordinatore sicurezza</dt><dd>{worksite.coordinatore_sicurezza || "—"}</dd></div>
               </dl>
             </Card>
             {quotes.length > 0 && (
               <Card icon={FileText} title="Preventivi collegati">
                 {quotes.map((q) => (
                   <Link key={q.id} to={`/preventivi/${q.id}`} className="flex items-center gap-2 py-1.5 hover:underline">
-                    <span className="text-sm text-slate-900 flex-1 truncate">{q.numero}{q.revisione ? ` Rev.${q.revisione}` : ""} · {q.oggetto}</span>
+                    <span className="text-sm text-zinc-900 flex-1 truncate">{q.numero}{q.revisione ? ` Rev.${q.revisione}` : ""} · {q.oggetto}</span>
                     <span className="text-sm tabular-nums">{fmtEur(q.totale)}</span>
                   </Link>
                 ))}
               </Card>
             )}
-            {worksite.note && <Card icon={Edit3} title="Note"><p className="text-sm text-slate-700 whitespace-pre-wrap">{worksite.note}</p></Card>}
+            {worksite.note && <Card icon={Edit3} title="Note"><p className="text-sm text-zinc-700 whitespace-pre-wrap">{worksite.note}</p></Card>}
           </div>
         </div>
       )}
@@ -253,9 +253,9 @@ export default function WorksiteDetail() {
         <div className="space-y-4">
           <Card icon={TrendingUp} title="Budget e costi reali" action={<Button size="sm" variant="ghost" onClick={() => setEditOpen(true)}>Imposta budget</Button>}>
             <div className="grid sm:grid-cols-3 gap-3 mb-4">
-              <div className="rounded-lg bg-slate-50 p-3"><p className="text-xs text-slate-600">Contratto</p><p className="text-lg font-bold tabular-nums">{fmtEur(econ.ricavo)}</p></div>
-              <div className="rounded-lg bg-slate-50 p-3"><p className="text-xs text-slate-600">Margine previsto</p><p className="text-lg font-bold tabular-nums">{econ.marginePrevisto === null ? "—" : fmtEur(econ.marginePrevisto)}</p><p className="text-xs text-slate-600">{econ.budgetTot ? `budget costi ${fmtEur(econ.budgetTot)}` : "imposta un budget"}</p></div>
-              <div className={`rounded-lg p-3 ${econ.margineStimato !== null && econ.margineStimato < 0 ? "bg-red-50" : "bg-slate-50"}`}><p className="text-xs text-slate-600">Margine stimato a fine lavori</p><p className="text-lg font-bold tabular-nums">{econ.margineStimato === null ? "—" : fmtEur(econ.margineStimato)}</p></div>
+              <div className="rounded-lg bg-zinc-50 p-3"><p className="text-xs text-zinc-600">Contratto</p><p className="text-lg font-bold tabular-nums">{fmtEur(econ.ricavo)}</p></div>
+              <div className="rounded-lg bg-zinc-50 p-3"><p className="text-xs text-zinc-600">Margine previsto</p><p className="text-lg font-bold tabular-nums">{econ.marginePrevisto === null ? "—" : fmtEur(econ.marginePrevisto)}</p><p className="text-xs text-zinc-600">{econ.budgetTot ? `budget costi ${fmtEur(econ.budgetTot)}` : "imposta un budget"}</p></div>
+              <div className={`rounded-lg p-3 ${econ.margineStimato !== null && econ.margineStimato < 0 ? "bg-red-50" : "bg-zinc-50"}`}><p className="text-xs text-zinc-600">Margine stimato a fine lavori</p><p className="text-lg font-bold tabular-nums">{econ.margineStimato === null ? "—" : fmtEur(econ.margineStimato)}</p></div>
             </div>
             <ul className="space-y-3">
               {COST_CATEGORIES.map((c) => {
@@ -266,7 +266,7 @@ export default function WorksiteDetail() {
                 return (
                   <li key={c}>
                     <div className="flex items-center justify-between text-sm gap-2">
-                      <span className="text-slate-800">{c}{c === "Manodopera" && (worksite.costo_manodopera_manuale == null ? <span className="text-xs text-slate-500"> · da presenze ({labor.ore} h)</span> : <span className="text-xs text-slate-500"> · impostata a mano</span>)}</span>
+                      <span className="text-zinc-800">{c}{c === "Manodopera" && (worksite.costo_manodopera_manuale == null ? <span className="text-xs text-zinc-500"> · da presenze ({labor.ore} h)</span> : <span className="text-xs text-zinc-500"> · impostata a mano</span>)}</span>
                       <span className="tabular-nums">
                         {c === "Manodopera" && laborEdit !== null ? (
                           <span className="inline-flex items-center gap-1">
@@ -275,19 +275,19 @@ export default function WorksiteDetail() {
                           </span>
                         ) : (
                           <>
-                            <strong className={b && r > b ? "text-red-700" : "text-slate-900"}>{fmtEur(r)}</strong>{b ? <span className="text-slate-500"> / {fmtEur(b)}</span> : null}
-                            {c === "Manodopera" && <button aria-label="Modifica costo manodopera" onClick={() => setLaborEdit(worksite.costo_manodopera_manuale ?? "")} className="ml-1 text-slate-500 hover:text-brand-700"><Pencil className="w-3.5 h-3.5 inline" /></button>}
+                            <strong className={b && r > b ? "text-red-700" : "text-zinc-900"}>{fmtEur(r)}</strong>{b ? <span className="text-zinc-500"> / {fmtEur(b)}</span> : null}
+                            {c === "Manodopera" && <button aria-label="Modifica costo manodopera" onClick={() => setLaborEdit(worksite.costo_manodopera_manuale ?? "")} className="ml-1 text-zinc-500 hover:text-brand-700"><Pencil className="w-3.5 h-3.5 inline" /></button>}
                           </>
                         )}
                       </span>
                     </div>
-                    {b > 0 && <div className="h-1.5 rounded-full bg-slate-100 mt-1 overflow-hidden"><div className={`h-full ${r > b ? "bg-red-500" : pct > 85 ? "bg-amber-500" : "bg-brand-600"}`} style={{ width: `${pct}%` }} /></div>}
+                    {b > 0 && <div className="h-1.5 rounded-full bg-zinc-100 mt-1 overflow-hidden"><div className={`h-full ${r > b ? "bg-red-500" : pct > 85 ? "bg-amber-500" : "bg-brand-600"}`} style={{ width: `${pct}%` }} /></div>}
                   </li>
                 );
               })}
             </ul>
-            <div className="flex justify-between text-sm font-semibold border-t border-slate-100 mt-4 pt-3">
-              <span>Totale costi</span><span className="tabular-nums">{fmtEur(econ.costi)}{econ.budgetTot ? <span className="text-slate-500 font-normal"> / {fmtEur(econ.budgetTot)}</span> : null}</span>
+            <div className="flex justify-between text-sm font-semibold border-t border-zinc-100 mt-4 pt-3">
+              <span>Totale costi</span><span className="tabular-nums">{fmtEur(econ.costi)}{econ.budgetTot ? <span className="text-zinc-500 font-normal"> / {fmtEur(econ.budgetTot)}</span> : null}</span>
             </div>
           </Card>
           <WorksiteTransactions worksite={worksite} transactions={transactions} allWorksites={allWorksites} onChanged={load} />
@@ -313,15 +313,15 @@ export default function WorksiteDetail() {
           <WorksiteDocs worksite={worksite} readOnly={readOnly} />
           {received.length > 0 && !readOnly && (
             <Card icon={Inbox} title="Preventivi dei fornitori">
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-zinc-100">
                 {received.map((rq) => (
                   <li key={rq.id} className="py-2 flex items-center gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-slate-900">{rq.fornitore}</p>
-                      <p className="text-xs text-slate-500 truncate">{fmtDate(rq.data)} · {rq.descrizione || ""}{rq.importo ? ` · ${fmtEur(rq.importo)}` : ""}</p>
+                      <p className="text-sm text-zinc-900">{rq.fornitore}</p>
+                      <p className="text-xs text-zinc-500 truncate">{fmtDate(rq.data)} · {rq.descrizione || ""}{rq.importo ? ` · ${fmtEur(rq.importo)}` : ""}</p>
                     </div>
-                    {rq.file_url && <a href={rq.file_url} target="_blank" rel="noreferrer" aria-label="Vedi originale" className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Eye className="w-4 h-4" /></a>}
-                    {rq.file_firmato_url && <a href={rq.file_firmato_url} target="_blank" rel="noreferrer" aria-label="Vedi firmato" className="p-1.5 rounded hover:bg-slate-100 text-brand-700"><CheckCircle2 className="w-4 h-4" /></a>}
+                    {rq.file_url && <a href={rq.file_url} target="_blank" rel="noreferrer" aria-label="Vedi originale" className="p-1.5 rounded hover:bg-zinc-100 text-zinc-500"><Eye className="w-4 h-4" /></a>}
+                    {rq.file_firmato_url && <a href={rq.file_firmato_url} target="_blank" rel="noreferrer" aria-label="Vedi firmato" className="p-1.5 rounded hover:bg-zinc-100 text-brand-700"><CheckCircle2 className="w-4 h-4" /></a>}
                     {(rq.file_tipo === "image" || rq.file_tipo === "pdf") && profile && (profile.firma_url || profile.timbro_url) && (
                       <Button size="sm" variant="outline" className="h-7" onClick={() => setSignTarget(rq)}>{rq.file_firmato_url ? "Rifirma" : "Firma"}</Button>
                     )}

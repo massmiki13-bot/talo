@@ -64,7 +64,7 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
         {loading && (
           <div className="flex flex-col items-center py-12 gap-3">
             <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
-            <p className="text-sm text-slate-500">Lettura del documento in corso...</p>
+            <p className="text-sm text-zinc-500">Lettura del documento in corso...</p>
           </div>
         )}
 
@@ -85,7 +85,7 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
             </div>
             <div>
               <Label htmlFor="aidocumentreader-descrizione">Descrizione</Label>
-              <textarea id="aidocumentreader-descrizione" value={extracted.descrizione || ""} onChange={e => setExtracted({ ...extracted, descrizione: e.target.value })} className="w-full border border-slate-200 rounded-lg p-2 text-sm min-h-[60px]" />
+              <textarea id="aidocumentreader-descrizione" value={extracted.descrizione || ""} onChange={e => setExtracted({ ...extracted, descrizione: e.target.value })} className="w-full border border-zinc-200 rounded-lg p-2 text-sm min-h-[60px]" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>

@@ -115,10 +115,10 @@ export default function DocumentPickerDialog({ open, onOpenChange, onSelect, pro
 
   const renderDocList = (items, type) => {
     if (loading) {
-      return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>;
+      return <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-zinc-500" /></div>;
     }
     if (!items || items.length === 0) {
-      return <p className="text-sm text-slate-500 text-center py-8">Nessun documento disponibile</p>;
+      return <p className="text-sm text-zinc-500 text-center py-8">Nessun documento disponibile</p>;
     }
     return (
       <div className="space-y-1 max-h-[400px] overflow-y-auto">
@@ -139,14 +139,14 @@ export default function DocumentPickerDialog({ open, onOpenChange, onSelect, pro
               ) : isSelected ? (
                 <Check className="w-4 h-4 text-green-700 flex-shrink-0" />
               ) : (
-                <FileText className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                <FileText className="w-4 h-4 text-zinc-500 flex-shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-700 truncate">
+                <p className="text-sm font-medium text-zinc-700 truncate">
                   {doc.titolo || doc.descrizione || doc.fornitore || "Senza titolo"}
                 </p>
                 {(doc.dipendente_nome || doc.data || doc.numero) && (
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-zinc-500">
                     {doc.dipendente_nome && `${doc.dipendente_nome} · `}
                     {doc.numero && `N. ${doc.numero} · `}
                     {doc.data && new Date(doc.data).toLocaleDateString("it-IT")}
@@ -154,7 +154,7 @@ export default function DocumentPickerDialog({ open, onOpenChange, onSelect, pro
                 )}
               </div>
               {doc.file_url && !isSelected && (
-                <span className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">file</span>
+                <span className="text-[10px] text-zinc-500 bg-zinc-100 px-1.5 py-0.5 rounded">file</span>
               )}
               {!doc.file_url && !isSelected && !isGenerating && (
                 <span className="text-[10px] text-brand-500 bg-brand-50 px-1.5 py-0.5 rounded">PDF</span>

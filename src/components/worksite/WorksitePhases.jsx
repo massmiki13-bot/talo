@@ -64,21 +64,21 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
   };
 
   return (
-    <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+    <section className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5">
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><ListChecks className="w-4 h-4 text-brand-600" /> Fasi e avanzamento</h3>
+        <h3 className="text-sm font-semibold text-zinc-800 flex items-center gap-2 flex-1"><ListChecks className="w-4 h-4 text-brand-600" /> Fasi e avanzamento</h3>
         {!readOnly && fasi.length > 0 && <Button size="sm" variant="outline" className="gap-1.5" onClick={emitSal} disabled={saving}><Receipt className="w-4 h-4" /> Emetti SAL</Button>}
       </div>
 
       <div className="mb-4">
-        <div className="flex justify-between text-sm mb-1"><span className="text-slate-600">Avanzamento complessivo</span><strong className="tabular-nums">{pct}%</strong></div>
-        <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600 transition-all" style={{ width: `${pct}%` }} /></div>
-        {contractAmount > 0 && <p className="text-xs text-slate-500 mt-1">Lavori maturati: {fmtEur(contractAmount * pct / 100)} su {fmtEur(contractAmount)}</p>}
+        <div className="flex justify-between text-sm mb-1"><span className="text-zinc-600">Avanzamento complessivo</span><strong className="tabular-nums">{pct}%</strong></div>
+        <div className="h-2.5 rounded-full bg-zinc-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600 transition-all" style={{ width: `${pct}%` }} /></div>
+        {contractAmount > 0 && <p className="text-xs text-zinc-500 mt-1">Lavori maturati: {fmtEur(contractAmount * pct / 100)} su {fmtEur(contractAmount)}</p>}
       </div>
 
       {fasi.length === 0 ? (
         <div className="text-center py-4">
-          <p className="text-sm text-slate-500 mb-3">Dividi il lavoro in fasi per seguire l'avanzamento e fatturare a stati di avanzamento (SAL).</p>
+          <p className="text-sm text-zinc-500 mb-3">Dividi il lavoro in fasi per seguire l'avanzamento e fatturare a stati di avanzamento (SAL).</p>
           {!readOnly && (
             <div className="flex flex-wrap justify-center gap-2">
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => { setFasi(FASI_TIPO.map((f) => ({ ...f, completamento: 0 }))); setDirty(true); }}><Wand2 className="w-4 h-4" /> Usa fasi tipo</Button>
@@ -89,18 +89,18 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
       ) : (
         <ul className="space-y-3">
           {fasi.map((f, i) => (
-            <li key={i} className="rounded-lg border border-slate-200 p-3">
+            <li key={i} className="rounded-lg border border-zinc-200 p-3">
               <div className="flex items-center gap-2">
                 <Input value={f.nome} onChange={(e) => update(i, { nome: e.target.value })} disabled={readOnly} placeholder="Nome della fase" className="h-8 flex-1" aria-label="Nome fase" />
-                <label className="text-xs text-slate-600 flex items-center gap-1 shrink-0">Peso
+                <label className="text-xs text-zinc-600 flex items-center gap-1 shrink-0">Peso
                   <Input type="number" min="0" value={f.peso ?? ""} onChange={(e) => update(i, { peso: Number(e.target.value) || 0 })} disabled={readOnly} className="h-8 w-16" aria-label="Peso della fase" />
                 </label>
-                {!readOnly && <button aria-label="Elimina fase" onClick={() => { setFasi((x) => x.filter((_, j) => j !== i)); setDirty(true); }} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                {!readOnly && <button aria-label="Elimina fase" onClick={() => { setFasi((x) => x.filter((_, j) => j !== i)); setDirty(true); }} className="p-1.5 rounded hover:bg-red-50 text-zinc-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
               </div>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2">
                 <input type="range" min="0" max="100" step="5" value={Number(f.completamento) || 0} onChange={(e) => update(i, { completamento: Number(e.target.value) })} disabled={readOnly}
                   className="flex-1 min-w-[120px] accent-brand-600" aria-label={`Completamento ${f.nome}`} />
-                <span className={`text-sm font-semibold tabular-nums w-12 text-right ${Number(f.completamento) >= 100 ? "text-emerald-700" : "text-slate-800"}`}>{Number(f.completamento) || 0}%</span>
+                <span className={`text-sm font-semibold tabular-nums w-12 text-right ${Number(f.completamento) >= 100 ? "text-emerald-700" : "text-zinc-800"}`}>{Number(f.completamento) || 0}%</span>
                 <Input type="date" value={f.data_prevista || ""} onChange={(e) => update(i, { data_prevista: e.target.value })} disabled={readOnly} className="h-8 w-36" aria-label="Data prevista" title="Data prevista di fine fase" />
               </div>
               {f.data_prevista && Number(f.completamento) < 100 && new Date(f.data_prevista) < new Date(new Date().toDateString()) && (
@@ -114,7 +114,7 @@ export default function WorksitePhases({ worksite, contractAmount, onSaved, read
       {!readOnly && fasi.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 mt-3">
           <Button size="sm" variant="outline" className="gap-1" onClick={() => { setFasi((x) => [...x, { nome: "", peso: 10, completamento: 0 }]); setDirty(true); }}><Plus className="w-4 h-4" /> Fase</Button>
-          <span className="text-xs text-slate-500">Somma pesi: {pesoTot}</span>
+          <span className="text-xs text-zinc-500">Somma pesi: {pesoTot}</span>
           <div className="flex-1" />
           {dirty && <Button size="sm" onClick={() => save().then((s) => s && toast({ title: "Avanzamento salvato" }))} disabled={saving}>{saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva avanzamento</Button>}
         </div>

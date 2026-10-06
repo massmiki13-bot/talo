@@ -34,7 +34,7 @@ export default function FormField({ label, error, hint, className = "", children
     <div className={className}>
       <Label htmlFor={id} className="text-sm">{label}</Label>
       <div className="mt-1">{linkControl(children, id, aria)}</div>
-      {error ? <p id={msgId} role="alert" className="text-xs text-red-700 mt-1">{error}</p> : hint ? <p id={msgId} className="text-xs text-slate-500 mt-1">{hint}</p> : null}
+      {error ? <p id={msgId} role="alert" className="text-xs text-red-700 mt-1">{error}</p> : hint ? <p id={msgId} className="text-xs text-zinc-500 mt-1">{hint}</p> : null}
     </div>
   );
 }

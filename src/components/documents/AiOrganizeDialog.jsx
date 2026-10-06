@@ -98,14 +98,14 @@ export default function AiOrganizeDialog({ open, onOpenChange, documents, folder
         {phase === "setup" && (
           <div className="space-y-5 mt-2">
             <div>
-              <p className="text-sm font-medium text-slate-700 mb-2">Quali documenti</p>
+              <p className="text-sm font-medium text-zinc-700 mb-2">Quali documenti</p>
               <div className="grid sm:grid-cols-2 gap-2">
                 <Choice active={scope === "unfiled"} onClick={() => setScope("unfiled")} title="Solo da archiviare" text={`${documents.filter((d) => !d.cartella_id).length} documenti senza cartella`} />
                 <Choice active={scope === "all"} onClick={() => setScope("all")} title="Tutto l'archivio" text={`${documents.length} documenti`} />
               </div>
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-700 mb-2">Struttura</p>
+              <p className="text-sm font-medium text-zinc-700 mb-2">Struttura</p>
               <div className="grid sm:grid-cols-2 gap-2">
                 <Choice active={mode === "merge"} onClick={() => setMode("merge")} title="Usa le cartelle esistenti" text="Aggiunge solo quello che manca" />
                 <Choice active={mode === "fresh"} onClick={() => setMode("fresh")} title="Riprogetta da zero" text="Nuovo albero; le vecchie cartelle restano, vuote" />
@@ -121,42 +121,42 @@ export default function AiOrganizeDialog({ open, onOpenChange, documents, folder
         {phase === "working" && (
           <div className="py-14 text-center">
             <Loader2 className="w-8 h-8 animate-spin text-brand-600 mx-auto" />
-            <p className="mt-3 text-sm text-slate-600">Sto studiando {target.length} documenti…</p>
+            <p className="mt-3 text-sm text-zinc-600">Sto studiando {target.length} documenti…</p>
           </div>
         )}
 
         {(phase === "review" || phase === "applying") && (
           <div className="mt-2 space-y-4">
             <div className="grid md:grid-cols-[220px_1fr] gap-4">
-              <div className="rounded-lg border border-slate-200 p-3 bg-slate-50 max-h-[50vh] overflow-y-auto">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Nuovo albero</p>
+              <div className="rounded-lg border border-zinc-200 p-3 bg-zinc-50 max-h-[50vh] overflow-y-auto">
+                <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-2">Nuovo albero</p>
                 {tree.map((t) => (
                   <div key={t.path} className="flex items-center gap-1.5 text-sm py-0.5" style={{ paddingLeft: t.depth * 14 }}>
                     <Folder className="w-3.5 h-3.5 text-brand-600 shrink-0" />
-                    <span className="truncate text-slate-800">{t.name}</span>
-                    {t.n > 0 && <span className="ml-auto text-xs text-slate-500 tabular-nums">{t.n}</span>}
+                    <span className="truncate text-zinc-800">{t.name}</span>
+                    {t.n > 0 && <span className="ml-auto text-xs text-zinc-500 tabular-nums">{t.n}</span>}
                   </div>
                 ))}
               </div>
-              <div className="rounded-lg border border-slate-200 divide-y divide-slate-100 max-h-[50vh] overflow-y-auto">
+              <div className="rounded-lg border border-zinc-200 divide-y divide-zinc-100 max-h-[50vh] overflow-y-auto">
                 {rows.map((r) => (
                   <div key={r.id} className="p-2.5 text-sm">
                     <div className="flex items-center gap-2 min-w-0">
-                      <FileText className="w-4 h-4 text-slate-500 shrink-0" />
-                      <span className="font-medium text-slate-800 truncate">{r.doc.titolo}</span>
+                      <FileText className="w-4 h-4 text-zinc-500 shrink-0" />
+                      <span className="font-medium text-zinc-800 truncate">{r.doc.titolo}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-xs text-slate-500 truncate shrink-0 max-w-[40%]">{r.now || "Senza cartella"}</span>
-                      <ArrowRight className="w-3 h-3 text-slate-500 shrink-0" />
+                      <span className="text-xs text-zinc-500 truncate shrink-0 max-w-[40%]">{r.now || "Senza cartella"}</span>
+                      <ArrowRight className="w-3 h-3 text-zinc-500 shrink-0" />
                       <Input value={r.cartella} onChange={(e) => setEdits({ ...edits, [r.id]: e.target.value })} className="h-7 text-xs" disabled={phase === "applying"} />
                     </div>
-                    {r.motivo && <p className="text-xs text-slate-500 mt-1">{r.motivo}</p>}
+                    {r.motivo && <p className="text-xs text-zinc-500 mt-1">{r.motivo}</p>}
                   </div>
                 ))}
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-              <p className="text-sm text-slate-600">{phase === "applying" ? `Sposto… ${progress}/${total}` : `${changes.length} documenti da spostare`}</p>
+              <p className="text-sm text-zinc-600">{phase === "applying" ? `Sposto… ${progress}/${total}` : `${changes.length} documenti da spostare`}</p>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setPhase("setup")} disabled={phase === "applying"} className="gap-1.5"><RotateCcw className="w-4 h-4" /> Rifai</Button>
                 <Button onClick={apply} disabled={phase === "applying" || !changes.length} className="bg-brand-600 hover:bg-brand-700 gap-2">
@@ -173,9 +173,9 @@ export default function AiOrganizeDialog({ open, onOpenChange, documents, folder
 
 function Choice({ active, onClick, title, text }) {
   return (
-    <button type="button" onClick={onClick} className={`text-left rounded-lg border p-3 transition-colors ${active ? "border-brand-600 bg-brand-50 ring-1 ring-brand-600" : "border-slate-200 hover:border-slate-300"}`}>
-      <p className="text-sm font-medium text-slate-900">{title}</p>
-      <p className="text-xs text-slate-500 mt-0.5">{text}</p>
+    <button type="button" onClick={onClick} className={`text-left rounded-lg border p-3 transition-colors ${active ? "border-brand-600 bg-brand-50 ring-1 ring-brand-600" : "border-zinc-200 hover:border-zinc-300"}`}>
+      <p className="text-sm font-medium text-zinc-900">{title}</p>
+      <p className="text-xs text-zinc-500 mt-0.5">{text}</p>
     </button>
   );
 }

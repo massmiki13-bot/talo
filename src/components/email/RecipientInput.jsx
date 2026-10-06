@@ -104,15 +104,15 @@ export default function RecipientInput({ label, value = [], onChange, placeholde
         className="flex flex-wrap items-center gap-1.5 min-h-10 rounded-md border border-input bg-background px-2 py-1.5 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1 cursor-text"
         onClick={() => inputRef.current?.focus()}
       >
-        {label && <span className="text-xs font-medium text-slate-500 w-9 shrink-0">{label}</span>}
+        {label && <span className="text-xs font-medium text-zinc-500 w-9 shrink-0">{label}</span>}
         {value.map((email) => (
-          <span key={email} className="inline-flex items-center gap-1 max-w-full rounded-full bg-slate-100 border border-slate-200 pl-2.5 pr-1 py-0.5 text-xs text-slate-700">
+          <span key={email} className="inline-flex items-center gap-1 max-w-full rounded-full bg-zinc-100 border border-zinc-200 pl-2.5 pr-1 py-0.5 text-xs text-zinc-700">
             <span className="truncate" title={email}>{nameOf(email) ? `${nameOf(email)} ‹${email}›` : email}</span>
             <button
               type="button"
               aria-label={`Rimuovi ${email}`}
               onClick={(e) => { e.stopPropagation(); onChange(value.filter((v) => v !== email)); }}
-              className="rounded-full p-0.5 hover:bg-slate-200"
+              className="rounded-full p-0.5 hover:bg-zinc-200"
             >
               <X className="w-3 h-3" />
             </button>
@@ -137,7 +137,7 @@ export default function RecipientInput({ label, value = [], onChange, placeholde
       </div>
       {invalidText && <p className="text-[11px] text-red-700 mt-1">Indirizzo non valido</p>}
       {open && suggestions.length > 0 && (
-        <ul role="listbox" className="absolute z-50 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-lg py-1 max-h-72 overflow-y-auto">
+        <ul role="listbox" className="absolute z-50 mt-1 w-full rounded-lg border border-zinc-200 bg-white shadow-lg py-1 max-h-72 overflow-y-auto">
           {suggestions.map((s, i) => {
             const K = KIND[s.kind] || KIND.recente;
             return (
@@ -149,12 +149,12 @@ export default function RecipientInput({ label, value = [], onChange, placeholde
                 onMouseEnter={() => setActive(i)}
                 className={`flex items-center gap-2.5 px-3 py-2 cursor-pointer ${i === active ? "bg-brand-50" : ""}`}
               >
-                <K.icon className="w-4 h-4 text-slate-500 shrink-0" />
+                <K.icon className="w-4 h-4 text-zinc-500 shrink-0" />
                 <div className="min-w-0 flex-1">
-                  {s.name && <p className="text-sm text-slate-800 truncate">{s.name}</p>}
-                  <p className={`truncate ${s.name ? "text-xs text-slate-500" : "text-sm text-slate-800"}`}>{s.email}</p>
+                  {s.name && <p className="text-sm text-zinc-800 truncate">{s.name}</p>}
+                  <p className={`truncate ${s.name ? "text-xs text-zinc-500" : "text-sm text-zinc-800"}`}>{s.email}</p>
                 </div>
-                <span className="text-[10px] uppercase tracking-wide text-slate-500 shrink-0">{K.label}</span>
+                <span className="text-[10px] uppercase tracking-wide text-zinc-500 shrink-0">{K.label}</span>
               </li>
             );
           })}

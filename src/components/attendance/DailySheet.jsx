@@ -151,20 +151,20 @@ export default function DailySheet({ date, setDate, records, employees, worksite
   return (
     <div className="space-y-3">
       {/* Giorno */}
-      <div className="bg-white rounded-xl border border-slate-200 p-2.5 flex flex-wrap items-center gap-2">
+      <div className="bg-white rounded-xl border border-zinc-200 p-2.5 flex flex-wrap items-center gap-2">
         <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => go(addDays(date, -1))} aria-label="Giorno precedente"><ChevronLeft className="w-4 h-4" /></Button>
         <Input type="date" aria-label="Giorno" value={date} onChange={(e) => e.target.value && go(e.target.value)} className="h-9 w-[150px]" />
         <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => go(addDays(date, 1))} aria-label="Giorno successivo"><ChevronRight className="w-4 h-4" /></Button>
         <Button variant="ghost" size="sm" onClick={() => go(iso(new Date()))}>Oggi</Button>
-        <p className="text-sm font-semibold text-slate-900 capitalize ml-1">{parseIso(date).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</p>
+        <p className="text-sm font-semibold text-zinc-900 capitalize ml-1">{parseIso(date).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</p>
         {hol && <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700">{hol}</span>}
-        {!hol && (wd === 0 || wd === 6) && <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">{wd === 0 ? "Domenica" : "Sabato"}</span>}
+        {!hol && (wd === 0 || wd === 6) && <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700">{wd === 0 ? "Domenica" : "Sabato"}</span>}
       </div>
 
       {!readOnly && (
-        <div className="bg-white rounded-xl border border-slate-200 p-2.5 flex flex-wrap items-center gap-2">
+        <div className="bg-white rounded-xl border border-zinc-200 p-2.5 flex flex-wrap items-center gap-2">
           <div className="relative min-w-[160px] flex-1 sm:flex-none">
-            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cerca dipendente" aria-label="Cerca dipendente" className="pl-8 h-9 sm:w-[180px]" />
           </div>
           <Select value={defaultSite || NONE} onValueChange={(v) => { const s = v === NONE ? "" : v; setDefaultSite(s); savePref("site", s); }}>
@@ -188,7 +188,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
                 <SelectTrigger className="h-9 w-[170px]"><SelectValue placeholder={`Sposta su ${siteLabel.toLowerCase()}`} /></SelectTrigger>
                 <SelectContent>{activeSites.map((w) => <SelectItem key={w.id} value={w.id}>{w.nome}</SelectItem>)}</SelectContent>
               </Select>
-              <button onClick={() => setSelected(new Set())} className="text-sm text-slate-500 hover:text-slate-800">Deseleziona</button>
+              <button onClick={() => setSelected(new Set())} className="text-sm text-zinc-500 hover:text-zinc-800">Deseleziona</button>
             </>
           )}
         </div>
@@ -196,14 +196,14 @@ export default function DailySheet({ date, setDate, records, employees, worksite
 
       {/* Tabella */}
       {rows.length === 0 ? (
-        <div className="bg-white rounded-xl border border-dashed border-slate-300 py-12 text-center text-sm text-slate-500">Nessun dipendente in forza in questa data.</div>
+        <div className="bg-white rounded-xl border border-dashed border-zinc-300 py-12 text-center text-sm text-zinc-500">Nessun dipendente in forza in questa data.</div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="hidden md:grid grid-cols-[28px_minmax(150px,1fr)_220px_minmax(260px,1.3fr)_36px] gap-3 px-3 py-2 bg-slate-50 text-xs font-medium uppercase tracking-wide text-slate-500">
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
+          <div className="hidden md:grid grid-cols-[28px_minmax(150px,1fr)_220px_minmax(260px,1.3fr)_36px] gap-3 px-3 py-2 bg-zinc-50 text-xs font-medium uppercase tracking-wide text-zinc-500">
             {!readOnly ? <input type="checkbox" aria-label="Seleziona tutti" checked={shown.length > 0 && shown.every((r) => selected.has(r.dipendente_id))} onChange={(e) => setSelected(e.target.checked ? new Set(shown.map((r) => r.dipendente_id)) : new Set())} /> : <span />}
             <span>Dipendente</span><span>Stato</span><span>{siteLabel} e ore</span><span />
           </div>
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-zinc-100">
             {shown.map((r) => {
               const e = empById.get(r.dipendente_id);
               const ore = r.cantieri.reduce((s, c) => s + c.ore, 0);
@@ -212,8 +212,8 @@ export default function DailySheet({ date, setDate, records, employees, worksite
                 <div key={r.dipendente_id} className={`grid grid-cols-[28px_1fr] md:grid-cols-[28px_minmax(150px,1fr)_220px_minmax(260px,1.3fr)_36px] gap-x-3 gap-y-2 px-3 py-2.5 items-start ${selected.has(r.dipendente_id) ? "bg-brand-50/60" : ""}`}>
                   {!readOnly ? <input type="checkbox" className="mt-2" checked={selected.has(r.dipendente_id)} onChange={() => setSelected((s) => { const n = new Set(s); n.has(r.dipendente_id) ? n.delete(r.dipendente_id) : n.add(r.dipendente_id); return n; })} aria-label={`Seleziona ${r.dipendente_nome}`} /> : <span />}
                   <div className="min-w-0 pt-1">
-                    <p className="text-sm font-medium text-slate-900 truncate">{r.dipendente_nome}</p>
-                    <p className="text-xs text-slate-500 truncate">{[e?.qualifica || e?.ruolo, r.stato === "presente" && `${fmtH(ore)} h`, ot > 0 && `+${fmtH(ot)} straord.`].filter(Boolean).join(" · ")}</p>
+                    <p className="text-sm font-medium text-zinc-900 truncate">{r.dipendente_nome}</p>
+                    <p className="text-xs text-zinc-500 truncate">{[e?.qualifica || e?.ruolo, r.stato === "presente" && `${fmtH(ore)} h`, ot > 0 && `+${fmtH(ot)} straord.`].filter(Boolean).join(" · ")}</p>
                   </div>
                   <div className="col-start-2 md:col-start-auto flex flex-wrap gap-1">
                     {STATE_ORDER.map((s) => {
@@ -221,7 +221,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
                       const on = r.stato === s;
                       return (
                         <button key={s} type="button" disabled={readOnly} onClick={() => setStato(r.dipendente_id, s)} title={info.label}
-                          className={`h-8 min-w-[36px] px-2 rounded-md text-xs font-semibold border transition-colors ${on ? info.bgClass : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"} disabled:cursor-default`}>
+                          className={`h-8 min-w-[36px] px-2 rounded-md text-xs font-semibold border transition-colors ${on ? info.bgClass : "bg-white border-zinc-200 text-zinc-500 hover:border-zinc-300"} disabled:cursor-default`}>
                           {info.short}
                         </button>
                       );
@@ -239,12 +239,12 @@ export default function DailySheet({ date, setDate, records, employees, worksite
                           </SelectContent>
                         </Select>
                         <Input type="number" inputMode="decimal" step="0.5" min="0" max="24" value={c.ore || ""} onChange={(ev) => setSite(r.dipendente_id, i, "ore", ev.target.value)} disabled={readOnly} className="h-8 w-[68px] text-sm tabular-nums" aria-label="Ore" />
-                        <span className="text-xs text-slate-500">h</span>
+                        <span className="text-xs text-zinc-500">h</span>
                         {!readOnly && (r.cantieri.length > 1
-                          ? <button onClick={() => removeSplit(r.dipendente_id, i)} className="p-1 text-slate-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
-                          : <button onClick={() => addSplit(r.dipendente_id)} className="p-1 text-slate-500 hover:text-brand-600" title={`Dividi su più ${siteLabel.toLowerCase()}`} aria-label="Aggiungi"><Plus className="w-4 h-4" /></button>)}
+                          ? <button onClick={() => removeSplit(r.dipendente_id, i)} className="p-1 text-zinc-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
+                          : <button onClick={() => addSplit(r.dipendente_id)} className="p-1 text-zinc-500 hover:text-brand-600" title={`Dividi su più ${siteLabel.toLowerCase()}`} aria-label="Aggiungi"><Plus className="w-4 h-4" /></button>)}
                       </div>
-                    )) : <p className="text-sm text-slate-500 pt-1.5">{r.stato ? "—" : "Non registrato"}</p>}
+                    )) : <p className="text-sm text-zinc-500 pt-1.5">{r.stato ? "—" : "Non registrato"}</p>}
                     {r.stato === "presente" && r.cantieri.length > 1 && !readOnly && (
                       <button onClick={() => addSplit(r.dipendente_id)} className="text-xs text-brand-700 hover:underline">+ altro {siteLabel.toLowerCase()}</button>
                     )}
@@ -254,7 +254,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
                   </div>
                   <div className="hidden md:block">
                     {!readOnly && !r.note && !noteOpen.has(r.dipendente_id) && (
-                      <button onClick={() => setNoteOpen((s) => new Set([...s, r.dipendente_id]))} className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700" title="Aggiungi nota" aria-label="Aggiungi nota"><MessageSquare className="w-4 h-4" /></button>
+                      <button onClick={() => setNoteOpen((s) => new Set([...s, r.dipendente_id]))} className="p-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700" title="Aggiungi nota" aria-label="Aggiungi nota"><MessageSquare className="w-4 h-4" /></button>
                     )}
                   </div>
                 </div>
@@ -265,14 +265,14 @@ export default function DailySheet({ date, setDate, records, employees, worksite
       )}
 
       {/* Barra riepilogo e salvataggio */}
-      <div className="sticky bottom-16 lg:bottom-3 z-30 rounded-xl border border-slate-200 bg-white/95 backdrop-blur shadow-lg px-4 py-2.5">
+      <div className="sticky bottom-16 lg:bottom-3 z-30 rounded-xl border border-zinc-200 bg-white/95 backdrop-blur shadow-lg px-4 py-2.5">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
           <span><strong className="tabular-nums">{totals.presenti}</strong> presenti</span>
           <span><strong className="tabular-nums">{fmtH(totals.ore)}</strong> ore</span>
           {totals.straord > 0 && <span className="text-amber-700"><strong className="tabular-nums">{fmtH(totals.straord)}</strong> straord.</span>}
-          {totals.assenti > 0 && <span className="text-slate-600">{totals.assenti} assenti</span>}
+          {totals.assenti > 0 && <span className="text-zinc-600">{totals.assenti} assenti</span>}
           {totals.mancanti > 0 && <span className="text-amber-700 flex items-center gap-1"><AlertTriangle className="w-4 h-4" />{totals.mancanti} da registrare</span>}
-          {canSeeCosts && totals.costo > 0 && <span className="text-slate-600">Costo {formatEuro(totals.costo)}</span>}
+          {canSeeCosts && totals.costo > 0 && <span className="text-zinc-600">Costo {formatEuro(totals.costo)}</span>}
           {!readOnly && (
             <div className="ml-auto flex gap-2">
               {dirty && <Button variant="ghost" size="sm" onClick={() => setRows(JSON.parse(initial))} className="gap-1.5"><RotateCcw className="w-4 h-4" /> Annulla</Button>}

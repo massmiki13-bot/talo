@@ -205,7 +205,7 @@ export default function Posta() {
       <div className="px-4 sm:px-0 mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
           <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Posta</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-sm text-zinc-500 mt-0.5">
             Email e PEC della ditta in un unico posto
             {lastSync && <> · aggiornata {formatDate(lastSync)}</>}
           </p>
@@ -232,7 +232,7 @@ export default function Posta() {
                 <li key={f.key} className="shrink-0">
                   <button
                     onClick={() => selectFolder(f.key)}
-                    className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${active ? "bg-brand-50 text-brand-800 font-semibold" : "text-slate-600 hover:bg-slate-100"}`}
+                    className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${active ? "bg-brand-50 text-brand-800 font-semibold" : "text-zinc-600 hover:bg-zinc-100"}`}
                     aria-current={active ? "page" : undefined}
                   >
                     <f.icon className="w-4 h-4" />
@@ -245,7 +245,7 @@ export default function Posta() {
           </ul>
           {accounts.length > 1 && (
             <div className="hidden xl:block mt-4">
-              <p className="text-xs font-medium text-slate-500 px-1 mb-1">Casella</p>
+              <p className="text-xs font-medium text-zinc-500 px-1 mb-1">Casella</p>
               <Select value={accountFilter} onValueChange={setAccountFilter}>
                 <SelectTrigger aria-label="Filtra per casella" className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -256,26 +256,26 @@ export default function Posta() {
             </div>
           )}
           {accounts.length > 0 && receiving.length === 0 && (
-            <p className="hidden xl:block mt-4 text-xs text-slate-500 px-1">Per vedere anche la posta in arrivo, aggiungi il server IMAP nelle impostazioni della casella.</p>
+            <p className="hidden xl:block mt-4 text-xs text-zinc-500 px-1">Per vedere anche la posta in arrivo, aggiungi il server IMAP nelle impostazioni della casella.</p>
           )}
         </nav>
 
         {/* Elenco */}
-        <section className={`${selected ? "hidden lg:flex" : "flex"} flex-col bg-white sm:rounded-xl border-y sm:border border-slate-200 min-h-[60vh]`}>
-          <div className="p-3 border-b border-slate-100">
+        <section className={`${selected ? "hidden lg:flex" : "flex"} flex-col bg-white sm:rounded-xl border-y sm:border border-zinc-200 min-h-[60vh]`}>
+          <div className="p-3 border-b border-zinc-100">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cerca per nome, email, oggetto…" className="pl-9 pr-8" aria-label="Cerca nella posta" />
-              {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-slate-100"><X className="w-3.5 h-3.5 text-slate-500" /></button>}
+              {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-zinc-100"><X className="w-3.5 h-3.5 text-zinc-500" /></button>}
             </div>
           </div>
           {loading ? (
-            <div className="flex-1 flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>
+            <div className="flex-1 flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-zinc-500" /></div>
           ) : messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-16 px-6">
-              <folder.icon className="w-10 h-10 text-slate-300 mb-3" />
-              <p className="font-medium text-slate-700">{query ? "Nessun risultato" : "Nessun messaggio"}</p>
-              <p className="text-sm text-slate-500 mt-1">
+              <folder.icon className="w-10 h-10 text-zinc-300 mb-3" />
+              <p className="font-medium text-zinc-700">{query ? "Nessun risultato" : "Nessun messaggio"}</p>
+              <p className="text-sm text-zinc-500 mt-1">
                 {query ? `Nessun messaggio contiene "${search}".`
                   : accounts.length === 0 ? "Collega una casella email o PEC per iniziare."
                   : folder.key === "arrivo" && !receiving.length ? "Attiva la ricezione (IMAP) nelle impostazioni della casella."
@@ -284,28 +284,28 @@ export default function Posta() {
               {accounts.length === 0 && <Button asChild size="sm" className="mt-4"><Link to="/profilo-ditta#caselle-email">Collega una casella</Link></Button>}
             </div>
           ) : (
-            <ul className="flex-1 overflow-y-auto divide-y divide-slate-100">
+            <ul className="flex-1 overflow-y-auto divide-y divide-zinc-100">
               {messages.map((m) => {
                 const unreadRow = m.direzione === "in" && !m.letto;
                 const active = selected?.id === m.id;
                 return (
                   <li key={m.id}>
-                    <button onClick={() => open(m)} className={`w-full text-left px-4 py-3 transition-colors ${active ? "bg-brand-50" : "hover:bg-slate-50"}`}>
+                    <button onClick={() => open(m)} className={`w-full text-left px-4 py-3 transition-colors ${active ? "bg-brand-50" : "hover:bg-zinc-50"}`}>
                       <div className="flex items-center gap-2">
                         {unreadRow && <span className="w-2 h-2 rounded-full bg-brand-600 shrink-0" aria-label="Non letto" />}
-                        <p className={`text-sm truncate flex-1 ${unreadRow ? "font-bold text-slate-900" : "text-slate-700"}`}>
+                        <p className={`text-sm truncate flex-1 ${unreadRow ? "font-bold text-zinc-900" : "text-zinc-700"}`}>
                           {m.stato === "bozza" ? <span className="text-red-700 font-medium">Bozza · </span> : null}
                           {counterpartOf(m)}
                         </p>
-                        <span className="text-xs text-slate-500 shrink-0">{formatDate(m.data)}</span>
+                        <span className="text-xs text-zinc-500 shrink-0">{formatDate(m.data)}</span>
                       </div>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         {m.is_pec && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded px-1 py-px shrink-0">{m.pec_tipo && m.pec_tipo !== "posta-certificata" ? PEC_LABELS[m.pec_tipo] || "PEC" : "PEC"}</span>}
                         {m.stato === "errore" && <span className="text-[10px] font-bold bg-red-100 text-red-700 rounded px-1 py-px shrink-0">NON INVIATA</span>}
-                        <p className={`text-sm truncate ${unreadRow ? "font-semibold text-slate-900" : "text-slate-800"}`}>{m.subject || "(senza oggetto)"}</p>
-                        {(m.allegati || []).length > 0 && <Paperclip className="w-3.5 h-3.5 text-slate-500 shrink-0" aria-label="Con allegati" />}
+                        <p className={`text-sm truncate ${unreadRow ? "font-semibold text-zinc-900" : "text-zinc-800"}`}>{m.subject || "(senza oggetto)"}</p>
+                        {(m.allegati || []).length > 0 && <Paperclip className="w-3.5 h-3.5 text-zinc-500 shrink-0" aria-label="Con allegati" />}
                       </div>
-                      <p className="text-xs text-slate-500 truncate mt-0.5">{m.snippet}</p>
+                      <p className="text-xs text-zinc-500 truncate mt-0.5">{m.snippet}</p>
                     </button>
                   </li>
                 );
@@ -320,7 +320,7 @@ export default function Posta() {
         </section>
 
         {/* Lettura */}
-        <section className={`${selected ? "block" : "hidden lg:flex"} bg-white sm:rounded-xl border-y sm:border border-slate-200 min-h-[60vh] ${selected ? "" : "items-center justify-center"}`}>
+        <section className={`${selected ? "block" : "hidden lg:flex"} bg-white sm:rounded-xl border-y sm:border border-zinc-200 min-h-[60vh] ${selected ? "" : "items-center justify-center"}`}>
           {selected ? (
             <MessageView
               message={selected}
@@ -333,8 +333,8 @@ export default function Posta() {
             />
           ) : (
             <div className="text-center px-6">
-              <Mails className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-              <p className="text-sm text-slate-500">Seleziona un messaggio per leggerlo</p>
+              <Mails className="w-12 h-12 text-zinc-200 mx-auto mb-3" />
+              <p className="text-sm text-zinc-500">Seleziona un messaggio per leggerlo</p>
             </div>
           )}
         </section>

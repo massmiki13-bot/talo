@@ -90,15 +90,15 @@ export default function DocumentPreviewDialog({ open, onOpenChange, fileUrl, tit
         <DialogHeader>
           <DialogTitle className="truncate">{titolo || "Anteprima documento"}</DialogTitle>
         </DialogHeader>
-        <div className="flex-1 overflow-auto bg-slate-100 rounded-lg flex items-center justify-center min-h-[300px]">
+        <div className="flex-1 overflow-auto bg-zinc-100 rounded-lg flex items-center justify-center min-h-[300px]">
           {imageType ? (
             <img src={viewUrl || undefined} alt={titolo} className="max-w-full max-h-[60vh] object-contain" />
           ) : pdfType ? (
             <iframe src={viewUrl || undefined} className="w-full" style={{ height: "60vh", border: "none" }} title={titolo} />
           ) : (
             <div className="p-8 text-center">
-              <FileText className="w-12 h-12 text-slate-500 mx-auto mb-2" />
-              <p className="text-sm text-slate-500">Anteprima non disponibile per questo formato</p>
+              <FileText className="w-12 h-12 text-zinc-500 mx-auto mb-2" />
+              <p className="text-sm text-zinc-500">Anteprima non disponibile per questo formato</p>
             </div>
           )}
         </div>

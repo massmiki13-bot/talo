@@ -17,7 +17,7 @@ const num = (v) => (v === "" ? "" : Number(String(v).replace(",", ".")));
 function NumberInput({ value, onChange, label, className = "", step = "any" }) {
   return (
     <div className={className}>
-      <label className="text-[11px] text-slate-500">{label}</label>
+      <label className="text-[11px] text-zinc-500">{label}</label>
       <Input type="number" inputMode="decimal" step={step} value={value ?? ""} onChange={(e) => onChange(num(e.target.value))} className="h-9 mt-0.5 tabular-nums" />
     </div>
   );
@@ -103,7 +103,7 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
   const rowMenu = (r, i) => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button aria-label="Azioni riga" className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><MoreVertical className="w-4 h-4" /></button>
+        <button aria-label="Azioni riga" className="p-1.5 rounded hover:bg-zinc-100 text-zinc-500"><MoreVertical className="w-4 h-4" /></button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => move(i, -1)} disabled={i === 0}><ArrowUp className="w-4 h-4 mr-2" /> Sposta su</DropdownMenuItem>
@@ -124,15 +124,15 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
   let chapterIndex = -1;
 
   return (
-    <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+    <section className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5">
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <h2 className="text-sm font-semibold text-slate-800 uppercase tracking-wide flex-1">Voci del preventivo</h2>
-        <button type="button" onClick={() => setShowCosts(!showCosts)} className={`text-xs rounded-full px-2.5 py-1 border ${showCosts ? "border-amber-300 bg-amber-50 text-amber-900" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+        <h2 className="text-sm font-semibold text-zinc-800 uppercase tracking-wide flex-1">Voci del preventivo</h2>
+        <button type="button" onClick={() => setShowCosts(!showCosts)} className={`text-xs rounded-full px-2.5 py-1 border ${showCosts ? "border-amber-300 bg-amber-50 text-amber-900" : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"}`}>
           {showCosts ? "Costi interni visibili" : "Mostra costi e margine"}
         </button>
       </div>
 
-      {righe.length === 0 && <p className="text-sm text-slate-500 py-6 text-center">Nessuna voce. Aggiungi una voce, un capitolo o pesca dal listino.</p>}
+      {righe.length === 0 && <p className="text-sm text-zinc-500 py-6 text-center">Nessuna voce. Aggiungi una voce, un capitolo o pesca dal listino.</p>}
 
       <div className="space-y-2">
         {righe.map((r, i) => {
@@ -140,19 +140,19 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
             chapterIndex++;
             const tot = chapters[chapterIndex]?.totale || 0;
             return (
-              <div key={i} className="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2 mt-3 first:mt-0">
-                <Heading className="w-4 h-4 text-slate-300 shrink-0" />
+              <div key={i} className="flex items-center gap-2 rounded-lg bg-zinc-800 px-3 py-2 mt-3 first:mt-0">
+                <Heading className="w-4 h-4 text-zinc-300 shrink-0" />
                 <Input value={r.descrizione} onChange={(e) => update(i, { descrizione: e.target.value })} placeholder="Titolo capitolo (es. Demolizioni)" aria-label="Titolo capitolo"
-                  className="h-8 bg-transparent border-0 text-white placeholder:text-slate-500 font-semibold uppercase tracking-wide focus-visible:ring-1 focus-visible:ring-slate-500" />
-                <span className="text-sm text-slate-200 tabular-nums shrink-0">{fmtEur(tot)}</span>
-                <div className="[&_button]:text-slate-300 [&_button:hover]:bg-slate-700">{rowMenu(r, i)}</div>
+                  className="h-8 bg-transparent border-0 text-white placeholder:text-zinc-500 font-semibold uppercase tracking-wide focus-visible:ring-1 focus-visible:ring-zinc-500" />
+                <span className="text-sm text-zinc-200 tabular-nums shrink-0">{fmtEur(tot)}</span>
+                <div className="[&_button]:text-zinc-300 [&_button:hover]:bg-zinc-700">{rowMenu(r, i)}</div>
               </div>
             );
           }
           if (r.tipo === "testo") {
             return (
-              <div key={i} className="flex items-start gap-2 rounded-lg border border-dashed border-slate-300 px-3 py-2">
-                <AlignLeft className="w-4 h-4 text-slate-500 mt-2 shrink-0" />
+              <div key={i} className="flex items-start gap-2 rounded-lg border border-dashed border-zinc-300 px-3 py-2">
+                <AlignLeft className="w-4 h-4 text-zinc-500 mt-2 shrink-0" />
                 <AutoTextarea value={r.descrizione} onChange={(e) => update(i, { descrizione: e.target.value })} placeholder="Testo descrittivo (senza prezzo)" className="flex-1 border-0 shadow-none px-0 focus-visible:ring-0" />
                 {rowMenu(r, i)}
               </div>
@@ -161,25 +161,25 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
           const total = rowTotal(r);
           const cost = rowCost(r);
           return (
-            <div key={i} className={`rounded-lg border p-3 ${r.opzionale ? "border-dashed border-slate-300 bg-slate-50/60" : "border-slate-200"}`}>
+            <div key={i} className={`rounded-lg border p-3 ${r.opzionale ? "border-dashed border-zinc-300 bg-zinc-50/60" : "border-zinc-200"}`}>
               <div className="flex items-start gap-2">
                 <div className="flex-1 min-w-0">
-                  {r.opzionale && <span className="inline-block text-[10px] font-bold uppercase tracking-wide text-slate-600 bg-slate-200 rounded px-1.5 py-0.5 mb-1">Opzionale · non nel totale</span>}
+                  {r.opzionale && <span className="inline-block text-[10px] font-bold uppercase tracking-wide text-zinc-600 bg-zinc-200 rounded px-1.5 py-0.5 mb-1">Opzionale · non nel totale</span>}
                   <AutoTextarea value={r.descrizione} onChange={(e) => update(i, { descrizione: e.target.value })} placeholder="Descrizione della voce…" aria-label="Descrizione" />
                 </div>
                 <Button type="button" size="icon" variant="ghost" onClick={() => improve(i)} disabled={aiIndex === i || !r.descrizione?.trim()} title="Riscrivi come voce di capitolato" aria-label="Migliora con AI" className="shrink-0">
-                  <Sparkles className={`w-4 h-4 ${aiIndex === i ? "animate-pulse text-brand-600" : "text-slate-500"}`} />
+                  <Sparkles className={`w-4 h-4 ${aiIndex === i ? "animate-pulse text-brand-600" : "text-zinc-500"}`} />
                 </Button>
                 {prezzari.length > 0 && (
                   <Button type="button" size="icon" variant="ghost" onClick={() => priceOne(i)} disabled={pricing != null || !r.descrizione?.trim()} title="Prezzo dal prezzario (IA)" aria-label="Prezzo dal prezzario" className="shrink-0">
-                    {pricing === i ? <Loader2 className="w-4 h-4 animate-spin text-brand-600" /> : <Euro className="w-4 h-4 text-slate-500" />}
+                    {pricing === i ? <Loader2 className="w-4 h-4 animate-spin text-brand-600" /> : <Euro className="w-4 h-4 text-zinc-500" />}
                   </Button>
                 )}
                 {rowMenu(r, i)}
               </div>
               <div className={`grid grid-cols-3 sm:grid-cols-6 ${showCosts ? "lg:grid-cols-8" : "lg:grid-cols-7"} gap-2 mt-2 items-end`}>
                 <div>
-                  <label className="text-[11px] text-slate-500">U.M.</label>
+                  <label className="text-[11px] text-zinc-500">U.M.</label>
                   <Select value={r.unita_misura || "cad"} onValueChange={(v) => update(i, { unita_misura: v })}>
                     <SelectTrigger className="h-9 mt-0.5"><SelectValue /></SelectTrigger>
                     <SelectContent>{UNIT_OPTIONS.map((u) => <SelectItem key={u.value} value={u.value} title={u.tooltip}>{u.label}</SelectItem>)}</SelectContent>
@@ -189,7 +189,7 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
                 <NumberInput label="Prezzo unit. €" value={r.prezzo_unitario} onChange={(v) => update(i, { prezzo_unitario: v })} step="0.01" className="col-span-1 lg:col-span-2" />
                 <NumberInput label="Sconto %" value={r.sconto} onChange={(v) => update(i, { sconto: v })} />
                 <div>
-                  <label className="text-[11px] text-slate-500">IVA</label>
+                  <label className="text-[11px] text-zinc-500">IVA</label>
                   <Select value={String(r.iva_percentuale ?? defaultIva)} onValueChange={(v) => update(i, { iva_percentuale: Number(v) })}>
                     <SelectTrigger className="h-9 mt-0.5"><SelectValue /></SelectTrigger>
                     <SelectContent>{[22, 10, 5, 4, 0].map((a) => <SelectItem key={a} value={String(a)}>{a}%</SelectItem>)}</SelectContent>
@@ -197,12 +197,12 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
                 </div>
                 {showCosts && <NumberInput label="Costo unit. €" value={r.costo_unitario} onChange={(v) => update(i, { costo_unitario: v })} step="0.01" />}
                 <div className="text-right col-span-3 sm:col-span-6 lg:col-span-1">
-                  <p className="text-[11px] text-slate-500">Totale</p>
-                  <p className={`text-sm font-semibold tabular-nums py-2 ${r.opzionale ? "text-slate-500" : "text-slate-900"}`}>{fmtEur(total)}</p>
+                  <p className="text-[11px] text-zinc-500">Totale</p>
+                  <p className={`text-sm font-semibold tabular-nums py-2 ${r.opzionale ? "text-zinc-500" : "text-zinc-900"}`}>{fmtEur(total)}</p>
                 </div>
               </div>
               {r.fonte_prezzo?.prezzario && (
-                <p className="text-xs text-slate-500 mt-1.5 flex items-center gap-1" title={r.fonte_prezzo.voce || ""}>
+                <p className="text-xs text-zinc-500 mt-1.5 flex items-center gap-1" title={r.fonte_prezzo.voce || ""}>
                   <BookOpenCheck className="w-3.5 h-3.5 text-brand-600 shrink-0" />
                   <span className="truncate">{r.fonte_prezzo.prezzario}{r.fonte_prezzo.codice ? ` · voce ${r.fonte_prezzo.codice}` : ""} · {fmtEur(r.fonte_prezzo.prezzo_base)}{r.fonte_prezzo.um ? `/${r.fonte_prezzo.um}` : ""}{r.fonte_prezzo.affidabilita && r.fonte_prezzo.affidabilita !== "alta" ? ` · corrispondenza ${r.fonte_prezzo.affidabilita}` : ""}</span>
                 </p>
@@ -228,7 +228,7 @@ export default function QuoteLines({ righe, setRighe, defaultIva = 22, showCosts
       {prezzari.length > 0 && (
         <div className="mt-3 rounded-lg border border-brand-100 bg-brand-50/60 p-2.5 flex flex-wrap items-center gap-2">
           <BookOpenCheck className="w-4 h-4 text-brand-700" />
-          <span className="text-sm text-slate-800">Prezzi da</span>
+          <span className="text-sm text-zinc-800">Prezzi da</span>
           <Select value={source} onValueChange={setSource}>
             <SelectTrigger className="h-8 w-auto min-w-[200px] bg-white text-sm"><SelectValue /></SelectTrigger>
             <SelectContent>

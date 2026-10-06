@@ -133,7 +133,7 @@ export default function Worksites() {
       <div className="mb-4 sm:mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
           <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Lavori</h1>
-          <p className="text-slate-500 mt-1 text-sm">Cantieri, avanzamento, costi, incassi e giornale dei lavori</p>
+          <p className="text-zinc-500 mt-1 text-sm">Cantieri, avanzamento, costi, incassi e giornale dei lavori</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={async () => { setContacts(await db.Contact.fields(["nome", "nome_privato"], { limit: 10000 }).catch(() => [])); setImportOpen(true); }}><Upload className="w-4 h-4" /> Importa</Button>
@@ -145,26 +145,26 @@ export default function Worksites() {
 
       {rows.length > 0 && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-          <button onClick={() => setState("in_corso")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
-            <p className="text-xs text-slate-500">In corso</p><p className="text-lg font-bold text-slate-900">{kpi.inCorso}</p><p className="text-xs text-slate-500">{fmtEur(kpi.valore)} di lavori aperti</p>
+          <button onClick={() => setState("in_corso")} className="text-left bg-white rounded-xl border border-zinc-200 p-3.5 hover:border-brand-300">
+            <p className="text-xs text-zinc-500">In corso</p><p className="text-lg font-bold text-zinc-900">{kpi.inCorso}</p><p className="text-xs text-zinc-500">{fmtEur(kpi.valore)} di lavori aperti</p>
           </button>
-          <button onClick={() => setSort("incassare")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
-            <p className="text-xs text-slate-500">Da incassare</p><p className="text-lg font-bold text-slate-900 tabular-nums">{fmtEur(kpi.daIncassare)}</p><p className="text-xs text-slate-500">su tutti i lavori</p>
+          <button onClick={() => setSort("incassare")} className="text-left bg-white rounded-xl border border-zinc-200 p-3.5 hover:border-brand-300">
+            <p className="text-xs text-zinc-500">Da incassare</p><p className="text-lg font-bold text-zinc-900 tabular-nums">{fmtEur(kpi.daIncassare)}</p><p className="text-xs text-zinc-500">su tutti i lavori</p>
           </button>
-          <button onClick={() => setState("perdita")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
-            <p className="text-xs text-slate-500">In perdita</p><p className={`text-lg font-bold ${kpi.perdita ? "text-red-700" : "text-slate-900"}`}>{kpi.perdita}</p><p className="text-xs text-slate-500">costi oltre il contratto</p>
+          <button onClick={() => setState("perdita")} className="text-left bg-white rounded-xl border border-zinc-200 p-3.5 hover:border-brand-300">
+            <p className="text-xs text-zinc-500">In perdita</p><p className={`text-lg font-bold ${kpi.perdita ? "text-red-700" : "text-zinc-900"}`}>{kpi.perdita}</p><p className="text-xs text-zinc-500">costi oltre il contratto</p>
           </button>
-          <button onClick={() => setState("ritardo")} className="text-left bg-white rounded-xl border border-slate-200 p-3.5 hover:border-brand-300">
-            <p className="text-xs text-slate-500">In ritardo</p><p className={`text-lg font-bold ${kpi.ritardo ? "text-amber-700" : "text-slate-900"}`}>{kpi.ritardo}</p><p className="text-xs text-slate-500">oltre la fine prevista</p>
+          <button onClick={() => setState("ritardo")} className="text-left bg-white rounded-xl border border-zinc-200 p-3.5 hover:border-brand-300">
+            <p className="text-xs text-zinc-500">In ritardo</p><p className={`text-lg font-bold ${kpi.ritardo ? "text-amber-700" : "text-zinc-900"}`}>{kpi.ritardo}</p><p className="text-xs text-zinc-500">oltre la fine prevista</p>
           </button>
         </div>
       )}
 
       <div className="flex flex-col lg:flex-row gap-2 mb-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <Input placeholder="Cerca per lavoro, cliente, indirizzo…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-10" aria-label="Cerca lavori" />
-          {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-slate-100"><X className="w-3.5 h-3.5 text-slate-500" /></button>}
+          {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-zinc-100"><X className="w-3.5 h-3.5 text-zinc-500" /></button>}
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:flex gap-2">
           <Select value={state} onValueChange={setState}>
@@ -184,7 +184,7 @@ export default function Worksites() {
             </Select>
           )}
           <Select value={sort} onValueChange={setSort}>
-            <SelectTrigger aria-label="Ordina per" className="lg:w-44 h-10"><ArrowUpDown className="w-4 h-4 text-slate-500" /><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Ordina per" className="lg:w-44 h-10"><ArrowUpDown className="w-4 h-4 text-zinc-500" /><SelectValue /></SelectTrigger>
             <SelectContent>{Object.entries(SORTS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
           </Select>
         </div>
@@ -200,15 +200,15 @@ export default function Worksites() {
             const st = WORKSITE_STATES[w.stato] || WORKSITE_STATES.da_iniziare;
             const loss = w._econ.margineReale < 0 && w._econ.costi > 0;
             return (
-              <div key={w.id} onClick={() => navigate(`/lavori/${w.id}`)} role="link" tabIndex={0} onKeyDown={onEnter(() => navigate(`/lavori/${w.id}`))} className="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-brand-300 hover:shadow-sm transition">
+              <div key={w.id} onClick={() => navigate(`/lavori/${w.id}`)} role="link" tabIndex={0} onKeyDown={onEnter(() => navigate(`/lavori/${w.id}`))} className="bg-white rounded-xl border border-zinc-200 p-4 cursor-pointer hover:border-brand-300 hover:shadow-sm transition">
                 <div className="flex items-start gap-2">
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-slate-900 truncate">{w.nome}</h3>
-                    <p className="text-xs text-slate-500 truncate">{w.cliente_nome || "Senza cliente"}{w.tipo_intervento ? ` · ${w.tipo_intervento}` : ""}</p>
+                    <h3 className="font-semibold text-zinc-900 truncate">{w.nome}</h3>
+                    <p className="text-xs text-zinc-500 truncate">{w.cliente_nome || "Senza cliente"}{w.tipo_intervento ? ` · ${w.tipo_intervento}` : ""}</p>
                   </div>
                   <span className={`text-[11px] font-semibold rounded-full border px-2 py-0.5 shrink-0 ${st.className}`}>{st.label}</span>
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild><button onClick={(e) => e.stopPropagation()} aria-label="Azioni" className="p-1 rounded hover:bg-slate-100 text-slate-500"><MoreHorizontal className="w-4 h-4" /></button></DropdownMenuTrigger>
+                    <DropdownMenuTrigger asChild><button onClick={(e) => e.stopPropagation()} aria-label="Azioni" className="p-1 rounded hover:bg-zinc-100 text-zinc-500"><MoreHorizontal className="w-4 h-4" /></button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenuItem onClick={() => setDeleteTarget(w)} className="text-red-700 focus:text-red-700"><Trash2 className="w-4 h-4 mr-2" /> Elimina</DropdownMenuItem>
                     </DropdownMenuContent>
@@ -216,17 +216,17 @@ export default function Worksites() {
                 </div>
 
                 <div className="mt-3">
-                  <div className="flex justify-between text-xs text-slate-600 mb-1"><span>Avanzamento</span><span className="tabular-nums">{w.avanzamento || 0}%</span></div>
-                  <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-brand-600" style={{ width: `${w.avanzamento || 0}%` }} /></div>
+                  <div className="flex justify-between text-xs text-zinc-600 mb-1"><span>Avanzamento</span><span className="tabular-nums">{w.avanzamento || 0}%</span></div>
+                  <div className="h-1.5 rounded-full bg-zinc-100 overflow-hidden"><div className="h-full bg-brand-600" style={{ width: `${w.avanzamento || 0}%` }} /></div>
                 </div>
 
                 <dl className="grid grid-cols-3 gap-2 mt-3 text-center">
-                  <div><dt className="text-[10px] uppercase tracking-wide text-slate-500">Contratto</dt><dd className="text-sm font-semibold tabular-nums">{w._econ.ricavo ? fmtEur(w._econ.ricavo) : "—"}</dd></div>
-                  <div><dt className="text-[10px] uppercase tracking-wide text-slate-500">Margine</dt><dd className={`text-sm font-semibold tabular-nums ${loss ? "text-red-700" : "text-emerald-700"}`}>{w._econ.costi || w._econ.ricavo ? fmtEur(w._econ.margineReale) : "—"}</dd></div>
-                  <div><dt className="text-[10px] uppercase tracking-wide text-slate-500">Da incassare</dt><dd className="text-sm font-semibold tabular-nums">{w._econ.ricavo ? fmtEur(w._residuo) : "—"}</dd></div>
+                  <div><dt className="text-[10px] uppercase tracking-wide text-zinc-500">Contratto</dt><dd className="text-sm font-semibold tabular-nums">{w._econ.ricavo ? fmtEur(w._econ.ricavo) : "—"}</dd></div>
+                  <div><dt className="text-[10px] uppercase tracking-wide text-zinc-500">Margine</dt><dd className={`text-sm font-semibold tabular-nums ${loss ? "text-red-700" : "text-emerald-700"}`}>{w._econ.costi || w._econ.ricavo ? fmtEur(w._econ.margineReale) : "—"}</dd></div>
+                  <div><dt className="text-[10px] uppercase tracking-wide text-zinc-500">Da incassare</dt><dd className="text-sm font-semibold tabular-nums">{w._econ.ricavo ? fmtEur(w._residuo) : "—"}</dd></div>
                 </dl>
 
-                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600">
+                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-3 pt-3 border-t border-zinc-100 text-xs text-zinc-600">
                   {w.indirizzo && <span className="flex items-center gap-1 truncate max-w-full"><MapPin className="w-3.5 h-3.5 shrink-0" />{w.indirizzo}</span>}
                   {w.data_fine_prevista && <span className={`flex items-center gap-1 ${w._late ? "text-amber-800 font-medium" : ""}`}><CalendarDays className="w-3.5 h-3.5" />fine {fmtDate(w.data_fine_prevista)}</span>}
                   {w._capo && <span className="flex items-center gap-1"><HardHat className="w-3.5 h-3.5" />{fullName(w._capo)}</span>}

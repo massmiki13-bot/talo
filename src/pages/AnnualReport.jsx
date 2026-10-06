@@ -187,22 +187,22 @@ export default function AnnualReport({ embedded = false }) {
         <Card><CardContent className="pt-6">
           <TrendingUp className="w-5 h-5 text-emerald-700 mb-2" />
           <p className="text-xl font-bold text-emerald-700">{formatEuro(yearData.entrate)}</p>
-          <p className="text-xs text-slate-500">Totale entrate</p>
+          <p className="text-xs text-zinc-500">Totale entrate</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6">
           <TrendingDown className="w-5 h-5 text-red-700 mb-2" />
           <p className="text-xl font-bold text-red-700">{formatEuro(yearData.uscite + yearData.laborCost)}</p>
-          <p className="text-xs text-slate-500">Totale uscite + manodopera</p>
+          <p className="text-xs text-zinc-500">Totale uscite + manodopera</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6">
           <Wallet className={`w-5 h-5 mb-2 ${yearData.margine >= 0 ? "text-emerald-700" : "text-red-700"}`} />
           <p className={`text-xl font-bold ${yearData.margine >= 0 ? "text-emerald-700" : "text-red-700"}`}>{formatEuro(yearData.margine)}</p>
-          <p className="text-xs text-slate-500">Margine complessivo</p>
+          <p className="text-xs text-zinc-500">Margine complessivo</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6">
           <Briefcase className="w-5 h-5 text-brand-600 mb-2" />
-          <p className="text-xl font-bold text-slate-900">{yearData.lavoriCount}</p>
-          <p className="text-xs text-slate-500">Lavori nell'anno</p>
+          <p className="text-xl font-bold text-zinc-900">{yearData.lavoriCount}</p>
+          <p className="text-xs text-zinc-500">Lavori nell'anno</p>
         </CardContent></Card>
       </div>
 
@@ -216,7 +216,7 @@ export default function AnnualReport({ embedded = false }) {
           <div className="space-y-1 max-h-40 overflow-y-auto">
             {yearData.inAttivo.map(w => (
               <Link key={w.id} to={`/lavori/${w.id}`} className="flex justify-between text-sm p-1.5 rounded hover:bg-emerald-100">
-                <span className="text-slate-700 truncate">{w.nome}</span>
+                <span className="text-zinc-700 truncate">{w.nome}</span>
                 <span className="font-medium text-emerald-700">+{formatEuro(w.margine)}</span>
               </Link>
             ))}
@@ -231,7 +231,7 @@ export default function AnnualReport({ embedded = false }) {
           <div className="space-y-1 max-h-40 overflow-y-auto">
             {yearData.inPerdita.map(w => (
               <Link key={w.id} to={`/lavori/${w.id}`} className="flex justify-between text-sm p-1.5 rounded hover:bg-red-100">
-                <span className="text-slate-700 truncate">{w.nome}</span>
+                <span className="text-zinc-700 truncate">{w.nome}</span>
                 <span className="font-medium text-red-700">{formatEuro(w.margine)}</span>
               </Link>
             ))}
@@ -241,21 +241,21 @@ export default function AnnualReport({ embedded = false }) {
       </div>
 
       {/* Detailed table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
         <table className="w-full">
-          <thead className="bg-slate-50 border-b border-slate-200">
+          <thead className="bg-zinc-50 border-b border-zinc-200">
             <tr>
-              <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Lavoro</th>
-              <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3 hidden sm:table-cell">Entrate</th>
-              <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3 hidden md:table-cell">Uscite</th>
-              <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3 hidden md:table-cell">Manod.</th>
-              <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">Margine</th>
+              <th className="text-left text-xs font-medium text-zinc-500 uppercase px-4 py-3">Lavoro</th>
+              <th className="text-right text-xs font-medium text-zinc-500 uppercase px-4 py-3 hidden sm:table-cell">Entrate</th>
+              <th className="text-right text-xs font-medium text-zinc-500 uppercase px-4 py-3 hidden md:table-cell">Uscite</th>
+              <th className="text-right text-xs font-medium text-zinc-500 uppercase px-4 py-3 hidden md:table-cell">Manod.</th>
+              <th className="text-right text-xs font-medium text-zinc-500 uppercase px-4 py-3">Margine</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-zinc-100">
             {yearData.worksiteBreakdown.map(w => (
-              <tr key={w.id} className="hover:bg-slate-50">
-                <td className="px-4 py-3 text-sm font-medium text-slate-900">{w.nome}</td>
+              <tr key={w.id} className="hover:bg-zinc-50">
+                <td className="px-4 py-3 text-sm font-medium text-zinc-900">{w.nome}</td>
                 <td className="px-4 py-3 text-sm text-right text-emerald-700 hidden sm:table-cell">{formatEuro(w.entrate)}</td>
                 <td className="px-4 py-3 text-sm text-right text-red-700 hidden md:table-cell">{formatEuro(w.uscite)}</td>
                 <td className="px-4 py-3 text-sm text-right text-orange-700 hidden md:table-cell">{formatEuro(w.labor)}</td>

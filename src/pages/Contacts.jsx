@@ -109,7 +109,7 @@ export default function Contacts() {
   const rowActions = (c) => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button onClick={(e) => e.stopPropagation()} aria-label="Altre azioni" className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"><MoreHorizontal className="w-4 h-4" /></button>
+        <button onClick={(e) => e.stopPropagation()} aria-label="Altre azioni" className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500"><MoreHorizontal className="w-4 h-4" /></button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
         <DropdownMenuItem onClick={() => setForm({ contact: c })}><Pencil className="w-4 h-4 mr-2" /> Modifica</DropdownMenuItem>
@@ -126,9 +126,9 @@ export default function Contacts() {
     const phone = c.cellulare || c.telefono;
     return (
       <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
-        {phone && <a href={phoneHref(phone)} aria-label={`Chiama ${displayName(c)}`} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"><Phone className="w-4 h-4" /></a>}
-        {c.cellulare && <a href={whatsappHref(c.cellulare)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"><MessageCircle className="w-4 h-4" /></a>}
-        {c.email && <a href={`mailto:${c.email}`} aria-label={`Email a ${displayName(c)}`} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500"><Mail className="w-4 h-4" /></a>}
+        {phone && <a href={phoneHref(phone)} aria-label={`Chiama ${displayName(c)}`} className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500"><Phone className="w-4 h-4" /></a>}
+        {c.cellulare && <a href={whatsappHref(c.cellulare)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500"><MessageCircle className="w-4 h-4" /></a>}
+        {c.email && <a href={`mailto:${c.email}`} aria-label={`Email a ${displayName(c)}`} className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500"><Mail className="w-4 h-4" /></a>}
       </div>
     );
   };
@@ -140,7 +140,7 @@ export default function Contacts() {
       <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
           <h1 className="font-display text-[28px] sm:text-[34px] leading-none font-bold uppercase tracking-[0.02em] text-zinc-950 border-l-[6px] border-brand-600 pl-3">Clienti e fornitori</h1>
-          <p className="text-slate-500 mt-1 text-sm">Anagrafiche, referenti, condizioni commerciali e storico</p>
+          <p className="text-zinc-500 mt-1 text-sm">Anagrafiche, referenti, condizioni commerciali e storico</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setImportOpen(true)}><Upload className="w-4 h-4" /> Importa</Button>
@@ -149,20 +149,20 @@ export default function Contacts() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-1 mb-4 border-b border-slate-200">
+      <div className="flex flex-wrap gap-1 mb-4 border-b border-zinc-200">
         {TABS.map((t) => (
           <button key={t.key} onClick={() => { setParams(t.key === "cliente" ? {} : { tipo: t.key }); setCategory(""); }}
-            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${t.key === tab.key ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"}`}>
-            {t.label} <span className="text-xs text-slate-500 ml-0.5">{counts[t.key]}</span>
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${t.key === tab.key ? "border-brand-600 text-brand-700" : "border-transparent text-zinc-500 hover:text-zinc-800"}`}>
+            {t.label} <span className="text-xs text-zinc-500 ml-0.5">{counts[t.key]}</span>
           </button>
         ))}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-2 mb-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <Input placeholder="Cerca per nome, P.IVA, email, telefono, città, referente…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 h-10" aria-label="Cerca contatti" />
-          {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-slate-100"><X className="w-3.5 h-3.5 text-slate-500" /></button>}
+          {search && <button onClick={() => setSearch("")} aria-label="Cancella ricerca" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-zinc-100"><X className="w-3.5 h-3.5 text-zinc-500" /></button>}
         </div>
         <Select value={sort} onValueChange={setSort}>
           <SelectTrigger aria-label="Ordina per" className="sm:w-52 h-10"><SelectValue /></SelectTrigger>
@@ -174,12 +174,12 @@ export default function Contacts() {
         <div className="flex flex-wrap items-center gap-1.5 mb-4">
           {categories.map((c) => (
             <button key={c} onClick={() => setCategory(category === c ? "" : c)}
-              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${category === c ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}>
+              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${category === c ? "border-brand-600 bg-brand-600 text-white" : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"}`}>
               {c}
             </button>
           ))}
           {contacts.some((c) => c.archiviato) && (
-            <button onClick={() => setShowArchived(!showArchived)} className={`ml-auto flex items-center gap-1 text-xs rounded-full px-2.5 py-1 ${showArchived ? "bg-slate-800 text-white" : "text-slate-500 hover:bg-slate-100"}`}>
+            <button onClick={() => setShowArchived(!showArchived)} className={`ml-auto flex items-center gap-1 text-xs rounded-full px-2.5 py-1 ${showArchived ? "bg-zinc-800 text-white" : "text-zinc-500 hover:bg-zinc-100"}`}>
               <Archive className="w-3.5 h-3.5" /> {showArchived ? "Stai vedendo gli archiviati" : "Archiviati"}
             </button>
           )}
@@ -192,10 +192,10 @@ export default function Contacts() {
           : <EmptyState icon={Users} title={`Nessun ${tab.key === "fornitore" ? "fornitore" : "cliente"}`} description="Aggiungilo a mano o importa la tua rubrica da Excel." actionLabel="+ Nuovo" onAction={() => setForm({})} />
       ) : (
         <>
-          <div className="hidden md:block bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="hidden md:block bg-white rounded-xl border border-zinc-200 overflow-hidden">
             <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200">
-                <tr className="text-left text-xs font-medium text-slate-500 uppercase">
+              <thead className="bg-zinc-50 border-b border-zinc-200">
+                <tr className="text-left text-xs font-medium text-zinc-500 uppercase">
                   <th className="px-4 py-3">Nome</th>
                   <th className="px-4 py-3">Località</th>
                   <th className="px-4 py-3 hidden lg:table-cell">Contatti</th>
@@ -203,31 +203,31 @@ export default function Contacts() {
                   <th className="px-2 py-3 w-24" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-zinc-100">
                 {filtered.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate(`/contatti/${c.id}`)} tabIndex={0} onKeyDown={onEnter(() => navigate(`/contatti/${c.id}`))}>
+                  <tr key={c.id} className="hover:bg-zinc-50 cursor-pointer" onClick={() => navigate(`/contatti/${c.id}`)} tabIndex={0} onKeyDown={onEnter(() => navigate(`/contatti/${c.id}`))}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-slate-900">{displayName(c)}</span>
-                        {tab.key === "tutti" && <span className="text-[10px] uppercase tracking-wide text-slate-500">{TIPO_LABEL[c.tipo] || "Cliente"}</span>}
+                        <span className="text-sm font-semibold text-zinc-900">{displayName(c)}</span>
+                        {tab.key === "tutti" && <span className="text-[10px] uppercase tracking-wide text-zinc-500">{TIPO_LABEL[c.tipo] || "Cliente"}</span>}
                       </div>
                       <div className="flex flex-wrap items-center gap-1 mt-0.5">
-                        {c.partita_iva && <span className="text-xs text-slate-500">P.IVA {c.partita_iva}</span>}
-                        {(c.categorie || []).slice(0, 3).map((cat) => <span key={cat} className="text-[10px] rounded-full bg-slate-100 text-slate-600 px-1.5 py-0.5">{cat}</span>)}
+                        {c.partita_iva && <span className="text-xs text-zinc-500">P.IVA {c.partita_iva}</span>}
+                        {(c.categorie || []).slice(0, 3).map((cat) => <span key={cat} className="text-[10px] rounded-full bg-zinc-100 text-zinc-600 px-1.5 py-0.5">{cat}</span>)}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-600">{[c.citta, c.provincia && `(${c.provincia})`].filter(Boolean).join(" ") || "—"}</td>
-                    <td className="px-4 py-3 text-sm text-slate-600 hidden lg:table-cell">
+                    <td className="px-4 py-3 text-sm text-zinc-600">{[c.citta, c.provincia && `(${c.provincia})`].filter(Boolean).join(" ") || "—"}</td>
+                    <td className="px-4 py-3 text-sm text-zinc-600 hidden lg:table-cell">
                       <p className="truncate max-w-[220px]">{c.email || c.pec || "—"}</p>
-                      <p className="text-xs text-slate-500">{c.cellulare || c.telefono}</p>
+                      <p className="text-xs text-zinc-500">{c.cellulare || c.telefono}</p>
                     </td>
                     <td className="px-4 py-3 text-right">
                       {c._stats ? (
                         <>
-                          <p className="text-sm font-medium text-slate-800 tabular-nums">{fmtEur(c._stats.valore)}</p>
-                          <p className="text-xs text-slate-500">{c._stats.n} {c._stats.n === 1 ? "preventivo" : "preventivi"}{c._stats.aperti ? ` · ${fmtEur(c._stats.aperti)} aperti` : ""}</p>
+                          <p className="text-sm font-medium text-zinc-800 tabular-nums">{fmtEur(c._stats.valore)}</p>
+                          <p className="text-xs text-zinc-500">{c._stats.n} {c._stats.n === 1 ? "preventivo" : "preventivi"}{c._stats.aperti ? ` · ${fmtEur(c._stats.aperti)} aperti` : ""}</p>
                         </>
-                      ) : <span className="text-sm text-slate-500">—</span>}
+                      ) : <span className="text-sm text-zinc-500">—</span>}
                     </td>
                     <td className="px-2 py-3"><div className="flex items-center justify-end">{quickLinks(c)}{rowActions(c)}</div></td>
                   </tr>
@@ -238,21 +238,21 @@ export default function Contacts() {
 
           <div className="md:hidden space-y-2">
             {filtered.map((c) => (
-              <div key={c.id} className="bg-white rounded-xl border border-slate-200 p-3.5 cursor-pointer active:bg-slate-50" onClick={() => navigate(`/contatti/${c.id}`)} role="link" tabIndex={0} onKeyDown={onEnter(() => navigate(`/contatti/${c.id}`))}>
+              <div key={c.id} className="bg-white rounded-xl border border-zinc-200 p-3.5 cursor-pointer active:bg-zinc-50" onClick={() => navigate(`/contatti/${c.id}`)} role="link" tabIndex={0} onKeyDown={onEnter(() => navigate(`/contatti/${c.id}`))}>
                 <div className="flex items-start gap-2">
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-slate-900 truncate">{displayName(c)}</p>
-                    <p className="text-xs text-slate-500 truncate">{[c.citta, c.partita_iva && `P.IVA ${c.partita_iva}`].filter(Boolean).join(" · ") || TIPO_LABEL[c.tipo]}</p>
-                    {c._stats && <p className="text-xs text-slate-600 mt-0.5">{c._stats.n} prev. · {fmtEur(c._stats.valore)}</p>}
+                    <p className="text-sm font-semibold text-zinc-900 truncate">{displayName(c)}</p>
+                    <p className="text-xs text-zinc-500 truncate">{[c.citta, c.partita_iva && `P.IVA ${c.partita_iva}`].filter(Boolean).join(" · ") || TIPO_LABEL[c.tipo]}</p>
+                    {c._stats && <p className="text-xs text-zinc-600 mt-0.5">{c._stats.n} prev. · {fmtEur(c._stats.valore)}</p>}
                   </div>
                   {rowActions(c)}
-                  <ChevronRight className="w-4 h-4 text-slate-300 mt-1" />
+                  <ChevronRight className="w-4 h-4 text-zinc-300 mt-1" />
                 </div>
                 <div className="mt-1.5 -ml-1.5">{quickLinks(c)}</div>
               </div>
             ))}
           </div>
-          <p className="text-xs text-slate-500 mt-3">{filtered.length} {filtered.length === 1 ? "contatto" : "contatti"}</p>
+          <p className="text-xs text-zinc-500 mt-3">{filtered.length} {filtered.length === 1 ? "contatto" : "contatti"}</p>
         </>
       )}
 

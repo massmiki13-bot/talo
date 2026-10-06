@@ -29,14 +29,14 @@ ${url}`;
   return (
     <div className="space-y-4">
       <div className="grid place-items-center">
-        {qr ? <img src={qr} alt="QR code per entrare nell'app dei dipendenti" className="w-60 h-60 rounded-xl border border-slate-200 p-2 bg-white" /> : <div className="w-60 h-60 rounded-xl bg-slate-100 animate-pulse" />}
-        <p className="text-sm text-slate-600 text-center mt-3">Fai inquadrare il QR al dipendente con la fotocamera: crea il suo account ed entra subito nell'app operai, già collegato alla sua scheda. Vale 14 giorni e per una sola persona.</p>
+        {qr ? <img src={qr} alt="QR code per entrare nell'app dei dipendenti" className="w-60 h-60 rounded-xl border border-zinc-200 p-2 bg-white" /> : <div className="w-60 h-60 rounded-xl bg-zinc-100 animate-pulse" />}
+        <p className="text-sm text-zinc-600 text-center mt-3">Fai inquadrare il QR al dipendente con la fotocamera: crea il suo account ed entra subito nell'app operai, già collegato alla sua scheda. Vale 14 giorni e per una sola persona.</p>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <Button variant="outline" className="gap-1.5" asChild><a href={`https://wa.me/?text=${encodeURIComponent(msg)}`} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" /> WhatsApp</a></Button>
         <Button variant="outline" className="gap-1.5" onClick={() => { navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 1500); }}>{copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />} Copia link</Button>
       </div>
-      <p className="text-xs text-slate-500">Il messaggio WhatsApp è in italiano, rumeno e albanese. Chi ha il link entra come questo dipendente: invialo solo a lui.</p>
+      <p className="text-xs text-zinc-500">Il messaggio WhatsApp è in italiano, rumeno e albanese. Chi ha il link entra come questo dipendente: invialo solo a lui.</p>
     </div>
   );
 }
@@ -131,7 +131,7 @@ export default function InviteDialog({
             <div>
               <Label htmlFor="inv-nome" className="mb-1.5 block">Per chi è l'invito</Label>
               <Input id="inv-nome" value={nome} onChange={(e) => setNome(e.target.value)} placeholder="es. Laura – ufficio" />
-              <p className="text-xs text-slate-500 mt-1">Solo un promemoria per te, per riconoscere l'invito.</p>
+              <p className="text-xs text-zinc-500 mt-1">Solo un promemoria per te, per riconoscere l'invito.</p>
             </div>
             <AccessConfigSection
               accessLevel={accessLevel}
@@ -174,8 +174,8 @@ export default function InviteDialog({
                   Copia codice
                 </Button>
               </div>
-              <div className="bg-slate-50 border rounded-lg p-3">
-                <p className="text-sm text-slate-500 mb-1 flex items-center gap-1">
+              <div className="bg-zinc-50 border rounded-lg p-3">
+                <p className="text-sm text-zinc-500 mb-1 flex items-center gap-1">
                   <LinkIcon className="w-4 h-4" /> Link di invito
                 </p>
                 <div className="flex items-center gap-2">

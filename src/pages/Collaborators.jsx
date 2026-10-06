@@ -16,7 +16,7 @@ const initials = (s) => String(s || "?").split(/[\s@._-]+/).filter(Boolean).slic
 const daysLeft = (inv) => Math.ceil(TTL_DAYS - (Date.now() - new Date(inv.created_date).getTime()) / 86_400_000);
 
 const ROLES = [
-  { key: "titolare", icon: Crown, title: "Titolare", tone: "bg-slate-900 text-white", text: "Tu. Vedi e gestisci tutto, compresi costi, profilo ditta e collaboratori." },
+  { key: "titolare", icon: Crown, title: "Titolare", tone: "bg-zinc-900 text-white", text: "Tu. Vedi e gestisci tutto, compresi costi, profilo ditta e collaboratori." },
   { key: "responsabile", icon: ShieldCheck, title: "Responsabile", tone: "bg-zinc-200 text-zinc-800", text: "Ufficio, capocantiere, commerciale: lavora solo nei moduli che scegli tu." },
   { key: "operaio", icon: HardHat, title: "Operaio", tone: "bg-amber-100 text-amber-800", text: "Vede soltanto i propri documenti, le proprie presenze e ore. Nessun costo." },
 ];
@@ -78,11 +78,11 @@ export default function Collaborators() {
       {/* Ruoli */}
       <div className="grid md:grid-cols-3 gap-3">
         {ROLES.map(({ key, icon: I, title, tone, text }) => (
-          <div key={key} className="bg-white rounded-2xl border border-slate-200 p-4 flex gap-3">
+          <div key={key} className="bg-white rounded-2xl border border-zinc-200 p-4 flex gap-3">
             <div className={`w-10 h-10 rounded-xl grid place-items-center shrink-0 ${tone}`}><I className="w-5 h-5" /></div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">{title}{key !== "titolare" && <span className="ml-1.5 text-xs font-normal text-slate-500">{(key === "operaio" ? active.filter((c) => c.access_level === "operaio") : active.filter((c) => c.access_level !== "operaio")).length} attivi</span>}</p>
-              <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">{text}</p>
+              <p className="text-sm font-semibold text-zinc-900">{title}{key !== "titolare" && <span className="ml-1.5 text-xs font-normal text-zinc-500">{(key === "operaio" ? active.filter((c) => c.access_level === "operaio") : active.filter((c) => c.access_level !== "operaio")).length} attivi</span>}</p>
+              <p className="text-xs text-zinc-600 mt-0.5 leading-relaxed">{text}</p>
             </div>
           </div>
         ))}
@@ -96,20 +96,20 @@ export default function Collaborators() {
             <h2 className="text-sm font-semibold text-amber-900">Inviti in attesa di conferma</h2>
             <span className="text-xs text-amber-800">{pending.length}</span>
           </div>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-zinc-100">
             {pending.map((i) => {
               const link = `${window.location.origin}/collaboratori/invito/${i.id}`;
               return (
                 <li key={i.id} className="px-4 py-3 flex flex-wrap items-center gap-3">
                   <div className="flex-1 min-w-[200px]">
-                    <p className="text-sm font-medium text-slate-900">{i.display_name || (i.access_level === "operaio" ? empName[i.employee_id] : "") || "Invito senza nome"}</p>
-                    <p className="text-xs text-slate-500">{i.access_level === "operaio" ? "Operaio" : "Responsabile"} · scade tra {daysLeft(i)} {daysLeft(i) === 1 ? "giorno" : "giorni"}{i.tentativi_falliti ? ` · ${i.tentativi_falliti} codici errati` : ""}</p>
+                    <p className="text-sm font-medium text-zinc-900">{i.display_name || (i.access_level === "operaio" ? empName[i.employee_id] : "") || "Invito senza nome"}</p>
+                    <p className="text-xs text-zinc-500">{i.access_level === "operaio" ? "Operaio" : "Responsabile"} · scade tra {daysLeft(i)} {daysLeft(i) === 1 ? "giorno" : "giorni"}{i.tentativi_falliti ? ` · ${i.tentativi_falliti} codici errati` : ""}</p>
                   </div>
-                  <button onClick={() => copy(i.code, `c${i.id}`)} className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 h-8 text-sm hover:bg-slate-50" title="Copia il codice">
-                    <KeyRound className="w-3.5 h-3.5 text-slate-500" /><span className="font-mono font-semibold tracking-widest">{i.code}</span>{copied === `c${i.id}` ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5 text-slate-500" />}
+                  <button onClick={() => copy(i.code, `c${i.id}`)} className="flex items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 h-8 text-sm hover:bg-zinc-50" title="Copia il codice">
+                    <KeyRound className="w-3.5 h-3.5 text-zinc-500" /><span className="font-mono font-semibold tracking-widest">{i.code}</span>{copied === `c${i.id}` ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5 text-zinc-500" />}
                   </button>
                   <Button size="sm" variant="outline" className="gap-1.5" onClick={() => copy(link, `l${i.id}`)}>{copied === `l${i.id}` ? <Check className="w-4 h-4 text-emerald-700" /> : <LinkIcon className="w-4 h-4" />} Copia link</Button>
-                  <button onClick={() => cancelInvite(i)} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Annulla invito" title="Annulla invito"><X className="w-4 h-4" /></button>
+                  <button onClick={() => cancelInvite(i)} className="p-1.5 rounded-md text-zinc-500 hover:text-red-600 hover:bg-red-50" aria-label="Annulla invito" title="Annulla invito"><X className="w-4 h-4" /></button>
                 </li>
               );
             })}
@@ -118,21 +118,21 @@ export default function Collaborators() {
       )}
 
       {/* Collaboratori attivi */}
-      <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-2">
-          <Users className="w-4 h-4 text-slate-500" />
-          <h2 className="text-sm font-semibold text-slate-900">Hanno accesso</h2>
-          <span className="text-xs text-slate-500">{active.length}</span>
+      <section className="bg-white rounded-2xl border border-zinc-200 overflow-hidden">
+        <div className="px-4 py-3 border-b border-zinc-100 flex items-center gap-2">
+          <Users className="w-4 h-4 text-zinc-500" />
+          <h2 className="text-sm font-semibold text-zinc-900">Hanno accesso</h2>
+          <span className="text-xs text-zinc-500">{active.length}</span>
         </div>
         {active.length === 0 ? (
           <div className="py-12 px-6 text-center">
-            <ShieldCheck className="w-10 h-10 text-slate-300 mx-auto" />
-            <p className="mt-3 font-semibold text-slate-900">Lavori ancora da solo su Talo</p>
-            <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">Invita l'ufficio, un capocantiere o i tuoi operai: ricevono un link e un codice di conferma, e vedono solo quello che decidi tu.</p>
+            <ShieldCheck className="w-10 h-10 text-zinc-300 mx-auto" />
+            <p className="mt-3 font-semibold text-zinc-900">Lavori ancora da solo su Talo</p>
+            <p className="text-sm text-zinc-500 mt-1 max-w-md mx-auto">Invita l'ufficio, un capocantiere o i tuoi operai: ricevono un link e un codice di conferma, e vedono solo quello che decidi tu.</p>
             <Button onClick={() => setInviteOpen(true)} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2"><UserPlus className="w-4 h-4" /> Invita collaboratore</Button>
           </div>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-zinc-100">
             {active.map((c) => <Row key={c.id} c={c} empName={empName} onEdit={() => setEditing(c)} onRevoke={() => revoke(c)} />)}
           </ul>
         )}
@@ -140,11 +140,11 @@ export default function Collaborators() {
 
       {revoked.length > 0 && (
         <section>
-          <button onClick={() => setShowRevoked(!showRevoked)} className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
+          <button onClick={() => setShowRevoked(!showRevoked)} className="flex items-center gap-1.5 text-sm text-zinc-600 hover:text-zinc-900">
             {showRevoked ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />} Accessi revocati ({revoked.length})
           </button>
           {showRevoked && (
-            <ul className="mt-2 bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+            <ul className="mt-2 bg-white rounded-2xl border border-zinc-200 divide-y divide-zinc-100 overflow-hidden">
               {revoked.map((c) => <Row key={c.id} c={c} empName={empName} muted onRestore={() => restore(c)} />)}
             </ul>
           )}
@@ -165,17 +165,17 @@ function Row({ c, empName, muted, onEdit, onRevoke, onRestore }) {
     <li className={`px-4 py-3 flex flex-wrap items-center gap-3 ${muted ? "opacity-70" : ""}`}>
       <div className={`w-10 h-10 rounded-full grid place-items-center text-sm font-semibold shrink-0 ${op ? "bg-amber-100 text-amber-800" : "bg-zinc-200 text-zinc-800"}`}>{initials(c.display_name || c.email)}</div>
       <div className="flex-1 min-w-[180px]">
-        <p className="text-sm font-medium text-slate-900 truncate">{c.display_name || c.email}</p>
-        <p className="text-xs text-slate-500 truncate">{c.email}</p>
+        <p className="text-sm font-medium text-zinc-900 truncate">{c.display_name || c.email}</p>
+        <p className="text-xs text-zinc-500 truncate">{c.email}</p>
       </div>
       <div className="w-full sm:w-auto sm:max-w-[45%] order-last sm:order-none flex flex-wrap items-center gap-1">
         <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${op ? "bg-amber-100 text-amber-800" : "bg-zinc-200 text-zinc-800"}`}>{op ? "Operaio" : "Responsabile"}</span>
         {op ? (
-          <span className="text-xs text-slate-600">collegato a {empName[c.employee_id] || "dipendente"}</span>
+          <span className="text-xs text-zinc-600">collegato a {empName[c.employee_id] || "dipendente"}</span>
         ) : all ? (
-          <span className="text-xs text-slate-600">tutti i moduli</span>
-        ) : mods.slice(0, 5).map((m) => <span key={m.key} className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">{m.label}</span>)}
-        {!op && !all && mods.length > 5 && <span className="text-xs text-slate-500">+{mods.length - 5}</span>}
+          <span className="text-xs text-zinc-600">tutti i moduli</span>
+        ) : mods.slice(0, 5).map((m) => <span key={m.key} className="text-xs px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-700">{m.label}</span>)}
+        {!op && !all && mods.length > 5 && <span className="text-xs text-zinc-500">+{mods.length - 5}</span>}
       </div>
       <div className="flex gap-1.5 ml-auto">
         {onEdit && <Button size="sm" variant="outline" className="gap-1.5" onClick={onEdit}><Pencil className="w-3.5 h-3.5" /> Permessi</Button>}

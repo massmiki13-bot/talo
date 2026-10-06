@@ -22,16 +22,16 @@ import {
 } from "@/lib/contacts";
 
 const QUOTE_STATO = {
-  bozza: { label: "Bozza", className: "bg-slate-100 text-slate-700" },
+  bozza: { label: "Bozza", className: "bg-zinc-100 text-zinc-700" },
   in_attesa: { label: "In attesa", className: "bg-amber-100 text-amber-800" },
   inviato: { label: "Inviato", className: "bg-zinc-200 text-zinc-800" },
   visto: { label: "Visto", className: "bg-indigo-100 text-indigo-800" },
   approvato: { label: "Accettato", className: "bg-emerald-100 text-emerald-800" },
   rifiutato: { label: "Rifiutato", className: "bg-red-100 text-red-700" },
-  scaduto: { label: "Scaduto", className: "bg-slate-200 text-slate-700" },
+  scaduto: { label: "Scaduto", className: "bg-zinc-200 text-zinc-700" },
 };
 const WORKSITE_STATO = {
-  da_iniziare: { label: "Da iniziare", className: "bg-slate-100 text-slate-700" },
+  da_iniziare: { label: "Da iniziare", className: "bg-zinc-100 text-zinc-700" },
   in_corso: { label: "In corso", className: "bg-zinc-200 text-zinc-800" },
   finito: { label: "Finito", className: "bg-emerald-100 text-emerald-800" },
 };
@@ -43,22 +43,22 @@ const Card = ({ icon, title, action, children, className = "" }) => <DetailCard 
 
 function Row({ to, title, subtitle, right, rightSub, badge }) {
   return (
-    <Link to={to} className="flex items-center gap-3 py-2.5 px-1 -mx-1 rounded hover:bg-slate-50">
+    <Link to={to} className="flex items-center gap-3 py-2.5 px-1 -mx-1 rounded hover:bg-zinc-50">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-slate-900 truncate">{title}</p>
-        {subtitle && <p className="text-xs text-slate-500 truncate">{subtitle}</p>}
+        <p className="text-sm font-medium text-zinc-900 truncate">{title}</p>
+        {subtitle && <p className="text-xs text-zinc-500 truncate">{subtitle}</p>}
       </div>
       <div className="text-right shrink-0">
         {badge}
-        {right && <p className="text-sm font-medium text-slate-800 tabular-nums">{right}</p>}
-        {rightSub && <p className="text-xs text-slate-500">{rightSub}</p>}
+        {right && <p className="text-sm font-medium text-zinc-800 tabular-nums">{right}</p>}
+        {rightSub && <p className="text-xs text-zinc-500">{rightSub}</p>}
       </div>
-      <ChevronRight className="w-4 h-4 text-slate-300 shrink-0" />
+      <ChevronRight className="w-4 h-4 text-zinc-300 shrink-0" />
     </Link>
   );
 }
 
-const Empty = ({ children }) => <p className="text-sm text-slate-500 py-2">{children}</p>;
+const Empty = ({ children }) => <p className="text-sm text-zinc-500 py-2">{children}</p>;
 
 export default function ContactDetail() {
   const { id } = useParams();
@@ -207,8 +207,8 @@ export default function ContactDetail() {
               <dl className="grid sm:grid-cols-2 gap-x-4 gap-y-3">
                 {info.map((r) => (
                   <div key={r.label} className="relative pl-6 min-w-0">
-                      <dt className="text-xs text-slate-500"><r.icon className="w-4 h-4 text-slate-500 absolute left-0 top-0.5" aria-hidden="true" />{r.label}</dt>
-                      <dd className="text-sm text-slate-800 break-words">{r.href ? <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="text-brand-700 hover:underline">{r.value}</a> : r.value}</dd>
+                      <dt className="text-xs text-zinc-500"><r.icon className="w-4 h-4 text-zinc-500 absolute left-0 top-0.5" aria-hidden="true" />{r.label}</dt>
+                      <dd className="text-sm text-zinc-800 break-words">{r.href ? <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="text-brand-700 hover:underline">{r.value}</a> : r.value}</dd>
                   </div>
                 ))}
               </dl>
@@ -218,15 +218,15 @@ export default function ContactDetail() {
           <div className="space-y-4">
             <Card icon={Users} title="Referenti">
               {contact.referenti?.length ? (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-zinc-100">
                   {contact.referenti.map((r, i) => (
                     <li key={i} className="py-2 flex items-center gap-2">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-slate-900">{r.nome || "—"} {r.ruolo && <span className="text-xs font-normal text-slate-500">· {r.ruolo}</span>}</p>
-                        <p className="text-xs text-slate-500 truncate">{[r.telefono, r.email].filter(Boolean).join(" · ")}</p>
+                        <p className="text-sm font-medium text-zinc-900">{r.nome || "—"} {r.ruolo && <span className="text-xs font-normal text-zinc-500">· {r.ruolo}</span>}</p>
+                        <p className="text-xs text-zinc-500 truncate">{[r.telefono, r.email].filter(Boolean).join(" · ")}</p>
                       </div>
-                      {r.telefono && <a href={phoneHref(r.telefono)} aria-label={`Chiama ${r.nome}`} className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Phone className="w-4 h-4" /></a>}
-                      {r.email && <button onClick={() => setCompose({ defaultTo: r.email, templateVars: { cliente: name }, links: { contact_id: id } })} aria-label={`Email a ${r.nome}`} className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Mail className="w-4 h-4" /></button>}
+                      {r.telefono && <a href={phoneHref(r.telefono)} aria-label={`Chiama ${r.nome}`} className="p-1.5 rounded hover:bg-zinc-100 text-zinc-500"><Phone className="w-4 h-4" /></a>}
+                      {r.email && <button onClick={() => setCompose({ defaultTo: r.email, templateVars: { cliente: name }, links: { contact_id: id } })} aria-label={`Email a ${r.nome}`} className="p-1.5 rounded hover:bg-zinc-100 text-zinc-500"><Mail className="w-4 h-4" /></button>}
                     </li>
                   ))}
                 </ul>
@@ -236,21 +236,21 @@ export default function ContactDetail() {
             <Card icon={CreditCard} title="Condizioni commerciali">
               {conditions.length ? (
                 <dl className="grid grid-cols-2 gap-3">
-                  {conditions.map(([k, v]) => <div key={k}><dt className="text-xs text-slate-500">{k}</dt><dd className="text-sm text-slate-800">{v}</dd></div>)}
+                  {conditions.map(([k, v]) => <div key={k}><dt className="text-xs text-zinc-500">{k}</dt><dd className="text-sm text-zinc-800">{v}</dd></div>)}
                 </dl>
               ) : <Empty>Nessuna condizione impostata: i preventivi useranno quelle standard.</Empty>}
             </Card>
 
             {contact.indirizzi?.length > 0 && (
               <Card icon={MapPin} title="Sedi e cantieri">
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-zinc-100">
                   {contact.indirizzi.map((a, i) => (
                     <li key={i} className="py-2 flex items-center gap-2">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-slate-900">{a.etichetta || "Indirizzo"}</p>
-                        <p className="text-xs text-slate-500">{fullAddress(a)}</p>
+                        <p className="text-sm font-medium text-zinc-900">{a.etichetta || "Indirizzo"}</p>
+                        <p className="text-xs text-zinc-500">{fullAddress(a)}</p>
                       </div>
-                      <a href={mapsUrl(a)} target="_blank" rel="noopener noreferrer" aria-label="Apri in Google Maps" className="p-1.5 rounded hover:bg-slate-100 text-slate-500"><Navigation className="w-4 h-4" /></a>
+                      <a href={mapsUrl(a)} target="_blank" rel="noopener noreferrer" aria-label="Apri in Google Maps" className="p-1.5 rounded hover:bg-zinc-100 text-zinc-500"><Navigation className="w-4 h-4" /></a>
                     </li>
                   ))}
                 </ul>
@@ -258,7 +258,7 @@ export default function ContactDetail() {
             )}
 
             {contact.note && (
-              <Card icon={StickyNote} title="Note"><p className="text-sm text-slate-700 whitespace-pre-wrap">{contact.note}</p></Card>
+              <Card icon={StickyNote} title="Note"><p className="text-sm text-zinc-700 whitespace-pre-wrap">{contact.note}</p></Card>
             )}
           </div>
         </div>
@@ -267,16 +267,16 @@ export default function ContactDetail() {
       {tab === "attivita" && (
         <Card icon={FileText} title="Cronologia">
           {timeline.length ? (
-            <ol className="relative border-l border-slate-200 ml-2">
+            <ol className="relative border-l border-zinc-200 ml-2">
               {timeline.map((t, i) => (
                 <li key={i} className="ml-4 py-2">
-                  <span className="absolute -left-[9px] mt-1.5 w-4 h-4 rounded-full bg-white border border-slate-300 flex items-center justify-center"><t.icon className="w-2.5 h-2.5 text-slate-500" /></span>
-                  <Link to={t.to} className="flex items-start gap-3 rounded hover:bg-slate-50 px-1 -mx-1">
+                  <span className="absolute -left-[9px] mt-1.5 w-4 h-4 rounded-full bg-white border border-zinc-300 flex items-center justify-center"><t.icon className="w-2.5 h-2.5 text-zinc-500" /></span>
+                  <Link to={t.to} className="flex items-start gap-3 rounded hover:bg-zinc-50 px-1 -mx-1">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-slate-900">{t.title} {t.badge && <Badge className={`${t.badge.className} ml-1`}>{t.badge.label}</Badge>}</p>
-                      <p className="text-xs text-slate-500 truncate">{[fmtDate(t.date), t.sub].filter(Boolean).join(" · ")}</p>
+                      <p className="text-sm font-medium text-zinc-900">{t.title} {t.badge && <Badge className={`${t.badge.className} ml-1`}>{t.badge.label}</Badge>}</p>
+                      <p className="text-xs text-zinc-500 truncate">{[fmtDate(t.date), t.sub].filter(Boolean).join(" · ")}</p>
                     </div>
-                    {t.right && <span className="text-sm text-slate-700 tabular-nums shrink-0">{t.right}</span>}
+                    {t.right && <span className="text-sm text-zinc-700 tabular-nums shrink-0">{t.right}</span>}
                   </Link>
                 </li>
               ))}
@@ -305,7 +305,7 @@ export default function ContactDetail() {
 
       {tab === "documenti" && (
         <Card icon={FolderOpen} title="Documenti" action={<Button size="sm" variant="outline" className="gap-1" onClick={() => setDocOpen(true)}><Upload className="w-4 h-4" /> Aggiungi</Button>}>
-          {fornitore && <p className="text-xs text-slate-500 mb-2">DURC, visura e assicurazioni del fornitore: con la data di scadenza ricevi il promemoria per tempo.</p>}
+          {fornitore && <p className="text-xs text-zinc-500 mb-2">DURC, visura e assicurazioni del fornitore: con la data di scadenza ricevi il promemoria per tempo.</p>}
           {data.documents.length ? data.documents.map((d) => {
             const st = getExpirationStatus(d.data_scadenza);
             return (
@@ -316,7 +316,7 @@ export default function ContactDetail() {
           }) : <Empty>Nessun documento.</Empty>}
           {data.received.length > 0 && (
             <div className="mt-4">
-              <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Preventivi ricevuti</p>
+              <p className="text-xs font-semibold text-zinc-500 uppercase mb-1">Preventivi ricevuti</p>
               {data.received.map((r) => <Row key={r.id} to="/preventivi?tab=ricevuti" title={r.descrizione || "Preventivo ricevuto"} subtitle={fmtDate(r.data)} right={r.importo ? fmtEur(r.importo) : null} />)}
             </div>
           )}

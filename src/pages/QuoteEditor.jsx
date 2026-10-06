@@ -35,10 +35,10 @@ const clean = (o) => Object.fromEntries(Object.entries(o).filter(([k]) => !STRIP
 
 function Section({ title, children, action, className = "" }) {
   return (
-    <section className={`bg-white rounded-xl border border-slate-200 p-4 sm:p-5 ${className}`}>
+    <section className={`bg-white rounded-xl border border-zinc-200 p-4 sm:p-5 ${className}`}>
       {(title || action) && (
         <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-sm font-semibold text-slate-800 uppercase tracking-wide flex-1">{title}</h2>
+          <h2 className="text-sm font-semibold text-zinc-800 uppercase tracking-wide flex-1">{title}</h2>
           {action}
         </div>
       )}
@@ -476,18 +476,18 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
 
   return (
     <div className="pb-24">
-      <Link to="/preventivi" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 mb-3"><ArrowLeft className="w-4 h-4" /> Preventivi</Link>
+      <Link to="/preventivi" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-800 mb-3"><ArrowLeft className="w-4 h-4" /> Preventivi</Link>
 
       {/* Intestazione */}
       <div className="flex flex-col xl:flex-row xl:items-start gap-3 mb-4">
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="font-display text-2xl sm:text-[30px] leading-tight font-bold text-zinc-950">{isNew ? "Nuovo preventivo" : `Preventivo ${quote.numero}`}</h1>
-            {quote.revisione > 0 && <span className="text-xs font-semibold rounded-full bg-slate-800 text-white px-2 py-0.5">Rev. {quote.revisione}</span>}
+            {quote.revisione > 0 && <span className="text-xs font-semibold rounded-full bg-zinc-800 text-white px-2 py-0.5">Rev. {quote.revisione}</span>}
             {!isNew && <span className={`text-xs font-semibold rounded-full border px-2 py-0.5 ${st.className}`}>{st.label}</span>}
             {dirty && <span className="text-xs text-amber-700">· modifiche non salvate</span>}
           </div>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-zinc-500 mt-1">
             {quote.cliente_nome || "Nessun cliente"}{exp && ` · valido fino al ${exp.toLocaleDateString("it-IT")}`}
             {quote.visto_il && ` · visto dal cliente il ${new Date(quote.visto_il).toLocaleDateString("it-IT")}`}
           </p>
@@ -526,15 +526,15 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
         <div className={`flex gap-3 rounded-xl border p-4 mb-4 ${risposta.esito === "accetta" ? "border-emerald-200 bg-emerald-50" : "border-red-200 bg-red-50"}`}>
           {risposta.esito === "accetta" ? <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0" /> : <XCircle className="w-5 h-5 text-red-700 shrink-0" />}
           <div className="text-sm flex-1">
-            <p className="font-semibold text-slate-900">{risposta.esito === "accetta" ? "Accettato e firmato online" : "Rifiutato online"} da {risposta.nome} il {new Date(risposta.data).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" })}</p>
-            {risposta.commento && <p className="text-slate-700 mt-1">“{risposta.commento}”</p>}
+            <p className="font-semibold text-zinc-900">{risposta.esito === "accetta" ? "Accettato e firmato online" : "Rifiutato online"} da {risposta.nome} il {new Date(risposta.data).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" })}</p>
+            {risposta.commento && <p className="text-zinc-700 mt-1">“{risposta.commento}”</p>}
           </div>
         </div>
       )}
       {!isNew && quote.stato === "approvato" && !quote.worksite_id && (
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-emerald-200 bg-white p-4 mb-4">
           <HardHat className="w-5 h-5 text-emerald-700 shrink-0" />
-          <p className="text-sm text-slate-700 flex-1"><strong>Preventivo accettato.</strong> Crea il lavoro con cliente, importo e condizioni già compilati.</p>
+          <p className="text-sm text-zinc-700 flex-1"><strong>Preventivo accettato.</strong> Crea il lavoro con cliente, importo e condizioni già compilati.</p>
           <Button onClick={createWorksite} className="gap-1.5 bg-emerald-600 hover:bg-emerald-700"><Plus className="w-4 h-4" /> Crea il lavoro</Button>
         </div>
       )}
@@ -582,7 +582,7 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
                   </Select>
                   <Button type="button" variant="outline" size="icon" onClick={() => setNewClientOpen(true)} aria-label="Nuovo cliente" title="Nuovo cliente"><UserPlus className="w-4 h-4" /></Button>
                 </div>
-                {client && <p className="text-xs text-slate-500 mt-1"><Link to={`/contatti/${client.id}`} className="text-brand-700 hover:underline">Scheda cliente</Link>{client.pagamento_default && ` · pagamento abituale: ${client.pagamento_default}`}</p>}
+                {client && <p className="text-xs text-zinc-500 mt-1"><Link to={`/contatti/${client.id}`} className="text-brand-700 hover:underline">Scheda cliente</Link>{client.pagamento_default && ` · pagamento abituale: ${client.pagamento_default}`}</p>}
               </div>
               <div className="col-span-2">
                 <Label htmlFor="quoteeditor-lavoro-collegato">Lavoro collegato</Label>
@@ -635,24 +635,24 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
           <Section title="Documento PDF">
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="text-slate-600">Grafica: <strong>{templateName}</strong></span>
+                <span className="text-zinc-600">Grafica: <strong>{templateName}</strong></span>
                 {!isNew && <button onClick={openPicker} className="text-brand-700 hover:underline text-sm">cambia</button>}
               </div>
-              <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
                 <input type="checkbox" className="w-4 h-4" checked={!!quote.copertina} onChange={(e) => set({ copertina: e.target.checked })} />
                 Pagina di copertina con sommario dei capitoli
               </label>
               <div>
-                <p className="text-sm text-slate-700 mb-1.5">Allegati in coda al PDF (foto del sopralluogo, schede tecniche, render…)</p>
+                <p className="text-sm text-zinc-700 mb-1.5">Allegati in coda al PDF (foto del sopralluogo, schede tecniche, render…)</p>
                 <div className="flex flex-wrap gap-2">
                   {(quote.allegati || []).map((a, i) => (
                     <div key={i} className="relative w-24">
-                      <img src={a.url} alt={a.name} className="w-24 h-20 object-cover rounded-md border border-slate-200" />
-                      <button type="button" aria-label={`Rimuovi ${a.name}`} onClick={() => set({ allegati: quote.allegati.filter((_, j) => j !== i) })} className="absolute -top-2 -right-2 rounded-full bg-white border border-slate-200 p-0.5 shadow"><X className="w-3.5 h-3.5" /></button>
-                      <input value={a.name} onChange={(e) => set({ allegati: quote.allegati.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)) })} className="mt-1 w-full text-[11px] border-b border-slate-200 focus:outline-none" aria-label="Didascalia" />
+                      <img src={a.url} alt={a.name} className="w-24 h-20 object-cover rounded-md border border-zinc-200" />
+                      <button type="button" aria-label={`Rimuovi ${a.name}`} onClick={() => set({ allegati: quote.allegati.filter((_, j) => j !== i) })} className="absolute -top-2 -right-2 rounded-full bg-white border border-zinc-200 p-0.5 shadow"><X className="w-3.5 h-3.5" /></button>
+                      <input value={a.name} onChange={(e) => set({ allegati: quote.allegati.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)) })} className="mt-1 w-full text-[11px] border-b border-zinc-200 focus:outline-none" aria-label="Didascalia" />
                     </div>
                   ))}
-                  <label className="w-24 h-20 rounded-md border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-xs text-slate-500 cursor-pointer hover:border-brand-400">
+                  <label className="w-24 h-20 rounded-md border-2 border-dashed border-zinc-300 flex flex-col items-center justify-center text-xs text-zinc-500 cursor-pointer hover:border-brand-400">
                     {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><ImageIcon className="w-5 h-5 mb-1" /> Aggiungi</>}
                     <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => { uploadAttachments([...e.target.files]); e.target.value = ""; }} />
                   </label>
@@ -665,12 +665,12 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
           <Section title="Firma del cliente">
             {quote.firma_cliente_url && quote.risposta_cliente?.esito === "accetta" ? (
               <div>
-                <img src={quote.firma_cliente_url} alt="Firma del cliente" className="h-20 border-b border-slate-300" />
-                <p className="text-xs text-slate-500 mt-1">Firmato online il {new Date(quote.risposta_cliente.data).toLocaleString("it-IT")}</p>
+                <img src={quote.firma_cliente_url} alt="Firma del cliente" className="h-20 border-b border-zinc-300" />
+                <p className="text-xs text-zinc-500 mt-1">Firmato online il {new Date(quote.risposta_cliente.data).toLocaleString("it-IT")}</p>
               </div>
             ) : (
               <>
-                <p className="text-sm text-slate-500 mb-2">Per firmare di persona, su tablet o telefono. In alternativa manda il link al cliente e firmerà online.</p>
+                <p className="text-sm text-zinc-500 mb-2">Per firmare di persona, su tablet o telefono. In alternativa manda il link al cliente e firmerà online.</p>
                 <SignaturePad value={clienteFirma} onChange={(v) => { setClienteFirma(v); setDirty(true); }} label="Firma cliente" />
                 {clienteFirma && clienteFirma !== quote.firma_cliente_url && <p className="text-xs text-emerald-700 mt-2">Al salvataggio il preventivo risulterà accettato.</p>}
               </>
@@ -692,34 +692,34 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
           <Section title="Riepilogo">
             <dl className="space-y-1.5 text-sm">
               {chapters.length > 0 && chapters.map((c, i) => (
-                <div key={i} className="flex justify-between text-slate-600"><dt className="truncate pr-2">{c.titolo || "Capitolo"}</dt><dd className="tabular-nums">{fmtEur(c.totale)}</dd></div>
+                <div key={i} className="flex justify-between text-zinc-600"><dt className="truncate pr-2">{c.titolo || "Capitolo"}</dt><dd className="tabular-nums">{fmtEur(c.totale)}</dd></div>
               ))}
-              {chapters.length > 0 && <div className="border-t border-slate-100 my-1" />}
-              <div className="flex justify-between"><dt className="text-slate-600">Totale voci</dt><dd className="tabular-nums">{fmtEur(totals.lordo)}</dd></div>
+              {chapters.length > 0 && <div className="border-t border-zinc-100 my-1" />}
+              <div className="flex justify-between"><dt className="text-zinc-600">Totale voci</dt><dd className="tabular-nums">{fmtEur(totals.lordo)}</dd></div>
               <div className="flex justify-between items-center gap-2">
-                <dt className="text-slate-600">Sconto sul totale</dt>
+                <dt className="text-zinc-600">Sconto sul totale</dt>
                 <dd className="flex items-center gap-1">
                   <Input type="number" inputMode="decimal" value={quote.sconto_globale ?? 0} onChange={(e) => set({ sconto_globale: e.target.value === "" ? 0 : Number(e.target.value) })} className="h-7 w-16 text-right tabular-nums" aria-label="Sconto sul totale in percentuale" />
-                  <span className="text-slate-500">%</span>
+                  <span className="text-zinc-500">%</span>
                 </dd>
               </div>
-              {totals.sconto_importo > 0.005 && <div className="flex justify-between text-slate-600"><dt>Sconto</dt><dd className="tabular-nums">−{fmtEur(totals.sconto_importo)}</dd></div>}
+              {totals.sconto_importo > 0.005 && <div className="flex justify-between text-zinc-600"><dt>Sconto</dt><dd className="tabular-nums">−{fmtEur(totals.sconto_importo)}</dd></div>}
               <div className="flex justify-between font-medium"><dt>Imponibile</dt><dd className="tabular-nums">{fmtEur(totals.imponibile)}</dd></div>
               {totals.iva.map((x) => (
-                <div key={x.aliquota} className="flex justify-between text-slate-600"><dt>IVA {x.aliquota}%</dt><dd className="tabular-nums">{fmtEur(x.imposta)}</dd></div>
+                <div key={x.aliquota} className="flex justify-between text-zinc-600"><dt>IVA {x.aliquota}%</dt><dd className="tabular-nums">{fmtEur(x.imposta)}</dd></div>
               ))}
-              <div className="flex justify-between text-lg font-bold border-t border-slate-200 pt-2 mt-2"><dt>Totale</dt><dd className="tabular-nums text-brand-700">{fmtEur(totals.totale)}</dd></div>
-              {totals.opzionali > 0.005 && <p className="text-xs text-slate-500">+ voci opzionali {fmtEur(totals.opzionali)} (non incluse)</p>}
+              <div className="flex justify-between text-lg font-bold border-t border-zinc-200 pt-2 mt-2"><dt>Totale</dt><dd className="tabular-nums text-brand-700">{fmtEur(totals.totale)}</dd></div>
+              {totals.opzionali > 0.005 && <p className="text-xs text-zinc-500">+ voci opzionali {fmtEur(totals.opzionali)} (non incluse)</p>}
             </dl>
           </Section>
 
           {showCosts && (
             <Section title="Margine (interno)">
               {totals.costo === null ? (
-                <p className="text-sm text-slate-500">Inserisci il costo unitario delle voci per vedere il margine. Non compare mai nel PDF né al cliente.</p>
+                <p className="text-sm text-zinc-500">Inserisci il costo unitario delle voci per vedere il margine. Non compare mai nel PDF né al cliente.</p>
               ) : (
                 <dl className="space-y-1.5 text-sm">
-                  <div className="flex justify-between"><dt className="text-slate-600">Costi</dt><dd className="tabular-nums">{fmtEur(totals.costo)}</dd></div>
+                  <div className="flex justify-between"><dt className="text-zinc-600">Costi</dt><dd className="tabular-nums">{fmtEur(totals.costo)}</dd></div>
                   <div className={`flex justify-between font-semibold ${totals.margine < 0 ? "text-red-700" : "text-emerald-700"}`}>
                     <dt>Margine</dt><dd className="tabular-nums">{fmtEur(totals.margine)} {totals.margine_pct !== null && `(${Math.round(totals.margine_pct)}%)`}</dd>
                   </div>
@@ -732,9 +732,9 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
       </div>
 
       {/* Barra di salvataggio sempre raggiungibile su telefono */}
-      <div className="fixed bottom-16 inset-x-3 md:hidden z-30 flex gap-2 rounded-xl bg-white/95 backdrop-blur border border-slate-200 shadow-lg p-2">
+      <div className="fixed bottom-16 inset-x-3 md:hidden z-30 flex gap-2 rounded-xl bg-white/95 backdrop-blur border border-zinc-200 shadow-lg p-2">
         <div className="flex-1 pl-2">
-          <p className="text-[11px] text-slate-500">Totale</p>
+          <p className="text-[11px] text-zinc-500">Totale</p>
           <p className="text-base font-bold tabular-nums">{fmtEur(totals.totale)}</p>
         </div>
         <Button onClick={() => save()} disabled={saving} className="gap-1.5">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva</Button>
@@ -759,13 +759,13 @@ ${exp ? `<p>L'offerta è valida fino al ${exp.toLocaleDateString("it-IT")}.</p>`
             <DialogTitle>Storico revisioni</DialogTitle>
             <DialogDescription>Versioni precedenti di questo preventivo. Puoi riportarne una nell'editor.</DialogDescription>
           </DialogHeader>
-          <ul className="divide-y divide-slate-100 max-h-[60vh] overflow-y-auto">
+          <ul className="divide-y divide-zinc-100 max-h-[60vh] overflow-y-auto">
             {[...(quote.revisioni || [])].reverse().map((r) => (
               <li key={r.rev} className="py-3 flex items-start gap-3">
-                <span className="text-xs font-semibold rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 mt-0.5">Rev. {r.rev}</span>
+                <span className="text-xs font-semibold rounded-full bg-zinc-100 text-zinc-700 px-2 py-0.5 mt-0.5">Rev. {r.rev}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-slate-900">{fmtEur(r.totale)} · {r.righe?.length || 0} righe · {QUOTE_STATES[r.stato]?.label || r.stato}</p>
-                  <p className="text-xs text-slate-500">Sostituita il {new Date(r.data_revisione).toLocaleDateString("it-IT")}{r.motivo ? ` · ${r.motivo}` : ""}</p>
+                  <p className="text-sm text-zinc-900">{fmtEur(r.totale)} · {r.righe?.length || 0} righe · {QUOTE_STATES[r.stato]?.label || r.stato}</p>
+                  <p className="text-xs text-zinc-500">Sostituita il {new Date(r.data_revisione).toLocaleDateString("it-IT")}{r.motivo ? ` · ${r.motivo}` : ""}</p>
                 </div>
                 <Button size="sm" variant="outline" onClick={() => restoreRevision(r)}>Ripristina</Button>
               </li>

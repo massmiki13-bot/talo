@@ -31,20 +31,20 @@ export default function SitePosition({ lat, lng, indirizzo, onChange }) {
   };
 
   return (
-    <div className="rounded-lg border border-slate-200 p-3">
+    <div className="rounded-lg border border-zinc-200 p-3">
       <div className="flex flex-wrap items-center gap-2">
-        <MapPin className={`w-4 h-4 ${has ? "text-emerald-700" : "text-slate-500"}`} aria-hidden="true" />
-        <span className="text-sm font-medium text-slate-900">Posizione per le timbrature</span>
+        <MapPin className={`w-4 h-4 ${has ? "text-emerald-700" : "text-zinc-500"}`} aria-hidden="true" />
+        <span className="text-sm font-medium text-zinc-900">Posizione per le timbrature</span>
         {has && (
           <a href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-700 hover:underline tabular-nums">{lat}, {lng}</a>
         )}
-        {has && <button type="button" onClick={() => { onChange({ lat: "", lng: "" }); setMsg(""); }} className="text-slate-500 hover:text-red-600" aria-label="Rimuovi la posizione"><X className="w-4 h-4" /></button>}
+        {has && <button type="button" onClick={() => { onChange({ lat: "", lng: "" }); setMsg(""); }} className="text-zinc-500 hover:text-red-600" aria-label="Rimuovi la posizione"><X className="w-4 h-4" /></button>}
         <div className="ml-auto flex gap-2">
           <Button type="button" size="sm" variant="outline" onClick={fromAddress} disabled={!!busy} className="gap-1.5">{busy === "addr" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}Dall'indirizzo</Button>
           <Button type="button" size="sm" variant="outline" onClick={here} disabled={!!busy} className="gap-1.5">{busy === "gps" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crosshair className="w-4 h-4" />}Sono in cantiere</Button>
         </div>
       </div>
-      <p className="text-xs text-slate-500 mt-1.5">{msg || "Serve a verificare che le timbrature avvengano in cantiere (solo se la posizione alla timbratura è attiva)."}</p>
+      <p className="text-xs text-zinc-500 mt-1.5">{msg || "Serve a verificare che le timbrature avvengano in cantiere (solo se la posizione alla timbratura è attiva)."}</p>
     </div>
   );
 }

@@ -100,16 +100,16 @@ export default function SignaturePad({ value, onChange, label = "Firma" }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-sm font-medium text-slate-700">{label}</span>
+        <span className="text-sm font-medium text-zinc-700">{label}</span>
         <div className="flex gap-1">
-          <button onClick={toggleSize} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-brand-600" title={enlarged ? "Riduci" : "Ingrandisci"}>
+          <button onClick={toggleSize} className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-brand-600" title={enlarged ? "Riduci" : "Ingrandisci"}>
             {enlarged ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
-          <label className="cursor-pointer p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-600" title="Carica immagine firma">
+          <label className="cursor-pointer p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-600" title="Carica immagine firma">
             <Upload className="w-4 h-4" />
             <input type="file" accept="image/*" className="hidden" onChange={handleUpload} />
           </label>
-          <button onClick={clear} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-red-600" title="Cancella">
+          <button onClick={clear} className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-red-600" title="Cancella">
             <Eraser className="w-4 h-4" />
           </button>
         </div>
@@ -118,7 +118,7 @@ export default function SignaturePad({ value, onChange, label = "Firma" }) {
         ref={canvasRef}
         width={500}
         height={enlarged ? 320 : 150}
-        className="w-full border-2 border-dashed border-slate-300 rounded-lg bg-white touch-none cursor-crosshair transition-all"
+        className="w-full border-2 border-dashed border-zinc-300 rounded-lg bg-white touch-none cursor-crosshair transition-all"
         onMouseDown={startDraw}
         onMouseMove={draw}
         onMouseUp={stopDraw}
@@ -128,7 +128,7 @@ export default function SignaturePad({ value, onChange, label = "Firma" }) {
         onTouchEnd={stopDraw}
       />
       {!hasDrawn && (
-        <p className="text-xs text-slate-500 mt-1 text-center">Firma con il dito/mouse o carica un'immagine</p>
+        <p className="text-xs text-zinc-500 mt-1 text-center">Firma con il dito/mouse o carica un'immagine</p>
       )}
       {hasDrawn && (
         <p className="text-xs text-emerald-700 mt-1 flex items-center gap-1">

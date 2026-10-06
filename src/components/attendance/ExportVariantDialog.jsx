@@ -56,35 +56,35 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => setFormat("pdf")}
-            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-colors ${format === "pdf" ? "border-red-500 bg-red-50/50" : "border-slate-200 hover:bg-slate-50"}`}
+            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-colors ${format === "pdf" ? "border-red-500 bg-red-50/50" : "border-zinc-200 hover:bg-zinc-50"}`}
           >
             <div className="w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
               <FileText className="w-5 h-5 text-red-700" />
             </div>
             <div className="text-left">
-              <p className="text-sm font-semibold text-slate-800">PDF</p>
-              <p className="text-[11px] text-slate-500">Pronto da stampare o inviare</p>
+              <p className="text-sm font-semibold text-zinc-800">PDF</p>
+              <p className="text-[11px] text-zinc-500">Pronto da stampare o inviare</p>
             </div>
           </button>
           <button
             onClick={() => setFormat("excel")}
-            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-colors ${format === "excel" ? "border-green-500 bg-green-50/50" : "border-slate-200 hover:bg-slate-50"}`}
+            className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-colors ${format === "excel" ? "border-green-500 bg-green-50/50" : "border-zinc-200 hover:bg-zinc-50"}`}
           >
             <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
               <FileSpreadsheet className="w-5 h-5 text-green-700" />
             </div>
             <div className="text-left">
-              <p className="text-sm font-semibold text-slate-800">Excel (.xls)</p>
-              <p className="text-[11px] text-slate-500">Rielaborare i dati</p>
+              <p className="text-sm font-semibold text-zinc-800">Excel (.xls)</p>
+              <p className="text-[11px] text-zinc-500">Rielaborare i dati</p>
             </div>
           </button>
         </div>
 
         {canSeeCosts && (
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-slate-800">Includi importi economici</p>
-              <p className="text-xs text-slate-500">Costo orario, costo manodopera e totali in euro</p>
+              <p className="text-sm font-medium text-zinc-800">Includi importi economici</p>
+              <p className="text-xs text-zinc-500">Costo orario, costo manodopera e totali in euro</p>
             </div>
             <Switch checked={includeCosts} onCheckedChange={setIncludeCosts} />
           </div>
@@ -99,13 +99,13 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
                 return (
                   <button key={v.key} disabled={loading}
                     onClick={() => handleSelect(v.key)}
-                    className="text-left p-4 rounded-xl border-2 border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait flex flex-col gap-2">
+                    className="text-left p-4 rounded-xl border-2 border-zinc-200 hover:border-brand-500 hover:bg-brand-50/50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait flex flex-col gap-2">
                     <div className="w-10 h-10 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0">
                       <Icon className="w-5 h-5 text-brand-600" />
                     </div>
-                    <h3 className="font-semibold text-slate-900 text-sm">{v.label}</h3>
-                    <p className="text-xs text-slate-500 leading-snug">{v.description}</p>
-                    <ul className="text-[11px] text-slate-500 space-y-0.5 mt-1">
+                    <h3 className="font-semibold text-zinc-900 text-sm">{v.label}</h3>
+                    <p className="text-xs text-zinc-500 leading-snug">{v.description}</p>
+                    <ul className="text-[11px] text-zinc-500 space-y-0.5 mt-1">
                       {filteredIncludes.map((inc, i) => <li key={i} className="flex items-center gap-1"><span className="text-brand-400">•</span>{inc}</li>)}
                     </ul>
                   </button>
@@ -113,22 +113,22 @@ export default function ExportVariantDialog({ open, title, onClose, onSelect, lo
               })}
             </div>
             {!canSeeCosts && (
-              <p className="text-xs text-slate-500 text-center">Il PDF verra generato senza importi economici.</p>
+              <p className="text-xs text-zinc-500 text-center">Il PDF verra generato senza importi economici.</p>
             )}
           </>
         ) : (
           <div className="mt-2 space-y-3">
-            <div className="rounded-xl border-2 border-slate-200 p-4 flex items-start gap-3">
+            <div className="rounded-xl border-2 border-zinc-200 p-4 flex items-start gap-3">
               <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
                 <FileSpreadsheet className="w-5 h-5 text-green-700" />
               </div>
               <div>
-                <h3 className="font-semibold text-slate-900 text-sm">Foglio di calcolo Excel</h3>
-                <p className="text-xs text-slate-500 leading-snug mt-1">
+                <h3 className="font-semibold text-zinc-900 text-sm">Foglio di calcolo Excel</h3>
+                <p className="text-xs text-zinc-500 leading-snug mt-1">
                   Esporta il tabellone completo con tutti i dipendenti, i giorni del mese, le ore giornaliere,
                   i totali e la suddivisione per cantiere. I dati sono modificabili e rielaborabili in Excel o LibreOffice.
                 </p>
-                <ul className="text-[11px] text-slate-500 space-y-0.5 mt-2">
+                <ul className="text-[11px] text-zinc-500 space-y-0.5 mt-2">
                   <li className="flex items-center gap-1"><span className="text-green-400">•</span>Matrice dipendenti x giorni</li>
                   <li className="flex items-center gap-1"><span className="text-green-400">•</span>Totali per dipendente e per giorno</li>
                   {canSeeCosts && includeCosts && <li className="flex items-center gap-1"><span className="text-green-400">•</span>Costi manodopera</li>}

@@ -53,42 +53,42 @@ export default function WorksiteLog({ worksite, attendance, employees, readOnly 
   };
 
   return (
-    <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+    <section className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5">
       <div className="flex items-center gap-2 mb-3">
-        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><BookOpen className="w-4 h-4 text-brand-600" /> Giornale dei lavori</h3>
+        <h3 className="text-sm font-semibold text-zinc-800 flex items-center gap-2 flex-1"><BookOpen className="w-4 h-4 text-brand-600" /> Giornale dei lavori</h3>
         {!readOnly && <Button size="sm" className="gap-1.5" onClick={openNew}><Plus className="w-4 h-4" /> Oggi</Button>}
       </div>
-      {loading ? <div className="py-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-500" /></div>
-        : entries.length === 0 ? <p className="text-sm text-slate-500 py-3">Annota ogni giorno cosa si è fatto, chi c'era e cosa è successo: è la memoria del cantiere e la prova in caso di contestazioni.</p>
+      {loading ? <div className="py-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-zinc-500" /></div>
+        : entries.length === 0 ? <p className="text-sm text-zinc-500 py-3">Annota ogni giorno cosa si è fatto, chi c'era e cosa è successo: è la memoria del cantiere e la prova in caso di contestazioni.</p>
         : (
-          <ol className="relative border-l border-slate-200 ml-2 space-y-4">
+          <ol className="relative border-l border-zinc-200 ml-2 space-y-4">
             {entries.map((e) => (
               <li key={e.id} className="ml-4">
                 <span className="absolute -left-[5px] mt-1.5 w-2.5 h-2.5 rounded-full bg-brand-600" />
                 <div className="flex items-start gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-900">{new Date(e.data).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</p>
-                    <p className="text-xs text-slate-500 flex flex-wrap gap-x-3">
+                    <p className="text-sm font-semibold text-zinc-900">{new Date(e.data).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}</p>
+                    <p className="text-xs text-zinc-500 flex flex-wrap gap-x-3">
                       {e.meteo && <span className="flex items-center gap-1"><CloudSun className="w-3.5 h-3.5" />{e.meteo}</span>}
                       {e.presenti?.length > 0 && <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" />{e.presenti.join(", ")}</span>}
                     </p>
                   </div>
                   {!readOnly && (
                     <>
-                      <button aria-label="Modifica" onClick={() => setEdit({ ...e })} className="p-1 rounded hover:bg-slate-100 text-slate-500"><Pencil className="w-4 h-4" /></button>
-                      <button aria-label="Elimina" onClick={() => remove(e)} className="p-1 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                      <button aria-label="Modifica" onClick={() => setEdit({ ...e })} className="p-1 rounded hover:bg-zinc-100 text-zinc-500"><Pencil className="w-4 h-4" /></button>
+                      <button aria-label="Elimina" onClick={() => remove(e)} className="p-1 rounded hover:bg-red-50 text-zinc-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                     </>
                   )}
                 </div>
-                {e.attivita && <p className="text-sm text-slate-800 mt-1 whitespace-pre-wrap">{e.attivita}</p>}
-                {e.forniture && <p className="text-sm text-slate-600 mt-1 flex gap-1.5"><Truck className="w-4 h-4 shrink-0 mt-0.5 text-slate-500" /><span className="whitespace-pre-wrap">{e.forniture}</span></p>}
+                {e.attivita && <p className="text-sm text-zinc-800 mt-1 whitespace-pre-wrap">{e.attivita}</p>}
+                {e.forniture && <p className="text-sm text-zinc-600 mt-1 flex gap-1.5"><Truck className="w-4 h-4 shrink-0 mt-0.5 text-zinc-500" /><span className="whitespace-pre-wrap">{e.forniture}</span></p>}
                 {e.problemi && <p className="text-sm text-amber-900 bg-amber-50 rounded px-2 py-1 mt-1 flex gap-1.5"><AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /><span className="whitespace-pre-wrap">{e.problemi}</span></p>}
                 {e.foto?.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {e.foto.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noopener noreferrer"><img src={f.url} alt={`Foto del ${fmtDate(e.data)}`} className="w-20 h-16 object-cover rounded border border-slate-200" /></a>)}
+                    {e.foto.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noopener noreferrer"><img src={f.url} alt={`Foto del ${fmtDate(e.data)}`} className="w-20 h-16 object-cover rounded border border-zinc-200" /></a>)}
                   </div>
                 )}
-                {e.autore && <p className="text-[11px] text-slate-500 mt-1">Compilato da {e.autore}</p>}
+                {e.autore && <p className="text-[11px] text-zinc-500 mt-1">Compilato da {e.autore}</p>}
               </li>
             ))}
           </ol>
@@ -148,11 +148,11 @@ function LogDialog({ open, entry, onOpenChange, onSave, presentOn }) {
             <div className="flex flex-wrap gap-2 mt-1">
               {(form.foto || []).map((f, i) => (
                 <div key={i} className="relative">
-                  <img src={f.url} alt="" className="w-20 h-16 object-cover rounded border border-slate-200" />
+                  <img src={f.url} alt="" className="w-20 h-16 object-cover rounded border border-zinc-200" />
                   <button type="button" aria-label="Rimuovi foto" onClick={() => setForm({ ...form, foto: form.foto.filter((_, j) => j !== i) })} className="absolute -top-2 -right-2 bg-white border rounded-full p-0.5"><X className="w-3 h-3" /></button>
                 </div>
               ))}
-              <label className="w-20 h-16 rounded border-2 border-dashed border-slate-300 flex items-center justify-center cursor-pointer text-slate-500">
+              <label className="w-20 h-16 rounded border-2 border-dashed border-zinc-300 flex items-center justify-center cursor-pointer text-zinc-500">
                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-5 h-5" />}
                 <input type="file" accept="image/*" multiple capture="environment" className="hidden" onChange={(e) => { upload([...e.target.files]); e.target.value = ""; }} />
               </label>

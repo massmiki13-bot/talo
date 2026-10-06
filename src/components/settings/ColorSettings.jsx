@@ -15,11 +15,11 @@ function ColorPicker({ field, value, onChange }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <Label className="text-sm font-medium text-slate-700">{field.label}</Label>
+        <Label className="text-sm font-medium text-zinc-700">{field.label}</Label>
         {!field.required && value && (
           <button
             onClick={() => onChange(field.key, "")}
-            className="text-slate-500 hover:text-red-500"
+            className="text-zinc-500 hover:text-red-500"
             title="Rimuovi colore"
           >
             <X className="w-3.5 h-3.5" />
@@ -32,7 +32,7 @@ function ColorPicker({ field, value, onChange }) {
             type="color"
             value={value || "#ffffff"}
             onChange={e => onChange(field.key, e.target.value)}
-            className="w-10 h-9 rounded-md border border-slate-200 cursor-pointer bg-transparent p-0"
+            className="w-10 h-9 rounded-md border border-zinc-200 cursor-pointer bg-transparent p-0"
           />
         </div>
         <Input
@@ -42,7 +42,7 @@ function ColorPicker({ field, value, onChange }) {
           className="font-mono text-xs uppercase"
         />
       </div>
-      <p className="text-[11px] text-slate-500 mt-1">{field.desc}</p>
+      <p className="text-[11px] text-zinc-500 mt-1">{field.desc}</p>
     </div>
   );
 }
@@ -55,12 +55,12 @@ export default function ColorSettings({ profile, onChange }) {
   const primaryText = getContrastColor(primary);
 
   return (
-    <div className="mt-5 border-t border-slate-100 pt-5">
+    <div className="mt-5 border-t border-zinc-100 pt-5">
       <div className="flex items-center gap-2 mb-3">
         <Palette className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-semibold text-slate-700">Colori</h3>
+        <h3 className="text-sm font-semibold text-zinc-700">Colori</h3>
       </div>
-      <p className="text-xs text-slate-500 mb-4">
+      <p className="text-xs text-zinc-500 mb-4">
         Personalizza la palette dell'app e dei documenti generati. I colori facoltativi, se non impostati, non vengono usati.
       </p>
 
@@ -71,9 +71,9 @@ export default function ColorSettings({ profile, onChange }) {
       </div>
 
       {/* Live preview */}
-      <div className="mt-5 rounded-xl border border-slate-200 overflow-hidden">
-        <div className="bg-slate-50 px-4 py-2 border-b border-slate-200">
-          <p className="text-xs font-medium text-slate-500">Anteprima</p>
+      <div className="mt-5 rounded-xl border border-zinc-200 overflow-hidden">
+        <div className="bg-zinc-50 px-4 py-2 border-b border-zinc-200">
+          <p className="text-xs font-medium text-zinc-500">Anteprima</p>
         </div>
         <div className="flex">
           {/* Mini sidebar */}
@@ -94,8 +94,8 @@ export default function ColorSettings({ profile, onChange }) {
           </div>
 
           {/* Content area */}
-          <div className="flex-1 p-4 bg-slate-50 space-y-3">
-            <div className="h-3 w-28 rounded bg-slate-300" />
+          <div className="flex-1 p-4 bg-zinc-50 space-y-3">
+            <div className="h-3 w-28 rounded bg-zinc-300" />
             <div className="flex flex-wrap gap-2">
               <span
                 className="px-3 py-1.5 rounded-md text-xs font-medium"
@@ -112,16 +112,16 @@ export default function ColorSettings({ profile, onChange }) {
             </div>
             <div className="flex gap-2 items-center">
               {profile.colore_terziario ? (
-                <span className="w-7 h-7 rounded-full border border-slate-200" style={{ background: profile.colore_terziario }} title="Terziario" />
+                <span className="w-7 h-7 rounded-full border border-zinc-200" style={{ background: profile.colore_terziario }} title="Terziario" />
               ) : (
-                <span className="w-7 h-7 rounded-full border border-dashed border-slate-200 flex items-center justify-center text-[8px] text-slate-300">-</span>
+                <span className="w-7 h-7 rounded-full border border-dashed border-zinc-200 flex items-center justify-center text-[8px] text-zinc-300">-</span>
               )}
               {profile.colore_quaternario ? (
-                <span className="w-7 h-7 rounded-full border border-slate-200" style={{ background: profile.colore_quaternario }} title="Quaternario" />
+                <span className="w-7 h-7 rounded-full border border-zinc-200" style={{ background: profile.colore_quaternario }} title="Quaternario" />
               ) : (
-                <span className="w-7 h-7 rounded-full border border-dashed border-slate-200 flex items-center justify-center text-[8px] text-slate-300">-</span>
+                <span className="w-7 h-7 rounded-full border border-dashed border-zinc-200 flex items-center justify-center text-[8px] text-zinc-300">-</span>
               )}
-              <span className="text-[10px] text-slate-500">Accenti facoltativi</span>
+              <span className="text-[10px] text-zinc-500">Accenti facoltativi</span>
             </div>
             <div className="flex items-center gap-2 pt-1">
               <div className="h-1.5 flex-1 rounded-full" style={{ background: primary }} />

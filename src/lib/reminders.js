@@ -12,14 +12,14 @@ export const REMINDER_TYPES = [
   { value: "incasso", label: "Incasso", color: "bg-teal-100 text-teal-800" },
   { value: "pagamento", label: "Pagamento", color: "bg-rose-100 text-rose-800" },
   { value: "sollecito_preventivo", label: "Sollecito preventivo", color: "bg-indigo-100 text-indigo-800" },
-  { value: "altro", label: "Altro", color: "bg-slate-100 text-slate-700" },
+  { value: "altro", label: "Altro", color: "bg-zinc-100 text-zinc-700" },
 ];
 export const reminderType = (v) => REMINDER_TYPES.find((t) => t.value === v) || REMINDER_TYPES.at(-1);
 
 export const PRIORITIES = [
   { value: "alta", label: "Alta", dot: "bg-red-500" },
-  { value: "normale", label: "Normale", dot: "bg-slate-300" },
-  { value: "bassa", label: "Bassa", dot: "bg-slate-200" },
+  { value: "normale", label: "Normale", dot: "bg-zinc-300" },
+  { value: "bassa", label: "Bassa", dot: "bg-zinc-200" },
 ];
 
 export const RECURRENCES = [
@@ -68,9 +68,9 @@ export function bucketOf(r, today = todayIso()) {
 export const BUCKETS = [
   { key: "overdue", label: "In ritardo", tone: "text-red-700" },
   { key: "today", label: "Oggi", tone: "text-brand-700" },
-  { key: "tomorrow", label: "Domani", tone: "text-slate-900" },
-  { key: "week", label: "Prossimi 7 giorni", tone: "text-slate-900" },
-  { key: "later", label: "Più avanti", tone: "text-slate-900" },
+  { key: "tomorrow", label: "Domani", tone: "text-zinc-900" },
+  { key: "week", label: "Prossimi 7 giorni", tone: "text-zinc-900" },
+  { key: "later", label: "Più avanti", tone: "text-zinc-900" },
 ];
 
 export const fmtDay = (s) => {

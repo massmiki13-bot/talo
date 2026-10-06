@@ -97,24 +97,24 @@ DATI: ${JSON.stringify(facts)}`,
   };
 
   if (!a) return <LoadingSpinner />;
-  if (isOperaio) return <div className="p-8 text-center text-slate-500">Le analisi economiche sono riservate al titolare e ai responsabili.</div>;
+  if (isOperaio) return <div className="p-8 text-center text-zinc-500">Le analisi economiche sono riservate al titolare e ai responsabili.</div>;
 
   return (
     <div className="space-y-4">
       <PageHeader title="Analisi" subtitle="Come sta andando l'impresa: soldi, lavori, preventivi e personale, calcolati dai dati che inserisci ogni giorno." />
 
       <div className="flex flex-col md:flex-row md:items-center gap-2">
-        <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit max-w-full overflow-x-auto no-scrollbar">
+        <div className="flex rounded-lg border border-zinc-200 bg-white p-0.5 w-fit max-w-full overflow-x-auto no-scrollbar">
           {TABS.map(({ key, label, icon: I }) => (
-            <button key={key} onClick={() => switchTab(key)} className={`flex items-center gap-1.5 px-3 h-9 rounded-md text-sm whitespace-nowrap ${tab === key ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}>
+            <button key={key} onClick={() => switchTab(key)} className={`flex items-center gap-1.5 px-3 h-9 rounded-md text-sm whitespace-nowrap ${tab === key ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}>
               <I className="w-4 h-4" /> {label}
             </button>
           ))}
         </div>
         {tab !== "report" && (
-          <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit md:ml-auto">
+          <div className="flex rounded-lg border border-zinc-200 bg-white p-0.5 w-fit md:ml-auto">
             {[{ k: "12m", l: "12 mesi" }, ...years.map((y) => ({ k: String(y), l: String(y) }))].map(({ k, l }) => (
-              <button key={k} onClick={() => setPeriodKey(k)} className={`px-3 h-8 rounded-md text-sm tabular-nums ${periodKey === k ? "bg-brand-600 text-white" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>
+              <button key={k} onClick={() => setPeriodKey(k)} className={`px-3 h-8 rounded-md text-sm tabular-nums ${periodKey === k ? "bg-brand-600 text-white" : "text-zinc-600 hover:text-zinc-900"}`}>{l}</button>
             ))}
           </div>
         )}
@@ -133,12 +133,12 @@ DATI: ${JSON.stringify(facts)}`,
 
 function Card({ title, subtitle, action, children, className = "" }) {
   return (
-    <section className={`bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 ${className}`}>
+    <section className={`bg-white rounded-2xl border border-zinc-200 p-4 sm:p-5 ${className}`}>
       {(title || action) && (
         <div className="flex items-start justify-between gap-3 mb-4">
           <div>
-            {title && <h2 className="text-sm font-semibold text-slate-900">{title}</h2>}
-            {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+            {title && <h2 className="text-sm font-semibold text-zinc-900">{title}</h2>}
+            {subtitle && <p className="text-xs text-zinc-500 mt-0.5">{subtitle}</p>}
           </div>
           {action}
         </div>
@@ -149,21 +149,21 @@ function Card({ title, subtitle, action, children, className = "" }) {
 }
 
 function Delta({ value, inverse = false }) {
-  if (value == null || !isFinite(value)) return <span className="text-xs text-slate-500">nessun confronto</span>;
+  if (value == null || !isFinite(value)) return <span className="text-xs text-zinc-500">nessun confronto</span>;
   const good = inverse ? value <= 0 : value >= 0;
   const I = Math.abs(value) < 0.5 ? Minus : value > 0 ? TrendingUp : TrendingDown;
   return (
-    <span className={`inline-flex items-center gap-1 text-xs font-medium ${Math.abs(value) < 0.5 ? "text-slate-500" : good ? "text-emerald-700" : "text-red-700"}`}>
-      <I className="w-3.5 h-3.5" />{value > 0 ? "+" : ""}{pct(value)} <span className="font-normal text-slate-500">vs anno prima</span>
+    <span className={`inline-flex items-center gap-1 text-xs font-medium ${Math.abs(value) < 0.5 ? "text-zinc-500" : good ? "text-emerald-700" : "text-red-700"}`}>
+      <I className="w-3.5 h-3.5" />{value > 0 ? "+" : ""}{pct(value)} <span className="font-normal text-zinc-500">vs anno prima</span>
     </span>
   );
 }
 
-function Kpi({ icon: Icon, label, value, sub, tone = "text-slate-900", accent, children }) {
+function Kpi({ icon: Icon, label, value, sub, tone = "text-zinc-900", accent, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-4 relative overflow-hidden">
+    <div className="bg-white rounded-2xl border border-zinc-200 p-4 relative overflow-hidden">
       <span className="absolute left-0 top-0 bottom-0 w-1" style={{ background: accent }} />
-      <div className="flex items-center gap-2 text-xs font-medium text-slate-500"><Icon className="w-4 h-4" style={{ color: accent }} />{label}</div>
+      <div className="flex items-center gap-2 text-xs font-medium text-zinc-500"><Icon className="w-4 h-4" style={{ color: accent }} />{label}</div>
       <p className={`text-2xl font-bold tabular-nums mt-2 tracking-tight ${tone}`}>{value}</p>
       <div className="mt-1 min-h-[18px]">{sub}</div>
       {children}
@@ -174,10 +174,10 @@ function Kpi({ icon: Icon, label, value, sub, tone = "text-slate-900", accent, c
 function ChartTip({ active, payload, label, money = true }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-slate-200 bg-white/95 backdrop-blur px-3 py-2 shadow-lg text-xs">
-      <p className="font-semibold text-slate-900 mb-1">{label}</p>
+    <div className="rounded-lg border border-zinc-200 bg-white/95 backdrop-blur px-3 py-2 shadow-lg text-xs">
+      <p className="font-semibold text-zinc-900 mb-1">{label}</p>
       {payload.filter((p) => p.value != null).map((p) => (
-        <p key={p.dataKey} className="flex items-center gap-2 text-slate-700">
+        <p key={p.dataKey} className="flex items-center gap-2 text-zinc-700">
           <span className="w-2 h-2 rounded-full" style={{ background: p.color || p.fill }} />
           <span className="flex-1">{p.name}</span>
           <span className="font-medium tabular-nums">{money ? eur(p.value) : `${fmtH(p.value)} h`}</span>
@@ -190,7 +190,7 @@ function ChartTip({ active, payload, label, money = true }) {
 const axis = { stroke: "#94a3b8", fontSize: 11, tickLine: false, axisLine: false };
 
 function Empty({ text }) {
-  return <div className="py-10 text-center text-sm text-slate-500">{text}</div>;
+  return <div className="py-10 text-center text-sm text-zinc-500">{text}</div>;
 }
 
 /* ───────────── Panoramica ───────────── */
@@ -203,12 +203,12 @@ function Overview({ a, ai, aiBusy, onAi }) {
       <div className="grid grid-cols-2 xl:grid-cols-5 gap-3">
         <Kpi icon={HandCoins} label="Incassato" value={eur(a.cur.incassi)} accent={C.incassi} sub={<Delta value={a.deltas.incassi} />} />
         <Kpi icon={Wallet} label="Costi" value={eur(a.cur.costi)} accent={C.costi} sub={<Delta value={a.deltas.costi} inverse />} />
-        <Kpi icon={PiggyBank} label="Margine" value={eur(a.cur.margine)} tone={a.cur.margine < 0 ? "text-red-700" : "text-slate-900"} accent={C.margine}
-          sub={<span className="text-xs text-slate-600">{a.marginePct != null ? `${pct(a.marginePct)} sugli incassi` : "—"}</span>} />
+        <Kpi icon={PiggyBank} label="Margine" value={eur(a.cur.margine)} tone={a.cur.margine < 0 ? "text-red-700" : "text-zinc-900"} accent={C.margine}
+          sub={<span className="text-xs text-zinc-600">{a.marginePct != null ? `${pct(a.marginePct)} sugli incassi` : "—"}</span>} />
         <Kpi icon={Clock} label="Da incassare" value={eur(a.daIncassare)} accent="#d97706"
-          sub={a.overdue.length ? <span className="text-xs font-medium text-red-700">{a.overdue.length} {a.overdue.length === 1 ? "rata scaduta" : "rate scadute"}</span> : <span className="text-xs text-slate-500">nessuna rata scaduta</span>} />
+          sub={a.overdue.length ? <span className="text-xs font-medium text-red-700">{a.overdue.length} {a.overdue.length === 1 ? "rata scaduta" : "rate scadute"}</span> : <span className="text-xs text-zinc-500">nessuna rata scaduta</span>} />
         <Kpi icon={Briefcase} label="Lavori da eseguire" value={eur(a.portafoglio)} accent="#7c3aed"
-          sub={<span className="text-xs text-slate-500">{a.openJobs.length} lavori aperti</span>} />
+          sub={<span className="text-xs text-zinc-500">{a.openJobs.length} lavori aperti</span>} />
       </div>
 
       <div className="grid xl:grid-cols-3 gap-4">
@@ -233,7 +233,7 @@ function Overview({ a, ai, aiBusy, onAi }) {
               </ResponsiveContainer>
             </div>
           )}
-          <div className="flex flex-wrap gap-4 mt-2 text-xs text-slate-600">
+          <div className="flex flex-wrap gap-4 mt-2 text-xs text-zinc-600">
             <Legend color={C.incassi} label="Incassi" /><Legend color={C.costi} label="Costi (spese + manodopera)" /><Legend color={C.margine} label="Margine accumulato" line />
           </div>
         </Card>
@@ -253,7 +253,7 @@ function Overview({ a, ai, aiBusy, onAi }) {
                 </ResponsiveContainer>
                 </div>
                 <div className="absolute inset-0 grid place-items-center pointer-events-none text-center">
-                  <div><p className="text-xs text-slate-500">Totale</p><p className="text-base font-bold text-slate-900 tabular-nums">{eur(totCat, true)}</p></div>
+                  <div><p className="text-xs text-zinc-500">Totale</p><p className="text-base font-bold text-zinc-900 tabular-nums">{eur(totCat, true)}</p></div>
                 </div>
               </div>
               <ul className="space-y-2 mt-3">
@@ -261,9 +261,9 @@ function Overview({ a, ai, aiBusy, onAi }) {
                   <li key={c.name} className="text-sm">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-sm" style={{ background: CAT_COLORS[c.name] }} />
-                      <span className="flex-1 text-slate-700">{c.name}</span>
-                      <span className="tabular-nums font-medium text-slate-900">{eur(c.value)}</span>
-                      <span className="w-10 text-right tabular-nums text-xs text-slate-500">{pct((c.value / totCat) * 100)}</span>
+                      <span className="flex-1 text-zinc-700">{c.name}</span>
+                      <span className="tabular-nums font-medium text-zinc-900">{eur(c.value)}</span>
+                      <span className="w-10 text-right tabular-nums text-xs text-zinc-500">{pct((c.value / totCat) * 100)}</span>
                     </div>
                   </li>
                 ))}
@@ -277,31 +277,31 @@ function Overview({ a, ai, aiBusy, onAi }) {
         <Card className="xl:col-span-2" title="Sintesi del controller" subtitle="L'IA legge i numeri e ti dice cosa va bene, cosa preoccupa e cosa fare"
           action={<Button size="sm" onClick={onAi} disabled={aiBusy} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{aiBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{ai ? "Aggiorna" : "Genera sintesi"}</Button>}>
           {!ai ? (
-            <p className="text-sm text-slate-500">Premi "Genera sintesi" per un commento sui numeri di questo periodo.</p>
+            <p className="text-sm text-zinc-500">Premi "Genera sintesi" per un commento sui numeri di questo periodo.</p>
           ) : ai.errore ? (
             <p className="text-sm text-red-700">{ai.errore}</p>
           ) : (
             <div className="space-y-4">
-              <p className="text-base font-semibold text-slate-900">{ai.titolo}</p>
+              <p className="text-base font-semibold text-zinc-900">{ai.titolo}</p>
               <div className="grid md:grid-cols-3 gap-4">
                 <AiList title="Va bene" items={ai.positivi} dot="bg-emerald-500" />
                 <AiList title="Attenzione" items={ai.attenzione} dot="bg-amber-500" />
                 <AiList title="Cosa fare" items={ai.azioni} dot="bg-brand-600" numbered />
               </div>
-              <p className="text-xs text-slate-500">Sintesi automatica su {ai.periodo}: controlla sempre i dati di dettaglio.</p>
+              <p className="text-xs text-zinc-500">Sintesi automatica su {ai.periodo}: controlla sempre i dati di dettaglio.</p>
             </div>
           )}
         </Card>
 
         <Card title="Crediti da sollecitare" subtitle="Rate dei clienti scadute e non pagate">
           {a.overdue.length === 0 ? <Empty text="Nessuna rata scaduta. Ottimo." /> : (
-            <ul className="divide-y divide-slate-100 -my-2">
+            <ul className="divide-y divide-zinc-100 -my-2">
               {a.overdue.slice(0, 6).map((o, i) => (
                 <li key={i} className="py-2.5">
                   <Link to={`/lavori/${o.lavoroId}`} className="flex items-center gap-3 group">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 truncate group-hover:text-brand-700">{o.cliente || o.lavoro}</p>
-                      <p className="text-xs text-slate-500 truncate">{o.descrizione} · {o.lavoro} · scaduta il {new Date(o.scadenza).toLocaleDateString("it-IT")}</p>
+                      <p className="text-sm font-medium text-zinc-900 truncate group-hover:text-brand-700">{o.cliente || o.lavoro}</p>
+                      <p className="text-xs text-zinc-500 truncate">{o.descrizione} · {o.lavoro} · scaduta il {new Date(o.scadenza).toLocaleDateString("it-IT")}</p>
                     </div>
                     <span className="text-sm font-semibold tabular-nums text-red-700">{eur(o.residuo)}</span>
                   </Link>
@@ -322,15 +322,15 @@ function Legend({ color, label, line }) {
 function AiList({ title, items = [], dot, numbered }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{title}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-2">{title}</p>
       <ul className="space-y-2">
         {items.map((t, i) => (
-          <li key={i} className="flex gap-2 text-sm text-slate-700 leading-snug">
+          <li key={i} className="flex gap-2 text-sm text-zinc-700 leading-snug">
             {numbered ? <span className="shrink-0 w-5 h-5 rounded-full bg-brand-600 text-white text-[11px] font-semibold grid place-items-center">{i + 1}</span> : <span className={`shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full ${dot}`} />}
             <span>{t}</span>
           </li>
         ))}
-        {!items.length && <li className="text-sm text-slate-500">—</li>}
+        {!items.length && <li className="text-sm text-zinc-500">—</li>}
       </ul>
     </div>
   );
@@ -347,10 +347,10 @@ function Jobs({ a }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Kpi icon={Briefcase} label="Lavori aperti" value={a.openJobs.length} accent="#7c3aed" sub={<span className="text-xs text-slate-500">{eur(a.portafoglio)} ancora da eseguire</span>} />
-        <Kpi icon={PiggyBank} label="Margine medio" value={pct(avg)} accent={C.margine} sub={<span className="text-xs text-slate-500">ad oggi, sui lavori mostrati</span>} />
-        <Kpi icon={AlertTriangle} label="In perdita" value={loss.length} tone={loss.length ? "text-red-700" : "text-slate-900"} accent="#dc2626" sub={<span className="text-xs text-slate-500">{loss.length ? eur(loss.reduce((s, j) => s + j.margine, 0)) : "nessuno"}</span>} />
-        <Kpi icon={Clock} label="Da incassare" value={eur(a.daIncassare)} accent="#d97706" sub={<span className="text-xs text-slate-500">su tutti i lavori</span>} />
+        <Kpi icon={Briefcase} label="Lavori aperti" value={a.openJobs.length} accent="#7c3aed" sub={<span className="text-xs text-zinc-500">{eur(a.portafoglio)} ancora da eseguire</span>} />
+        <Kpi icon={PiggyBank} label="Margine medio" value={pct(avg)} accent={C.margine} sub={<span className="text-xs text-zinc-500">ad oggi, sui lavori mostrati</span>} />
+        <Kpi icon={AlertTriangle} label="In perdita" value={loss.length} tone={loss.length ? "text-red-700" : "text-zinc-900"} accent="#dc2626" sub={<span className="text-xs text-zinc-500">{loss.length ? eur(loss.reduce((s, j) => s + j.margine, 0)) : "nessuno"}</span>} />
+        <Kpi icon={Clock} label="Da incassare" value={eur(a.daIncassare)} accent="#d97706" sub={<span className="text-xs text-zinc-500">su tutti i lavori</span>} />
       </div>
 
       <Card title="Ricavo di ogni lavoro: quanto se ne va in costi e quanto resta" subtitle="I 10 lavori di valore maggiore"
@@ -377,7 +377,7 @@ function Jobs({ a }) {
           <div className="overflow-x-auto -mx-4 sm:-mx-5">
             <table className="w-full text-sm min-w-[720px]">
               <thead>
-                <tr className="text-xs text-slate-500 border-b border-slate-100">
+                <tr className="text-xs text-zinc-500 border-b border-zinc-100">
                   <th className="text-left font-medium px-4 sm:px-5 py-2">Lavoro</th>
                   <th className="text-right font-medium px-3 py-2">Ricavo</th>
                   <th className="text-right font-medium px-3 py-2">Costi</th>
@@ -386,23 +386,23 @@ function Jobs({ a }) {
                   <th className="text-right font-medium px-4 sm:px-5 py-2">Da incassare</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-zinc-100">
                 {list.map((j) => (
-                  <tr key={j.id} className="hover:bg-slate-50">
+                  <tr key={j.id} className="hover:bg-zinc-50">
                     <td className="px-4 sm:px-5 py-2.5">
-                      <Link to={`/lavori/${j.id}`} className="font-medium text-slate-900 hover:text-brand-700">{j.nome}</Link>
-                      <p className="text-xs text-slate-500">{j.cliente || "—"}{j.sforamenti.length ? <span className="text-amber-700"> · sforato: {j.sforamenti.join(", ")}</span> : null}</p>
+                      <Link to={`/lavori/${j.id}`} className="font-medium text-zinc-900 hover:text-brand-700">{j.nome}</Link>
+                      <p className="text-xs text-zinc-500">{j.cliente || "—"}{j.sforamenti.length ? <span className="text-amber-700"> · sforato: {j.sforamenti.join(", ")}</span> : null}</p>
                     </td>
                     <td className="px-3 py-2.5 text-right tabular-nums">{eur(j.ricavo)}</td>
-                    <td className="px-3 py-2.5 text-right tabular-nums text-slate-600">{eur(j.costi)}</td>
+                    <td className="px-3 py-2.5 text-right tabular-nums text-zinc-600">{eur(j.costi)}</td>
                     <td className="px-3 py-2.5 text-right">
                       <span className={`tabular-nums font-semibold ${j.margine < 0 ? "text-red-700" : (j.marginePct ?? 0) < 10 ? "text-amber-700" : "text-emerald-700"}`}>{pct(j.marginePct)}</span>
-                      <p className="text-xs tabular-nums text-slate-500">{eur(j.margine)}</p>
+                      <p className="text-xs tabular-nums text-zinc-500">{eur(j.margine)}</p>
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600" style={{ width: `${Math.min(100, j.avanzamento)}%` }} /></div>
-                        <span className="text-xs tabular-nums text-slate-600 w-9 text-right">{Math.round(j.avanzamento)}%</span>
+                        <div className="flex-1 h-1.5 rounded-full bg-zinc-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600" style={{ width: `${Math.min(100, j.avanzamento)}%` }} /></div>
+                        <span className="text-xs tabular-nums text-zinc-600 w-9 text-right">{Math.round(j.avanzamento)}%</span>
                       </div>
                     </td>
                     <td className={`px-4 sm:px-5 py-2.5 text-right tabular-nums ${j.rateScadute.length ? "text-red-700 font-medium" : ""}`}>{eur(j.daIncassare)}</td>
@@ -419,8 +419,8 @@ function Jobs({ a }) {
 
 function Seg({ value, onChange, options }) {
   return (
-    <div className="flex rounded-md border border-slate-200 p-0.5 shrink-0">
-      {options.map(([k, l]) => <button key={k} onClick={() => onChange(k)} className={`px-2.5 h-7 rounded text-xs ${value === k ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}>{l}</button>)}
+    <div className="flex rounded-md border border-zinc-200 p-0.5 shrink-0">
+      {options.map(([k, l]) => <button key={k} onClick={() => onChange(k)} className={`px-2.5 h-7 rounded text-xs ${value === k ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}>{l}</button>)}
     </div>
   );
 }
@@ -436,9 +436,9 @@ function Commercial({ a }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-        <Kpi icon={FileText} label="Preventivi emessi" value={c.emessi} accent={C.incassi} sub={<span className="text-xs text-slate-500">{eur(c.valoreEmesso)} di imponibile</span>} />
-        <Kpi icon={Target} label="Tasso di accettazione" value={pct(c.conversione)} accent={C.margine} sub={<span className="text-xs text-slate-500">{c.accettati} accettati · {eur(c.valoreAccettato)}</span>} />
-        <Kpi icon={Timer} label="Tempo di risposta" value={c.tempoRisposta != null ? `${Math.round(c.tempoRisposta)} gg` : "—"} accent="#7c3aed" sub={<span className="text-xs text-slate-500">dall'invio all'accettazione</span>} />
+        <Kpi icon={FileText} label="Preventivi emessi" value={c.emessi} accent={C.incassi} sub={<span className="text-xs text-zinc-500">{eur(c.valoreEmesso)} di imponibile</span>} />
+        <Kpi icon={Target} label="Tasso di accettazione" value={pct(c.conversione)} accent={C.margine} sub={<span className="text-xs text-zinc-500">{c.accettati} accettati · {eur(c.valoreAccettato)}</span>} />
+        <Kpi icon={Timer} label="Tempo di risposta" value={c.tempoRisposta != null ? `${Math.round(c.tempoRisposta)} gg` : "—"} accent="#7c3aed" sub={<span className="text-xs text-zinc-500">dall'invio all'accettazione</span>} />
         <Kpi icon={Briefcase} label="In attesa di risposta" value={eur(c.pipeline)} accent="#d97706" sub={<Link to="/preventivi" className="text-xs text-brand-700 hover:underline inline-flex items-center gap-1">{c.pipelineCount} preventivi aperti <ArrowRight className="w-3 h-3" /></Link>} />
       </div>
 
@@ -465,8 +465,8 @@ function Commercial({ a }) {
             <ul className="space-y-3">
               {funnel.map((f) => (
                 <li key={f.s}>
-                  <div className="flex justify-between text-sm mb-1"><span className="text-slate-700">{f.label}</span><span className="tabular-nums font-medium text-slate-900">{f.n}</span></div>
-                  <div className="h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full" style={{ width: `${(f.n / maxF) * 100}%`, background: FCOL[f.s] }} /></div>
+                  <div className="flex justify-between text-sm mb-1"><span className="text-zinc-700">{f.label}</span><span className="tabular-nums font-medium text-zinc-900">{f.n}</span></div>
+                  <div className="h-2 rounded-full bg-zinc-100 overflow-hidden"><div className="h-full rounded-full" style={{ width: `${(f.n / maxF) * 100}%`, background: FCOL[f.s] }} /></div>
                 </li>
               ))}
             </ul>
@@ -479,9 +479,9 @@ function Commercial({ a }) {
           <ul className="space-y-3">
             {c.topClients.map((t, i) => (
               <li key={t.nome} className="flex items-center gap-3 text-sm">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold grid place-items-center shrink-0">{i + 1}</span>
-                <span className="w-40 sm:w-56 truncate text-slate-800">{t.nome}</span>
-                <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600" style={{ width: `${(t.value / maxC) * 100}%` }} /></div>
+                <span className="w-6 h-6 rounded-full bg-zinc-100 text-zinc-700 text-xs font-semibold grid place-items-center shrink-0">{i + 1}</span>
+                <span className="w-40 sm:w-56 truncate text-zinc-800">{t.nome}</span>
+                <div className="flex-1 h-2 rounded-full bg-zinc-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600" style={{ width: `${(t.value / maxC) * 100}%` }} /></div>
                 <span className="w-24 text-right tabular-nums font-medium">{eur(t.value)}</span>
               </li>
             ))}
@@ -502,10 +502,10 @@ function Staff({ a }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-        <Kpi icon={Clock} label="Ore lavorate" value={`${fmtH(Math.round(s.ore))} h`} accent={C.incassi} sub={<span className="text-xs text-slate-500">{s.people.length} persone</span>} />
-        <Kpi icon={Wallet} label="Costo manodopera" value={eur(s.costo)} accent="#7c3aed" sub={<span className="text-xs text-slate-500">{s.costoOrarioMedio ? `${eur(s.costoOrarioMedio)}/h in media` : "—"}</span>} />
-        <Kpi icon={TrendingUp} label="Straordinari" value={`${fmtH(Math.round(s.straordinari))} h`} accent={C.costi} sub={<span className="text-xs text-slate-500">{s.ore ? `${pct((s.straordinari / s.ore) * 100, 1)} delle ore` : "—"}</span>} />
-        <Kpi icon={Users} label="Giornate di assenza" value={totAbs} accent="#dc2626" sub={<span className="text-xs text-slate-500">ferie, permessi, malattia</span>} />
+        <Kpi icon={Clock} label="Ore lavorate" value={`${fmtH(Math.round(s.ore))} h`} accent={C.incassi} sub={<span className="text-xs text-zinc-500">{s.people.length} persone</span>} />
+        <Kpi icon={Wallet} label="Costo manodopera" value={eur(s.costo)} accent="#7c3aed" sub={<span className="text-xs text-zinc-500">{s.costoOrarioMedio ? `${eur(s.costoOrarioMedio)}/h in media` : "—"}</span>} />
+        <Kpi icon={TrendingUp} label="Straordinari" value={`${fmtH(Math.round(s.straordinari))} h`} accent={C.costi} sub={<span className="text-xs text-zinc-500">{s.ore ? `${pct((s.straordinari / s.ore) * 100, 1)} delle ore` : "—"}</span>} />
+        <Kpi icon={Users} label="Giornate di assenza" value={totAbs} accent="#dc2626" sub={<span className="text-xs text-zinc-500">ferie, permessi, malattia</span>} />
       </div>
 
       <div className="grid xl:grid-cols-3 gap-4">
@@ -519,7 +519,7 @@ function Staff({ a }) {
                   <YAxis yAxisId="h" {...axis} width={44} tickFormatter={(v) => `${v}h`} />
                   <YAxis yAxisId="e" orientation="right" {...axis} width={56} tickFormatter={(v) => eur(v, true)} />
                   <Tooltip content={({ active, payload, label }) => (active && payload?.length ? (
-                    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-lg text-xs">
+                    <div className="rounded-lg border border-zinc-200 bg-white px-3 py-2 shadow-lg text-xs">
                       <p className="font-semibold mb-1">{label}</p>
                       <p>Ore: <b className="tabular-nums">{fmtH(payload[0]?.payload.ore || 0)} h</b></p>
                       <p>Costo: <b className="tabular-nums">{eur(payload[0]?.payload.manodopera || 0)}</b></p>
@@ -542,7 +542,7 @@ function Staff({ a }) {
               <ul className="space-y-2">
                 {abs.map(([k, l, col]) => (
                   <li key={k} className="flex items-center gap-2 text-sm">
-                    <span className="w-2.5 h-2.5 rounded-sm" style={{ background: col }} /><span className="flex-1 text-slate-700">{l}</span>
+                    <span className="w-2.5 h-2.5 rounded-sm" style={{ background: col }} /><span className="flex-1 text-zinc-700">{l}</span>
                     <span className="tabular-nums font-medium">{s.absences[k]} gg</span>
                   </li>
                 ))}
@@ -557,10 +557,10 @@ function Staff({ a }) {
           <ul className="space-y-3">
             {s.people.map((p) => (
               <li key={p.id} className="grid grid-cols-[1fr_auto] sm:grid-cols-[180px_1fr_auto] items-center gap-x-3 gap-y-1 text-sm">
-                <Link to={`/dipendenti/${p.id}`} className="font-medium text-slate-900 hover:text-brand-700 truncate">{p.nome}</Link>
-                <div className="order-3 sm:order-none col-span-2 sm:col-span-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600" style={{ width: `${(p.ore / maxO) * 100}%` }} /></div>
-                <span className="text-right tabular-nums text-slate-700 whitespace-nowrap">
-                  <b className="text-slate-900">{fmtH(Math.round(p.ore))} h</b> · {p.giorni} gg{p.straordinari ? <span className="text-amber-700"> · +{fmtH(Math.round(p.straordinari))} str.</span> : null} · {eur(p.costo)}
+                <Link to={`/dipendenti/${p.id}`} className="font-medium text-zinc-900 hover:text-brand-700 truncate">{p.nome}</Link>
+                <div className="order-3 sm:order-none col-span-2 sm:col-span-1 h-2 rounded-full bg-zinc-100 overflow-hidden"><div className="h-full rounded-full bg-brand-600" style={{ width: `${(p.ore / maxO) * 100}%` }} /></div>
+                <span className="text-right tabular-nums text-zinc-700 whitespace-nowrap">
+                  <b className="text-zinc-900">{fmtH(Math.round(p.ore))} h</b> · {p.giorni} gg{p.straordinari ? <span className="text-amber-700"> · +{fmtH(Math.round(p.straordinari))} str.</span> : null} · {eur(p.costo)}
                 </span>
               </li>
             ))}

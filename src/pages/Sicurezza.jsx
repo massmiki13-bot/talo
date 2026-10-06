@@ -100,10 +100,10 @@ export default function Sicurezza() {
       <PageHeader title="Sicurezza · POS" subtitle="Il Piano Operativo di Sicurezza di ogni cantiere, completo secondo l'Allegato XV del D.Lgs. 81/2008: i dati arrivano dalle schede, l'IA valuta i rischi delle lavorazioni." actionLabel="Nuovo POS" onAction={() => setNewOpen(true)} actionIcon={Plus} />
 
       {plans.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-14 px-6 text-center">
-          <ShieldCheck className="w-10 h-10 text-slate-300 mx-auto" />
-          <p className="mt-3 font-semibold text-slate-900">Nessun POS ancora</p>
-          <p className="text-sm text-slate-500 mt-1 max-w-lg mx-auto">Scegli un cantiere: impresa, figure della sicurezza, lavoratori con i corsi e le visite e dati del committente si compilano da soli. Tu scegli le lavorazioni, l'IA scrive rischi, misure e DPI.</p>
+        <div className="bg-white rounded-2xl border border-dashed border-zinc-300 py-14 px-6 text-center">
+          <ShieldCheck className="w-10 h-10 text-zinc-300 mx-auto" />
+          <p className="mt-3 font-semibold text-zinc-900">Nessun POS ancora</p>
+          <p className="text-sm text-zinc-500 mt-1 max-w-lg mx-auto">Scegli un cantiere: impresa, figure della sicurezza, lavoratori con i corsi e le visite e dati del committente si compilano da soli. Tu scegli le lavorazioni, l'IA scrive rischi, misure e DPI.</p>
           <Button onClick={() => setNewOpen(true)} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2"><Plus className="w-4 h-4" /> Nuovo POS</Button>
         </div>
       ) : (
@@ -111,20 +111,20 @@ export default function Sicurezza() {
           {plans.map((p) => {
             const miss = Object.values(checkSections(p.dati || {})).flat().length;
             return (
-              <div key={p.id} className="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col">
+              <div key={p.id} className="bg-white rounded-2xl border border-zinc-200 p-4 flex flex-col">
                 <button onClick={() => open(p.id)} className="text-left flex gap-3">
                   <div className="w-10 h-10 rounded-xl bg-emerald-50 grid place-items-center shrink-0"><ShieldCheck className="w-5 h-5 text-emerald-700" /></div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-900 truncate hover:text-brand-700">{p.titolo}</p>
-                    <p className="text-xs text-slate-500">Rev. {p.revisione || 0} · {new Date(p.data || p.created_date).toLocaleDateString("it-IT")} · {(p.dati?.lavorazioni || []).length} lavorazioni</p>
+                    <p className="text-sm font-semibold text-zinc-900 truncate hover:text-brand-700">{p.titolo}</p>
+                    <p className="text-xs text-zinc-500">Rev. {p.revisione || 0} · {new Date(p.data || p.created_date).toLocaleDateString("it-IT")} · {(p.dati?.lavorazioni || []).length} lavorazioni</p>
                   </div>
                 </button>
                 <div className="flex items-center gap-2 mt-3">
-                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${p.stato === "consegnato" ? "bg-emerald-100 text-emerald-800" : p.stato === "completo" ? "bg-zinc-200 text-zinc-800" : "bg-slate-100 text-slate-700"}`}>{STATI[p.stato] || "Bozza"}</span>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${p.stato === "consegnato" ? "bg-emerald-100 text-emerald-800" : p.stato === "completo" ? "bg-zinc-200 text-zinc-800" : "bg-zinc-100 text-zinc-700"}`}>{STATI[p.stato] || "Bozza"}</span>
                   {miss > 0 ? <span className="text-xs text-amber-700 flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" />{miss} dati mancanti</span> : <span className="text-xs text-emerald-700 flex items-center gap-1"><Check className="w-3.5 h-3.5" />Completo</span>}
                   <div className="ml-auto flex">
-                    <button onClick={() => duplicate(p)} className="p-1.5 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100" title="Duplica per un altro cantiere" aria-label="Duplica"><Copy className="w-4 h-4" /></button>
-                    <button onClick={() => remove(p)} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => duplicate(p)} className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100" title="Duplica per un altro cantiere" aria-label="Duplica"><Copy className="w-4 h-4" /></button>
+                    <button onClick={() => remove(p)} className="p-1.5 rounded-md text-zinc-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </div>
               </div>
@@ -139,24 +139,24 @@ export default function Sicurezza() {
             <DialogTitle>Nuovo POS</DialogTitle>
             <DialogDescription>Per quale cantiere? I dati del lavoro e della squadra vengono copiati nel POS.</DialogDescription>
           </DialogHeader>
-          <label className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer ${pscFile ? "border-brand-300 bg-brand-50" : "border-dashed border-slate-300 hover:border-brand-400"}`}>
+          <label className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer ${pscFile ? "border-brand-300 bg-brand-50" : "border-dashed border-zinc-300 hover:border-brand-400"}`}>
             <FileUp className="w-5 h-5 text-brand-600 shrink-0" aria-hidden="true" />
             <span className="flex-1 min-w-0 text-sm">
-              <span className="block font-medium text-slate-900 truncate">{pscFile ? pscFile.name : "Hai il PSC del cantiere? Allegalo"}</span>
-              <span className="block text-xs text-slate-500">{pscFile ? "L'IA compilerà cantiere, figure, lavorazioni, rischi ed emergenze" : "Facoltativo: l'IA lo legge e compila il POS in automatico"}</span>
+              <span className="block font-medium text-zinc-900 truncate">{pscFile ? pscFile.name : "Hai il PSC del cantiere? Allegalo"}</span>
+              <span className="block text-xs text-zinc-500">{pscFile ? "L'IA compilerà cantiere, figure, lavorazioni, rischi ed emergenze" : "Facoltativo: l'IA lo legge e compila il POS in automatico"}</span>
             </span>
-            {pscFile && <button type="button" onClick={(e) => { e.preventDefault(); setPscFile(null); }} className="text-xs text-slate-500 hover:text-red-600">Rimuovi</button>}
+            {pscFile && <button type="button" onClick={(e) => { e.preventDefault(); setPscFile(null); }} className="text-xs text-zinc-500 hover:text-red-600">Rimuovi</button>}
             <input type="file" accept=".pdf,image/*" className="hidden" onChange={(e) => { setPscFile(e.target.files[0] || null); e.target.value = ""; }} aria-label="PSC del cantiere" />
           </label>
           {creating && <p className="text-sm text-brand-800 flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />{creating}</p>}
           <div className="max-h-[50vh] overflow-y-auto -mx-2 space-y-0.5">
             {ctx.worksites.filter((w) => w.stato !== "finito").map((w) => (
-              <button key={w.id} onClick={() => create(w.id)} disabled={!!creating} className="w-full text-left disabled:opacity-50 flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50">
-                <HardHat className="w-4 h-4 text-slate-500" />
-                <span className="flex-1 min-w-0"><span className="block text-sm font-medium text-slate-900 truncate">{w.nome}</span><span className="block text-xs text-slate-500 truncate">{[w.cliente_nome, w.indirizzo].filter(Boolean).join(" · ")}</span></span>
+              <button key={w.id} onClick={() => create(w.id)} disabled={!!creating} className="w-full text-left disabled:opacity-50 flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-zinc-50">
+                <HardHat className="w-4 h-4 text-zinc-500" />
+                <span className="flex-1 min-w-0"><span className="block text-sm font-medium text-zinc-900 truncate">{w.nome}</span><span className="block text-xs text-zinc-500 truncate">{[w.cliente_nome, w.indirizzo].filter(Boolean).join(" · ")}</span></span>
               </button>
             ))}
-            <button onClick={() => create("")} disabled={!!creating} className="w-full text-left disabled:opacity-50 flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 text-sm text-slate-700"><Plus className="w-4 h-4" /> Cantiere non ancora inserito nei Lavori</button>
+            <button onClick={() => create("")} disabled={!!creating} className="w-full text-left disabled:opacity-50 flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-zinc-50 text-sm text-zinc-700"><Plus className="w-4 h-4" /> Cantiere non ancora inserito nei Lavori</button>
           </div>
         </DialogContent>
       </Dialog>
@@ -275,30 +275,30 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
     <div className="pb-10">
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5 -ml-2"><ArrowLeft className="w-4 h-4" /> Tutti i POS</Button>
-        <Input value={meta.titolo} onChange={(e) => setMeta({ ...meta, titolo: e.target.value })} className="flex-1 min-w-[220px] text-base font-semibold border-transparent hover:border-slate-200 focus:border-slate-300 bg-transparent" aria-label="Titolo" />
-        <span className="text-xs text-slate-500 w-24 text-right">{saveState === "saving" ? "Salvataggio…" : saveState === "dirty" ? "Modifiche…" : saveState === "error" ? "Errore di salvataggio" : "Salvato"}</span>
-        <label className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-md border text-sm font-medium cursor-pointer ${pscBusy ? "border-brand-300 bg-brand-50 text-brand-800" : "border-slate-200 bg-white hover:bg-slate-50"}`} title={plan.psc_file ? `PSC letto: ${plan.psc_file.nome}` : "L'IA legge il PSC e completa il POS"}>
+        <Input value={meta.titolo} onChange={(e) => setMeta({ ...meta, titolo: e.target.value })} className="flex-1 min-w-[220px] text-base font-semibold border-transparent hover:border-zinc-200 focus:border-zinc-300 bg-transparent" aria-label="Titolo" />
+        <span className="text-xs text-zinc-500 w-24 text-right">{saveState === "saving" ? "Salvataggio…" : saveState === "dirty" ? "Modifiche…" : saveState === "error" ? "Errore di salvataggio" : "Salvato"}</span>
+        <label className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-md border text-sm font-medium cursor-pointer ${pscBusy ? "border-brand-300 bg-brand-50 text-brand-800" : "border-zinc-200 bg-white hover:bg-zinc-50"}`} title={plan.psc_file ? `PSC letto: ${plan.psc_file.nome}` : "L'IA legge il PSC e completa il POS"}>
           {pscBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileUp className="w-4 h-4" />}{pscBusy ? "Lettura del PSC…" : "Compila dal PSC"}
           <input type="file" accept=".pdf,image/*" className="hidden" disabled={pscBusy} onChange={(e) => { fromPsc(e.target.files[0]); e.target.value = ""; }} aria-label="Allega il PSC" />
         </label>
         <Button variant="outline" size="sm" onClick={() => pdf("download")} disabled={pdfBusy} className="gap-1.5">{pdfBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} PDF</Button>
       </div>
       {plan.psc_file && (
-        <p className="text-xs text-slate-500 -mt-2 mb-3">PSC collegato: <a href={plan.psc_file.url} className="text-brand-700 hover:underline">{plan.psc_file.nome}</a>{plan.psc_file.letto_il ? ` · letto il ${new Date(plan.psc_file.letto_il).toLocaleDateString("it-IT")}` : ""}</p>
+        <p className="text-xs text-zinc-500 -mt-2 mb-3">PSC collegato: <a href={plan.psc_file.url} className="text-brand-700 hover:underline">{plan.psc_file.nome}</a>{plan.psc_file.letto_il ? ` · letto il ${new Date(plan.psc_file.letto_il).toLocaleDateString("it-IT")}` : ""}</p>
       )}
 
       <div className="grid lg:grid-cols-[250px_minmax(0,1fr)] gap-4 items-start">
-        <nav className="bg-white rounded-2xl border border-slate-200 p-1.5 lg:sticky lg:top-4 flex lg:flex-col gap-0.5 overflow-x-auto no-scrollbar min-w-0">
+        <nav className="bg-white rounded-2xl border border-zinc-200 p-1.5 lg:sticky lg:top-4 flex lg:flex-col gap-0.5 overflow-x-auto no-scrollbar min-w-0">
           {SEZIONI.map((s) => {
             const m = miss[s.key]?.length || 0;
             return (
-              <button key={s.key} onClick={() => setSec(s.key)} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left whitespace-nowrap ${sec === s.key ? "bg-brand-50 text-brand-800 font-medium" : "text-slate-700 hover:bg-slate-50"}`}>
+              <button key={s.key} onClick={() => setSec(s.key)} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left whitespace-nowrap ${sec === s.key ? "bg-brand-50 text-brand-800 font-medium" : "text-zinc-700 hover:bg-zinc-50"}`}>
                 <span className={`w-5 h-5 rounded-full text-[11px] font-semibold grid place-items-center shrink-0 ${m ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>{m ? s.n : <Check className="w-3 h-3" />}</span>
                 <span className="lg:whitespace-normal">{s.label}</span>
               </button>
             );
           })}
-          <div className="hidden lg:block px-3 py-2 mt-1 border-t border-slate-100 text-xs text-slate-500">{totalMiss ? `${totalMiss} dati da completare` : "Tutte le sezioni sono complete"}</div>
+          <div className="hidden lg:block px-3 py-2 mt-1 border-t border-zinc-100 text-xs text-zinc-500">{totalMiss ? `${totalMiss} dati da completare` : "Tutte le sezioni sono complete"}</div>
         </nav>
 
         <div className="min-w-0 space-y-4">
@@ -347,14 +347,14 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                 <F label="Titolo edilizio" v={d.cantiere?.titolo_edilizio} on={(v) => set("cantiere.titolo_edilizio", v)} />
                 <F label="Orario di lavoro" v={d.cantiere?.orario} on={(v) => set("cantiere.orario", v)} />
               </Grid>
-              <label className="flex items-center gap-2 text-sm text-slate-700 mt-4"><Switch checked={d.cantiere?.presenza_psc !== false} onCheckedChange={(v) => set("cantiere.presenza_psc", v)} /> Nel cantiere c'è un PSC (più imprese presenti)</label>
+              <label className="flex items-center gap-2 text-sm text-zinc-700 mt-4"><Switch checked={d.cantiere?.presenza_psc !== false} onCheckedChange={(v) => set("cantiere.presenza_psc", v)} /> Nel cantiere c'è un PSC (più imprese presenti)</label>
               <Area label="Modalità organizzative (accessi, aree di stoccaggio, viabilità, servizi igienici…)" v={d.cantiere?.organizzazione} on={(v) => set("cantiere.organizzazione", v)} rows={4} />
-              <p className="text-sm font-medium text-slate-800 mt-5 mb-2">Subappaltatori e lavoratori autonomi</p>
+              <p className="text-sm font-medium text-zinc-800 mt-5 mb-2">Subappaltatori e lavoratori autonomi</p>
               {(d.cantiere?.subappaltatori || []).map((s, k) => (
                 <div key={k} className="flex gap-2 mb-2">
                   <Input value={s.nome} placeholder="Impresa" onChange={(e) => set("cantiere.subappaltatori", d.cantiere.subappaltatori.map((x, j) => (j === k ? { ...x, nome: e.target.value } : x)))} />
                   <Input value={s.lavorazioni} placeholder="Lavorazioni affidate" onChange={(e) => set("cantiere.subappaltatori", d.cantiere.subappaltatori.map((x, j) => (j === k ? { ...x, lavorazioni: e.target.value } : x)))} />
-                  <button onClick={() => set("cantiere.subappaltatori", d.cantiere.subappaltatori.filter((_, j) => j !== k))} className="p-2 text-slate-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
+                  <button onClick={() => set("cantiere.subappaltatori", d.cantiere.subappaltatori.filter((_, j) => j !== k))} className="p-2 text-zinc-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
                 </div>
               ))}
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => set("cantiere.subappaltatori", [...(d.cantiere?.subappaltatori || []), { nome: "", lavorazioni: "" }])}><Plus className="w-4 h-4" /> Aggiungi</Button>
@@ -363,19 +363,19 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
 
           {sec === "lavoratori" && (
             <Card title="Lavoratori e formazione" action={<Button size="sm" variant="outline" className="gap-1.5" onClick={() => set("lavoratori", (d.lavoratori || []).map((l) => { const e = ctx.employees.find((x) => x.id === l.id); return e ? { ...workerRow(e, ctx.empDocs), mansione: l.mansione } : l; }))}><RefreshCw className="w-4 h-4" /> Aggiorna corsi e visite</Button>}>
-              <p className="text-sm text-slate-500 mb-3">Formazione e idoneità arrivano dalle schede dei dipendenti. Scrivi la mansione che ognuno svolgerà in questo cantiere.</p>
+              <p className="text-sm text-zinc-500 mb-3">Formazione e idoneità arrivano dalle schede dei dipendenti. Scrivi la mansione che ognuno svolgerà in questo cantiere.</p>
               <div className="space-y-2">
                 {(d.lavoratori || []).map((l, k) => (
-                  <div key={l.id || k} className="rounded-xl border border-slate-200 p-3">
+                  <div key={l.id || k} className="rounded-xl border border-zinc-200 p-3">
                     <div className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900">{l.nome}</p>
-                        <p className="text-xs text-slate-500">{l.qualifica || "—"}{l.idoneita ? ` · ${l.idoneita}` : " · idoneità non registrata"}</p>
+                        <p className="text-sm font-medium text-zinc-900">{l.nome}</p>
+                        <p className="text-xs text-zinc-500">{l.qualifica || "—"}{l.idoneita ? ` · ${l.idoneita}` : " · idoneità non registrata"}</p>
                       </div>
-                      <button onClick={() => set("lavoratori", d.lavoratori.filter((_, j) => j !== k))} className="p-1 text-slate-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
+                      <button onClick={() => set("lavoratori", d.lavoratori.filter((_, j) => j !== k))} className="p-1 text-zinc-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
                     </div>
                     <Input className="mt-2" value={l.mansione || ""} placeholder="Mansione in cantiere (es. muratore, addetto ai ponteggi)" onChange={(e) => set("lavoratori", d.lavoratori.map((x, j) => (j === k ? { ...x, mansione: e.target.value } : x)))} />
-                    <p className={`text-xs mt-1.5 ${l.formazione ? "text-slate-600" : "text-amber-700"}`}>{l.formazione ? `Formazione: ${l.formazione}` : "Nessun attestato di formazione registrato"}</p>
+                    <p className={`text-xs mt-1.5 ${l.formazione ? "text-zinc-600" : "text-amber-700"}`}>{l.formazione ? `Formazione: ${l.formazione}` : "Nessun attestato di formazione registrato"}</p>
                   </div>
                 ))}
               </div>
@@ -393,7 +393,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                 <div className="flex flex-wrap gap-1.5">
                   {LAVORAZIONI.map((n) => {
                     const on = (d.lavorazioni || []).some((l) => l.nome === n);
-                    return <button key={n} onClick={() => toggleLav(n)} className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${on ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-700 hover:border-slate-300"}`}>{on && <Check className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />}{n}</button>;
+                    return <button key={n} onClick={() => toggleLav(n)} className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${on ? "border-brand-600 bg-brand-600 text-white" : "border-zinc-200 text-zinc-700 hover:border-zinc-300"}`}>{on && <Check className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />}{n}</button>;
                   })}
                 </div>
                 <form className="flex gap-2 mt-3" onSubmit={(e) => { e.preventDefault(); const v = e.target.elements.nuova.value.trim(); if (v) { toggleLav(v); e.target.reset(); } }}>
@@ -416,7 +416,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
 
           {sec === "attrezzature" && (
             <Card title="Macchine, attrezzature e opere provvisionali">
-              <p className="text-sm text-slate-500 mb-2">Si riempie da solo con le attrezzature delle lavorazioni valutate dall'IA. Una per riga.</p>
+              <p className="text-sm text-zinc-500 mb-2">Si riempie da solo con le attrezzature delle lavorazioni valutate dall'IA. Una per riga.</p>
               <Area label="Macchine e attrezzature (con marca/modello se utile)" v={lines(d.attrezzature?.macchine)} on={(v) => set("attrezzature.macchine", toLines(v))} rows={8} />
               <Area label="Ponteggi, trabattelli, parapetti e opere provvisionali" v={lines(d.attrezzature?.opere_provvisionali)} on={(v) => set("attrezzature.opere_provvisionali", toLines(v))} rows={4} placeholder="es. Ponteggio a telai prefabbricati con PiMUS" />
               <Area label="Impianti di cantiere (elettrico, messa a terra, idrico…)" v={lines(d.attrezzature?.impianti)} on={(v) => set("attrezzature.impianti", toLines(v))} rows={3} />
@@ -425,13 +425,13 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
 
           {sec === "sostanze" && (
             <Card title="Sostanze pericolose e rumore">
-              <p className="text-sm font-medium text-slate-800 mb-2">Sostanze e preparati pericolosi</p>
+              <p className="text-sm font-medium text-zinc-800 mb-2">Sostanze e preparati pericolosi</p>
               {(d.sostanze || []).map((s, k) => (
                 <div key={k} className="grid sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 mb-2">
                   <Input value={s.nome} placeholder="Prodotto" onChange={(e) => set("sostanze", d.sostanze.map((x, j) => (j === k ? { ...x, nome: e.target.value } : x)))} />
                   <Input value={s.uso} placeholder="Impiego" onChange={(e) => set("sostanze", d.sostanze.map((x, j) => (j === k ? { ...x, uso: e.target.value } : x)))} />
                   <Input value={s.scheda} placeholder="Scheda di sicurezza" onChange={(e) => set("sostanze", d.sostanze.map((x, j) => (j === k ? { ...x, scheda: e.target.value } : x)))} />
-                  <button onClick={() => set("sostanze", d.sostanze.filter((_, j) => j !== k))} className="p-2 text-slate-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
+                  <button onClick={() => set("sostanze", d.sostanze.filter((_, j) => j !== k))} className="p-2 text-zinc-500 hover:text-red-600" aria-label="Rimuovi"><X className="w-4 h-4" /></button>
                 </div>
               ))}
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => set("sostanze", [...(d.sostanze || []), { nome: "", uso: "", scheda: "Disponibile in cantiere" }])}><Plus className="w-4 h-4" /> Aggiungi sostanza</Button>
@@ -450,7 +450,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                 {uniq([...DPI, ...(d.dpi || [])]).map((x) => {
                   const on = (d.dpi || []).includes(x);
                   return (
-                    <label key={x} className={`flex items-center gap-2 text-sm rounded-lg border px-3 py-2 cursor-pointer ${on ? "border-brand-300 bg-brand-50/60" : "border-slate-200"}`}>
+                    <label key={x} className={`flex items-center gap-2 text-sm rounded-lg border px-3 py-2 cursor-pointer ${on ? "border-brand-300 bg-brand-50/60" : "border-zinc-200"}`}>
                       <input type="checkbox" checked={on} onChange={() => set("dpi", on ? d.dpi.filter((y) => y !== x) : [...(d.dpi || []), x])} /> {x}
                     </label>
                   );
@@ -482,21 +482,21 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
                 <F label="Luogo" v={d.firme?.luogo} on={(v) => set("firme.luogo", v)} />
                 <F label="Data" type="date" v={d.firme?.data} on={(v) => set("firme.data", v)} />
                 <div>
-                  <Label htmlFor="sicurezza-stato" className="text-sm text-slate-700">Stato</Label>
+                  <Label htmlFor="sicurezza-stato" className="text-sm text-zinc-700">Stato</Label>
                   <Select value={meta.stato} onValueChange={(v) => setMeta({ ...meta, stato: v })}>
                     <SelectTrigger id="sicurezza-stato" className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>{Object.entries(STATI).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="sicurezza-revisione" className="text-sm text-slate-700">Revisione</Label>
+                  <Label htmlFor="sicurezza-revisione" className="text-sm text-zinc-700">Revisione</Label>
                   <div className="flex gap-2 mt-1">
                     <Input id="sicurezza-revisione" readOnly value={`Rev. ${meta.revisione} del ${new Date(meta.data).toLocaleDateString("it-IT")}`} />
                     <Button variant="outline" onClick={async () => (await confirmDialog("Creare una nuova revisione? Numero e data verranno aggiornati.")) && setMeta({ ...meta, revisione: meta.revisione + 1, data: new Date().toISOString().slice(0, 10) })}>Nuova</Button>
                   </div>
                 </div>
               </Grid>
-              <p className="text-sm text-slate-600 mt-4">Nel PDF compaiono le righe per le firme di datore di lavoro, RSPP, RLS e CSE; la firma del datore di lavoro viene presa dal Profilo ditta. Le firme raccolte dal telefono vengono aggiunte in fondo.</p>
+              <p className="text-sm text-zinc-600 mt-4">Nel PDF compaiono le righe per le firme di datore di lavoro, RSPP, RLS e CSE; la firma del datore di lavoro viene presa dal Profilo ditta. Le firme raccolte dal telefono vengono aggiunte in fondo.</p>
               <PosSignatures plan={plan} dati={d} revisione={meta.revisione} onChange={onChange} />
               {totalMiss > 0 && <p className="text-sm text-amber-800 mt-3 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" />Prima di consegnarlo completa i {totalMiss} dati mancanti (vedi le sezioni con il numero arancione).</p>}
               <div className="flex flex-wrap gap-2 mt-5">
@@ -516,17 +516,17 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
 
 function LavCard({ l, idx, busy, onAssess, onChange, onRemove }) {
   return (
-    <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5">
+    <section className="bg-white rounded-2xl border border-zinc-200 p-4 sm:p-5">
       <div className="flex items-start gap-2">
-        <h3 className="flex-1 text-sm font-semibold text-slate-900">4.{idx + 1} · {l.nome}</h3>
+        <h3 className="flex-1 text-sm font-semibold text-zinc-900">4.{idx + 1} · {l.nome}</h3>
         <Button size="sm" variant="outline" onClick={onAssess} disabled={busy} className="gap-1.5">{busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{l.rischi?.length ? "Rigenera" : "Valuta con IA"}</Button>
-        <button onClick={onRemove} className="p-1.5 text-slate-500 hover:text-red-600" aria-label="Rimuovi lavorazione"><X className="w-4 h-4" /></button>
+        <button onClick={onRemove} className="p-1.5 text-zinc-500 hover:text-red-600" aria-label="Rimuovi lavorazione"><X className="w-4 h-4" /></button>
       </div>
       <Input value={l.note || ""} onChange={(e) => onChange({ note: e.target.value })} placeholder="Dettagli per l'IA (es. copertura a 9 m, tegole in cotto, accesso da cortile)" className="mt-3" />
-      {!l.rischi?.length ? <p className="text-sm text-slate-500 mt-3">Premi "Valuta con IA" per ottenere rischi, misure e DPI di questa lavorazione.</p> : (
+      {!l.rischi?.length ? <p className="text-sm text-zinc-500 mt-3">Premi "Valuta con IA" per ottenere rischi, misure e DPI di questa lavorazione.</p> : (
         <>
           <Area label="Descrizione" v={l.descrizione} on={(v) => onChange({ descrizione: v })} rows={3} />
-          <p className="text-sm font-medium text-slate-800 mt-4 mb-2">Rischi (P × D)</p>
+          <p className="text-sm font-medium text-zinc-800 mt-4 mb-2">Rischi (P × D)</p>
           <div className="space-y-1.5">
             {l.rischi.map((r, k) => {
               const lv = riskLevel(r.p, r.d);
@@ -537,7 +537,7 @@ function LavCard({ l, idx, busy, onAssess, onChange, onRemove }) {
                   <Input type="number" min={1} max={4} value={r.p} onChange={(e) => upd({ p: Math.min(4, Math.max(1, Number(e.target.value) || 1)) })} className="h-8 text-sm" aria-label="Probabilità" />
                   <Input type="number" min={1} max={4} value={r.d} onChange={(e) => upd({ d: Math.min(4, Math.max(1, Number(e.target.value) || 1)) })} className="h-8 text-sm" aria-label="Danno" />
                   <span className={`text-xs font-semibold text-center rounded-md py-1.5 ${lv.className}`}>{lv.r} {lv.label}</span>
-                  <button onClick={() => onChange({ rischi: l.rischi.filter((_, j) => j !== k) })} className="text-slate-500 hover:text-red-600" aria-label="Rimuovi rischio"><X className="w-4 h-4" /></button>
+                  <button onClick={() => onChange({ rischi: l.rischi.filter((_, j) => j !== k) })} className="text-zinc-500 hover:text-red-600" aria-label="Rimuovi rischio"><X className="w-4 h-4" /></button>
                 </div>
               );
             })}
@@ -557,19 +557,19 @@ function LavCard({ l, idx, busy, onAssess, onChange, onRemove }) {
 
 function Card({ title, action, children }) {
   return (
-    <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
-      <div className="flex items-start justify-between gap-3 mb-4"><h2 className="text-base font-semibold text-slate-900">{title}</h2>{action}</div>
+    <section className="bg-white rounded-2xl border border-zinc-200 p-4 sm:p-6">
+      <div className="flex items-start justify-between gap-3 mb-4"><h2 className="text-base font-semibold text-zinc-900">{title}</h2>{action}</div>
       {children}
     </section>
   );
 }
 const Grid = ({ children }) => <div className="grid sm:grid-cols-2 gap-3">{children}</div>;
-const Hr = () => <div className="border-t border-slate-100 my-5" />;
+const Hr = () => <div className="border-t border-zinc-100 my-5" />;
 function F({ label, v, on, wide, type = "text", list }) {
   const id = `f-${label.replace(/\W+/g, "-")}`;
   return (
     <div className={wide ? "sm:col-span-2" : ""}>
-      <Label htmlFor={id} className="text-sm text-slate-700">{label}</Label>
+      <Label htmlFor={id} className="text-sm text-zinc-700">{label}</Label>
       <Input id={id} type={type} value={v || ""} onChange={(e) => on(e.target.value)} className="mt-1" list={list ? `${id}-l` : undefined} />
       {list && <datalist id={`${id}-l`}>{list.map((x) => <option key={x} value={x} />)}</datalist>}
     </div>
@@ -578,7 +578,7 @@ function F({ label, v, on, wide, type = "text", list }) {
 function Area({ label, v, on, rows = 3, placeholder }) {
   return (
     <div className="mt-4">
-      <Label htmlFor="sicurezza-campo" className="text-sm text-slate-700">{label}</Label>
+      <Label htmlFor="sicurezza-campo" className="text-sm text-zinc-700">{label}</Label>
       <Textarea id="sicurezza-campo" value={v || ""} onChange={(e) => on(e.target.value)} rows={rows} className="mt-1" placeholder={placeholder} />
     </div>
   );
@@ -589,9 +589,9 @@ function Tags({ label, v = [], on, options = [] }) {
   const add = (x) => { const s = x.trim(); if (s && !v.includes(s)) on([...v, s]); setText(""); };
   return (
     <div>
-      <Label htmlFor={id} className="text-sm text-slate-700">{label}</Label>
+      <Label htmlFor={id} className="text-sm text-zinc-700">{label}</Label>
       <div className="mt-1 flex flex-wrap gap-1.5 rounded-md border border-input p-1.5 min-h-10">
-        {v.map((x) => <span key={x} className="text-sm bg-slate-100 rounded px-2 py-0.5 flex items-center gap-1">{x}<button onClick={() => on(v.filter((y) => y !== x))} aria-label={`Rimuovi ${x}`}><X className="w-3 h-3" /></button></span>)}
+        {v.map((x) => <span key={x} className="text-sm bg-zinc-100 rounded px-2 py-0.5 flex items-center gap-1">{x}<button onClick={() => on(v.filter((y) => y !== x))} aria-label={`Rimuovi ${x}`}><X className="w-3 h-3" /></button></span>)}
         <input id={id} list={`${id}-l`} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(text); } }} onBlur={() => text && add(text)} placeholder="Nome e invio" className="flex-1 min-w-[120px] text-sm outline-none px-1" />
         <datalist id={`${id}-l`}>{options.map((x) => <option key={x} value={x} />)}</datalist>
       </div>

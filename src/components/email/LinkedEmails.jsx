@@ -35,35 +35,35 @@ export default function LinkedEmails({ field, id, composeDefaults = {}, title = 
   const links = { [field]: id, ...(composeDefaults.links || {}) };
 
   return (
-    <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+    <section className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3 mb-3">
-        <h3 className="font-semibold text-slate-900 flex items-center gap-2"><Mail className="w-4 h-4 text-brand-600" /> {title}</h3>
+        <h3 className="font-semibold text-zinc-900 flex items-center gap-2"><Mail className="w-4 h-4 text-brand-600" /> {title}</h3>
         <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setCompose({ ...composeDefaults, links })}>
           <PenSquare className="w-4 h-4" /> Scrivi
         </Button>
       </div>
       {loading ? (
-        <div className="py-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-500" /></div>
+        <div className="py-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-zinc-500" /></div>
       ) : messages.length === 0 ? (
-        <p className="text-sm text-slate-500 py-3">Nessuna email collegata. Quelle inviate da qui o collegate dalla Posta compariranno in questo elenco.</p>
+        <p className="text-sm text-zinc-500 py-3">Nessuna email collegata. Quelle inviate da qui o collegate dalla Posta compariranno in questo elenco.</p>
       ) : (
-        <ul className="divide-y divide-slate-100 -mx-1">
+        <ul className="divide-y divide-zinc-100 -mx-1">
           {messages.map((m) => (
             <li key={m.id}>
-              <button onClick={() => setReading(m)} className="w-full text-left flex items-center gap-3 px-1 py-2.5 rounded hover:bg-slate-50">
+              <button onClick={() => setReading(m)} className="w-full text-left flex items-center gap-3 px-1 py-2.5 rounded hover:bg-zinc-50">
                 {m.direzione === "in"
                   ? <ArrowDownLeft className="w-4 h-4 text-emerald-700 shrink-0" aria-label="Ricevuta" />
                   : <ArrowUpRight className="w-4 h-4 text-brand-600 shrink-0" aria-label="Inviata" />}
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-slate-800 truncate">
+                  <p className="text-sm text-zinc-800 truncate">
                     {m.is_pec && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded px-1 mr-1.5">PEC</span>}
                     {m.stato === "errore" && <span className="text-[10px] font-bold bg-red-100 text-red-700 rounded px-1 mr-1.5">NON INVIATA</span>}
                     {m.subject || "(senza oggetto)"}
                   </p>
-                  <p className="text-xs text-slate-500 truncate">{m.direzione === "in" ? m.from_email : `A: ${(m.to || []).join(", ")}`}</p>
+                  <p className="text-xs text-zinc-500 truncate">{m.direzione === "in" ? m.from_email : `A: ${(m.to || []).join(", ")}`}</p>
                 </div>
-                {(m.allegati || []).length > 0 && <Paperclip className="w-3.5 h-3.5 text-slate-500 shrink-0" />}
-                <span className="text-xs text-slate-500 shrink-0">{formatDate(m.data)}</span>
+                {(m.allegati || []).length > 0 && <Paperclip className="w-3.5 h-3.5 text-zinc-500 shrink-0" />}
+                <span className="text-xs text-zinc-500 shrink-0">{formatDate(m.data)}</span>
               </button>
             </li>
           ))}

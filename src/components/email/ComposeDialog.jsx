@@ -313,7 +313,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl w-[calc(100vw-1.5rem)] max-h-[92vh] overflow-y-auto p-0 gap-0">
-          <DialogHeader className="px-5 pt-5 pb-3 border-b border-slate-100">
+          <DialogHeader className="px-5 pt-5 pb-3 border-b border-zinc-100">
             <DialogTitle className="flex items-center gap-2">
               {isPec ? <ShieldCheck className="w-5 h-5 text-emerald-700" /> : <Send className="w-5 h-5 text-brand-600" />}
               {draftId ? "Bozza" : isPec ? "Nuova PEC" : "Nuovo messaggio"}
@@ -322,19 +322,19 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
           </DialogHeader>
 
           {loadingAccounts ? (
-            <div className="py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>
+            <div className="py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-zinc-500" /></div>
           ) : accounts.length === 0 ? (
             <div className="p-8 text-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mx-auto"><AlertTriangle className="w-6 h-6 text-amber-700" /></div>
-              <p className="font-semibold text-slate-800">Nessuna casella collegata</p>
-              <p className="text-sm text-slate-500 max-w-sm mx-auto">Per inviare email o PEC dal tuo indirizzo collega prima una casella in Profilo Ditta. Bastano indirizzo e password per app.</p>
+              <p className="font-semibold text-zinc-800">Nessuna casella collegata</p>
+              <p className="text-sm text-zinc-500 max-w-sm mx-auto">Per inviare email o PEC dal tuo indirizzo collega prima una casella in Profilo Ditta. Bastano indirizzo e password per app.</p>
               <Button asChild className="gap-2"><Link to="/profilo-ditta#caselle-email" onClick={() => onOpenChange(false)}><Settings className="w-4 h-4" /> Collega una casella</Link></Button>
             </div>
           ) : (
             <div className="px-5 py-4 space-y-3">
               {/* Mittente */}
               <div className="grid sm:grid-cols-[90px_1fr] items-center gap-1.5 sm:gap-3">
-                <Label htmlFor="composedialog-da" className="text-slate-500">Da</Label>
+                <Label htmlFor="composedialog-da" className="text-zinc-500">Da</Label>
                 <Select value={accountId} onValueChange={setAccountId}>
                   <SelectTrigger id="composedialog-da"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -359,11 +359,11 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
 
               {/* Destinatari */}
               <div className="grid sm:grid-cols-[90px_1fr] items-start gap-1.5 sm:gap-3">
-                <Label className="text-slate-500 sm:pt-2.5">A</Label>
+                <Label className="text-zinc-500 sm:pt-2.5">A</Label>
                 <div className="space-y-2">
                   <div className="flex gap-2 items-start">
                     <div className="flex-1 min-w-0"><RecipientInput value={to} onChange={setTo} placeholder="Nome o indirizzo email" autoFocus={!to.length} /></div>
-                    {!showCc && <Button type="button" variant="ghost" size="sm" className="text-slate-500 h-10" onClick={() => setShowCc(true)}>Cc/Ccn</Button>}
+                    {!showCc && <Button type="button" variant="ghost" size="sm" className="text-zinc-500 h-10" onClick={() => setShowCc(true)}>Cc/Ccn</Button>}
                   </div>
                   {showCc && (
                     <>
@@ -375,14 +375,14 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
               </div>
 
               <div className="grid sm:grid-cols-[90px_1fr] items-center gap-1.5 sm:gap-3">
-                <Label htmlFor="mail-subject" className="text-slate-500">Oggetto</Label>
+                <Label htmlFor="mail-subject" className="text-zinc-500">Oggetto</Label>
                 <Input id="mail-subject" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Oggetto del messaggio" />
               </div>
 
               {/* Strumenti */}
               <div className="flex flex-wrap items-center gap-2 pt-1">
                 <Select value="" onValueChange={applyTemplate}>
-                  <SelectTrigger className="w-auto h-9 gap-2 text-sm"><FileText className="w-4 h-4 text-slate-500" /><span>Usa un modello</span></SelectTrigger>
+                  <SelectTrigger className="w-auto h-9 gap-2 text-sm"><FileText className="w-4 h-4 text-zinc-500" /><span>Usa un modello</span></SelectTrigger>
                   <SelectContent>
                     {templates.map((t) => <SelectItem key={t.id} value={t.id}>{t.nome}</SelectItem>)}
                   </SelectContent>
@@ -410,7 +410,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
 
                 <div className="flex items-center gap-1.5">
                   <Select value={language} onValueChange={setLanguage}>
-                    <SelectTrigger className="w-[120px] h-9 text-sm"><Languages className="w-4 h-4 text-slate-500" /><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-[120px] h-9 text-sm"><Languages className="w-4 h-4 text-zinc-500" /><SelectValue /></SelectTrigger>
                     <SelectContent>{LANGUAGES.map((l) => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}</SelectContent>
                   </Select>
                   {language !== "it" && (
@@ -424,8 +424,8 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
               <RichTextEditor value={body} onChange={setBody} placeholder="Scrivi il messaggio…" />
 
               {/* Firma */}
-              <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2">
-                <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <div className="rounded-lg border border-zinc-200 bg-zinc-50/60 px-3 py-2">
+                <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
                   <input type="checkbox" className="w-4 h-4" checked={withSignature} onChange={(e) => setWithSignature(e.target.checked)} />
                   Aggiungi la firma {account?.firma_html ? "della casella" : "della ditta"}
                 </label>
@@ -443,14 +443,14 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
               {/* Allegati */}
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5"><Paperclip className="w-4 h-4" /> Allegati</span>
+                  <span className="text-sm font-medium text-zinc-700 flex items-center gap-1.5"><Paperclip className="w-4 h-4" /> Allegati</span>
                   <Button type="button" variant="outline" size="sm" className="h-8 gap-1.5" onClick={() => setPickerOpen(true)}><FolderOpen className="w-4 h-4" /> Dai documenti</Button>
                   <Button type="button" variant="outline" size="sm" className="h-8 gap-1.5" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
                     {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />} Dal dispositivo
                   </Button>
                   <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
                   {files.length > 0 && (
-                    <span className={`text-xs ml-auto ${totalSize > MAX_ATTACHMENTS_BYTES * 0.9 ? "text-red-700" : "text-slate-500"}`}>
+                    <span className={`text-xs ml-auto ${totalSize > MAX_ATTACHMENTS_BYTES * 0.9 ? "text-red-700" : "text-zinc-500"}`}>
                       {formatBytes(totalSize)} di 20 MB
                     </span>
                   )}
@@ -458,14 +458,14 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
                 {files.length > 0 && (
                   <ul className="grid sm:grid-cols-2 gap-2">
                     {files.map((f, i) => (
-                      <li key={`${f.name}-${i}`} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-2">
+                      <li key={`${f.name}-${i}`} className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-2.5 py-2">
                         <FileText className="w-4 h-4 text-brand-600 shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm text-slate-800 truncate">{f.name}</p>
-                          {f.size ? <p className="text-[11px] text-slate-500">{formatBytes(f.size)}</p> : null}
+                          <p className="text-sm text-zinc-800 truncate">{f.name}</p>
+                          {f.size ? <p className="text-[11px] text-zinc-500">{formatBytes(f.size)}</p> : null}
                         </div>
-                        <button type="button" aria-label={`Rimuovi ${f.name}`} className="p-1 rounded hover:bg-slate-100" onClick={() => setFiles((prev) => prev.filter((_, j) => j !== i))}>
-                          <X className="w-4 h-4 text-slate-500" />
+                        <button type="button" aria-label={`Rimuovi ${f.name}`} className="p-1 rounded hover:bg-zinc-100" onClick={() => setFiles((prev) => prev.filter((_, j) => j !== i))}>
+                          <X className="w-4 h-4 text-zinc-500" />
                         </button>
                       </li>
                     ))}
@@ -475,7 +475,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
 
               {/* Collegamenti */}
               <div>
-                <button type="button" onClick={() => setShowLinks((s) => !s)} className="text-sm text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+                <button type="button" onClick={() => setShowLinks((s) => !s)} className="text-sm text-zinc-600 hover:text-zinc-900 flex items-center gap-1.5">
                   <Link2 className="w-4 h-4" />
                   Collega a cliente, lavoro o preventivo
                   {[linkState.contact_id, linkState.worksite_id, linkState.quote_id].filter(Boolean).length > 0 && (
@@ -497,7 +497,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
           )}
 
           {accounts.length > 0 && !loadingAccounts && (
-            <div className="sticky bottom-0 flex flex-wrap items-center gap-2 border-t border-slate-100 bg-white px-5 py-3">
+            <div className="sticky bottom-0 flex flex-wrap items-center gap-2 border-t border-zinc-100 bg-white px-5 py-3">
               <Button type="button" variant="ghost" size="sm" className="gap-1.5" onClick={() => setPreviewOpen(true)}><Eye className="w-4 h-4" /> Anteprima</Button>
               <Button type="button" variant="ghost" size="sm" className="gap-1.5" onClick={handleSaveDraft} disabled={savingDraft || sending}>
                 {savingDraft ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva bozza
@@ -519,15 +519,15 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
             <DialogTitle>Anteprima</DialogTitle>
             <DialogDescription>Così vedrà il messaggio il destinatario.</DialogDescription>
           </DialogHeader>
-          <div className="text-sm space-y-1 border-b border-slate-100 pb-3">
-            <p><span className="text-slate-500">Da:</span> {account ? `${account.display_name || ""} ‹${account.email_address}›` : "—"} {isPec && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded px-1.5 py-0.5 ml-1">PEC</span>}</p>
-            <p><span className="text-slate-500">A:</span> {to.join(", ") || "—"}</p>
-            {cc.length > 0 && <p><span className="text-slate-500">Cc:</span> {cc.join(", ")}</p>}
-            {bcc.length > 0 && <p><span className="text-slate-500">Ccn:</span> {bcc.join(", ")}</p>}
-            <p><span className="text-slate-500">Oggetto:</span> <strong>{subject || "(senza oggetto)"}</strong></p>
-            {files.length > 0 && <p><span className="text-slate-500">Allegati:</span> {files.map((f) => f.name).join(", ")}</p>}
+          <div className="text-sm space-y-1 border-b border-zinc-100 pb-3">
+            <p><span className="text-zinc-500">Da:</span> {account ? `${account.display_name || ""} ‹${account.email_address}›` : "—"} {isPec && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded px-1.5 py-0.5 ml-1">PEC</span>}</p>
+            <p><span className="text-zinc-500">A:</span> {to.join(", ") || "—"}</p>
+            {cc.length > 0 && <p><span className="text-zinc-500">Cc:</span> {cc.join(", ")}</p>}
+            {bcc.length > 0 && <p><span className="text-zinc-500">Ccn:</span> {bcc.join(", ")}</p>}
+            <p><span className="text-zinc-500">Oggetto:</span> <strong>{subject || "(senza oggetto)"}</strong></p>
+            {files.length > 0 && <p><span className="text-zinc-500">Allegati:</span> {files.map((f) => f.name).join(", ")}</p>}
           </div>
-          <iframe title="Anteprima email" sandbox="" srcDoc={previewDoc} className="w-full h-[55vh] rounded-md border border-slate-200 bg-white" />
+          <iframe title="Anteprima email" sandbox="" srcDoc={previewDoc} className="w-full h-[55vh] rounded-md border border-zinc-200 bg-white" />
         </DialogContent>
       </Dialog>
 
@@ -545,7 +545,7 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
 function LinkSelect({ label, value, onChange, options }) {
   return (
     <div>
-      <Label htmlFor="composedialog-campo" className="text-xs text-slate-500">{label}</Label>
+      <Label htmlFor="composedialog-campo" className="text-xs text-zinc-500">{label}</Label>
       <Select value={value || "none"} onValueChange={(v) => onChange(v === "none" ? "" : v)}>
         <SelectTrigger id="composedialog-campo" className="mt-1 h-9 text-sm"><SelectValue /></SelectTrigger>
         <SelectContent>

@@ -202,14 +202,14 @@ export default function Reminders() {
 
       {/* Riepilogo */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Stat icon={AlertTriangle} label="In ritardo" value={stats.overdue} tone={stats.overdue ? "text-red-700" : "text-slate-500"} />
+        <Stat icon={AlertTriangle} label="In ritardo" value={stats.overdue} tone={stats.overdue ? "text-red-700" : "text-zinc-500"} />
         <Stat icon={Bell} label="Oggi" value={stats.today} tone="text-brand-600" />
-        <Stat icon={CalendarIcon} label="Prossimi 7 giorni" value={stats.week} tone="text-slate-700" />
+        <Stat icon={CalendarIcon} label="Prossimi 7 giorni" value={stats.week} tone="text-zinc-700" />
         <Stat icon={CheckCircle2} label="Completati (30 gg)" value={stats.done30} tone="text-emerald-700" />
       </div>
 
       {/* Inserimento rapido */}
-      <form onSubmit={quickAdd} className="bg-white rounded-xl border border-slate-200 p-2 flex items-center gap-2 mb-4">
+      <form onSubmit={quickAdd} className="bg-white rounded-xl border border-zinc-200 p-2 flex items-center gap-2 mb-4">
         <Sparkles className="w-4 h-4 text-brand-600 ml-2 shrink-0" />
         <Input value={quick} onChange={(e) => setQuick(e.target.value)} aria-label="Nuovo promemoria in parole tue" placeholder='Scrivi come parli: "chiamare Bianchi venerdì alle 10", "pagare F24 il 16 ogni mese"…' className="border-0 shadow-none focus-visible:ring-0 h-9" />
         <Button type="submit" aria-label="Aggiungi promemoria" disabled={!quick.trim() || quickBusy} className="bg-brand-600 hover:bg-brand-700 shrink-0 gap-1.5">
@@ -219,14 +219,14 @@ export default function Reminders() {
 
       {/* Strumenti */}
       <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
-        <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit max-w-full overflow-x-auto">
+        <div className="flex rounded-lg border border-zinc-200 bg-white p-0.5 w-fit max-w-full overflow-x-auto">
           {[["agenda", "Agenda", ListTodo], ["calendario", "Calendario", CalendarIcon], ["completati", "Completati", CheckCircle2]].map(([k, l, I]) => (
-            <button key={k} onClick={() => setTab(k)} className={`flex items-center gap-1.5 px-3 h-8 rounded-md text-sm ${tab === k ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}><I className="w-4 h-4" /> {l}</button>
+            <button key={k} onClick={() => setTab(k)} className={`flex items-center gap-1.5 px-3 h-8 rounded-md text-sm ${tab === k ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}><I className="w-4 h-4" /> {l}</button>
           ))}
         </div>
         <div className="flex flex-wrap gap-2 md:ml-auto">
           <div className="relative flex-1 min-w-[160px]">
-            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cerca…" className="pl-8 h-9" />
           </div>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -257,15 +257,15 @@ export default function Reminders() {
             </section>
           )}
           {openCount === 0 ? (
-            <div className="bg-white rounded-xl border border-dashed border-slate-300 py-14 text-center">
+            <div className="bg-white rounded-xl border border-dashed border-zinc-300 py-14 text-center">
               <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
-              <p className="mt-3 font-semibold text-slate-900">{q || typeFilter !== "all" || prioFilter !== "all" ? "Nessun promemoria con questi filtri" : "Tutto in ordine"}</p>
-              <p className="text-sm text-slate-500 mt-1">Nessun promemoria aperto. Aggiungine uno con la barra qui sopra.</p>
+              <p className="mt-3 font-semibold text-zinc-900">{q || typeFilter !== "all" || prioFilter !== "all" ? "Nessun promemoria con questi filtri" : "Tutto in ordine"}</p>
+              <p className="text-sm text-zinc-500 mt-1">Nessun promemoria aperto. Aggiungine uno con la barra qui sopra.</p>
             </div>
           ) : BUCKETS.filter((b) => grouped[b.key].length).map((b) => (
             <section key={b.key}>
-              <h2 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${b.tone}`}>{b.label}<span className="text-xs font-normal text-slate-500">{grouped[b.key].length}</span></h2>
-              <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+              <h2 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${b.tone}`}>{b.label}<span className="text-xs font-normal text-zinc-500">{grouped[b.key].length}</span></h2>
+              <div className="bg-white rounded-xl border border-zinc-200 divide-y divide-zinc-100">
                 {grouped[b.key].map((r) => <ReminderRow key={r.id} r={r} {...rowProps} showDate={b.key !== "today" && b.key !== "tomorrow"} />)}
               </div>
             </section>
@@ -275,9 +275,9 @@ export default function Reminders() {
 
       {tab === "completati" && (
         completed.length === 0 ? (
-          <div className="bg-white rounded-xl border border-dashed border-slate-300 py-14 text-center text-sm text-slate-500">Nessun promemoria completato.</div>
+          <div className="bg-white rounded-xl border border-dashed border-zinc-300 py-14 text-center text-sm text-zinc-500">Nessun promemoria completato.</div>
         ) : (
-          <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+          <div className="bg-white rounded-xl border border-zinc-200 divide-y divide-zinc-100">
             {completed.slice(0, 300).map((r) => <ReminderRow key={r.id} r={r} {...rowProps} showDate />)}
           </div>
         )
@@ -291,9 +291,9 @@ export default function Reminders() {
         <Dialog open onOpenChange={(v) => !v && setDayOpen(null)}>
           <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
             <DialogHeader><DialogTitle className="capitalize">{parseIso(dayOpen).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</DialogTitle></DialogHeader>
-            <div className="rounded-lg border border-slate-200 divide-y divide-slate-100">
+            <div className="rounded-lg border border-zinc-200 divide-y divide-zinc-100">
               {main.filter((r) => r.data === dayOpen && matches(r)).sort(byWhen).map((r) => <ReminderRow key={r.id} r={r} {...rowProps} />)}
-              {!main.some((r) => r.data === dayOpen && matches(r)) && <p className="p-4 text-sm text-slate-500">Niente in programma.</p>}
+              {!main.some((r) => r.data === dayOpen && matches(r)) && <p className="p-4 text-sm text-zinc-500">Niente in programma.</p>}
             </div>
             <Button onClick={() => { setEditing({ ...empty(), data: dayOpen }); setDayOpen(null); }} className="bg-brand-600 hover:bg-brand-700 gap-1.5 w-fit"><Plus className="w-4 h-4" /> Aggiungi in questo giorno</Button>
           </DialogContent>
@@ -307,11 +307,11 @@ export default function Reminders() {
 
 function Stat({ icon: Icon, label, value, tone }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-3 flex items-center gap-3">
+    <div className="bg-white rounded-xl border border-zinc-200 p-3 flex items-center gap-3">
       <Icon className={`w-5 h-5 ${tone}`} />
       <div>
-        <p className="text-xl font-bold text-slate-900 tabular-nums leading-none">{value}</p>
-        <p className="text-xs text-slate-500 mt-1">{label}</p>
+        <p className="text-xl font-bold text-zinc-900 tabular-nums leading-none">{value}</p>
+        <p className="text-xs text-zinc-500 mt-1">{label}</p>
       </div>
     </div>
   );
@@ -325,16 +325,16 @@ function ReminderRow({ r, today, showDate, onComplete, onSnooze, onEdit, onDelet
     <div className="flex items-start gap-3 px-3 py-2.5 group">
       <button
         onClick={() => onComplete(r)}
-        className={`mt-0.5 w-5 h-5 rounded-full border-2 grid place-items-center shrink-0 transition-colors ${r.completato ? "bg-emerald-600 border-emerald-600 text-white" : r.priorita === "alta" ? "border-red-500 hover:bg-red-50" : "border-slate-300 hover:border-emerald-600"}`}
+        className={`mt-0.5 w-5 h-5 rounded-full border-2 grid place-items-center shrink-0 transition-colors ${r.completato ? "bg-emerald-600 border-emerald-600 text-white" : r.priorita === "alta" ? "border-red-500 hover:bg-red-50" : "border-zinc-300 hover:border-emerald-600"}`}
         aria-label={r.completato ? "Riapri" : "Segna come fatto"}
       >
         {r.completato && <Check className="w-3 h-3" />}
       </button>
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${r.completato ? "line-through text-slate-500" : "text-slate-900"}`}>
+        <p className={`text-sm font-medium ${r.completato ? "line-through text-zinc-500" : "text-zinc-900"}`}>
           {r.priorita === "alta" && !r.completato && <span className="text-red-700 mr-1">!</span>}{r.titolo}
         </p>
-        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1 text-xs text-slate-500">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1 text-xs text-zinc-500">
           {(showDate || overdue) && <span className={overdue ? "text-red-700 font-medium" : ""}>{fmtDay(r.data)}</span>}
           {r.ora && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{r.ora}</span>}
           <span className={`px-1.5 py-0.5 rounded ${t.color}`}>{t.label}</span>
@@ -343,13 +343,13 @@ function ReminderRow({ r, today, showDate, onComplete, onSnooze, onEdit, onDelet
           {r.posticipato > 0 && <span>posticipato {r.posticipato}×</span>}
           {hasLink && <button onClick={() => onLink(r)} className="flex items-center gap-1 text-brand-700 hover:underline"><ExternalLink className="w-3 h-3" />{LINK_LABEL[r.riferimento_tipo] || "Apri"}</button>}
         </div>
-        {r.descrizione && !r.completato && <p className="text-xs text-slate-500 mt-1 line-clamp-2 whitespace-pre-line">{r.descrizione}</p>}
+        {r.descrizione && !r.completato && <p className="text-xs text-zinc-500 mt-1 line-clamp-2 whitespace-pre-line">{r.descrizione}</p>}
       </div>
       <div className="flex items-center gap-0.5 shrink-0">
         {!r.completato && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label="Posticipa" title="Posticipa"><AlarmClockOff className="w-4 h-4" /></button>
+              <button className="p-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800" aria-label="Posticipa" title="Posticipa"><AlarmClockOff className="w-4 h-4" /></button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Posticipa</DropdownMenuLabel>
@@ -363,7 +363,7 @@ function ReminderRow({ r, today, showDate, onComplete, onSnooze, onEdit, onDelet
         )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label="Altre azioni"><MoreHorizontal className="w-4 h-4" /></button>
+            <button className="p-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800" aria-label="Altre azioni"><MoreHorizontal className="w-4 h-4" /></button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => onEdit(r)}><Pencil className="w-4 h-4 mr-2" /> Modifica</DropdownMenuItem>
@@ -387,16 +387,16 @@ function MonthCalendar({ month, setMonth, reminders, today, onDay, onNew }) {
   const byDay = {};
   for (const r of reminders) (byDay[r.data] ||= []).push(r);
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100">
-        <button onClick={() => setMonth(new Date(y, m - 1, 1))} className="p-1.5 rounded-md hover:bg-slate-100" aria-label="Mese precedente"><ChevronLeft className="w-5 h-5" /></button>
+    <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-100">
+        <button onClick={() => setMonth(new Date(y, m - 1, 1))} className="p-1.5 rounded-md hover:bg-zinc-100" aria-label="Mese precedente"><ChevronLeft className="w-5 h-5" /></button>
         <div className="flex items-center gap-2">
-          <p className="font-semibold text-slate-900 capitalize">{month.toLocaleDateString("it-IT", { month: "long", year: "numeric" })}</p>
+          <p className="font-semibold text-zinc-900 capitalize">{month.toLocaleDateString("it-IT", { month: "long", year: "numeric" })}</p>
           <button onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); }} className="text-xs text-brand-700 hover:underline">Oggi</button>
         </div>
-        <button onClick={() => setMonth(new Date(y, m + 1, 1))} className="p-1.5 rounded-md hover:bg-slate-100" aria-label="Mese successivo"><ChevronRight className="w-5 h-5" /></button>
+        <button onClick={() => setMonth(new Date(y, m + 1, 1))} className="p-1.5 rounded-md hover:bg-zinc-100" aria-label="Mese successivo"><ChevronRight className="w-5 h-5" /></button>
       </div>
-      <div className="grid grid-cols-7 text-center text-xs font-medium text-slate-500 border-b border-slate-100">
+      <div className="grid grid-cols-7 text-center text-xs font-medium text-zinc-500 border-b border-zinc-100">
         {["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"].map((d) => <div key={d} className="py-1.5">{d}</div>)}
       </div>
       <div className="grid grid-cols-7">
@@ -407,16 +407,16 @@ function MonthCalendar({ month, setMonth, reminders, today, onDay, onNew }) {
             <div
               key={i}
               onClick={() => d && (list.length ? onDay(d) : onNew(d))}
-              className={`min-h-[64px] sm:min-h-[96px] border-b border-r border-slate-100 p-1 ${d ? "cursor-pointer hover:bg-slate-50" : "bg-slate-50/50"}`}
+              className={`min-h-[64px] sm:min-h-[96px] border-b border-r border-zinc-100 p-1 ${d ? "cursor-pointer hover:bg-zinc-50" : "bg-zinc-50/50"}`}
             >
               {d && (
                 <>
-                  <span className={`inline-grid place-items-center w-6 h-6 text-xs rounded-full ${d === today ? "bg-brand-600 text-white font-semibold" : "text-slate-700"}`}>{Number(d.slice(8))}</span>
+                  <span className={`inline-grid place-items-center w-6 h-6 text-xs rounded-full ${d === today ? "bg-brand-600 text-white font-semibold" : "text-zinc-700"}`}>{Number(d.slice(8))}</span>
                   <div className="hidden sm:block space-y-0.5 mt-0.5">
                     {list.slice(0, 3).map((r) => (
-                      <p key={r.id} className={`text-[11px] leading-tight truncate px-1 py-0.5 rounded ${r.completato ? "line-through text-slate-500" : r.data < today ? "bg-red-50 text-red-700" : reminderType(r.tipo).color}`}>{r.ora ? `${r.ora} ` : ""}{r.titolo}</p>
+                      <p key={r.id} className={`text-[11px] leading-tight truncate px-1 py-0.5 rounded ${r.completato ? "line-through text-zinc-500" : r.data < today ? "bg-red-50 text-red-700" : reminderType(r.tipo).color}`}>{r.ora ? `${r.ora} ` : ""}{r.titolo}</p>
                     ))}
-                    {list.length > 3 && <p className="text-[11px] text-slate-500 px-1">+{list.length - 3} altri</p>}
+                    {list.length > 3 && <p className="text-[11px] text-zinc-500 px-1">+{list.length - 3} altri</p>}
                   </div>
                   {open.length > 0 && <div className="sm:hidden flex justify-center mt-1"><span className={`w-1.5 h-1.5 rounded-full ${d < today ? "bg-red-500" : "bg-brand-500"}`} /></div>}
                 </>
@@ -474,7 +474,7 @@ function ReminderDialog({ initial, onClose, onSave }) {
           </div>
           <div><Label htmlFor="r-luogo">Luogo</Label><Input id="r-luogo" value={f.luogo} onChange={(e) => set("luogo", e.target.value)} placeholder="es. cantiere via Roma 12" /></div>
           <div><Label htmlFor="r-note">Note</Label><Textarea id="r-note" rows={3} value={f.descrizione} onChange={(e) => set("descrizione", e.target.value)} /></div>
-          <p className="text-xs text-slate-500">Il giorno stabilito ricevi un'email di riepilogo al mattino e, con l'app aperta, una notifica (all'ora indicata, se c'è).</p>
+          <p className="text-xs text-zinc-500">Il giorno stabilito ricevi un'email di riepilogo al mattino e, con l'app aperta, una notifica (all'ora indicata, se c'è).</p>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onClose}>Annulla</Button>
             <Button type="submit" disabled={!f.titolo.trim() || !f.data || busy} className="bg-brand-600 hover:bg-brand-700">{busy && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva</Button>

@@ -62,12 +62,12 @@ export default function BackupExport() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6 mt-5">
+    <div className="bg-white rounded-xl border border-zinc-200 p-6 mt-5">
       <div className="flex items-center gap-2 mb-3">
         <Database className="w-4 h-4 text-brand-600" />
-        <h3 className="text-sm font-semibold text-slate-700">Backup ed Esportazione</h3>
+        <h3 className="text-sm font-semibold text-zinc-700">Backup ed Esportazione</h3>
       </div>
-      <p className="text-sm text-slate-500 mb-4">
+      <p className="text-sm text-zinc-500 mb-4">
         Scarica tutti i dati dell'app (contatti, preventivi, lavori, dipendenti, documenti, promemoria, contratti) in formato CSV.
         Utile come backup di sicurezza o da consegnare al commercialista.
       </p>
@@ -75,7 +75,7 @@ export default function BackupExport() {
         {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
         {exporting ? "Esportazione in corso…" : "Esporta tutti i dati (CSV)"}
       </Button>
-      <p className="text-xs text-slate-500 mt-2">Verranno scaricati singoli file CSV per ogni categoria di dati.</p>
+      <p className="text-xs text-zinc-500 mt-2">Verranno scaricati singoli file CSV per ogni categoria di dati.</p>
     </div>
   );
 }

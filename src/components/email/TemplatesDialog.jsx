@@ -70,7 +70,7 @@ export default function TemplatesDialog({ open, onOpenChange }) {
       <DialogContent className="max-w-2xl w-[calc(100vw-1.5rem)] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {editing && <button onClick={() => setEditing(null)} aria-label="Torna all'elenco" className="p-1 rounded hover:bg-slate-100"><ArrowLeft className="w-4 h-4" /></button>}
+            {editing && <button onClick={() => setEditing(null)} aria-label="Torna all'elenco" className="p-1 rounded hover:bg-zinc-100"><ArrowLeft className="w-4 h-4" /></button>}
             {editing ? (editing.id ? "Modifica modello" : "Nuovo modello") : "Modelli email"}
           </DialogTitle>
           <DialogDescription>
@@ -101,7 +101,7 @@ export default function TemplatesDialog({ open, onOpenChange }) {
               <Label>Testo</Label>
               <div className="flex flex-wrap gap-1.5 my-1.5">
                 {TEMPLATE_VARIABLES.map((v) => (
-                  <button key={v.key} type="button" onClick={() => insertVar(v.key)} className="text-xs rounded-full border border-slate-200 px-2 py-0.5 text-slate-600 hover:bg-slate-50">
+                  <button key={v.key} type="button" onClick={() => insertVar(v.key)} className="text-xs rounded-full border border-zinc-200 px-2 py-0.5 text-zinc-600 hover:bg-zinc-50">
                     + {v.label}
                   </button>
                 ))}
@@ -114,7 +114,7 @@ export default function TemplatesDialog({ open, onOpenChange }) {
             </div>
           </div>
         ) : loading ? (
-          <div className="py-10 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-500" /></div>
+          <div className="py-10 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-zinc-500" /></div>
         ) : (
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
@@ -124,14 +124,14 @@ export default function TemplatesDialog({ open, onOpenChange }) {
               )}
             </div>
             {items.length === 0 ? (
-              <p className="text-sm text-slate-500 py-6 text-center">Nessun modello salvato. Finché non ne crei, quando scrivi trovi i 5 modelli pronti di Talo.</p>
+              <p className="text-sm text-zinc-500 py-6 text-center">Nessun modello salvato. Finché non ne crei, quando scrivi trovi i 5 modelli pronti di Talo.</p>
             ) : (
-              <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200">
+              <ul className="divide-y divide-zinc-100 rounded-lg border border-zinc-200">
                 {items.map((t) => (
                   <li key={t.id} className="flex items-center gap-3 px-3 py-2.5">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-slate-800 truncate">{t.nome}</p>
-                      <p className="text-xs text-slate-500 truncate">{TEMPLATE_TYPES.find((x) => x.value === t.tipo)?.label || "Generico"} · {t.oggetto}</p>
+                      <p className="text-sm font-medium text-zinc-800 truncate">{t.nome}</p>
+                      <p className="text-xs text-zinc-500 truncate">{TEMPLATE_TYPES.find((x) => x.value === t.tipo)?.label || "Generico"} · {t.oggetto}</p>
                     </div>
                     <Button size="icon" variant="ghost" aria-label="Modifica" onClick={() => setEditing({ ...EMPTY, ...t })}><Pencil className="w-4 h-4" /></Button>
                     <Button size="icon" variant="ghost" aria-label="Elimina" onClick={() => remove(t)}><Trash2 className="w-4 h-4 text-red-700" /></Button>

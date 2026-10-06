@@ -60,37 +60,37 @@ export default function PriceListDialog({ open, onOpenChange, onAdd, showCosts }
           <DialogDescription>Le voci che usi spesso, con prezzo e unità di misura. Per aggiungerne una: nel preventivo, menu della riga → "Salva nel listino".</DialogDescription>
         </DialogHeader>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cerca nel listino…" className="pl-9" autoFocus aria-label="Cerca nel listino" />
         </div>
         {categories.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {categories.map((c) => (
-              <button key={c} onClick={() => setCategory(category === c ? "" : c)} className={`rounded-full border px-2.5 py-0.5 text-xs ${category === c ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>{c}</button>
+              <button key={c} onClick={() => setCategory(category === c ? "" : c)} className={`rounded-full border px-2.5 py-0.5 text-xs ${category === c ? "border-brand-600 bg-brand-600 text-white" : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"}`}>{c}</button>
             ))}
           </div>
         )}
-        <div className="flex-1 overflow-y-auto min-h-[200px] rounded-lg border border-slate-200">
+        <div className="flex-1 overflow-y-auto min-h-[200px] rounded-lg border border-zinc-200">
           {loading ? (
-            <div className="py-10 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-slate-500" /></div>
+            <div className="py-10 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-zinc-500" /></div>
           ) : filtered.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-10 px-6">{items.length ? "Nessuna voce trovata." : "Il listino è vuoto. Salva qui le voci che ripeti spesso dal menu di ogni riga del preventivo."}</p>
+            <p className="text-sm text-zinc-500 text-center py-10 px-6">{items.length ? "Nessuna voce trovata." : "Il listino è vuoto. Salva qui le voci che ripeti spesso dal menu di ogni riga del preventivo."}</p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-zinc-100">
               {filtered.map((i) => (
-                <li key={i.id} className={`flex items-start gap-3 px-3 py-2.5 cursor-pointer ${selected.has(i.id) ? "bg-brand-50" : "hover:bg-slate-50"}`} onClick={() => toggle(i.id)}>
-                  <span className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center shrink-0 ${selected.has(i.id) ? "bg-brand-600 border-brand-600" : "border-slate-300"}`}>
+                <li key={i.id} className={`flex items-start gap-3 px-3 py-2.5 cursor-pointer ${selected.has(i.id) ? "bg-brand-50" : "hover:bg-zinc-50"}`} onClick={() => toggle(i.id)}>
+                  <span className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center shrink-0 ${selected.has(i.id) ? "bg-brand-600 border-brand-600" : "border-zinc-300"}`}>
                     {selected.has(i.id) && <Check className="w-3.5 h-3.5 text-white" />}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-slate-800 line-clamp-2">{i.descrizione}</p>
-                    <p className="text-xs text-slate-600">{[i.categoria, i.codice].filter(Boolean).join(" · ")}</p>
+                    <p className="text-sm text-zinc-800 line-clamp-2">{i.descrizione}</p>
+                    <p className="text-xs text-zinc-600">{[i.categoria, i.codice].filter(Boolean).join(" · ")}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-sm font-medium text-slate-900 tabular-nums">{fmtEur(i.prezzo_unitario)}<span className="text-xs text-slate-500">/{unitLabel(i.unita_misura)}</span></p>
-                    {showCosts && i.costo_unitario != null && <p className="text-xs text-slate-600">costo {fmtEur(i.costo_unitario)}</p>}
+                    <p className="text-sm font-medium text-zinc-900 tabular-nums">{fmtEur(i.prezzo_unitario)}<span className="text-xs text-zinc-500">/{unitLabel(i.unita_misura)}</span></p>
+                    {showCosts && i.costo_unitario != null && <p className="text-xs text-zinc-600">costo {fmtEur(i.costo_unitario)}</p>}
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); remove(i); }} aria-label="Rimuovi dal listino" className="p-1 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={(e) => { e.stopPropagation(); remove(i); }} aria-label="Rimuovi dal listino" className="p-1 rounded hover:bg-red-50 text-zinc-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                 </li>
               ))}
             </ul>

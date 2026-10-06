@@ -41,7 +41,7 @@ export default function QuoteTemplatePicker({
       <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Scegli il modello del preventivo</DialogTitle>
-          <p className="text-sm text-slate-500 font-normal">
+          <p className="text-sm text-zinc-500 font-normal">
             Anteprima con i tuoi dati reali. Seleziona il modello che preferisci, poi conferma per scaricare o inviare.
           </p>
         </DialogHeader>
@@ -58,35 +58,35 @@ export default function QuoteTemplatePicker({
                   className={`border rounded-lg p-3 cursor-pointer transition-colors ${
                     selectedTemplate === t.id
                       ? "border-brand-500 bg-brand-50"
-                      : "border-slate-200 hover:bg-slate-50"
+                      : "border-zinc-200 hover:bg-zinc-50"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      selectedTemplate === t.id ? "bg-brand-100" : "bg-slate-100"
+                      selectedTemplate === t.id ? "bg-brand-100" : "bg-zinc-100"
                     }`}>
-                      <Icon className={`w-4 h-4 ${selectedTemplate === t.id ? "text-brand-600" : "text-slate-500"}`} />
+                      <Icon className={`w-4 h-4 ${selectedTemplate === t.id ? "text-brand-600" : "text-zinc-500"}`} />
                     </div>
-                    <p className="text-sm font-medium text-slate-900">{t.nome}</p>
+                    <p className="text-sm font-medium text-zinc-900">{t.nome}</p>
                     {selectedTemplate === t.id && <Check className="w-4 h-4 text-brand-600 ml-auto" />}
                   </div>
-                  <p className="text-xs text-slate-500 mt-1.5">{t.descrizione}</p>
+                  <p className="text-xs text-zinc-500 mt-1.5">{t.descrizione}</p>
                 </div>
               );
             })}
           </div>
 
           {/* Preview */}
-          <div className="flex-1 rounded-lg border border-slate-200 bg-slate-100 min-h-[300px] overflow-hidden">
+          <div className="flex-1 rounded-lg border border-zinc-200 bg-zinc-100 min-h-[300px] overflow-hidden">
             {generating ? (
               <div className="flex flex-col items-center justify-center h-full py-16 gap-2">
                 <Loader2 className="w-6 h-6 animate-spin text-brand-600" />
-                <p className="text-sm text-slate-500">Generazione anteprima...</p>
+                <p className="text-sm text-zinc-500">Generazione anteprima...</p>
               </div>
             ) : previewUrl ? (
               <iframe src={previewUrl} className="w-full h-full min-h-[400px]" title="Anteprima preventivo" />
             ) : (
-              <div className="flex items-center justify-center h-full py-16 text-slate-500 text-sm">
+              <div className="flex items-center justify-center h-full py-16 text-zinc-500 text-sm">
                 Seleziona un modello per vedere l'anteprima
               </div>
             )}
@@ -111,15 +111,15 @@ export default function QuoteTemplatePicker({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_pdf")}>
                   <FileText className="w-4 h-4 mr-2 text-red-700" /> PDF
-                  <span className="ml-auto text-xs text-slate-500">Pronto da inviare</span>
+                  <span className="ml-auto text-xs text-zinc-500">Pronto da inviare</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_word")}>
                   <FileType className="w-4 h-4 mr-2 text-brand-600" /> Word (.doc)
-                  <span className="ml-auto text-xs text-slate-500">Modificabile</span>
+                  <span className="ml-auto text-xs text-zinc-500">Modificabile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAction(selectedTemplate, "download_excel")}>
                   <FileSpreadsheet className="w-4 h-4 mr-2 text-green-700" /> Excel (.xls)
-                  <span className="ml-auto text-xs text-slate-500">Tabelle e calcoli</span>
+                  <span className="ml-auto text-xs text-zinc-500">Tabelle e calcoli</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

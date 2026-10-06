@@ -198,13 +198,13 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
     return true;
   });
 
-  if (loading) return <div className="py-8 text-center text-sm text-slate-500">Caricamento...</div>;
+  if (loading) return <div className="py-8 text-center text-sm text-zinc-500">Caricamento...</div>;
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <Input placeholder="Cerca per mittente o descrizione..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10 h-10" />
         </div>
         <Button
@@ -246,19 +246,19 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
             const Icon = fileTypeIcon(rq.file_tipo);
             const isSelected = selectedIds.has(rq.id);
             return (
-              <div key={rq.id} className={`bg-white rounded-xl border p-4 ${isSelected ? "border-brand-400 bg-brand-50" : "border-slate-200"}`}>
+              <div key={rq.id} className={`bg-white rounded-xl border p-4 ${isSelected ? "border-brand-400 bg-brand-50" : "border-zinc-200"}`}>
                 <div className="flex items-start gap-3">
                   {selectMode && (
                     <input type="checkbox" checked={isSelected} onChange={() => toggleSelect(rq.id)} className="w-4 h-4 mt-3 cursor-pointer flex-shrink-0" />
                   )}
-                  <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-5 h-5 text-slate-500" />
+                  <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-5 h-5 text-zinc-500" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-medium text-slate-900">{rq.fornitore}</p>
-                      <span className="text-xs text-slate-500">{rq.data ? new Date(rq.data).toLocaleDateString("it-IT") : ""}</span>
-                      {rq.importo > 0 && <span className="text-sm font-semibold text-slate-700">€ {rq.importo.toFixed(2)}</span>}
+                      <p className="text-sm font-medium text-zinc-900">{rq.fornitore}</p>
+                      <span className="text-xs text-zinc-500">{rq.data ? new Date(rq.data).toLocaleDateString("it-IT") : ""}</span>
+                      {rq.importo > 0 && <span className="text-sm font-semibold text-zinc-700">€ {rq.importo.toFixed(2)}</span>}
                       <Select value={rq.stato} onValueChange={v => handleStatusChange(rq.id, v)}>
                         <SelectTrigger className="h-6 w-[110px] text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent>
@@ -268,7 +268,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
                         </SelectContent>
                       </Select>
                     </div>
-                    {rq.descrizione && <p className="text-xs text-slate-500 mt-1">{rq.descrizione}</p>}
+                    {rq.descrizione && <p className="text-xs text-zinc-500 mt-1">{rq.descrizione}</p>}
                     <div className="flex items-center gap-2 mt-2 flex-wrap">
                       {rq.worksite_nome && (
                         <span className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">
@@ -283,9 +283,9 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-end gap-1 mt-3 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-end gap-1 mt-3 pt-3 border-t border-zinc-100">
                   {rq.file_url && (
-                    <a href={rq.file_url} target="_blank" rel="noreferrer" className="p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200" title="Vedi originale">
+                    <a href={rq.file_url} target="_blank" rel="noreferrer" className="p-2 rounded-lg bg-zinc-100 text-zinc-600 hover:bg-zinc-200" title="Vedi originale">
                       <Eye className="w-4 h-4" />
                     </a>
                   )}
@@ -346,7 +346,7 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
                 <p className="text-xs text-emerald-700 mb-2">
                   Totale rilevato dal documento: <strong>{aiSuggestion.importo.toFixed(2)} €</strong>
                 </p>
-                <p className="text-xs text-slate-500 mb-2">Confermi che questo importo è corretto?</p>
+                <p className="text-xs text-zinc-500 mb-2">Confermi che questo importo è corretto?</p>
                 <div className="flex gap-2">
                   <Button size="sm" onClick={acceptAiSuggestion} className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700">Sì, conferma</Button>
                   <Button size="sm" variant="outline" onClick={rejectAiSuggestion} className="h-7 text-xs border-emerald-300 text-emerald-700 hover:bg-emerald-100">No, lo correggo a mano</Button>
@@ -373,15 +373,15 @@ export default function ReceivedQuotesSection({ profile, worksites }) {
                   {worksites.map(w => <SelectItem key={w.id} value={w.id}>{w.nome}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-slate-500 mt-1">Se collegato, il preventivo comparirà anche nella cartella del lavoro.</p>
+              <p className="text-xs text-zinc-500 mt-1">Se collegato, il preventivo comparirà anche nella cartella del lavoro.</p>
             </div>
 
-            <div className="border-t border-slate-100 pt-3">
+            <div className="border-t border-zinc-100 pt-3">
               <Label>File del preventivo *</Label>
               <div className="mt-1">
                 <label className="cursor-pointer">
-                  <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:border-brand-400 transition-colors min-h-[56px] flex items-center justify-center">
-                    {uploading ? <p className="text-xs text-slate-500">Caricamento...</p> : fileUrl ? <p className="text-xs text-emerald-700">✓ File caricato — tocca per cambiare</p> : <><Upload className="w-6 h-6 text-slate-500 mx-auto mb-1" /><p className="text-xs text-slate-500">Carica PDF, immagine o documento</p></>}
+                  <div className="border-2 border-dashed border-zinc-300 rounded-lg p-4 text-center hover:border-brand-400 transition-colors min-h-[56px] flex items-center justify-center">
+                    {uploading ? <p className="text-xs text-zinc-500">Caricamento...</p> : fileUrl ? <p className="text-xs text-emerald-700">✓ File caricato — tocca per cambiare</p> : <><Upload className="w-6 h-6 text-zinc-500 mx-auto mb-1" /><p className="text-xs text-zinc-500">Carica PDF, immagine o documento</p></>}
                   </div>
                   <input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx" className="hidden" onChange={handleFileUpload} />
                 </label>

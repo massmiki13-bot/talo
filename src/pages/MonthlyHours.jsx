@@ -186,7 +186,7 @@ export default function MonthlyHours({ onOpenDay } = {}) {
         {canSeeCosts && (
           <div className="flex items-center gap-2 ml-auto">
             <Switch checked={showCosts} onCheckedChange={setShowCosts} id="show-costs" />
-            <label htmlFor="show-costs" className="text-xs font-medium text-slate-600 cursor-pointer">Mostra costi</label>
+            <label htmlFor="show-costs" className="text-xs font-medium text-zinc-600 cursor-pointer">Mostra costi</label>
           </div>
         )}
         {!isOperaio && (
@@ -197,11 +197,11 @@ export default function MonthlyHours({ onOpenDay } = {}) {
       </div>
 
       {/* Employee selector for single PDF */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6 flex flex-col sm:flex-row gap-3 sm:items-end">
+      <div className="bg-white rounded-xl border border-zinc-200 p-4 mb-6 flex flex-col sm:flex-row gap-3 sm:items-end">
         <div className="flex-1">
-          <label className="text-xs font-medium text-slate-500 mb-1 block">Dipendente</label>
+          <label className="text-xs font-medium text-zinc-500 mb-1 block">Dipendente</label>
           {isOperaio ? (
-            <div className="text-sm font-medium text-slate-700 py-2">
+            <div className="text-sm font-medium text-zinc-700 py-2">
               {employeeSummary.find(e => e.id === myEmpId)?.nome || "Nessun dato"}
             </div>
           ) : (
@@ -222,59 +222,59 @@ export default function MonthlyHours({ onOpenDay } = {}) {
       <div className={`grid grid-cols-1 ${canSeeCosts && showCosts ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4 mb-6`}>
         <Card><CardContent className="pt-6">
           <Users className="w-5 h-5 text-brand-600 mb-2" />
-          <p className="text-2xl font-bold text-slate-900">{employeeSummary.length}</p>
-          <p className="text-xs text-slate-500">Dipendenti con ore</p>
+          <p className="text-2xl font-bold text-zinc-900">{employeeSummary.length}</p>
+          <p className="text-xs text-zinc-500">Dipendenti con ore</p>
         </CardContent></Card>
         <Card><CardContent className="pt-6">
           <Clock className="w-5 h-5 text-amber-700 mb-2" />
-          <p className="text-2xl font-bold text-slate-900">{totaleOreMese.toFixed(1)}h</p>
-          <p className="text-xs text-slate-500">Totale ore del mese</p>
+          <p className="text-2xl font-bold text-zinc-900">{totaleOreMese.toFixed(1)}h</p>
+          <p className="text-xs text-zinc-500">Totale ore del mese</p>
         </CardContent></Card>
         {canSeeCosts && showCosts && (
         <Card><CardContent className="pt-6">
           <span className="text-2xl">💶</span>
-          <p className="text-2xl font-bold text-slate-900 mt-2">{formatEuro(totaleCostoMese)}</p>
-          <p className="text-xs text-slate-500">Costo manodopera</p>
+          <p className="text-2xl font-bold text-zinc-900 mt-2">{formatEuro(totaleCostoMese)}</p>
+          <p className="text-xs text-zinc-500">Costo manodopera</p>
         </CardContent></Card>
         )}
       </div>
 
       {/* Tabellone grid */}
       {employeeSummary.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
-          <Clock className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-          <p className="text-sm text-slate-500">Nessuna presenza registrata per {MESI[mese]} {anno}</p>
+        <div className="bg-white rounded-xl border border-zinc-200 p-8 text-center">
+          <Clock className="w-10 h-10 text-zinc-300 mx-auto mb-2" />
+          <p className="text-sm text-zinc-500">Nessuna presenza registrata per {MESI[mese]} {anno}</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
           <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Tabellone delle ore del mese (scorri in orizzontale)">
             <table className="border-collapse text-sm">
               <thead>
                 <tr>
-                  <th className="sticky left-0 z-10 bg-slate-50 border-b border-r border-slate-200 px-2 py-1.5 text-left text-xs font-medium text-slate-500 uppercase min-w-[120px] max-w-[180px]">Dipendente</th>
+                  <th className="sticky left-0 z-10 bg-zinc-50 border-b border-r border-zinc-200 px-2 py-1.5 text-left text-xs font-medium text-zinc-500 uppercase min-w-[120px] max-w-[180px]">Dipendente</th>
                   {days.map(d => (
-                    <th key={d.dateStr} className={`border-b border-r border-slate-200 px-0.5 py-1 text-center text-xs font-medium min-w-[28px] w-7 ${d.isSunday ? "bg-red-50 text-red-700" : d.isSaturday ? "bg-slate-100 text-slate-600" : "bg-slate-50 text-slate-600"}`}>
+                    <th key={d.dateStr} className={`border-b border-r border-zinc-200 px-0.5 py-1 text-center text-xs font-medium min-w-[28px] w-7 ${d.isSunday ? "bg-red-50 text-red-700" : d.isSaturday ? "bg-zinc-100 text-zinc-600" : "bg-zinc-50 text-zinc-600"}`}>
                       {d.day}
                     </th>
                   ))}
-                  <th className="bg-slate-50 border-b border-slate-200 px-2 py-1 text-center text-xs font-medium text-slate-500 uppercase min-w-[50px]">ORE</th>
-                  <th className="bg-slate-50 border-b border-l border-slate-200 px-2 py-1 text-center text-xs font-medium text-slate-500 uppercase min-w-[50px]" title="Ore oltre l'orario giornaliero">STR.</th>
+                  <th className="bg-zinc-50 border-b border-zinc-200 px-2 py-1 text-center text-xs font-medium text-zinc-500 uppercase min-w-[50px]">ORE</th>
+                  <th className="bg-zinc-50 border-b border-l border-zinc-200 px-2 py-1 text-center text-xs font-medium text-zinc-500 uppercase min-w-[50px]" title="Ore oltre l'orario giornaliero">STR.</th>
                 </tr>
                 <tr>
-                  <th className="sticky left-0 z-10 bg-slate-50 border-b border-r border-slate-200"></th>
+                  <th className="sticky left-0 z-10 bg-zinc-50 border-b border-r border-zinc-200"></th>
                   {days.map(d => (
-                    <th key={d.dateStr} className={`border-b border-r border-slate-200 px-0.5 py-0.5 text-center text-[10px] font-medium ${d.isSunday ? "bg-red-50 text-red-500" : d.isSaturday ? "bg-slate-100 text-slate-600" : "bg-slate-50 text-slate-500"}`}>
+                    <th key={d.dateStr} className={`border-b border-r border-zinc-200 px-0.5 py-0.5 text-center text-[10px] font-medium ${d.isSunday ? "bg-red-50 text-red-500" : d.isSaturday ? "bg-zinc-100 text-zinc-600" : "bg-zinc-50 text-zinc-500"}`}>
                       {d.letter}
                     </th>
                   ))}
-                  <th className="bg-slate-50 border-b border-slate-200"></th>
-                  <th className="bg-slate-50 border-b border-l border-slate-200"></th>
+                  <th className="bg-zinc-50 border-b border-zinc-200"></th>
+                  <th className="bg-zinc-50 border-b border-l border-zinc-200"></th>
                 </tr>
               </thead>
               <tbody>
                 {employeeSummary.map(emp => (
-                  <tr key={emp.id} className="hover:bg-slate-50">
-                    <td className="sticky left-0 z-10 bg-white border-b border-r border-slate-200 font-medium text-slate-900 whitespace-nowrap px-2 py-1.5 min-w-[120px] max-w-[180px] truncate">
+                  <tr key={emp.id} className="hover:bg-zinc-50">
+                    <td className="sticky left-0 z-10 bg-white border-b border-r border-zinc-200 font-medium text-zinc-900 whitespace-nowrap px-2 py-1.5 min-w-[120px] max-w-[180px] truncate">
                       {emp.nome}
                       <div className="flex flex-wrap gap-0.5 mt-0.5">
                         {STATE_ORDER.map(s => {
@@ -286,26 +286,26 @@ export default function MonthlyHours({ onOpenDay } = {}) {
                     </td>
                     {days.map(d => {
                       const dayData = emp.dayMap[d.dateStr];
-                      if (!dayData) return <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-slate-200 text-center min-w-[28px] w-7 h-8 ${d.isSunday ? "bg-red-50/50" : d.isSaturday ? "bg-slate-50" : ""}`}></td>;
+                      if (!dayData) return <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-zinc-200 text-center min-w-[28px] w-7 h-8 ${d.isSunday ? "bg-red-50/50" : d.isSaturday ? "bg-zinc-50" : ""}`}></td>;
                       const info = getStatoInfo(dayData.stato);
                       if (dayData.stato === "presente") {
                         return (
-                          <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-slate-200 text-center text-xs font-semibold ${info.bgClass} min-w-[28px] w-7 h-8`}
+                          <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-zinc-200 text-center text-xs font-semibold ${info.bgClass} min-w-[28px] w-7 h-8`}
                             title={[d.hol, dayData.cantieri.map(c => `${c.cantiere_nome}: ${c.ore}h`).join(", ")].filter(Boolean).join(" · ")}>
                             {dayData.ore.toFixed(0)}
                           </td>
                         );
                       }
                       return (
-                        <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-slate-200 text-center text-[10px] font-bold min-w-[28px] w-7 h-8 ${info.bgClass}`}>
+                        <td key={d.dateStr} onClick={onOpenDay ? () => onOpenDay(d.dateStr) : undefined} title={d.hol || undefined} className={`${onOpenDay ? "cursor-pointer hover:ring-2 hover:ring-inset hover:ring-brand-400 " : ""}border-b border-r border-zinc-200 text-center text-[10px] font-bold min-w-[28px] w-7 h-8 ${info.bgClass}`}>
                           {TAB_LETTERS[dayData.stato] || ""}
                         </td>
                       );
                     })}
-                    <td className="border-b border-slate-200 text-center font-bold text-slate-900 bg-slate-50 px-2 py-1.5">
+                    <td className="border-b border-zinc-200 text-center font-bold text-zinc-900 bg-zinc-50 px-2 py-1.5">
                       {emp.totaleOre.toFixed(1)}
                     </td>
-                    <td className={`border-b border-l border-slate-200 text-center px-2 py-1.5 bg-slate-50 tabular-nums ${emp.straordinari ? "font-semibold text-amber-700" : "text-slate-500"}`}>{emp.straordinari ? fmtH(emp.straordinari) : "—"}</td>
+                    <td className={`border-b border-l border-zinc-200 text-center px-2 py-1.5 bg-zinc-50 tabular-nums ${emp.straordinari ? "font-semibold text-amber-700" : "text-zinc-500"}`}>{emp.straordinari ? fmtH(emp.straordinari) : "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -316,15 +316,15 @@ export default function MonthlyHours({ onOpenDay } = {}) {
 
       {/* Ore e costo per cantiere */}
       {perSite.length > 0 && (
-        <div className="bg-white rounded-xl border border-slate-200 mt-4 overflow-hidden">
-          <p className="px-4 py-2.5 text-sm font-semibold text-slate-900 border-b border-slate-100">Ore per cantiere · {MESI[mese]} {anno}</p>
-          <div className="divide-y divide-slate-100">
+        <div className="bg-white rounded-xl border border-zinc-200 mt-4 overflow-hidden">
+          <p className="px-4 py-2.5 text-sm font-semibold text-zinc-900 border-b border-zinc-100">Ore per cantiere · {MESI[mese]} {anno}</p>
+          <div className="divide-y divide-zinc-100">
             {perSite.map((c) => (
               <div key={c.nome} className="flex items-center gap-3 px-4 py-2 text-sm">
-                <span className="flex-1 min-w-0 truncate text-slate-800">{c.nome}</span>
-                <div className="hidden sm:block w-40 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-brand-500" style={{ width: `${(c.ore / perSite[0].ore) * 100}%` }} /></div>
+                <span className="flex-1 min-w-0 truncate text-zinc-800">{c.nome}</span>
+                <div className="hidden sm:block w-40 h-1.5 rounded-full bg-zinc-100 overflow-hidden"><div className="h-full bg-brand-500" style={{ width: `${(c.ore / perSite[0].ore) * 100}%` }} /></div>
                 <span className="w-16 text-right tabular-nums font-medium">{fmtH(c.ore)} h</span>
-                {canSeeCosts && showCosts && <span className="w-24 text-right tabular-nums text-slate-600">{formatEuro(c.costo)}</span>}
+                {canSeeCosts && showCosts && <span className="w-24 text-right tabular-nums text-zinc-600">{formatEuro(c.costo)}</span>}
               </div>
             ))}
           </div>
@@ -332,7 +332,7 @@ export default function MonthlyHours({ onOpenDay } = {}) {
       )}
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mt-4 text-xs text-slate-500">
+      <div className="flex flex-wrap gap-4 mt-4 text-xs text-zinc-500">
         {STATE_ORDER.map(s => {
           const info = ATTENDANCE_STATES[s];
           const symbol = s === "presente" ? "8" : (TAB_LETTERS[s] || info.short);

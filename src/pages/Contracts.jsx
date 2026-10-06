@@ -138,19 +138,19 @@ export default function Contracts() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <Kpi icon={PenLine} label="Da firmare" value={kpi.daFirmare} tone="text-amber-700" onClick={() => setStatoFilter("inviato")} />
         <Kpi icon={CheckCircle2} label="Firmati in corso" value={kpi.firmati} tone="text-emerald-700" onClick={() => setStatoFilter("firmato")} />
-        <Kpi icon={Clock} label="In scadenza (60 gg)" value={kpi.inScadenza} tone={kpi.inScadenza ? "text-red-700" : "text-slate-500"} onClick={() => setStatoFilter("scadenza")} />
+        <Kpi icon={Clock} label="In scadenza (60 gg)" value={kpi.inScadenza} tone={kpi.inScadenza ? "text-red-700" : "text-zinc-500"} onClick={() => setStatoFilter("scadenza")} />
         <Kpi icon={Euro} label={`Appalti firmati ${new Date().getFullYear()}`} value={formatEuro(kpi.valore)} tone="text-brand-600" />
       </div>
 
       <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-3">
-        <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit max-w-full overflow-x-auto no-scrollbar">
+        <div className="flex rounded-lg border border-zinc-200 bg-white p-0.5 w-fit max-w-full overflow-x-auto no-scrollbar">
           {[{ key: "all", label: "Tutti" }, ...CATEGORIES, ...(templates.length ? [{ key: "custom", label: "Miei modelli" }] : [])].map((c) => (
-            <button key={c.key} onClick={() => setCat(c.key)} className={`px-3 h-8 rounded-md text-sm whitespace-nowrap ${cat === c.key ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}>{c.label}</button>
+            <button key={c.key} onClick={() => setCat(c.key)} className={`px-3 h-8 rounded-md text-sm whitespace-nowrap ${cat === c.key ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}>{c.label}</button>
           ))}
         </div>
         <div className="flex gap-2 lg:ml-auto">
           <div className="relative flex-1 lg:w-64">
-            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cerca per titolo o controparte" className="pl-8 h-9" />
           </div>
           <Select value={statoFilter} onValueChange={setStatoFilter}>
@@ -165,30 +165,30 @@ export default function Contracts() {
       </div>
 
       {list.length === 0 ? (
-        <div className="bg-white rounded-xl border border-dashed border-slate-300 py-14 px-6 text-center">
-          <FileSignature className="w-10 h-10 text-slate-300 mx-auto" />
-          <p className="mt-3 font-semibold text-slate-900">{contracts.length ? "Nessun contratto con questi filtri" : "Nessun contratto ancora"}</p>
-          <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">Scegli un modello, collega il dipendente o il cliente e descrivi l'accordo: l'IA compila i campi e prepara il documento con la tua intestazione.</p>
+        <div className="bg-white rounded-xl border border-dashed border-zinc-300 py-14 px-6 text-center">
+          <FileSignature className="w-10 h-10 text-zinc-300 mx-auto" />
+          <p className="mt-3 font-semibold text-zinc-900">{contracts.length ? "Nessun contratto con questi filtri" : "Nessun contratto ancora"}</p>
+          <p className="text-sm text-zinc-500 mt-1 max-w-md mx-auto">Scegli un modello, collega il dipendente o il cliente e descrivi l'accordo: l'IA compila i campi e prepara il documento con la tua intestazione.</p>
           {!contracts.length && <Button onClick={() => setWizard({ initial: null })} className="mt-4 bg-brand-600 hover:bg-brand-700 gap-2"><Plus className="w-4 h-4" /> Nuovo contratto</Button>}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-zinc-200 divide-y divide-zinc-100 overflow-hidden">
           {list.map((c) => {
             const s = statoOf(c);
             const exp = expiry(c);
             const I = CAT_ICON[categoryOf(c.tipo)] || FileSignature;
             return (
-              <button key={c.id} onClick={() => setDetailId(c.id)} className="w-full text-left flex items-center gap-3 px-4 py-3 hover:bg-slate-50">
-                <div className="w-9 h-9 rounded-lg bg-slate-100 grid place-items-center shrink-0"><I className="w-4 h-4 text-slate-600" /></div>
+              <button key={c.id} onClick={() => setDetailId(c.id)} className="w-full text-left flex items-center gap-3 px-4 py-3 hover:bg-zinc-50">
+                <div className="w-9 h-9 rounded-lg bg-zinc-100 grid place-items-center shrink-0"><I className="w-4 h-4 text-zinc-600" /></div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">{c.titolo}</p>
-                  <p className="text-xs text-slate-500 truncate">
+                  <p className="text-sm font-medium text-zinc-900 truncate">{c.titolo}</p>
+                  <p className="text-xs text-zinc-500 truncate">
                     {typeTitle(c.tipo, templates)} · {fmtDate(c.data_creazione || c.created_date)}{c.importo ? ` · ${formatEuro(c.importo)}` : ""}
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1.5 shrink-0">
                   {exp && <span className={`text-xs font-medium px-2 py-0.5 rounded-full flex items-center gap-1 ${exp.className}`}><AlertTriangle className="w-3 h-3" />{exp.label}</span>}
-                  {!exp && c.data_scadenza && <span className="hidden md:inline text-xs text-slate-500">fino al {fmtDate(c.data_scadenza)}</span>}
+                  {!exp && c.data_scadenza && <span className="hidden md:inline text-xs text-zinc-500">fino al {fmtDate(c.data_scadenza)}</span>}
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${s.className}`}>{s.label}</span>
                 </div>
               </button>
@@ -215,14 +215,14 @@ export default function Contracts() {
         <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>I miei modelli</DialogTitle></DialogHeader>
           {templates.length === 0 ? (
-            <p className="text-sm text-slate-500">Nessun modello personalizzato. Quando crei un contratto puoi spuntare "Salva anche come mio modello".</p>
+            <p className="text-sm text-zinc-500">Nessun modello personalizzato. Quando crei un contratto puoi spuntare "Salva anche come mio modello".</p>
           ) : (
-            <ul className="divide-y divide-slate-100 -mx-2">
+            <ul className="divide-y divide-zinc-100 -mx-2">
               {templates.map((t) => (
                 <li key={t.id} className="flex items-center gap-2 px-2 py-2">
-                  <span className="flex-1 text-sm text-slate-900 truncate">{t.nome}</span>
+                  <span className="flex-1 text-sm text-zinc-900 truncate">{t.nome}</span>
                   <Button size="sm" variant="outline" onClick={() => { setTemplatesOpen(false); setWizard({ initial: { tipo: `custom_${t.id}` } }); }}>Usa</Button>
-                  <button onClick={async () => { if (!(await confirmDialog(`Eliminare il modello "${t.nome}"?`))) return; await db.ContractTemplate.delete(t.id); setTemplates((l) => l.filter((x) => x.id !== t.id)); }} className="p-1.5 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina modello"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={async () => { if (!(await confirmDialog(`Eliminare il modello "${t.nome}"?`))) return; await db.ContractTemplate.delete(t.id); setTemplates((l) => l.filter((x) => x.id !== t.id)); }} className="p-1.5 rounded-md text-zinc-500 hover:text-red-600 hover:bg-red-50" aria-label="Elimina modello"><Trash2 className="w-4 h-4" /></button>
                 </li>
               ))}
             </ul>
@@ -236,11 +236,11 @@ export default function Contracts() {
 function Kpi({ icon: Icon, label, value, tone, onClick }) {
   const Tag = onClick ? "button" : "div";
   return (
-    <Tag onClick={onClick} className={`bg-white rounded-xl border border-slate-200 p-3 flex items-center gap-3 text-left ${onClick ? "hover:border-slate-300" : ""}`}>
+    <Tag onClick={onClick} className={`bg-white rounded-xl border border-zinc-200 p-3 flex items-center gap-3 text-left ${onClick ? "hover:border-zinc-300" : ""}`}>
       <Icon className={`w-5 h-5 shrink-0 ${tone}`} />
       <div className="min-w-0">
-        <p className="text-xl font-bold text-slate-900 tabular-nums leading-none truncate">{value}</p>
-        <p className="text-xs text-slate-500 mt-1">{label}</p>
+        <p className="text-xl font-bold text-zinc-900 tabular-nums leading-none truncate">{value}</p>
+        <p className="text-xs text-zinc-500 mt-1">{label}</p>
       </div>
     </Tag>
   );

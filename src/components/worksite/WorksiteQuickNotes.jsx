@@ -22,9 +22,9 @@ export default function WorksiteQuickNotes({ worksite }) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
+    <div className="bg-white rounded-xl border border-zinc-200 p-5">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-zinc-700 flex items-center gap-2">
           <StickyNote className="w-4 h-4 text-amber-500" /> Note Veloci
         </h3>
         <button
@@ -40,7 +40,7 @@ export default function WorksiteQuickNotes({ worksite }) {
         value={notes}
         onChange={e => setNotes(e.target.value)}
         placeholder="Accordi col cliente, problemi, promemoria interni…"
-        className="w-full border border-slate-200 rounded-lg p-3 text-sm min-h-[100px] resize-y focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
+        className="w-full border border-zinc-200 rounded-lg p-3 text-sm min-h-[100px] resize-y focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400"
       />
     </div>
   );

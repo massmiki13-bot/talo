@@ -64,52 +64,52 @@ export default function WorksiteMoney({ worksite, contractAmount, extraIncome = 
 
   return (
     <div className="space-y-4">
-      <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+      <section className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5">
         <div className="flex items-center gap-2 mb-3">
-          <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><Euro className="w-4 h-4 text-emerald-700" /> Incassi</h3>
+          <h3 className="text-sm font-semibold text-zinc-800 flex items-center gap-2 flex-1"><Euro className="w-4 h-4 text-emerald-700" /> Incassi</h3>
           {!readOnly && <Button size="sm" className="gap-1.5 bg-emerald-600 hover:bg-emerald-700" onClick={() => setPayOpen(true)}><Plus className="w-4 h-4" /> Registra incasso</Button>}
         </div>
         {contractAmount > 0 ? (
           <>
             <div className="grid grid-cols-3 gap-3 text-center mb-2">
-              <div><p className="text-xs text-slate-500">Contratto</p><p className="text-base font-bold tabular-nums">{fmtEur(contractAmount)}</p></div>
-              <div><p className="text-xs text-slate-500">Incassato</p><p className="text-base font-bold text-emerald-700 tabular-nums">{fmtEur(incassato)}</p></div>
-              <div><p className="text-xs text-slate-500">Da incassare</p><p className={`text-base font-bold tabular-nums ${residuo > 0 ? "text-red-700" : "text-slate-900"}`}>{fmtEur(residuo)}</p></div>
+              <div><p className="text-xs text-zinc-500">Contratto</p><p className="text-base font-bold tabular-nums">{fmtEur(contractAmount)}</p></div>
+              <div><p className="text-xs text-zinc-500">Incassato</p><p className="text-base font-bold text-emerald-700 tabular-nums">{fmtEur(incassato)}</p></div>
+              <div><p className="text-xs text-zinc-500">Da incassare</p><p className={`text-base font-bold tabular-nums ${residuo > 0 ? "text-red-700" : "text-zinc-900"}`}>{fmtEur(residuo)}</p></div>
             </div>
-            <div className="h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full bg-emerald-500" style={{ width: `${pct}%` }} /></div>
-            <p className="text-xs text-slate-500 mt-1">{Math.round(pct)}% incassato</p>
+            <div className="h-2 rounded-full bg-zinc-100 overflow-hidden"><div className="h-full bg-emerald-500" style={{ width: `${pct}%` }} /></div>
+            <p className="text-xs text-zinc-500 mt-1">{Math.round(pct)}% incassato</p>
           </>
-        ) : <p className="text-sm text-slate-500">Imposta l'importo del contratto nei dati del lavoro per seguire gli incassi.</p>}
+        ) : <p className="text-sm text-zinc-500">Imposta l'importo del contratto nei dati del lavoro per seguire gli incassi.</p>}
 
         {payments.length > 0 && (
-          <ul className="divide-y divide-slate-100 mt-3">
+          <ul className="divide-y divide-zinc-100 mt-3">
             {payments.map((p) => (
               <li key={p.id} className="py-2 flex items-center gap-3">
                 <span className={`w-2 h-2 rounded-full ${p.tipo === "saldo" ? "bg-emerald-500" : "bg-brand-500"}`} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-slate-900">{fmtEur(p.importo)} · {p.tipo === "saldo" ? "Saldo" : p.tipo === "sal" ? "SAL" : "Acconto"}</p>
-                  <p className="text-xs text-slate-500 truncate">{fmtDate(p.data)}{p.metodo ? ` · ${p.metodo}` : ""}{p.note ? ` · ${p.note}` : ""}</p>
+                  <p className="text-sm text-zinc-900">{fmtEur(p.importo)} · {p.tipo === "saldo" ? "Saldo" : p.tipo === "sal" ? "SAL" : "Acconto"}</p>
+                  <p className="text-xs text-zinc-500 truncate">{fmtDate(p.data)}{p.metodo ? ` · ${p.metodo}` : ""}{p.note ? ` · ${p.note}` : ""}</p>
                 </div>
-                {!readOnly && <button aria-label="Elimina incasso" onClick={() => removePayment(p)} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                {!readOnly && <button aria-label="Elimina incasso" onClick={() => removePayment(p)} className="p-1.5 rounded hover:bg-red-50 text-zinc-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}
               </li>
             ))}
           </ul>
         )}
       </section>
 
-      <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5">
+      <section className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5">
         <div className="flex items-center gap-2 mb-3">
-          <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 flex-1"><CalendarClock className="w-4 h-4 text-brand-600" /> Piano pagamenti</h3>
+          <h3 className="text-sm font-semibold text-zinc-800 flex items-center gap-2 flex-1"><CalendarClock className="w-4 h-4 text-brand-600" /> Piano pagamenti</h3>
           {!readOnly && <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setPlanOpen(true)}>{rate.length ? "Modifica" : <><Plus className="w-4 h-4" /> Imposta rate</>}</Button>}
         </div>
         {rate.length ? (
           <>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-zinc-100">
               {rate.map((r, i) => (
                 <li key={i} className="py-2.5 flex items-center gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-slate-900">{r.descrizione}</p>
-                    <p className="text-xs text-slate-500">{r.scadenza ? `entro il ${fmtDate(r.scadenza)}` : "senza scadenza"}{r.pagato > 0 && r.residuo > 0.005 ? ` · pagati ${fmtEur(r.pagato)}` : ""}</p>
+                    <p className="text-sm text-zinc-900">{r.descrizione}</p>
+                    <p className="text-xs text-zinc-500">{r.scadenza ? `entro il ${fmtDate(r.scadenza)}` : "senza scadenza"}{r.pagato > 0 && r.residuo > 0.005 ? ` · pagati ${fmtEur(r.pagato)}` : ""}</p>
                   </div>
                   <span className="text-sm font-semibold tabular-nums">{fmtEur(r.importo)}</span>
                   <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${INSTALLMENT_STATE[r.stato].className}`}>{INSTALLMENT_STATE[r.stato].label}</span>
@@ -122,7 +122,7 @@ export default function WorksiteMoney({ worksite, contractAmount, extraIncome = 
               <p className="text-xs text-amber-800 mt-2">Il piano copre {fmtEur(pianificato)} su un contratto di {fmtEur(contractAmount)}.</p>
             )}
           </>
-        ) : <p className="text-sm text-slate-500">Definisci acconto, SAL e saldo con le scadenze: Talo ti ricorda quando incassare e segnala le rate scadute.</p>}
+        ) : <p className="text-sm text-zinc-500">Definisci acconto, SAL e saldo con le scadenze: Talo ti ricorda quando incassare e segnala le rate scadute.</p>}
       </section>
 
       <Dialog open={payOpen} onOpenChange={setPayOpen}>
@@ -222,7 +222,7 @@ function PlanDialog({ open, onOpenChange, worksite, contractAmount, onSaved }) {
               <Input aria-label="Descrizione" value={r.descrizione || ""} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, descrizione: e.target.value } : y)))} placeholder="Es. Acconto" className="h-9" />
               <Input aria-label="Importo" type="number" step="0.01" value={r.importo ?? ""} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, importo: e.target.value } : y)))} className="h-9 tabular-nums" />
               <Input aria-label="Scadenza" type="date" value={r.scadenza || ""} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, scadenza: e.target.value } : y)))} className="h-9" />
-              <button aria-label="Rimuovi rata" onClick={() => setRows((x) => x.filter((_, j) => j !== i))} className="p-1.5 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+              <button aria-label="Rimuovi rata" onClick={() => setRows((x) => x.filter((_, j) => j !== i))} className="p-1.5 rounded hover:bg-red-50 text-zinc-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
             </div>
           ))}
           <Button size="sm" variant="outline" className="gap-1" onClick={() => setRows((x) => [...x, { descrizione: "", importo: "", scadenza: "" }])}><Plus className="w-4 h-4" /> Rata</Button>
@@ -231,7 +231,7 @@ function PlanDialog({ open, onOpenChange, worksite, contractAmount, onSaved }) {
           <span>Totale rate: <strong className="tabular-nums">{fmtEur(tot)}</strong></span>
           {contractAmount > 0 && Math.abs(tot - contractAmount) > 1 && <span className="text-amber-800">differenza {fmtEur(contractAmount - tot)}</span>}
         </div>
-        <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" className="w-4 h-4" checked={remind} onChange={(e) => setRemind(e.target.checked)} /> <Bell className="w-4 h-4 text-brand-600" /> Crea un promemoria per ogni scadenza</label>
+        <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer"><input type="checkbox" className="w-4 h-4" checked={remind} onChange={(e) => setRemind(e.target.checked)} /> <Bell className="w-4 h-4 text-brand-600" /> Crea un promemoria per ogni scadenza</label>
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
           <Button onClick={save} disabled={saving}>{saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}Salva piano</Button>

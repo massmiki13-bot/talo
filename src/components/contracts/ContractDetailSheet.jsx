@@ -20,7 +20,7 @@ import { STATI, statoOf, typeTitle, fmtDate, aiReview, RELATED, linkedInitial } 
 import { formatEuro } from "@/utils/pdfUtils";
 
 const FLOW = ["bozza", "inviato", "firmato", "concluso"];
-const SEV = { alta: "bg-red-100 text-red-800", media: "bg-amber-100 text-amber-800", bassa: "bg-slate-100 text-slate-700" };
+const SEV = { alta: "bg-red-100 text-red-800", media: "bg-amber-100 text-amber-800", bassa: "bg-zinc-100 text-zinc-700" };
 const safeName = (s) => String(s || "Contratto").replace(/[^\p{L}\p{N}_ -]/gu, "").trim().replace(/\s+/g, "_");
 
 export default function ContractDetailSheet({ contract, open, onOpenChange, profile, customTemplates, contacts, employees, onChanged, onDuplicate, onDelete, onPreview, onCreateLinked }) {
@@ -117,9 +117,9 @@ Cordiali saluti`,
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto p-0">
-          <SheetHeader className="px-5 pt-5 pb-4 border-b border-slate-100 text-left space-y-2">
+          <SheetHeader className="px-5 pt-5 pb-4 border-b border-zinc-100 text-left space-y-2">
             <SheetTitle className="text-lg leading-snug pr-8">{contract.titolo}</SheetTitle>
-            <p className="text-sm text-slate-500">{typeTitle(contract.tipo, customTemplates)}</p>
+            <p className="text-sm text-zinc-500">{typeTitle(contract.tipo, customTemplates)}</p>
             {/* Avanzamento */}
             <div className="flex flex-wrap items-center gap-1.5">
               {contract.stato === "annullato" ? (
@@ -129,8 +129,8 @@ Cordiali saluti`,
                 const info = STATI.find((x) => x.value === s);
                 return (
                   <React.Fragment key={s}>
-                    {i > 0 && <span className={`h-px w-4 ${i <= idx ? "bg-emerald-500" : "bg-slate-200"}`} />}
-                    <button onClick={() => setStato(s)} disabled={busy === "stato"} className={`text-xs font-medium px-2 py-1 rounded-full border transition-colors ${i === idx ? `${info.className} border-transparent` : i < idx ? "border-emerald-200 text-emerald-700 bg-white" : "border-slate-200 text-slate-500 bg-white hover:border-slate-300"}`}>
+                    {i > 0 && <span className={`h-px w-4 ${i <= idx ? "bg-emerald-500" : "bg-zinc-200"}`} />}
+                    <button onClick={() => setStato(s)} disabled={busy === "stato"} className={`text-xs font-medium px-2 py-1 rounded-full border transition-colors ${i === idx ? `${info.className} border-transparent` : i < idx ? "border-emerald-200 text-emerald-700 bg-white" : "border-zinc-200 text-zinc-500 bg-white hover:border-zinc-300"}`}>
                       {i < idx && <Check className="w-3 h-3 inline -mt-0.5 mr-0.5" />}{info.label}
                     </button>
                   </React.Fragment>
@@ -178,10 +178,10 @@ Cordiali saluti`,
                 </div>
               </div>
             ) : contract.stato !== "annullato" && (
-              <div className="rounded-lg border border-slate-200 p-3 flex items-center gap-3">
+              <div className="rounded-lg border border-zinc-200 p-3 flex items-center gap-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900">Firma dal telefono</p>
-                  <p className="text-xs text-slate-500">{contract.firma_token ? "Link attivo: in attesa della firma." : "La controparte legge e firma con il dito, senza stampare nulla."}</p>
+                  <p className="text-sm font-medium text-zinc-900">Firma dal telefono</p>
+                  <p className="text-xs text-zinc-500">{contract.firma_token ? "Link attivo: in attesa della firma." : "La controparte legge e firma con il dito, senza stampare nulla."}</p>
                 </div>
                 {contract.firma_token && <Button size="sm" variant="ghost" onClick={revokeSign} aria-label="Revoca il link di firma" title="Revoca il link"><Link2Off className="w-4 h-4" /></Button>}
                 <Button size="sm" onClick={openSign} disabled={busy === "sign"} className="gap-1.5 bg-brand-600 hover:bg-brand-700">{busy === "sign" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}{contract.firma_token ? "Mostra link" : "Richiedi firma"}</Button>
@@ -189,12 +189,12 @@ Cordiali saluti`,
             )}
 
             {/* Copia firmata */}
-            <div className="rounded-lg border border-slate-200 p-3 flex items-center gap-3">
+            <div className="rounded-lg border border-zinc-200 p-3 flex items-center gap-3">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900">Copia firmata</p>
+                <p className="text-sm font-medium text-zinc-900">Copia firmata</p>
                 {contract.file_firmato_url
                   ? <a href={contract.file_firmato_url} target="_blank" rel="noopener noreferrer" className="text-sm text-brand-700 hover:underline truncate block">{contract.file_firmato_nome || "Apri il documento firmato"}</a>
-                  : <p className="text-xs text-slate-500">Carica la scansione firmata: il contratto passa a "Firmato".</p>}
+                  : <p className="text-xs text-zinc-500">Carica la scansione firmata: il contratto passa a "Firmato".</p>}
               </div>
               <Button size="sm" variant="outline" asChild disabled={busy === "upload"}>
                 <label className="cursor-pointer gap-1.5">{busy === "upload" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}{contract.file_firmato_url ? "Sostituisci" : "Carica"}<input type="file" accept="application/pdf,image/*" className="hidden" onChange={uploadSigned} /></label>
@@ -203,9 +203,9 @@ Cordiali saluti`,
 
             {/* Contratti collegati */}
             {onCreateLinked && RELATED[contract.tipo]?.length > 0 && (
-              <div className="rounded-lg border border-slate-200 p-3">
-                <p className="text-sm font-medium text-slate-900 flex items-center gap-1.5"><Link2 className="w-4 h-4 text-brand-600" aria-hidden="true" />Crea un contratto collegato</p>
-                <p className="text-xs text-slate-500 mt-0.5">Parte già con oggetto, luogo, date e lavoro di questo contratto.</p>
+              <div className="rounded-lg border border-zinc-200 p-3">
+                <p className="text-sm font-medium text-zinc-900 flex items-center gap-1.5"><Link2 className="w-4 h-4 text-brand-600" aria-hidden="true" />Crea un contratto collegato</p>
+                <p className="text-xs text-zinc-500 mt-0.5">Parte già con oggetto, luogo, date e lavoro di questo contratto.</p>
                 <div className="flex flex-wrap gap-2 mt-2.5">
                   {RELATED[contract.tipo].map(([t, label]) => (
                     <Button key={t} size="sm" variant="outline" className="gap-1.5" onClick={() => onCreateLinked(linkedInitial(contract, t))}><Plus className="w-3.5 h-3.5" />{label}</Button>
@@ -215,29 +215,29 @@ Cordiali saluti`,
             )}
 
             {/* Revisione IA */}
-            <div className="rounded-lg border border-slate-200 p-3 space-y-2">
+            <div className="rounded-lg border border-zinc-200 p-3 space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-slate-900 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-brand-600" /> Controllo con IA</p>
+                <p className="text-sm font-medium text-zinc-900 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-brand-600" /> Controllo con IA</p>
                 <Button size="sm" variant="outline" onClick={review} disabled={busy === "review"} className="gap-1.5">{busy === "review" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{rev ? "Ricontrolla" : "Controlla il contratto"}</Button>
               </div>
               {placeholders > 0 && <p className="text-sm text-amber-800 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" /> {placeholders} spazi "______" ancora da compilare nel testo.</p>}
               {rev ? (
                 <div className="space-y-2">
-                  <p className="text-sm text-slate-700">{rev.giudizio}{rev.punteggio ? <span className="ml-2 text-xs font-semibold text-slate-900 bg-slate-100 rounded px-1.5 py-0.5">{rev.punteggio}/10</span> : null}</p>
+                  <p className="text-sm text-zinc-700">{rev.giudizio}{rev.punteggio ? <span className="ml-2 text-xs font-semibold text-zinc-900 bg-zinc-100 rounded px-1.5 py-0.5">{rev.punteggio}/10</span> : null}</p>
                   <ul className="space-y-1.5">
                     {(rev.problemi || []).map((p, i) => (
-                      <li key={i} className="text-sm text-slate-700 flex gap-2"><span className={`shrink-0 h-fit text-[11px] font-semibold uppercase px-1.5 py-0.5 rounded ${SEV[p.gravita] || SEV.bassa}`}>{p.gravita}</span>{p.testo}</li>
+                      <li key={i} className="text-sm text-zinc-700 flex gap-2"><span className={`shrink-0 h-fit text-[11px] font-semibold uppercase px-1.5 py-0.5 rounded ${SEV[p.gravita] || SEV.bassa}`}>{p.gravita}</span>{p.testo}</li>
                     ))}
                   </ul>
-                  <p className="text-xs text-slate-500">Suggerimenti automatici del {fmtDate(rev.data)}: non sostituiscono il parere di un consulente.</p>
+                  <p className="text-xs text-zinc-500">Suggerimenti automatici del {fmtDate(rev.data)}: non sostituiscono il parere di un consulente.</p>
                 </div>
-              ) : <p className="text-xs text-slate-500">Cerca dati mancanti, incoerenze e clausole importanti assenti (sicurezza, DURC, tracciabilità, penali…).</p>}
+              ) : <p className="text-xs text-zinc-500">Cerca dati mancanti, incoerenze e clausole importanti assenti (sicurezza, DURC, tracciabilità, penali…).</p>}
             </div>
 
             {/* Testo */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-slate-900">Testo del contratto</p>
+                <p className="text-sm font-medium text-zinc-900">Testo del contratto</p>
                 {!editing ? (
                   <Button size="sm" variant="ghost" className="gap-1.5" onClick={async () => { if (locked && !(await confirmDialog("Il contratto risulta firmato: modificare il testo lo renderà diverso dalla copia firmata. Continuare?"))) return; setText(contract.contenuto_finale || ""); setEditing(true); }}>
                     {locked ? <Lock className="w-4 h-4" /> : <Pencil className="w-4 h-4" />} Modifica
@@ -251,13 +251,13 @@ Cordiali saluti`,
               </div>
               {editing
                 ? <Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-[420px] font-serif text-[13px] leading-relaxed" />
-                : <div className="max-h-[420px] overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 px-5 py-4 text-[13px] leading-relaxed text-slate-800 whitespace-pre-wrap font-serif">{contract.contenuto_finale}</div>}
+                : <div className="max-h-[420px] overflow-y-auto rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-4 text-[13px] leading-relaxed text-zinc-800 whitespace-pre-wrap font-serif">{contract.contenuto_finale}</div>}
             </div>
 
-            <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-100">
+            <div className="flex items-center justify-between gap-2 pt-3 border-t border-zinc-100">
               <div className="flex gap-1">
                 <Button variant="ghost" className="text-red-700 hover:text-red-700 hover:bg-red-50 gap-1.5" onClick={() => onDelete(contract)}><Trash2 className="w-4 h-4" /> Elimina</Button>
-                {contract.stato !== "annullato" && <Button variant="ghost" className="text-slate-600" onClick={async () => (await confirmDialog("Segnare il contratto come annullato?")) && setStato("annullato")}>Annulla contratto</Button>}
+                {contract.stato !== "annullato" && <Button variant="ghost" className="text-zinc-600" onClick={async () => (await confirmDialog("Segnare il contratto come annullato?")) && setStato("annullato")}>Annulla contratto</Button>}
               </div>
               <Button variant="outline" className="gap-1.5" onClick={() => onDuplicate(contract)}><Copy className="w-4 h-4" /> Duplica</Button>
             </div>
@@ -282,8 +282,8 @@ Cordiali saluti`,
 function Item({ label, value }) {
   return (
     <div>
-      <dt className="text-xs text-slate-500">{label}</dt>
-      <dd className="text-slate-900">{value || "—"}</dd>
+      <dt className="text-xs text-zinc-500">{label}</dt>
+      <dd className="text-zinc-900">{value || "—"}</dd>
     </div>
   );
 }

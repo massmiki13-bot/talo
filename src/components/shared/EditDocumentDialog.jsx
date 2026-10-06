@@ -126,18 +126,18 @@ export default function EditDocumentDialog({ open, onOpenChange, doc, employeeNa
           </div>
 
           {/* Scadenza */}
-          <div className="border-t border-slate-100 pt-3">
-            <Label className="text-xs font-medium text-slate-600">Data scadenza</Label>
+          <div className="border-t border-zinc-100 pt-3">
+            <Label className="text-xs font-medium text-zinc-600">Data scadenza</Label>
             <div className="flex flex-wrap gap-1.5 mt-1.5">
               <button
                 type="button"
                 onClick={() => setForm(prev => ({ ...prev, scadenza_mode: "manuale" }))}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "manuale" ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "manuale" ? "bg-brand-600 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
               >Manuale</button>
               <button
                 type="button"
                 onClick={() => setForm(prev => ({ ...prev, scadenza_mode: "nessuna", data_scadenza: "" }))}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "nessuna" ? "bg-slate-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${form.scadenza_mode === "nessuna" ? "bg-zinc-600 text-white" : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}
               >Nessuna scadenza</button>
             </div>
 
@@ -148,12 +148,12 @@ export default function EditDocumentDialog({ open, onOpenChange, doc, employeeNa
                   value={form.data_scadenza || ""}
                   onChange={e => setForm(prev => ({ ...prev, data_scadenza: e.target.value }))}
                 />
-                <p className="text-xs text-slate-500 mt-1">Inserisci o modifica la data di scadenza.</p>
+                <p className="text-xs text-zinc-500 mt-1">Inserisci o modifica la data di scadenza.</p>
               </div>
             )}
 
             {form.scadenza_mode === "nessuna" && (
-              <p className="text-xs text-slate-500 mt-2">
+              <p className="text-xs text-zinc-500 mt-2">
                 Il documento non ha scadenza — {doc.data_scadenza ? "il promemoria esistente verrà rimosso." : "nessun promemoria verrà creato."}
               </p>
             )}
@@ -161,10 +161,10 @@ export default function EditDocumentDialog({ open, onOpenChange, doc, employeeNa
 
           {/* Anticipo + ripetizione (solo se c'è scadenza) */}
           {hasScadenza && form.scadenza_mode !== "nessuna" && (
-            <div className="border-t border-slate-100 pt-3 space-y-2">
+            <div className="border-t border-zinc-100 pt-3 space-y-2">
               <div className="flex items-center gap-2">
                 <Bell className="w-3.5 h-3.5 text-brand-600" />
-                <span className="text-xs font-medium text-slate-600">Avvisa con anticipo</span>
+                <span className="text-xs font-medium text-zinc-600">Avvisa con anticipo</span>
               </div>
               <Select value={form.anticipo} onValueChange={v => setForm({ ...form, anticipo: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>

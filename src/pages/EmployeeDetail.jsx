@@ -32,7 +32,7 @@ const Card = ({ icon, title, action, children }) => <DetailCard icon={icon} titl
 
 function Info({ label, value }) {
   if (!value && value !== 0) return null;
-  return <div><dt className="text-xs text-slate-500">{label}</dt><dd className="text-sm text-slate-900 break-words">{value}</dd></div>;
+  return <div><dt className="text-xs text-zinc-500">{label}</dt><dd className="text-sm text-zinc-900 break-words">{value}</dd></div>;
 }
 
 export default function EmployeeDetail() {
@@ -212,7 +212,7 @@ export default function EmployeeDetail() {
       {!cessato && status.problemi.length > 0 && (
         <div className={`rounded-2xl border p-4 ${status.livello === "critico" ? "border-red-200 bg-red-50" : "border-amber-200 bg-amber-50"}`}>
           <p className={`text-sm font-semibold flex items-center gap-2 ${status.livello === "critico" ? "text-red-800" : "text-amber-900"}`}><AlertTriangle className="w-4 h-4" aria-hidden="true" /> Da sistemare per la sicurezza</p>
-          <ul className="mt-1.5 text-sm text-slate-800 list-disc pl-6 space-y-0.5">{status.problemi.map((p, i) => <li key={i}>{p.testo}</li>)}</ul>
+          <ul className="mt-1.5 text-sm text-zinc-800 list-disc pl-6 space-y-0.5">{status.problemi.map((p, i) => <li key={i}>{p.testo}</li>)}</ul>
           {!readOnly && <Button size="sm" variant="outline" className="mt-2 bg-white" onClick={() => setTab("sicurezza")}>Vai a formazione e visite</Button>}
         </div>
       )}
@@ -250,39 +250,39 @@ export default function EmployeeDetail() {
               <Info label="Patenti e abilitazioni" value={(employee.patenti || []).join(", ")} />
               <Info label="Taglie" value={Object.entries(employee.taglie || {}).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(" · ")} />
             </dl>
-            {!(employee.patenti || []).length && !Object.values(employee.taglie || {}).some(Boolean) && <p className="text-sm text-slate-500">Nessuna informazione.</p>}
+            {!(employee.patenti || []).length && !Object.values(employee.taglie || {}).some(Boolean) && <p className="text-sm text-zinc-500">Nessuna informazione.</p>}
           </Card>
           <Card icon={Phone} title="Contatto di emergenza">
             {employee.contatto_emergenza?.nome || employee.contatto_emergenza?.telefono ? (
               <div className="flex items-center gap-3">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-slate-900">{employee.contatto_emergenza.nome} {employee.contatto_emergenza.relazione && <span className="text-slate-500 font-normal">· {employee.contatto_emergenza.relazione}</span>}</p>
-                  <p className="text-sm text-slate-600">{employee.contatto_emergenza.telefono}</p>
+                  <p className="text-sm font-medium text-zinc-900">{employee.contatto_emergenza.nome} {employee.contatto_emergenza.relazione && <span className="text-zinc-500 font-normal">· {employee.contatto_emergenza.relazione}</span>}</p>
+                  <p className="text-sm text-zinc-600">{employee.contatto_emergenza.telefono}</p>
                 </div>
                 {employee.contatto_emergenza.telefono && <Button asChild size="sm" variant="outline"><a href={phoneHref(employee.contatto_emergenza.telefono)}><Phone className="w-4 h-4" /></a></Button>}
               </div>
-            ) : <p className="text-sm text-slate-500">Non indicato.</p>}
+            ) : <p className="text-sm text-zinc-500">Non indicato.</p>}
           </Card>
           {!readOnly && (
             <Card icon={Smartphone} title="Accesso all'app">
               {collab ? (
-                <p className="text-sm text-slate-700 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-700" /> Collegato come <strong>{collab.access_level === "operaio" ? "operaio" : "responsabile"}</strong> ({collab.email})</p>
+                <p className="text-sm text-zinc-700 flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-700" /> Collegato come <strong>{collab.access_level === "operaio" ? "operaio" : "responsabile"}</strong> ({collab.email})</p>
               ) : (
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <p className="text-sm text-slate-600 flex-1">Con l'accesso vede solo le sue ore, i suoi documenti e le sue scadenze.</p>
+                  <p className="text-sm text-zinc-600 flex-1">Con l'accesso vede solo le sue ore, i suoi documenti e le sue scadenze.</p>
                   <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)}>Invita all'app</Button>
                 </div>
               )}
             </Card>
           )}
-          {employee.note && <Card icon={Pencil} title="Note"><p className="text-sm text-slate-700 whitespace-pre-wrap">{employee.note}</p></Card>}
+          {employee.note && <Card icon={Pencil} title="Note"><p className="text-sm text-zinc-700 whitespace-pre-wrap">{employee.note}</p></Card>}
         </div>
       )}
 
       {tab === "sicurezza" && (
         <div className="grid lg:grid-cols-2 gap-4">
           <Card icon={GraduationCap} title="Formazione" action={!readOnly && <Button size="sm" variant="outline" className="gap-1" onClick={() => setTraining({ kind: "corso" })}><Plus className="w-4 h-4" /> Corso</Button>}>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-zinc-100">
               {CORSI.filter((c) => c.obbligatorio || courses.some((d) => d.corso_codice === c.codice)).map((c) => {
                 const list = courses.filter((d) => d.corso_codice === c.codice).sort((a, b) => String(b.data_emissione).localeCompare(String(a.data_emissione)));
                 const last = list[0];
@@ -292,8 +292,8 @@ export default function EmployeeDetail() {
                   <li key={c.codice} className="py-2.5 flex items-center gap-3">
                     <span className={`w-2 h-2 rounded-full shrink-0 ${!last ? "bg-red-500" : days !== null && days < 0 ? "bg-red-500" : days !== null && days <= 30 ? "bg-amber-500" : "bg-emerald-500"}`} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-slate-900">{c.nome}</p>
-                      <p className="text-xs text-slate-500">{last ? `Attestato del ${fmtDate(last.data_emissione)}${exp ? ` · ${days < 0 ? "scaduto il" : "scade il"} ${fmtDate(last.data_scadenza)}` : " · senza scadenza"}` : "Non registrato"}</p>
+                      <p className="text-sm text-zinc-900">{c.nome}</p>
+                      <p className="text-xs text-zinc-500">{last ? `Attestato del ${fmtDate(last.data_emissione)}${exp ? ` · ${days < 0 ? "scaduto il" : "scade il"} ${fmtDate(last.data_scadenza)}` : " · senza scadenza"}` : "Non registrato"}</p>
                     </div>
                     {!readOnly && (!last || (days !== null && days <= 30)) && <Button size="sm" variant="outline" onClick={() => setTraining({ kind: "corso", preset: c.codice })}>{last ? "Rinnova" : "Registra"}</Button>}
                   </li>
@@ -301,26 +301,26 @@ export default function EmployeeDetail() {
               })}
               {courses.filter((d) => !CORSI.some((c) => c.codice === d.corso_codice && c.codice !== "altro")).map((d) => (
                 <li key={d.id} className="py-2.5 flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full shrink-0 bg-slate-400" />
-                  <div className="flex-1 min-w-0"><p className="text-sm text-slate-900">{d.titolo}</p><p className="text-xs text-slate-500">{fmtDate(d.data_emissione)}{d.data_scadenza && ` · scade il ${fmtDate(d.data_scadenza)}`}</p></div>
+                  <span className="w-2 h-2 rounded-full shrink-0 bg-zinc-400" />
+                  <div className="flex-1 min-w-0"><p className="text-sm text-zinc-900">{d.titolo}</p><p className="text-xs text-zinc-500">{fmtDate(d.data_emissione)}{d.data_scadenza && ` · scade il ${fmtDate(d.data_scadenza)}`}</p></div>
                 </li>
               ))}
             </ul>
           </Card>
           <Card icon={Stethoscope} title="Visite mediche" action={!readOnly && <Button size="sm" variant="outline" className="gap-1" onClick={() => setTraining({ kind: "visita_medica" })}><Plus className="w-4 h-4" /> Visita</Button>}>
             {visits.length ? (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-zinc-100">
                 {[...visits].sort((a, b) => String(b.data_emissione).localeCompare(String(a.data_emissione))).map((v, i) => (
                   <li key={v.id} className={`py-2.5 ${i > 0 ? "opacity-60" : ""}`}>
-                    <p className="text-sm text-slate-900">{fmtDate(v.data_emissione)} · {v.esito || v.descrizione || "Visita"}</p>
-                    <p className="text-xs text-slate-500">{[v.ente && `Dott. ${v.ente}`, v.data_scadenza && `prossima entro il ${fmtDate(v.data_scadenza)}`].filter(Boolean).join(" · ")}</p>
+                    <p className="text-sm text-zinc-900">{fmtDate(v.data_emissione)} · {v.esito || v.descrizione || "Visita"}</p>
+                    <p className="text-xs text-zinc-500">{[v.ente && `Dott. ${v.ente}`, v.data_scadenza && `prossima entro il ${fmtDate(v.data_scadenza)}`].filter(Boolean).join(" · ")}</p>
                   </li>
                 ))}
               </ul>
-            ) : <p className="text-sm text-slate-500">Nessuna visita registrata. La visita di idoneità è obbligatoria prima di adibire il lavoratore alla mansione.</p>}
+            ) : <p className="text-sm text-zinc-500">Nessuna visita registrata. La visita di idoneità è obbligatoria prima di adibire il lavoratore alla mansione.</p>}
           </Card>
           {status.prossima && (
-            <p className="text-sm text-slate-600 lg:col-span-2">Prossima scadenza: <strong>{status.prossima.titolo}</strong> il {fmtDate(status.prossima.data)}.</p>
+            <p className="text-sm text-zinc-600 lg:col-span-2">Prossima scadenza: <strong>{status.prossima.titolo}</strong> il {fmtDate(status.prossima.data)}.</p>
           )}
         </div>
       )}
@@ -334,17 +334,17 @@ export default function EmployeeDetail() {
         )}>
           {dpi.length ? (
             <table className="w-full text-sm">
-              <thead><tr className="text-left text-xs text-slate-500 border-b border-slate-100"><th className="py-2">Dispositivo</th><th className="py-2">Taglia</th><th className="py-2">Q.tà</th><th className="py-2">Consegnato il</th><th /></tr></thead>
-              <tbody className="divide-y divide-slate-100">
+              <thead><tr className="text-left text-xs text-zinc-500 border-b border-zinc-100"><th className="py-2">Dispositivo</th><th className="py-2">Taglia</th><th className="py-2">Q.tà</th><th className="py-2">Consegnato il</th><th /></tr></thead>
+              <tbody className="divide-y divide-zinc-100">
                 {[...dpi].map((d, i) => ({ ...d, i })).sort((a, b) => String(b.data_consegna).localeCompare(String(a.data_consegna))).map((d) => (
                   <tr key={d.i}>
-                    <td className="py-2 text-slate-900">{d.articolo}</td><td className="py-2">{d.taglia || "—"}</td><td className="py-2">{d.quantita || 1}</td><td className="py-2">{fmtDate(d.data_consegna)}</td>
-                    <td className="py-2 text-right">{!readOnly && <button aria-label="Elimina" onClick={() => removeDpi(d.i)} className="p-1 rounded hover:bg-red-50 text-slate-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}</td>
+                    <td className="py-2 text-zinc-900">{d.articolo}</td><td className="py-2">{d.taglia || "—"}</td><td className="py-2">{d.quantita || 1}</td><td className="py-2">{fmtDate(d.data_consegna)}</td>
+                    <td className="py-2 text-right">{!readOnly && <button aria-label="Elimina" onClick={() => removeDpi(d.i)} className="p-1 rounded hover:bg-red-50 text-zinc-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          ) : <p className="text-sm text-slate-500">Nessun DPI registrato. Ogni consegna va documentata con il verbale firmato dal lavoratore.</p>}
+          ) : <p className="text-sm text-zinc-500">Nessun DPI registrato. Ogni consegna va documentata con il verbale firmato dal lavoratore.</p>}
         </Card>
       )}
 
@@ -368,7 +368,7 @@ export default function EmployeeDetail() {
               ["Ferie · permessi", `${hours.month.stati.ferie || 0} · ${hours.month.stati.permesso || 0}`],
               [readOnly ? "Malattia · assenze" : "Costo del mese", readOnly ? `${hours.month.stati.malattia || 0} · ${hours.month.stati.assente || 0}` : employee.costo_orario ? fmtEur(hours.month.ore * employee.costo_orario) : "—"],
             ].map(([l, v]) => (
-              <div key={l} className="bg-white rounded-xl border border-slate-200 p-3.5"><p className="text-xs text-slate-500">{l}</p><p className="text-lg font-bold text-slate-900 tabular-nums">{v}</p></div>
+              <div key={l} className="bg-white rounded-xl border border-zinc-200 p-3.5"><p className="text-xs text-zinc-500">{l}</p><p className="text-lg font-bold text-zinc-900 tabular-nums">{v}</p></div>
             ))}
           </div>
           <div className="grid lg:grid-cols-2 gap-4">
@@ -377,12 +377,12 @@ export default function EmployeeDetail() {
                 <ul className="space-y-2">
                   {Object.entries(hours.month.cantieri).sort((a, b) => b[1] - a[1]).map(([name, ore]) => (
                     <li key={name}>
-                      <div className="flex justify-between text-sm"><span className="text-slate-800 truncate pr-2">{name}</span><span className="tabular-nums text-slate-700">{ore} h</span></div>
-                      <div className="h-1.5 rounded-full bg-slate-100 mt-1"><div className="h-1.5 rounded-full bg-brand-600" style={{ width: `${Math.min(100, (ore / Math.max(1, hours.month.ore)) * 100)}%` }} /></div>
+                      <div className="flex justify-between text-sm"><span className="text-zinc-800 truncate pr-2">{name}</span><span className="tabular-nums text-zinc-700">{ore} h</span></div>
+                      <div className="h-1.5 rounded-full bg-zinc-100 mt-1"><div className="h-1.5 rounded-full bg-brand-600" style={{ width: `${Math.min(100, (ore / Math.max(1, hours.month.ore)) * 100)}%` }} /></div>
                     </li>
                   ))}
                 </ul>
-              ) : <p className="text-sm text-slate-500">Nessuna ora registrata nel mese.</p>}
+              ) : <p className="text-sm text-zinc-500">Nessuna ora registrata nel mese.</p>}
             </Card>
             <Card icon={Clock} title={`Anno ${month.y} · ${hours.anno.toLocaleString("it-IT")} ore`}>
               <div className="flex items-end gap-1 h-28" role="img" aria-label="Ore per mese">
@@ -390,8 +390,8 @@ export default function EmployeeDetail() {
                   const max = Math.max(1, ...hours.perMonth.map((p) => p.ore));
                   return (
                     <button key={i} onClick={() => setMonth((m) => ({ ...m, m: i }))} className="flex-1 flex flex-col items-center gap-1 group" title={`${MONTHS[i]}: ${x.ore} h`}>
-                      <div className={`w-full rounded-t ${i === month.m ? "bg-brand-600" : "bg-slate-300 group-hover:bg-slate-400"}`} style={{ height: `${(x.ore / max) * 88}px` }} />
-                      <span className="text-[10px] text-slate-500">{MONTHS[i][0]}</span>
+                      <div className={`w-full rounded-t ${i === month.m ? "bg-brand-600" : "bg-zinc-300 group-hover:bg-zinc-400"}`} style={{ height: `${(x.ore / max) * 88}px` }} />
+                      <span className="text-[10px] text-zinc-500">{MONTHS[i][0]}</span>
                     </button>
                   );
                 })}
@@ -399,7 +399,7 @@ export default function EmployeeDetail() {
             </Card>
           </div>
           {sitesWorked.length > 0 && (
-            <p className="text-sm text-slate-600">Ha lavorato su {sitesWorked.length} {sitesWorked.length === 1 ? "cantiere" : "cantieri"}: {sitesWorked.map((w, i) => <span key={w.id}>{i > 0 && ", "}<Link to={`/lavori/${w.id}`} className="text-brand-700 hover:underline">{w.nome}</Link></span>)}.</p>
+            <p className="text-sm text-zinc-600">Ha lavorato su {sitesWorked.length} {sitesWorked.length === 1 ? "cantiere" : "cantieri"}: {sitesWorked.map((w, i) => <span key={w.id}>{i > 0 && ", "}<Link to={`/lavori/${w.id}`} className="text-brand-700 hover:underline">{w.nome}</Link></span>)}.</p>
           )}
         </div>
       )}
@@ -450,14 +450,14 @@ function DpiDialog({ open, onOpenChange, employee, onSaved }) {
         <div className="flex flex-wrap gap-1.5">
           {DPI_ARTICOLI.map((a) => (
             <button key={a} type="button" onClick={() => toggle(a)}
-              className={`rounded-full border px-2.5 py-1 text-xs ${rows.some((x) => x.articolo === a) ? "border-brand-600 bg-brand-600 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}>{a}</button>
+              className={`rounded-full border px-2.5 py-1 text-xs ${rows.some((x) => x.articolo === a) ? "border-brand-600 bg-brand-600 text-white" : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"}`}>{a}</button>
           ))}
         </div>
         {rows.length > 0 && (
           <div className="space-y-2">
             {rows.map((r, i) => (
               <div key={r.articolo} className="grid grid-cols-[1fr_70px_60px_130px] gap-2 items-center">
-                <span className="text-sm text-slate-800 truncate">{r.articolo}</span>
+                <span className="text-sm text-zinc-800 truncate">{r.articolo}</span>
                 <Input aria-label="Taglia" placeholder="Taglia" value={r.taglia} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, taglia: e.target.value } : y)))} className="h-8" />
                 <Input aria-label="Quantità" type="number" min="1" value={r.quantita} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, quantita: Number(e.target.value) || 1 } : y)))} className="h-8" />
                 <Input aria-label="Data consegna" type="date" value={r.data_consegna} onChange={(e) => setRows((x) => x.map((y, j) => (j === i ? { ...y, data_consegna: e.target.value } : y)))} className="h-8" />

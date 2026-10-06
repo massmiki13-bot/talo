@@ -113,14 +113,14 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto p-0">
-          <SheetHeader className="px-5 pt-5 pb-3 border-b border-slate-100 text-left">
+          <SheetHeader className="px-5 pt-5 pb-3 border-b border-zinc-100 text-left">
             <div className="flex items-start gap-2 pr-8">
               <SheetTitle className="text-lg leading-snug flex-1">{doc.titolo}</SheetTitle>
-              <button onClick={toggleFav} className="p-1 rounded hover:bg-slate-100" aria-label={doc.preferito ? "Togli dai preferiti" : "Aggiungi ai preferiti"}>
-                <Star className={`w-5 h-5 ${doc.preferito ? "fill-amber-400 text-amber-500" : "text-slate-500"}`} />
+              <button onClick={toggleFav} className="p-1 rounded hover:bg-zinc-100" aria-label={doc.preferito ? "Togli dai preferiti" : "Aggiungi ai preferiti"}>
+                <Star className={`w-5 h-5 ${doc.preferito ? "fill-amber-400 text-amber-500" : "text-zinc-500"}`} />
               </button>
             </div>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-zinc-500">
               {typeLabel(doc.tipo)} · {doc.cartella_id ? pathLabel(doc.cartella_id, folders) : "Senza cartella"}
               {doc.dimensione ? ` · ${formatSize(doc.dimensione)}` : ""}
             </p>
@@ -129,13 +129,13 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
 
           <div className="p-5 space-y-5">
             {doc.file_url && (
-              <div className="rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
+              <div className="rounded-lg border border-zinc-200 bg-zinc-50 overflow-hidden">
                 {kind === "image" ? (
-                  previewUrl ? <img src={previewUrl} alt={doc.titolo} className="w-full max-h-[420px] object-contain bg-white" /> : <div className="h-40 grid place-items-center text-sm text-slate-500">Caricamento…</div>
+                  previewUrl ? <img src={previewUrl} alt={doc.titolo} className="w-full max-h-[420px] object-contain bg-white" /> : <div className="h-40 grid place-items-center text-sm text-zinc-500">Caricamento…</div>
                 ) : kind === "pdf" ? (
-                  previewUrl ? <iframe src={previewUrl} title={doc.titolo} className="w-full h-[420px] bg-white" /> : <div className="h-40 grid place-items-center text-sm text-slate-500">Caricamento…</div>
+                  previewUrl ? <iframe src={previewUrl} title={doc.titolo} className="w-full h-[420px] bg-white" /> : <div className="h-40 grid place-items-center text-sm text-zinc-500">Caricamento…</div>
                 ) : (
-                  <div className="p-6 text-center text-sm text-slate-500">Anteprima non disponibile per questo formato.</div>
+                  <div className="p-6 text-center text-sm text-zinc-500">Anteprima non disponibile per questo formato.</div>
                 )}
               </div>
             )}
@@ -150,7 +150,7 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
               </Button>
             </div>
 
-            {form.riassunto && <p className="text-sm text-slate-700 bg-brand-50/60 border border-brand-100 rounded-lg p-3">{form.riassunto}</p>}
+            {form.riassunto && <p className="text-sm text-zinc-700 bg-brand-50/60 border border-brand-100 rounded-lg p-3">{form.riassunto}</p>}
 
             <div className="grid sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2"><Label htmlFor="documentdetailsheet-titolo">Titolo</Label><Input id="documentdetailsheet-titolo" value={form.titolo || ""} onChange={(e) => set("titolo", e.target.value)} /></div>
@@ -175,19 +175,19 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
             </div>
 
             {doc.data_scadenza && (
-              <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
-                <p className="text-sm text-slate-700">Promemoria di scadenza</p>
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-200 p-3">
+                <p className="text-sm text-zinc-700">Promemoria di scadenza</p>
                 <CreateReminderButton docTitle={doc.titolo} scadenzaDate={doc.data_scadenza} docId={doc.id} docType="CompanyDocument" docTypeLabel={typeLabel(doc.tipo)} personName={doc.dipendente_nome || null} />
               </div>
             )}
 
             {doc.versioni?.length > 0 && (
               <div>
-                <p className="text-sm font-medium text-slate-700 flex items-center gap-1.5 mb-2"><History className="w-4 h-4" /> Versioni precedenti</p>
+                <p className="text-sm font-medium text-zinc-700 flex items-center gap-1.5 mb-2"><History className="w-4 h-4" /> Versioni precedenti</p>
                 <ul className="space-y-1">
                   {[...doc.versioni].reverse().map((v, i) => (
                     <li key={i} className="text-sm flex items-center justify-between gap-2">
-                      <span className="truncate text-slate-600">{v.nome_file || "File"} · sostituito il {new Date(v.sostituito_il).toLocaleDateString("it-IT")}</span>
+                      <span className="truncate text-zinc-600">{v.nome_file || "File"} · sostituito il {new Date(v.sostituito_il).toLocaleDateString("it-IT")}</span>
                       <a href={v.file_url} target="_blank" rel="noopener noreferrer" className="text-brand-600 hover:underline shrink-0">Apri</a>
                     </li>
                   ))}
@@ -195,7 +195,7 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
               </div>
             )}
 
-            <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100 sticky bottom-0 bg-white pb-1">
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-zinc-100 sticky bottom-0 bg-white pb-1">
               <Button variant="ghost" className="text-red-700 hover:text-red-700 hover:bg-red-50 gap-1.5" onClick={() => onDelete(doc)}><Trash2 className="w-4 h-4" /> Elimina</Button>
               <Button onClick={save} disabled={!dirty || saving} className="bg-brand-600 hover:bg-brand-700 gap-1.5">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Salva</Button>
             </div>

@@ -69,9 +69,9 @@ export default function Presenze() {
 
       {isOperaio && ctx.employeeId && <div className="mb-4 max-w-xl"><ClockCard employeeId={ctx.employeeId} /></div>}
 
-      <div className="flex rounded-lg border border-slate-200 bg-white p-0.5 w-fit mb-4 max-w-full overflow-x-auto no-scrollbar">
+      <div className="flex rounded-lg border border-zinc-200 bg-white p-0.5 w-fit mb-4 max-w-full overflow-x-auto no-scrollbar">
         {TABS.filter((t) => !t.staff || !isOperaio).map(({ key, label, icon: I }) => (
-          <button key={key} onClick={() => switchTab(key)} className={`flex items-center gap-1.5 px-3 h-9 rounded-md text-sm whitespace-nowrap ${tab === key ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"}`}>
+          <button key={key} onClick={() => switchTab(key)} className={`flex items-center gap-1.5 px-3 h-9 rounded-md text-sm whitespace-nowrap ${tab === key ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}>
             <I className="w-4 h-4" /> {label}
           </button>
         ))}
