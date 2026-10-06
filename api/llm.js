@@ -3,6 +3,7 @@
 // Restituisce { result } — oggetto JSON se è stato chiesto uno schema, altrimenti testo.
 import { handler, requireUser, HttpError, rateLimit } from "./_lib/server.js";
 import { isAllowedFileUrl } from "./_lib/mail.js";
+import { isDemoTenant } from "./_lib/demo.js";
 import { fetchStoredFile } from "./_lib/files.js";
 
 const API = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -12,6 +13,8 @@ const MODELS = (process.env.GEMINI_MODELS || "gemini-3.8-flash,gemini-3.7-flash,
   .split(",").map((m) => m.trim()).filter(Boolean);
 
 const MAX_FILE_BYTES = 18 * 1024 * 1024;
+const DAILY_LIMIT = Number(process.env.AI_DAILY_LIMIT) || 400;
+const DAILY_LIMIT_DEMO = Number(process.env.AI_DAILY_LIMIT_DEMO) || 40;
 // Con documenti da leggere (preventivi, PSC) la risposta è lunga: più tempo per modello, con un tetto complessivo.
 const MODEL_TIMEOUT_MS = 30_000;
 const MODEL_TIMEOUT_FILES_MS = 90_000;
@@ -104,7 +107,10 @@ async function callGemini(model, payload, timeoutMs = MODEL_TIMEOUT_MS) {
 export default handler(async (req, body) => {
   const { user, tenantId } = await requireUser(req);
   if (!process.env.GEMINI_API_KEY) throw new HttpError(503, "Assistente AI non configurato (manca GEMINI_API_KEY)");
-  rateLimit(`llm:${user.id}`, 20, 60_000);
+  await rateLimit(`llm:${user.id}`, 20, 60_000);
+  // Tetto giornaliero per azienda (più basso per la demo, che è aperta a tutti): protegge dai costi.
+  const daily = isDemoTenant(tenantId) ? DAILY_LIMIT_DEMO : DAILY_LIMIT;
+  await rateLimit(`llm-giorno:${tenantId}`, daily, 86_400_000, "Limite giornaliero dell'assistente AI raggiunto: riprova domani");
 
   const { prompt, response_json_schema, file_urls, add_context_from_internet } = body;
   if (!prompt || typeof prompt !== "string") throw new HttpError(400, "Richiesta AI vuota");

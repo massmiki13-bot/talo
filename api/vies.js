@@ -23,7 +23,7 @@ export function parseItalianAddress(raw) {
 
 export default handler(async (req, body) => {
   const { user } = await requireUser(req);
-  rateLimit(`vies:${user.id}`, 20, 60_000);
+  await rateLimit(`vies:${user.id}`, 20, 60_000);
   const raw = String(body.partita_iva || "").replace(/\s+/g, "").toUpperCase();
   const country = /^[A-Z]{2}/.test(raw) ? raw.slice(0, 2) : "IT";
   const vat = raw.replace(/^[A-Z]{2}/, "");

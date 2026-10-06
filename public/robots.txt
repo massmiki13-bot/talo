@@ -1,0 +1,8 @@
+# Talo è un'applicazione riservata: si indicizza solo la pagina di accesso.
+User-agent: *
+Disallow: /api/
+Disallow: /p/
+Disallow: /firma/
+Disallow: /cantiere/
+Disallow: /entra/
+Allow: /

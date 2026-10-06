@@ -10,7 +10,7 @@ const MAX_RECIPIENTS = 50;
 export default handler(async (req, body) => {
   const { user, tenantId, accessLevel } = await requireUser(req);
   if (accessLevel === "operaio") throw new HttpError(403, "Non autorizzato a inviare email");
-  rateLimit(`send:${user.id}`, 30, 60_000);
+  await rateLimit(`send:${user.id}`, 30, 60_000);
   if (isDemoTenant(tenantId)) throw new HttpError(403, "Nella demo l'invio di email è disattivato: crea il tuo account per usarlo.");
 
   const { subject, body: html, text, from_email, account_id, draft_id } = body;

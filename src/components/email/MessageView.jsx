@@ -19,11 +19,25 @@ export const formatDate = (iso, long = false) => {
 // Il contenuto delle email ricevute è HTML di terzi: lo mostriamo in un iframe
 // senza script né accesso alla pagina.
 function MailBody({ message }) {
+  // Le immagini remote rivelano al mittente quando il messaggio viene aperto: si caricano solo su richiesta.
+  const [showImages, setShowImages] = useState(false);
+  const hasRemoteImages = /<img[^>]+src\s*=\s*["']?\s*https?:/i.test(message.html || "") || /url\(\s*["']?https?:/i.test(message.html || "");
+  const csp = `default-src 'none'; style-src 'unsafe-inline'; img-src data: cid: blob:${showImages || message.direzione === "out" ? " https: http:" : ""}`;
   const html = message.html?.trim()
     ? message.html
     : `<pre style="white-space:pre-wrap;font-family:inherit;margin:0">${String(message.text || "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]))}</pre>`;
-  const doc = `<!doctype html><html><head><meta charset="utf-8"><base target="_blank"><style>body{margin:0;padding:4px 2px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#0f172a;word-wrap:break-word}img{max-width:100%;height:auto}</style></head><body>${html}</body></html>`;
-  return <iframe title="Contenuto del messaggio" sandbox="allow-popups allow-popups-to-escape-sandbox" srcDoc={doc} className="w-full min-h-[360px] h-[55vh] border-0 bg-white" />;
+  const doc = `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${csp}"><base target="_blank"><style>body{margin:0;padding:4px 2px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#0f172a;word-wrap:break-word}img{max-width:100%;height:auto}</style></head><body>${html}</body></html>`;
+  return (
+    <>
+      {hasRemoteImages && !showImages && message.direzione !== "out" && (
+        <p className="mb-2 flex flex-wrap items-center gap-2 rounded-md bg-slate-50 border border-slate-200 px-3 py-2 text-xs text-slate-600">
+          Le immagini esterne sono bloccate per la tua riservatezza.
+          <button type="button" onClick={() => setShowImages(true)} className="font-semibold text-brand-700 hover:underline">Mostra immagini</button>
+        </p>
+      )}
+      <iframe title="Contenuto del messaggio" sandbox="allow-popups allow-popups-to-escape-sandbox" srcDoc={doc} className="w-full min-h-[360px] h-[55vh] border-0 bg-white" />
+    </>
+  );
 }
 
 export default function MessageView({ message, onReply, onReplyAll, onForward, onDelete, onBack, links = {} }) {

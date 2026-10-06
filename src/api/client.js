@@ -3,7 +3,7 @@
 // Espone la stessa forma usata dal resto dell'app:
 //   api.entities.<Entity>.list/filter/get/create/update/delete/...
 //   api.auth.*            (login, registrazione, reset password)
-//   api.integrations.Core (UploadFile, InvokeLLM, SendEmail)
+//   api.integrations.Core (UploadFile, InvokeLLM)
 //   api.functions.invoke  (funzioni server)
 import { createClient } from "@supabase/supabase-js";
 import { cacheGet, cacheSet, cacheClear, isNetworkError } from "@/lib/offlineStore";
@@ -361,9 +361,6 @@ const Core = {
   async InvokeLLM(params) {
     const res = await callServer("llm", params);
     return res.result;
-  },
-  async SendEmail({ to, subject, body, from_name }) {
-    return callServer("system-email", { to, subject, body, from_name });
   },
 };
 

@@ -1,7 +1,7 @@
 // Caselle email: credenziali, IMAP (posta in arrivo) e archivio messaggi.
 import { ImapFlow } from "imapflow";
 import { simpleParser } from "mailparser";
-import { admin, HttpError, toDoc } from "./server.js";
+import { admin, HttpError, toDoc, updateRecordData } from "./server.js";
 
 const EMAIL_RE = /^[^\s@<>(),;:"]+@[^\s@<>(),;:"]+\.[^\s@<>(),;:"]+$/;
 
@@ -79,12 +79,15 @@ function snippetOf(text) {
 
 async function findContactByEmail(tenantId, email) {
   if (!email) return null;
-  const { data } = await admin()
-    .from("entity_records").select("id, data")
-    .eq("entity", "Contact").eq("tenant_id", tenantId)
-    .or(`data->>email.ilike.${email},data->>pec.ilike.${email}`)
-    .limit(1);
-  return data?.[0]?.id || null;
+  // Due confronti esatti: l'indirizzo del mittente non entra mai nella sintassi del filtro.
+  for (const field of ["email", "pec"]) {
+    const { data } = await admin()
+      .from("entity_records").select("id")
+      .eq("entity", "Contact").eq("tenant_id", tenantId).eq(`data->>${field}`, email)
+      .limit(1);
+    if (data?.[0]?.id) return data[0].id;
+  }
+  return null;
 }
 
 export async function insertMessage(tenantId, userId, userEmail, data) {
@@ -168,8 +171,7 @@ export async function syncInbox({ tenantId, userId, userEmail, account, password
       }
 
       const patch = { ultimo_uid: maxUid, uidvalidity: uidValidity, ultima_sincronizzazione: new Date().toISOString() };
-      const { data: row } = await admin().from("entity_records").select("data").eq("id", account.id).single();
-      await admin().from("entity_records").update({ data: { ...row.data, ...patch } }).eq("id", account.id);
+      await updateRecordData(account.id, patch);
     } finally {
       lock.release();
     }

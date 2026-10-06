@@ -25,7 +25,13 @@ export default function PublicQuote() {
   useEffect(() => {
     fetch(`/api/quote-public?t=${encodeURIComponent(token)}`)
       .then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || "Link non valido"); return j; })
-      .then(setData)
+      .then((j) => {
+        setData(j);
+        // La pagina è davvero aperta nel browser del cliente: il preventivo passa a "visto".
+        if (["in_attesa", "inviato"].includes(j.quote?.stato)) {
+          fetch("/api/quote-public", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, visto: true }) }).catch(() => {});
+        }
+      })
       .catch((e) => setError(e.message));
   }, [token]);
 

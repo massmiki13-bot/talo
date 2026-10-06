@@ -1,5 +1,5 @@
 // Scarica un allegato di un'email ricevuta (restituisce il file).
-import { requireUser, HttpError, getRecord, toDoc } from "./_lib/server.js";
+import { requireUser, HttpError, getRecord, toDoc, parseBody, publicMessage } from "./_lib/server.js";
 import { loadAccount, fetchAttachment, friendlyMailError } from "./_lib/mailbox.js";
 
 export default async function mailAttachment(req, res) {
@@ -7,7 +7,7 @@ export default async function mailAttachment(req, res) {
     if (req.method !== "POST") throw new HttpError(405, "Metodo non consentito");
     const { tenantId, accessLevel } = await requireUser(req);
     if (accessLevel === "operaio") throw new HttpError(403, "Non autorizzato");
-    const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
+    const body = parseBody(req);
 
     const row = await getRecord("EmailMessage", body.message_id);
     if (!row || row.tenant_id !== tenantId) throw new HttpError(404, "Messaggio non trovato");
@@ -34,6 +34,6 @@ export default async function mailAttachment(req, res) {
     if (status >= 500) console.error(e);
     res.statusCode = status;
     res.setHeader("Content-Type", "application/json; charset=utf-8");
-    res.end(JSON.stringify({ error: e.message || "Errore interno" }));
+    res.end(JSON.stringify({ error: publicMessage(e) }));
   }
 }

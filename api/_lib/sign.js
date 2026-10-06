@@ -2,7 +2,7 @@
 // Il link contiene un token segreto (data.firma_token del record). Per ogni firma si registrano
 // nome, data, IP, dispositivo e l'impronta SHA-256 del testo firmato.
 import crypto from "crypto";
-import { admin, HttpError, escapeHtml } from "./server.js";
+import { admin, HttpError, escapeHtml, updateRecordData, addPosSignature } from "./server.js";
 import { systemTransport, systemFrom, sendMail } from "./mail.js";
 
 const PROFILE_FIELDS = ["ragione_sociale", "partita_iva", "indirizzo", "citta", "cap", "provincia", "telefono", "email", "logo_url"];
@@ -29,12 +29,6 @@ async function loadProfile(tenantId) {
     .from("entity_records").select("data").eq("entity", "CompanyProfile").eq("tenant_id", tenantId)
     .order("created_date", { ascending: true }).limit(1).maybeSingle();
   return data?.data || {};
-}
-
-async function save(row, patch) {
-  const { error } = await admin().from("entity_records")
-    .update({ data: { ...row.data, ...patch }, updated_date: new Date().toISOString() }).eq("id", row.id);
-  if (error) throw new HttpError(500, error.message);
 }
 
 async function notifyOwner(row, subject, html) {
@@ -97,7 +91,7 @@ export async function postSignature(req, body, ip) {
     const hash = contractHash(d);
     if (body.hash !== hash) throw new HttpError(409, "Il testo è stato aggiornato: ricarica la pagina e rileggilo prima di firmare");
     const firma_controparte = { nome, firma: body.firma, hash, ...evidence(req, ip) };
-    await save(row, { firma_controparte, stato: "firmato", firmato_il: firma_controparte.data.slice(0, 10) });
+    await updateRecordData(row.id, { firma_controparte, stato: "firmato", firmato_il: firma_controparte.data.slice(0, 10) });
     const appUrl = process.env.APP_URL || "";
     await notifyOwner(row, `✍️ Contratto firmato: ${d.titolo || ""}`,
       `<div style="font-family:Arial,sans-serif;font-size:14px;color:#0f172a"><p><strong>${escapeHtml(nome)}</strong> ha firmato dal telefono il contratto <strong>${escapeHtml(d.titolo || "")}</strong>.</p>
@@ -113,8 +107,8 @@ export async function postSignature(req, body, ip) {
   if (!signer) throw new HttpError(400, "Scegli il tuo nome dall'elenco");
   const prev = (d.firme_raccolte || []).filter((f) => !(f.firmatario_id === signer.id && f.revisione === rev));
   const firma = { firmatario_id: signer.id, nome_elenco: signer.nome, ruolo: signer.ruolo, nome, firma: body.firma, revisione: rev, hash, ...evidence(req, ip) };
-  const firme_raccolte = [...prev, firma];
-  await save(row, { firme_raccolte });
+  const saved = await addPosSignature(row.id, firma, [...prev, firma]);
+  const firme_raccolte = saved?.firme_raccolte || [...prev, firma];
   const all = posSigners(d);
   if (all.every((s) => firme_raccolte.some((f) => f.firmatario_id === s.id && f.revisione === rev))) {
     const appUrl = process.env.APP_URL || "";
