@@ -44,16 +44,16 @@ export default function PublicQuote() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-6">
+      <main className="min-h-screen flex items-center justify-center bg-zinc-50 p-6">
         <div className="max-w-md text-center">
           <AlertTriangle className="w-10 h-10 text-amber-500 mx-auto mb-3" />
           <h1 className="text-lg font-semibold text-zinc-900">{error}</h1>
           <p className="text-sm text-zinc-600 mt-2">Il link potrebbe essere stato sostituito da una versione più recente. Contatta l'azienda che te l'ha inviato.</p>
         </div>
-      </div>
+      </main>
     );
   }
-  if (!q) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-7 h-7 animate-spin text-zinc-500" /></div>;
+  if (!q) return <main className="min-h-screen flex items-center justify-center" aria-busy="true"><Loader2 className="w-7 h-7 animate-spin text-zinc-500" aria-label="Caricamento" /></main>;
 
   const color = p.colore_principale || "#1d4ed8";
   const exp = expiryDate(q);
