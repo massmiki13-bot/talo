@@ -126,7 +126,7 @@ export default function PublicQuote() {
           </div>
 
           {/* Voci */}
-          <div className="overflow-x-auto -mx-5 sm:mx-0">
+          <div className="overflow-x-auto -mx-5 sm:mx-0" tabIndex={0} role="region" aria-label="Voci del preventivo (scorri in orizzontale)">
             <table className="w-full text-sm min-w-[520px]">
               <thead>
                 <tr className="text-left text-xs uppercase tracking-wide text-zinc-500 border-b border-zinc-200">
@@ -248,7 +248,7 @@ export default function PublicQuote() {
           </div>
         </footer>
       </article>
-      <p className="text-center text-xs text-zinc-500 mt-4">Documento inviato con Talo</p>
+      <p className="text-center text-xs text-zinc-600 mt-4">Documento inviato con Talo</p>
     </main>
   );
 }
