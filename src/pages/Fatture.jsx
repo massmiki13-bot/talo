@@ -293,7 +293,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
     setSave("dirty");
     const t = setTimeout(async () => {
       setSave("saving");
-      const { id, created_date, updated_date, created_by_id, ...data } = f; // eslint-disable-line no-unused-vars
+      const { id, created_date, updated_date, created_by_id, ...data } = f;  
       try { onChange(await db.Invoice.update(inv.id, { ...data, imponibile: c.imponibile, iva_totale: c.iva, totale: c.totale })); setSave("saved"); }
       catch { setSave("error"); }
     }, 900);
@@ -356,7 +356,7 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
   });
 
   const creditNote = () => run("nc", async () => {
-    const { id, created_date, updated_date, created_by_id, numero, stato, data_pagamento, progressivo_invio, ...rest } = f; // eslint-disable-line no-unused-vars
+    const { id, created_date, updated_date, created_by_id, numero, stato, data_pagamento, progressivo_invio, ...rest } = f;  
     const x = await createNumbered(db.Invoice, { ...rest, tipo_documento: "TD04", data: today(), stato: "bozza", fattura_collegata: f.numero, oggetto: `Storno fattura n. ${f.numero} del ${new Date(f.data).toLocaleDateString("it-IT")}` }, f.anno, "TD04");
     onCreated(x);
   });

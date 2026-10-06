@@ -1,4 +1,4 @@
-import { hexToRgb, addImageSafe, addCompanyHeader, addFooter } from "@/utils/pdfUtils";
+import { addImageSafe, addCompanyHeader, addFooter } from "@/utils/pdfUtils";
 
 // Sostituisce i placeholder {{FIELD}} e {{FIELD|default}} con i valori forniti.
 // Supporta blocchi condizionali {{#if FIELD}}...{{/if}}: il blocco viene

@@ -1,3 +1,4 @@
+// @ts-nocheck — disegno di PDF/Excel con argomenti a ventaglio (jsPDF): escluso dal controllo dei tipi.
 import { formatEuro, formatNumber } from "@/utils/pdfUtils";
 import { downloadWordDoc } from "@/utils/wordExport";
 import { downloadExcelSheet } from "@/utils/excelExport";

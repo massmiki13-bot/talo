@@ -54,7 +54,7 @@ export function computeDashboard(input) {
     // atteso: avanzamento in proporzione al tempo trascorso
     let atteso = null;
     if (w.data_inizio && w.data_fine_prevista && w.data_fine_prevista > w.data_inizio) {
-      atteso = Math.max(0, Math.min(100, ((now - new Date(w.data_inizio)) / (new Date(w.data_fine_prevista) - new Date(w.data_inizio))) * 100));
+      atteso = Math.max(0, Math.min(100, ((+now - +new Date(w.data_inizio)) / (+new Date(w.data_fine_prevista) - +new Date(w.data_inizio))) * 100));
     }
     return {
       ...w, incassato, totale, costi, daIncassare: Math.max(0, totale - incassato),

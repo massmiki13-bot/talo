@@ -40,7 +40,7 @@ export const needsIso = (classifica) => classLimit(classifica) >= classLimit("II
 const iso = (d) => (d instanceof Date ? d.toISOString().slice(0, 10) : d || "");
 const addMonths = (d, m) => { const x = new Date(`${d}T12:00:00`); x.setMonth(x.getMonth() + m); return iso(x); };
 const addDaysIso = (d, n) => { const x = new Date(`${d}T12:00:00`); x.setDate(x.getDate() + n); return iso(x); };
-export const daysTo = (d, today = new Date()) => (d ? Math.ceil((new Date(`${d}T12:00:00`) - new Date(`${iso(today)}T12:00:00`)) / 86_400_000) : null);
+export const daysTo = (d, today = new Date()) => (d ? Math.ceil((+new Date(`${d}T12:00:00`) - +new Date(`${iso(today)}T12:00:00`)) / 86_400_000) : null);
 
 /**
  * Scadenze di un'attestazione SOA: verifica triennale (da chiedere 90 giorni prima) e scadenza
@@ -92,8 +92,8 @@ export function canBid(soa, categoria, importo) {
   const cat = (soa?.categorie || []).find((c) => c.codice === categoria);
   if (!cat) return { ok: false, motivo: `L'attestazione non contiene la categoria ${categoria}. Si può valutare un raggruppamento (RTI) o l'avvalimento con un'impresa qualificata.` };
   const lim = classLimit(cat.classifica);
-  if (lim === Infinity || imp <= lim * 1.2) return { ok: true, classifica: cat.classifica, motivo: `Qualificata in ${categoria} classifica ${cat.classifica}${lim !== Infinity && imp > lim ? " grazie all'aumento di un quinto" : ""}.` };
-  return { ok: false, classifica: cat.classifica, motivo: `La classifica ${cat.classifica} copre fino a ${(lim * 1.2).toLocaleString("it-IT")} € (con l'aumento di un quinto): l'importo è superiore.` };
+  if (lim === Infinity || imp <= +lim * 1.2) return { ok: true, classifica: cat.classifica, motivo: `Qualificata in ${categoria} classifica ${cat.classifica}${lim !== Infinity && imp > +lim ? " grazie all'aumento di un quinto" : ""}.` };
+  return { ok: false, classifica: cat.classifica, motivo: `La classifica ${cat.classifica} copre fino a ${(+lim * 1.2).toLocaleString("it-IT")} € (con l'aumento di un quinto): l'importo è superiore.` };
 }
 
 /**
@@ -109,11 +109,11 @@ export function reachableClass(lavori) {
     if (c.importo === Infinity) break;
     const L = c.importo;
     const top = (k) => imps.slice(0, k).reduce((s, x) => s + x, 0);
-    const ok = tot >= 0.9 * L && (imps[0] >= 0.4 * L || (imps.length >= 2 && top(2) >= 0.55 * L) || (imps.length >= 3 && top(3) >= 0.65 * L));
+    const ok = tot >= 0.9 * +L && (imps[0] >= 0.4 * +L || (imps.length >= 2 && top(2) >= 0.55 * +L) || (imps.length >= 3 && top(3) >= 0.65 * +L));
     if (ok) best = c; else break;
   }
   const next = CLASSIFICHE[best ? CLASSIFICHE.indexOf(best) + 1 : 0];
-  return { totale: tot, classifica: best?.codice || null, prossima: next && next.importo !== Infinity ? { codice: next.codice, mancano: Math.max(0, 0.9 * next.importo - tot) } : null };
+  return { totale: tot, classifica: best?.codice || null, prossima: next && next.importo !== Infinity ? { codice: next.codice, mancano: Math.max(0, 0.9 * +next.importo - tot) } : null };
 }
 
 /** Lavori finiti nel periodo (anni) raggruppati per categoria SOA, con la classifica raggiungibile. */

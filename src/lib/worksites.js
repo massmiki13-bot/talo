@@ -127,6 +127,6 @@ export const INSTALLMENT_STATE = {
   da_pagare: { label: "Da pagare", className: "bg-slate-100 text-slate-700" },
 };
 
-export const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86_400_000);
+export const daysBetween = (a, b) => Math.round((+new Date(b) - +new Date(a)) / 86_400_000);
 
 export const fmtDate = (d) => (d ? new Date(d).toLocaleDateString("it-IT") : "—");

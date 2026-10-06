@@ -6,17 +6,18 @@ import { files } from "@/api/client";
 const UNSAFE_HREF = /^[\s\u0000-\u001f]*(javascript|data|vbscript):/i;
 
 export function installPrivateLinkHandler() {
-  if (typeof document === "undefined" || window.__taloPrivateLinks) return;
-  window.__taloPrivateLinks = true;
+  const w = /** @type {any} */ (window);
+  if (typeof document === "undefined" || w.__taloPrivateLinks) return;
+  w.__taloPrivateLinks = true;
   // I link che arrivano dai dati (allegati, foto, documenti) non devono mai eseguire codice.
   const blockUnsafe = (e) => {
-    const a = e.target?.closest?.("a[href]");
+    const a = /** @type {any} */ (e.target)?.closest?.("a[href]");
     if (a && UNSAFE_HREF.test(a.getAttribute("href") || "")) { e.preventDefault(); e.stopPropagation(); }
   };
   document.addEventListener("click", blockUnsafe, true);
   document.addEventListener("auxclick", blockUnsafe, true);
   document.addEventListener("click", (e) => {
-    const a = e.target?.closest?.("a[href]");
+    const a = /** @type {any} */ (e.target)?.closest?.("a[href]");
     if (!a || !files.isPrivate(a.getAttribute("href"))) return;
     e.preventDefault();
     e.stopPropagation();

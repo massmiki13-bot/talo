@@ -10,7 +10,7 @@ export const SCADENZE = [
 ];
 
 const dayMs = 86_400_000;
-export const daysTo = (iso) => (iso ? Math.ceil((new Date(iso) - new Date(new Date().toDateString())) / dayMs) : null);
+export const daysTo = (iso) => (iso ? Math.ceil((+new Date(iso) - +new Date(new Date().toDateString())) / dayMs) : null);
 
 /** Scadenze di un mezzo ordinate, con stato: scaduta, entro 30 giorni, ok. */
 export function deadlines(m) {

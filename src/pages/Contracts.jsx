@@ -110,7 +110,7 @@ export default function Contracts() {
   };
 
   const duplicate = async (c) => {
-    const { id, created_date, updated_date, created_by_id, stato, firmato_il, inviato_il, file_firmato_url, file_firmato_nome, revisione_ai, ...rest } = c; // eslint-disable-line no-unused-vars
+    const { id, created_date, updated_date, created_by_id, stato, firmato_il, inviato_il, file_firmato_url, file_firmato_nome, revisione_ai, ...rest } = c;  
     const copy = await db.GeneratedContract.create({ ...rest, titolo: `${c.titolo} (copia)`, stato: "bozza", data_creazione: today() });
     setContracts((all) => [copy, ...all]);
     setDetailId(copy.id);

@@ -9,8 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  ArrowLeft, Plus, Save, Send, FileDown, Copy, Bookmark, LayoutTemplate, FolderOpen, Check, Loader2, Link2, MoreHorizontal,
-  History, HardHat, Sparkles, ShieldCheck, XCircle, CheckCircle2, Eye, Image as ImageIcon, X, Upload, UserPlus, AlertTriangle, Clock,
+  ArrowLeft, Plus, Save, Send, FileDown, Copy, Bookmark, LayoutTemplate, FolderOpen, Loader2, Link2, MoreHorizontal,
+  History, HardHat, Sparkles, XCircle, CheckCircle2, Image as ImageIcon, X, UserPlus, AlertTriangle, Clock,
 } from "lucide-react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import SignaturePad from "@/components/shared/SignaturePad";

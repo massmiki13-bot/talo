@@ -6,9 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  ArrowLeft, Pencil, MapPin, Navigation, Users, CalendarDays, FileText, Inbox, Eye, FileDown, AlertTriangle, TrendingUp, TrendingDown,
-  MoreHorizontal, Plus, Loader2, HardHat, Receipt, ClipboardList, Edit3, CheckCircle2,
+import { Pencil, MapPin, Navigation, Users, CalendarDays, FileText, Inbox, Eye, FileDown, AlertTriangle, TrendingUp, Plus, Loader2, HardHat, ClipboardList, Edit3, CheckCircle2,
 } from "lucide-react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { DetailHero, DetailCard, DetailTabs, HeroButton, StatusPill, Alerts, eurShort } from "@/components/shared/DetailLayout";

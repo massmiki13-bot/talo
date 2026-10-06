@@ -49,7 +49,7 @@ export function addYears(dateStr, years) {
 }
 
 const today = () => new Date(new Date().toDateString());
-const daysTo = (dateStr) => Math.ceil((new Date(dateStr) - today()) / 86_400_000);
+const daysTo = (dateStr) => Math.ceil((+new Date(dateStr) - +today()) / 86_400_000);
 
 /**
  * Conformità alla sicurezza di un dipendente in base ai suoi documenti.
@@ -103,7 +103,7 @@ export const COMPLIANCE_STYLE = {
 
 export const seniority = (dateStr) => {
   if (!dateStr) return null;
-  const months = Math.floor((today() - new Date(dateStr)) / (30.44 * 86_400_000));
+  const months = Math.floor((+today() - +new Date(dateStr)) / (30.44 * 86_400_000));
   if (months < 1) return "meno di un mese";
   if (months < 12) return `${months} ${months === 1 ? "mese" : "mesi"}`;
   const y = Math.floor(months / 12);

@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Eraser, Upload, Check, Maximize2, Minimize2 } from "lucide-react";
 
 export default function SignaturePad({ value, onChange, label = "Firma" }) {

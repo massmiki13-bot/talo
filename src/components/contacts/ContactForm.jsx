@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { Search, Loader2, Plus, Trash2, AlertTriangle, CheckCircle2, X } from "lucide-react";
+import { Search, Loader2, Plus, Trash2, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { validateContact, isValidPartitaIva, formatIban } from "@/lib/validators";
 import { CATEGORIE_CLIENTE, CATEGORIE_FORNITORE, MODALITA_PAGAMENTO, findDuplicates, displayName } from "@/lib/contacts";
 import Field from "@/components/shared/FormField";

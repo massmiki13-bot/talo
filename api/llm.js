@@ -83,13 +83,13 @@ async function callGemini(model, payload, timeoutMs = MODEL_TIMEOUT_MS) {
     // Un modello lento non deve consumare tutto il tempo della funzione.
     signal: AbortSignal.timeout(timeoutMs),
   }).catch((e) => {
-    const err = new Error(e.name === "TimeoutError" ? "Modello troppo lento" : e.message);
+    const err = /** @type {any} */ (new Error(e.name === "TimeoutError" ? "Modello troppo lento" : e.message));
     err.status = 503;
     throw err;
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const err = new Error(data?.error?.message || `Gemini ${res.status}`);
+    const err = /** @type {any} */ (new Error(data?.error?.message || `Gemini ${res.status}`));
     err.status = res.status;
     throw err;
   }
@@ -97,7 +97,7 @@ async function callGemini(model, payload, timeoutMs = MODEL_TIMEOUT_MS) {
   const text = (cand?.content?.parts || []).map((p) => p.text || "").join("");
   if (!text) {
     const reason = cand?.finishReason || data.promptFeedback?.blockReason || "vuota";
-    const err = new Error(`Risposta AI ${reason}`);
+    const err = /** @type {any} */ (new Error(`Risposta AI ${reason}`));
     err.status = 422;
     throw err;
   }
@@ -129,7 +129,7 @@ export default handler(async (req, body) => {
 
   const payload = {
     systemInstruction: { parts: [{ text: "Sei l'assistente di Talo, gestionale per imprese edili e di impianti italiane. Rispondi in italiano, in modo preciso e professionale, salvo diversa richiesta." }] },
-    contents: [{ role: "user", parts: [...fileParts, { text }] }],
+    contents: [{ role: "user", parts: /** @type {any[]} */ ([...fileParts, { text }]) }],
     generationConfig: { temperature: 0.4 },
   };
   if (useSearch) payload.tools = [{ google_search: {} }];

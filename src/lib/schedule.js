@@ -3,7 +3,7 @@ const dayMs = 86_400_000;
 export const toDate = (iso) => new Date(`${iso}T00:00:00`);
 export const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 export const addDays = (s, n) => { const d = toDate(s); d.setDate(d.getDate() + n); return iso(d); };
-export const diffDays = (a, b) => Math.round((toDate(b) - toDate(a)) / dayMs);
+export const diffDays = (a, b) => Math.round((+toDate(b) - +toDate(a)) / dayMs);
 
 /** Periodo del lavoro: date indicate, altrimenti inizio oggi e 30 giorni di durata. */
 export function worksiteSpan(w, today = iso(new Date())) {

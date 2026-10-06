@@ -105,7 +105,7 @@ function walk(root) {
   if (root.matches?.("[data-no-translate]")) return;
   translateAttrs(root);
   const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, {
-    acceptNode: (n) => (n.nodeType === 1 && n.hasAttribute("data-no-translate") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+    acceptNode: (/** @type {any} */ n) => (n.nodeType === 1 && n.hasAttribute("data-no-translate") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
   });
   for (let n = tw.nextNode(); n; n = tw.nextNode()) (n.nodeType === 3 ? translateText(n) : translateAttrs(n));
 }
@@ -113,7 +113,7 @@ function walk(root) {
 /** Rimette i testi originali in italiano. */
 function restore(root) {
   const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
-  for (let n = tw.currentNode; n; n = tw.nextNode()) {
+  for (let n = /** @type {any} */ (tw.currentNode); n; n = tw.nextNode()) {
     if (n.nodeType === 3) { const st = textState.get(n); if (st && n.nodeValue === st.tr) n.nodeValue = st.orig; textState.delete(n); }
     else { const st = attrState.get(n); if (st) { for (const [a, { orig, tr }] of Object.entries(st)) if (n.getAttribute(a) === tr) n.setAttribute(a, orig); attrState.delete(n); } }
   }

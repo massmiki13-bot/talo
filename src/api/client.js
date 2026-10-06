@@ -39,7 +39,7 @@ const schemaFiles = import.meta.glob("../../schema/entities/*.jsonc", { eager: t
 const DEFAULTS = {};
 for (const [path, raw] of Object.entries(schemaFiles)) {
   try {
-    const schema = JSON.parse(raw);
+    const schema = JSON.parse(String(raw));
     const defaults = {};
     for (const [key, prop] of Object.entries(schema.properties || {})) {
       if ("default" in prop) defaults[key] = prop.default;
@@ -108,7 +108,7 @@ function entityApi(entity) {
     list: (sort, limit, skip) => list({}, sort, limit, skip),
     filter: (filter, sort, limit, skip) => list(filter, sort, limit, skip),
     // Solo alcuni campi (per elenchi e calcoli): { filter, sort, limit, skip }
-    fields: (fields, { filter, sort, limit, skip } = {}) =>
+    fields: (fields, { filter, sort, limit, skip } = /** @type {any} */ ({})) =>
       rpc("entity_list_fields", { p_entity: entity, p_fields: fields, p_filter: filter || {}, p_sort: sort || "-created_date", p_limit: limit ?? null, p_skip: skip || 0 })
         .then((rows) => rows || []),
     get: (id) => {
@@ -160,13 +160,13 @@ function entityApi(entity) {
 }
 
 const entityCache = {};
-const entities = new Proxy({}, {
+const entities = /** @type {Record<string, any>} */ (new Proxy({}, {
   get(_, name) {
     if (typeof name !== "string") return undefined;
     if (!entityCache[name]) entityCache[name] = entityApi(name);
     return entityCache[name];
   },
-});
+}));
 
 // ─── Autenticazione ───
 
@@ -319,7 +319,7 @@ const PRIVATE_PREFIX = "/storage/v1/object/authenticated/private/";
 const signedCache = new Map();
 export const files = {
   isPrivate: (url) => typeof url === "string" && url.includes(PRIVATE_PREFIX),
-  async signed(url, { download } = {}) {
+  async signed(url, { download } = /** @type {any} */ ({})) {
     if (!files.isPrivate(url)) return url;
     const key = download ? `${url}#${download}` : url;
     const hit = signedCache.get(key);

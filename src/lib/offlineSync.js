@@ -17,7 +17,7 @@ export async function queuePhoto({ file, worksite_id, fase, didascalia, data }) 
   return enqueue({ kind: "photo", uid: await currentUid(), blob: file, name: file.name || "foto.jpg", type: file.type || "image/jpeg", worksite_id, fase, didascalia, data });
 }
 
-export async function pendingFor(kind, match = () => true) {
+export async function pendingFor(kind, match = /** @type {(x: any) => boolean} */ (() => true)) {
   const uid = await currentUid();
   return (await queueAll()).filter((x) => x.kind === kind && x.uid === uid && match(x));
 }

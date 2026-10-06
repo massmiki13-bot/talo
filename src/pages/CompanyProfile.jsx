@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Building2, Upload, Save, X, Plus, Trash2, Bell, Hash, Palette, Mail, Database, Search, Loader2, CheckCircle2, AlertCircle, PenLine, Stamp, Image as ImageIcon, RotateCcw, FileText, History,
+  Building2, Save, X, Plus, Trash2, Bell, Palette, Mail, Database, Search, Loader2, CheckCircle2, AlertCircle, PenLine, Stamp, Image as ImageIcon, RotateCcw, FileText, History,
 } from "lucide-react";
 import { QUOTE_TEMPLATES } from "@/utils/quoteTemplates";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";

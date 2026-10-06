@@ -115,7 +115,7 @@ export function computeAnalytics(data, period) {
   const accepted = pq.filter((q) => q.stato === "approvato");
   const decided = pq.filter((q) => ["approvato", "rifiutato"].includes(q.stato));
   const valueOf = (list) => list.reduce((s, q) => s + n(q.imponibile || q.totale), 0);
-  const respDays = accepted.filter((q) => q.data_firma_cliente && q.data).map((q) => (new Date(q.data_firma_cliente) - new Date(q.data)) / 86_400_000).filter((d) => d >= 0);
+  const respDays = accepted.filter((q) => q.data_firma_cliente && q.data).map((q) => (+new Date(q.data_firma_cliente) - +new Date(q.data)) / 86_400_000).filter((d) => d >= 0);
   const openPipeline = quotes.filter((q) => OPEN_STATES.includes(q.stato) && effectiveState(q) !== "scaduto");
   const clients = {};
   for (const p of payments.filter((x) => inRange(x.data, from, to))) {

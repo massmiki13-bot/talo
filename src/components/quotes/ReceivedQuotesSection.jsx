@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { api, db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Inbox, Upload, Trash2, Eye, FileText, FileImage, FileCheck, Send, Search, CheckSquare } from "lucide-react";
+import { Inbox, Upload, Trash2, Eye, FileText, FileImage, FileCheck, Search, CheckSquare } from "lucide-react";
 import EmptyState from "@/components/shared/EmptyState";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
 import SignStampDialog from "./SignStampDialog";

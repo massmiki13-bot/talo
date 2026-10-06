@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { api, db } from "@/lib/db";
 import { useToast } from "@/components/ui/use-toast";
-import { Camera, Trash2, Upload, Loader2, CloudOff } from "lucide-react";
+import { Camera, Trash2, Loader2, CloudOff } from "lucide-react";
 import { isNetworkError, onQueueChange } from "@/lib/offlineStore";
 import { queuePhoto, pendingFor } from "@/lib/offlineSync";
 

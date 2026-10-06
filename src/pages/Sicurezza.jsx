@@ -78,7 +78,7 @@ export default function Sicurezza() {
   };
 
   const duplicate = async (p) => {
-    const { id, created_date, updated_date, created_by_id, ...rest } = p; // eslint-disable-line no-unused-vars
+    const { id, created_date, updated_date, created_by_id, ...rest } = p;  
     const copy = await db.SafetyPlan.create({ ...rest, titolo: `${p.titolo} (copia)`, stato: "bozza", revisione: 0, data: new Date().toISOString().slice(0, 10) });
     setPlans((l) => [copy, ...l]);
     toast({ title: "POS duplicato", description: "Aggiorna cantiere e lavorazioni." });
@@ -215,7 +215,7 @@ function Editor({ plan, ctx, onBack, onChange, onProfile }) {
   };
   const assessAll = async () => {
     const todo = d.lavorazioni.map((l, i) => (!l.rischi?.length ? i : -1)).filter((i) => i >= 0);
-    for (const i of todo) { setAiBusy(i); await assess(i); } // eslint-disable-line no-await-in-loop
+    for (const i of todo) { setAiBusy(i); await assess(i); }  
     toast({ title: "Valutazione dei rischi completata", description: "Controlla e adatta ogni scheda al tuo cantiere." });
   };
   // PSC: l'IA lo legge e completa il POS senza toccare ciò che è già scritto

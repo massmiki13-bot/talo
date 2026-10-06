@@ -37,6 +37,7 @@ export function smtpTransport({ host, port, user, pass }) {
   });
 }
 
+/** @param {any} transport @param {{ fromName?: string, fromEmail: string, to: string, cc?: string, bcc?: string, subject: string, html?: string, text?: string, attachments?: any[] }} message */
 export async function sendMail(transport, { fromName, fromEmail, to, cc, bcc, subject, html, text, attachments }) {
   return transport.sendMail({
     from: { name: clean(fromName) || clean(fromEmail), address: clean(fromEmail) },

@@ -88,7 +88,7 @@ export function summarize(events, settings = DEFAULT_SETTINGS) {
         if (open) issues.push("entrata senza uscita");
         open = e;
       } else if (open) {
-        intervals.push({ from: open, to: e, ore: (new Date(e.at) - new Date(open.at)) / 3_600_000 });
+        intervals.push({ from: open, to: e, ore: (+new Date(e.at) - +new Date(open.at)) / 3_600_000 });
         open = null;
       } else issues.push("uscita senza entrata");
     }

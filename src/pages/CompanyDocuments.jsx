@@ -191,7 +191,7 @@ export default function CompanyDocuments() {
         setFolders(res.folders);
         folderId = res.folderId;
       }
-      const { cartella, _smista, ...meta } = r; // eslint-disable-line no-unused-vars
+      const { cartella, _smista, ...meta } = r;  
       doc = await db.CompanyDocument.update(doc.id, {
         ...meta, cartella_id: folderId || "", cartella_nome: foldersRef.current.find((f) => f.id === folderId)?.nome || "",
         data_emissione: r.data_emissione || null, data_scadenza: r.data_scadenza || null,

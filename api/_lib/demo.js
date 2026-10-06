@@ -133,7 +133,7 @@ function build() {
   worksites.filter((w) => w.stato !== "da_iniziare").forEach((w, wi) => {
     const base = w.importo_totale || 20000;
     [["Materiali", forn[0], 0.09, "Materiale edile e ferramenta"], ["Materiali", forn[1], 0.07, "Calcestruzzo e massetti"], ["Noleggi", forn[2], 0.03, "Nolo ponteggio e mini escavatore"], ["Subappalti", forn[3], 0.08, "Impianto elettrico"], ["Materiali", forn[0], 0.05, "Piastrelle e collanti"]]
-      .forEach(([categoria, f, pct, descr], k) => add("WorksiteTransaction", { worksite_id: w.id, worksite_nome: w.nome, tipo: "uscita", categoria, descrizione: descr, importo: r2(base * pct * (wi === 1 && k === 3 ? 1.9 : 1)), data: day(Number(w.data_inizio ? (new Date(w.data_inizio) - new Date()) / 86400000 : -30) + 5 + k * 9 | 0), fornitore: f.nome }));
+      .forEach(([categoria, f, pct, descr], k) => add("WorksiteTransaction", { worksite_id: w.id, worksite_nome: w.nome, tipo: "uscita", categoria, descrizione: descr, importo: r2(base * pct * (wi === 1 && k === 3 ? 1.9 : 1)), data: day(Number(w.data_inizio ? (+new Date(w.data_inizio) - +new Date()) / 86400000 : -30) + 5 + k * 9 | 0), fornitore: f.nome }));
   });
 
   // ── Presenze degli ultimi 45 giorni + timbrature di oggi ──
@@ -181,7 +181,7 @@ function build() {
 
   // ── Documenti ditta ──
   [["DURC", "durc", -60, 60], ["Visura camerale", "visura", -30, null], ["Polizza RCT/RCO Allianz", "assicurazione", -300, 65], ["Certificazione SOA OG1 classe III", "certificazione", -600, 495], ["Iscrizione Cassa Edile", "altro", -365, null]]
-    .forEach(([titolo, tipo, em, sc]) => add("CompanyDocument", { titolo, tipo, data_emissione: day(em), ...(sc != null ? { data_scadenza: day(sc) } : {}), riassunto: `${titolo} dell'impresa.`, nome_file: `${titolo.replace(/\W+/g, "_")}.pdf`, mime: "application/pdf" }));
+    .forEach(([titolo, tipo, em, sc]) => add("CompanyDocument", { titolo, tipo, data_emissione: day(em), ...(sc != null ? { data_scadenza: day(sc) } : {}), riassunto: `${titolo} dell'impresa.`, nome_file: `${String(titolo).replace(/\W+/g, "_")}.pdf`, mime: "application/pdf" }));
 
   // ── Contratti ──
   add("GeneratedContract", { tipo: "subappalto", titolo: "Contratto di subappalto – impianto elettrico Hotel Alpenrose", controparte_nome: "Elettro Rainer Snc", contatto_id: forn[3].id, worksite_id: worksites[0].id, stato: "firmato", firmato_il: day(-70), data_creazione: day(-75), importo: 18500, data_scadenza: day(40),

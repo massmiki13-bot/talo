@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronLeft, ChevronRight, MapPin, AlertTriangle, CheckCircle2, Loader2, Settings2, LogIn, LogOut, Smartphone, CloudOff } from "lucide-react";
-import { addDays, iso, parseIso } from "@/lib/attendance";
+import { addDays, parseIso } from "@/lib/attendance";
 import { summarize, confirmDay, settingsOf, fmtTime } from "@/lib/timbrature";
 
 const fmtH = (h) => String(h).replace(".", ",");

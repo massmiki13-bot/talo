@@ -28,11 +28,11 @@ function wrapEntity(entity, entityName) {
 
 const cache = {};
 
-export const db = new Proxy({}, {
-  get(_, name) {
+export const db = /** @type {Record<string, any>} */ (new Proxy({}, {
+  get(_, /** @type {string} */ name) {
     if (!cache[name]) {
       cache[name] = wrapEntity(api.entities[name], name);
     }
     return cache[name];
   }
-});
+}));

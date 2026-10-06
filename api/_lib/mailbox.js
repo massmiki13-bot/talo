@@ -110,7 +110,7 @@ export async function syncInbox({ tenantId, userId, userEmail, account, password
     await client.connect();
     const lock = await client.getMailboxLock("INBOX");
     try {
-      const box = client.mailbox;
+      const box = /** @type {any} */ (client.mailbox);
       const uidValidity = String(box.uidValidity);
       const sameBox = account.uidvalidity === uidValidity;
       const lastUid = sameBox ? Number(account.ultimo_uid) || 0 : 0;
@@ -125,7 +125,7 @@ export async function syncInbox({ tenantId, userId, userEmail, account, password
 
       let maxUid = lastUid;
       for (const uid of toFetch) {
-        const msg = await client.fetchOne(String(uid), { source: true, flags: true, uid: true }, { uid: true });
+        const msg = /** @type {any} */ (await client.fetchOne(String(uid), { source: true, flags: true, uid: true }, { uid: true }));
         if (!msg?.source) continue;
         const parsed = await simpleParser(msg.source, { skipImageLinks: true });
         const from = parsed.from?.value?.[0] || {};
@@ -188,7 +188,7 @@ export async function fetchAttachment({ account, password, uid, index }) {
     await client.connect();
     const lock = await client.getMailboxLock("INBOX");
     try {
-      const msg = await client.fetchOne(String(uid), { source: true }, { uid: true });
+      const msg = /** @type {any} */ (await client.fetchOne(String(uid), { source: true }, { uid: true }));
       if (!msg?.source) throw new HttpError(404, "Messaggio non più presente sul server");
       const parsed = await simpleParser(msg.source);
       const att = (parsed.attachments || [])[index];

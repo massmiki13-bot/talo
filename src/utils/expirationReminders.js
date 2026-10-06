@@ -12,7 +12,7 @@ export function getExpirationStatus(date) {
   const d = new Date(date);
   if (isNaN(d.getTime())) return null;
   const today = new Date(new Date().toDateString());
-  const diffDays = (d - today) / (1000 * 60 * 60 * 24);
+  const diffDays = (+d - +today) / (1000 * 60 * 60 * 24);
   if (diffDays < 0) return "expired";
   if (diffDays <= 30) return "expiring_soon";
   return null;

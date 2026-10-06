@@ -46,13 +46,13 @@ export default function ClockCard({ employeeId, t: tProp }) {
 
   const queued = pendingPunches().filter((p) => p.client_time.slice(0, 10) === today);
   const all = useMemo(() => [...events, ...queued.map((q) => ({ id: q.client_id, tipo: q.tipo, at: q.client_time, dipendente_id: employeeId, data: today, worksite_id: q.worksite || "", worksite_nome: sites.find((s) => s.id === q.worksite)?.nome || "", offline: true }))]
-    .sort((a, b) => a.at.localeCompare(b.at)), [events, queued, employeeId, today, sites]); // eslint-disable-line react-hooks/exhaustive-deps
+    .sort((a, b) => a.at.localeCompare(b.at)), [events, queued, employeeId, today, sites]);  
   const last = all.at(-1);
   const inside = last?.tipo === "entrata";
   const next = inside ? "uscita" : "entrata";
   const day = all.length ? summarize(all.map((e) => ({ dipendente_nome: "", ...e })), settings)[0] : null;
 
-  useEffect(() => { if (inside && last.worksite_id) setSite(last.worksite_id); }, [inside, last?.worksite_id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (inside && last.worksite_id) setSite(last.worksite_id); }, [inside, last?.worksite_id]);  
 
   const doPunch = async (tipo) => {
     setBusy(true);

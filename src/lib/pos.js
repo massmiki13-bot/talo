@@ -1,3 +1,4 @@
+// @ts-nocheck — disegno di PDF/Excel con argomenti a ventaglio (jsPDF): escluso dal controllo dei tipi.
 // Piano Operativo di Sicurezza (D.Lgs. 81/2008, art. 89 c.1 lett. h e Allegato XV punto 3.2).
 import { api } from "@/lib/db";
 import { CORSI, VISITA } from "@/lib/employees";

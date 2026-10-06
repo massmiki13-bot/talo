@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,7 +96,7 @@ export default function Reminders() {
         if (sib.length) await db.Reminder.bulkUpdate(sib.map((x) => ({ id: x.id, completato: true })));
         const next = r.ricorrenza && r.ricorrenza !== "nessuna" ? nextOccurrence(r.data, r.ricorrenza) : null;
         if (next) {
-          const { id, created_date, updated_date, created_by_id, completato_il, posticipato, ...rest } = r; // eslint-disable-line no-unused-vars
+          const { id, created_date, updated_date, created_by_id, completato_il, posticipato, ...rest } = r;  
           await db.Reminder.create({ ...rest, data: next, completato: false });
           toast({ title: "Completato", description: `Il prossimo è stato fissato per ${fmtDay(next)}.` });
         } else toast({ title: "Completato" });
