@@ -3,7 +3,7 @@
 // Espone la stessa forma usata dal resto dell'app:
 //   api.entities.<Entity>.list/filter/get/create/update/delete/...
 //   api.auth.*            (login, registrazione, reset password)
-//   api.integrations.Core (UploadFile, InvokeLLM, SendEmail)
+//   api.integrations.Core (UploadFile, InvokeLLM)
 //   api.functions.invoke  (funzioni server)
 import { createClient } from "@supabase/supabase-js";
 import { cacheGet, cacheSet, cacheClear, isNetworkError } from "@/lib/offlineStore";
@@ -28,7 +28,8 @@ export class ApiError extends Error {
 }
 
 function fail(error, fallback = "Errore di comunicazione con il server") {
-  const status = error?.code === "28000" ? 401 : error?.code === "42501" ? 403 : error?.code === "P0002" ? 404 : error?.status || 500;
+  if (error?.code === "23505") throw new ApiError("Questo numero è già usato da un altro documento: scegline uno diverso", 409, error);
+  const status = error?.code === "28000" ? 401 : error?.code === "42501" ? 403 : (error?.code === "P0002" || error?.code === "PT404") ? 404 : error?.status || 500;
   throw new ApiError(error?.message || fallback, status, error);
 }
 
@@ -38,7 +39,7 @@ const schemaFiles = import.meta.glob("../../schema/entities/*.jsonc", { eager: t
 const DEFAULTS = {};
 for (const [path, raw] of Object.entries(schemaFiles)) {
   try {
-    const schema = JSON.parse(raw);
+    const schema = JSON.parse(String(raw));
     const defaults = {};
     for (const [key, prop] of Object.entries(schema.properties || {})) {
       if ("default" in prop) defaults[key] = prop.default;
@@ -107,7 +108,7 @@ function entityApi(entity) {
     list: (sort, limit, skip) => list({}, sort, limit, skip),
     filter: (filter, sort, limit, skip) => list(filter, sort, limit, skip),
     // Solo alcuni campi (per elenchi e calcoli): { filter, sort, limit, skip }
-    fields: (fields, { filter, sort, limit, skip } = {}) =>
+    fields: (fields, { filter, sort, limit, skip } = /** @type {any} */ ({})) =>
       rpc("entity_list_fields", { p_entity: entity, p_fields: fields, p_filter: filter || {}, p_sort: sort || "-created_date", p_limit: limit ?? null, p_skip: skip || 0 })
         .then((rows) => rows || []),
     get: (id) => {
@@ -159,13 +160,13 @@ function entityApi(entity) {
 }
 
 const entityCache = {};
-const entities = new Proxy({}, {
+const entities = /** @type {Record<string, any>} */ (new Proxy({}, {
   get(_, name) {
     if (typeof name !== "string") return undefined;
     if (!entityCache[name]) entityCache[name] = entityApi(name);
     return entityCache[name];
   },
-});
+}));
 
 // ─── Autenticazione ───
 
@@ -222,6 +223,10 @@ const auth = {
       options: { data: { ...(full_name ? { full_name } : {}), ...(consent || {}) }, emailRedirectTo: appUrl("/") },
     });
     if (error) throw new ApiError(/already registered/i.test(error.message) ? "Esiste già un account con questa email" : error.message, 400, error);
+    // Per un'email già registrata Supabase risponde senza errore ma con un utente senza identità: nessun codice partirà.
+    if (data.user && !data.session && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      throw new ApiError("Esiste già un account con questa email: accedi oppure recupera la password", 400);
+    }
     return { user: toUser(data.user), needsConfirmation: !data.session };
   },
   async verifyOtp({ email, otpCode }) {
@@ -314,7 +319,7 @@ const PRIVATE_PREFIX = "/storage/v1/object/authenticated/private/";
 const signedCache = new Map();
 export const files = {
   isPrivate: (url) => typeof url === "string" && url.includes(PRIVATE_PREFIX),
-  async signed(url, { download } = {}) {
+  async signed(url, { download } = /** @type {any} */ ({})) {
     if (!files.isPrivate(url)) return url;
     const key = download ? `${url}#${download}` : url;
     const hit = signedCache.get(key);
@@ -361,9 +366,6 @@ const Core = {
   async InvokeLLM(params) {
     const res = await callServer("llm", params);
     return res.result;
-  },
-  async SendEmail({ to, subject, body, from_name }) {
-    return callServer("system-email", { to, subject, body, from_name });
   },
 };
 

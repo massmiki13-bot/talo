@@ -4,12 +4,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { handler, requireUser, admin, HttpError, rateLimit } from "./_lib/server.js";
 import { privatePath, signPrivateUrl } from "./_lib/files.js";
-import { isDemoTenant } from "./_lib/demo.js";
+import { isDemoTenant, demoUserId } from "./_lib/demo.js";
 
 const CONFIRM_TEXT = "ELIMINA DEFINITIVAMENTE";
 
 async function signedUrls({ user, tenantId, accessLevel }, body) {
-  rateLimit(`file-url:${user.id}`, 120, 60_000);
+  await rateLimit(`file-url:${user.id}`, 120, 60_000);
   const urls = Array.isArray(body.urls) ? body.urls.slice(0, 50) : [body.url];
   const out = {};
   let employeeId = null;
@@ -49,7 +49,7 @@ async function removeFolder(db, bucket, folder) {
 }
 
 async function deleteAccount({ user, tenantId, accessLevel }, body) {
-  rateLimit(`account-delete:${user.id}`, 3, 60_000);
+  await rateLimit(`account-delete:${user.id}`, 3, 60_000);
   if (accessLevel !== "host" || tenantId !== user.id) throw new HttpError(403, "Solo il titolare può eliminare l'account dell'azienda");
   if (isDemoTenant(tenantId)) throw new HttpError(403, "L'azienda demo non si può eliminare");
   if (String(body.confirm || "").trim().toUpperCase() !== CONFIRM_TEXT) throw new HttpError(400, `Per confermare scrivi: ${CONFIRM_TEXT}`);
@@ -69,13 +69,18 @@ async function deleteAccount({ user, tenantId, accessLevel }, body) {
 // Sessione dell'azienda demo: la password resta sul server, il browser riceve solo i token.
 async function demoSession(req) {
   const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "anon";
-  rateLimit(`demo:${ip}`, 10, 60 * 60_000);
+  await rateLimit(`demo:${ip}`, 10, 60 * 60_000);
   const { DEMO_EMAIL, DEMO_PASSWORD } = process.env;
   if (!DEMO_EMAIL || !DEMO_PASSWORD) throw new HttpError(503, "La demo non è disponibile in questo momento");
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-  const { data, error } = await client.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+  let { data, error } = await client.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+  // Se un visitatore ha cambiato la password della demo, il server la ripristina e riprova.
+  if ((error || !data?.session) && demoUserId()) {
+    await admin().auth.admin.updateUserById(demoUserId(), { password: DEMO_PASSWORD }).catch(() => {});
+    ({ data, error } = await client.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD }));
+  }
   if (error || !data?.session) throw new HttpError(503, "La demo non è disponibile in questo momento");
   return { access_token: data.session.access_token, refresh_token: data.session.refresh_token };
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { api, db } from "@/lib/db";
+import { api } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,13 +64,13 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
         {loading && (
           <div className="flex flex-col items-center py-12 gap-3">
             <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
-            <p className="text-sm text-slate-500">Lettura del documento in corso...</p>
+            <p className="text-sm text-zinc-500">Lettura del documento in corso...</p>
           </div>
         )}
 
         {!loading && extracted?.error && (
           <div className="py-6 text-center">
-            <p className="text-sm text-red-600 mb-3">Impossibile leggere il documento.</p>
+            <p className="text-sm text-red-700 mb-3">Impossibile leggere il documento.</p>
             <Button variant="outline" onClick={readDocument}>Riprova</Button>
           </div>
         )}
@@ -85,7 +85,7 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
             </div>
             <div>
               <Label htmlFor="aidocumentreader-descrizione">Descrizione</Label>
-              <textarea id="aidocumentreader-descrizione" value={extracted.descrizione || ""} onChange={e => setExtracted({ ...extracted, descrizione: e.target.value })} className="w-full border border-slate-200 rounded-lg p-2 text-sm min-h-[60px]" />
+              <textarea id="aidocumentreader-descrizione" value={extracted.descrizione || ""} onChange={e => setExtracted({ ...extracted, descrizione: e.target.value })} className="w-full border border-zinc-200 rounded-lg p-2 text-sm min-h-[60px]" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -95,7 +95,7 @@ Se non riesci a leggere una data di scadenza, lascia il campo data_scadenza vuot
               <div>
                 <Label htmlFor="aidocumentreader-data-scadenza-verifica">Data Scadenza (verifica!)</Label>
                 <Input id="aidocumentreader-data-scadenza-verifica" type="date" value={extracted.data_scadenza || ""} onChange={e => setExtracted({ ...extracted, data_scadenza: e.target.value })} />
-                <p className="text-xs text-amber-600 mt-1">Controlla che la data sia corretta</p>
+                <p className="text-xs text-amber-700 mt-1">Controlla che la data sia corretta</p>
               </div>
             </div>
 

@@ -36,7 +36,7 @@ export default function SignRequestDialog({ open, onOpenChange, url, title, mess
         </div>
         <div className="flex gap-2">
           <Input readOnly value={url} aria-label="Link di firma" onFocus={(e) => e.target.select()} className="font-mono text-xs" />
-          <Button variant="outline" onClick={copy} className="gap-1.5 shrink-0">{copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}{copied ? "Copiato" : "Copia"}</Button>
+          <Button variant="outline" onClick={copy} className="gap-1.5 shrink-0">{copied ? <Check className="w-4 h-4 text-emerald-700" /> : <Copy className="w-4 h-4" />}{copied ? "Copiato" : "Copia"}</Button>
         </div>
         <div className="grid grid-cols-2 gap-2">
           <Button asChild variant="outline" className="gap-1.5"><a href={whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle className="w-4 h-4" />WhatsApp</a></Button>

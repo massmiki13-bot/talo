@@ -1,8 +1,10 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { useAutoLabel } from "@/lib/autoLabel"
 
-const Input = React.forwardRef(({ className, type, ...props }, ref) => {
+const Input = React.forwardRef(({ className, type, ...props }, forwardedRef) => {
+  const ref = useAutoLabel(forwardedRef)
   return (
     (<input
       type={type}

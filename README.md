@@ -53,6 +53,16 @@ node scripts/mail-test.mjs            # posta: invio, ricezione, allegati, bozze
 node scripts/test-account-delete.mjs  # cancellazione completa di un'azienda
 ```
 
+Le regole di accesso del database (isolamento tra aziende, ruoli, permessi per modulo) hanno test dedicati in
+`tests/access-rules.local.test.js`: girano solo contro un Supabase locale con le migrazioni applicate
+(`supabase start`), mai in produzione, e vengono saltati se mancano le variabili:
+
+```bash
+TALO_TEST_SUPABASE_URL=http://127.0.0.1:54321 TALO_TEST_PUBLISHABLE_KEY=… TALO_TEST_SECRET_KEY=… npm test
+```
+
+Prima di pubblicare: `npm run lint && npm run typecheck && npm test && npm run build` (tutti a zero errori).
+
 La validazione XML con lo schema ufficiale (`tests/fixtures/fpa.xsd`) richiede Python con `lxml`; senza, quei test vengono saltati.
 
 Per provare la versione online: `APP_BASE=https://talo-kohl.vercel.app`. In locale l'antivirus può bloccare IMAP/SMTP cifrati (errore di certificato): il collaudo della posta va fatto online.

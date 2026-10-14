@@ -76,20 +76,37 @@ export function toDoc(row) {
 }
 
 export async function getRecord(entity, id) {
+  if (!isUuid(id)) return null;
   const { data, error } = await admin()
     .from("entity_records").select("*").eq("entity", entity).eq("id", id).maybeSingle();
   if (error) throw new HttpError(500, error.message);
   return data;
 }
 
+// Funzione del database non ancora presente (migrazione non applicata): si usa il percorso precedente.
+const missingFn = (error) => error?.code === "PGRST202" || error?.code === "42883";
+
+// Unisce `patch` al documento con un'unica istruzione (migrazione 0019); restituisce i dati aggiornati.
 export async function updateRecordData(id, patch) {
+  const rpc = await admin().rpc("server_patch_record", { p_id: id, p_patch: patch });
+  if (!rpc.error) return rpc.data;
+  if (!missingFn(rpc.error)) throw new HttpError(500, rpc.error.message);
   const row = await admin().from("entity_records").select("data").eq("id", id).single();
   if (row.error) throw new HttpError(500, row.error.message);
+  const data = { ...row.data.data, ...patch };
   const { error } = await admin()
     .from("entity_records")
-    .update({ data: { ...row.data.data, ...patch }, updated_date: new Date().toISOString() })
+    .update({ data, updated_date: new Date().toISOString() })
     .eq("id", id);
   if (error) throw new HttpError(500, error.message);
+  return data;
+}
+
+export async function addPosSignature(id, firma, fallbackList) {
+  const rpc = await admin().rpc("server_add_pos_signature", { p_id: id, p_firma: firma });
+  if (!rpc.error) return rpc.data;
+  if (!missingFn(rpc.error)) throw new HttpError(500, rpc.error.message);
+  return updateRecordData(id, { firme_raccolte: fallbackList });
 }
 
 // Errori imprevisti delle funzioni: registrati in app_errors (senza mai bloccare la risposta).
@@ -122,22 +139,44 @@ export function handler(fn, { methods = ["POST"] } = {}) {
         console.error(e);
         await logServerError(e, req);
       }
-      res.status(status).json({ error: e.message || "Errore interno", ...(e.extra || {}) });
+      res.status(status).json({ error: publicMessage(e), ...(e.extra || {}) });
     }
   };
 }
 
-// Limite semplice di richieste per utente (per istanza del server).
+// Limite di richieste: contatore sul database, condiviso da tutte le istanze (migrazione 0019),
+// più un contatore in memoria che vale anche se il database non risponde.
 const buckets = new Map();
-export function rateLimit(key, max, windowMs) {
+export async function rateLimit(key, max, windowMs, message = "Troppe richieste, riprova tra poco") {
   const now = Date.now();
   const b = buckets.get(key);
   if (!b || now > b.reset) {
     buckets.set(key, { count: 1, reset: now + windowMs });
-    return;
+  } else {
+    b.count += 1;
+    if (b.count > max) throw new HttpError(429, message);
   }
-  b.count += 1;
-  if (b.count > max) throw new HttpError(429, "Troppe richieste, riprova tra poco");
+  let allowed = true;
+  try {
+    const { data, error } = await admin().rpc("rate_hit", { p_key: key, p_max: max, p_window_seconds: Math.max(1, Math.round(windowMs / 1000)) });
+    if (!error) allowed = data !== false;
+  } catch { /* il limite condiviso non deve bloccare il servizio */ }
+  if (!allowed) throw new HttpError(429, message);
+}
+
+// Il corpo JSON di una richiesta gestita senza `handler` (risposte non JSON, pagine pubbliche).
+export function parseBody(req) {
+  if (typeof req.body !== "string") return req.body || {};
+  try { return JSON.parse(req.body || "{}"); } catch { throw new HttpError(400, "JSON non valido"); }
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const isUuid = (v) => typeof v === "string" && UUID_RE.test(v);
+
+// Gli errori imprevisti non mostrano all'esterno i dettagli interni (database, parser).
+export function publicMessage(e) {
+  if (e instanceof HttpError) return e.message || "Errore";
+  return "Errore interno: riprova tra poco";
 }
 
 export function escapeHtml(s) {

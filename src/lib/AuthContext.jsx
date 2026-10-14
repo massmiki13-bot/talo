@@ -1,14 +1,13 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { api } from '@/api/client';
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [authChecked, setAuthChecked] = useState(false);
-  const [authError, setAuthError] = useState(null);
 
   const checkUserAuth = useCallback(async () => {
     setIsLoadingAuth(true);
@@ -21,7 +20,6 @@ export const AuthProvider = ({ children }) => {
       const currentUser = await api.auth.me();
       setUser(currentUser);
       setIsAuthenticated(true);
-      setAuthError(null);
     } catch (error) {
       console.error('Verifica utente non riuscita:', error);
       setUser(null);
@@ -61,9 +59,6 @@ export const AuthProvider = ({ children }) => {
       user,
       isAuthenticated,
       isLoadingAuth,
-      isLoadingPublicSettings: false,
-      authError,
-      appPublicSettings: null,
       authChecked,
       logout,
       navigateToLogin,

@@ -1,4 +1,5 @@
 import React from "react";
+import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { db } from "@/lib/db";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ export default function ClientAreaDialog({ open, onOpenChange, worksite, onChang
   const url = `${window.location.origin}/cantiere/${worksite.cliente_token}`;
   const toggle = async (k, v) => onChange(await db.Worksite.update(worksite.id, { cliente_condivisione: { ...share, [k]: v } }));
   const revoke = async () => {
-    if (!confirm("Disattivare il link? Il cliente non potrà più aprire l'area del cantiere.")) return;
+    if (!(await confirmDialog("Disattivare il link? Il cliente non potrà più aprire l'area del cantiere."))) return;
     onChange(await db.Worksite.update(worksite.id, { cliente_token: null }));
     onOpenChange(false);
   };

@@ -64,7 +64,7 @@ export default function WorkerApp() {
         <div className="max-w-lg mx-auto grid grid-cols-5">
           {TABS.map(([k, label, I]) => (
             <button key={k} type="button" onClick={() => go(k)} aria-current={tab === k ? "page" : undefined} className={`relative h-16 flex flex-col items-center justify-center gap-0.5 text-[11px] font-semibold ${tab === k ? "text-brand-700" : "text-zinc-500"}`}>
-              <I className={`w-6 h-6 ${k === "segnala" && tab !== k ? "text-red-600" : ""}`} aria-hidden="true" />{t(label)}
+              <I className={`w-6 h-6 ${k === "segnala" && tab !== k ? "text-red-700" : ""}`} aria-hidden="true" />{t(label)}
               {k === "altro" && unread > 0 && <span className="absolute top-2 right-[calc(50%-18px)] w-4 h-4 rounded-full bg-brand-600 text-white text-[10px] grid place-items-center">{unread}</span>}
             </button>
           ))}

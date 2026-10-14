@@ -15,7 +15,7 @@ export const typeTitle = (tipo, customTemplates = []) =>
 export const partyKind = (tipo) => (categoryOf(tipo) === "lavoro" ? "dipendente" : "contatto");
 
 export const STATI = [
-  { value: "bozza", label: "Bozza", className: "bg-slate-100 text-slate-700" },
+  { value: "bozza", label: "Bozza", className: "bg-zinc-100 text-zinc-700" },
   { value: "inviato", label: "Da firmare", className: "bg-amber-100 text-amber-800" },
   { value: "firmato", label: "Firmato", className: "bg-emerald-100 text-emerald-800" },
   { value: "concluso", label: "Concluso", className: "bg-zinc-200 text-zinc-800" },

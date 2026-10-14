@@ -54,6 +54,28 @@ function precacheServiceWorker() {
   };
 }
 
+// Degli schemi delle entità al browser servono solo i valori predefiniti: il resto (titoli, descrizioni,
+// elenchi di valori) non entra nel pacchetto iniziale.
+function slimEntitySchemas() {
+  return {
+    name: 'talo-slim-schemas',
+    enforce: 'pre',
+    load(id) {
+      if (!/schema\/entities\/[^/]+\.jsonc\?raw$/.test(id)) return null;
+      try {
+        const schema = JSON.parse(fs.readFileSync(id.replace(/\?raw$/, ''), 'utf8'));
+        const properties = {};
+        for (const [key, prop] of Object.entries(schema.properties || {})) {
+          if (prop && typeof prop === 'object' && 'default' in prop) properties[key] = { default: prop.default };
+        }
+        return `export default ${JSON.stringify(JSON.stringify({ name: schema.name, properties }))}`;
+      } catch {
+        return null; // schema non leggibile: si usa il file così com'è
+      }
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   // Le funzioni server leggono le variabili (anche quelle segrete) da process.env.
@@ -71,7 +93,7 @@ export default defineConfig(({ mode }) => {
     ssr: {
       external: ['nodemailer', '@supabase/supabase-js', 'imapflow', 'mailparser'],
     },
-    plugins: [react(), localApi(), precacheServiceWorker()],
+    plugins: [slimEntitySchemas(), react(), localApi(), precacheServiceWorker()],
     build: {
       chunkSizeWarningLimit: 1500,
       rollupOptions: {

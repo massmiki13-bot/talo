@@ -34,7 +34,7 @@ export default function PublicWorksite() {
       <AlertTriangle className="w-10 h-10 text-amber-500 mx-auto mb-3" aria-hidden="true" /><h1 className="text-lg font-semibold text-zinc-900">{error}</h1>
       <p className="text-sm text-zinc-600 mt-2">Chiedi all'impresa un nuovo link.</p></div></main>
   );
-  if (!d) return <main className="min-h-screen grid place-items-center"><Loader2 className="w-7 h-7 animate-spin text-zinc-400" aria-label="Caricamento" /></main>;
+  if (!d) return <main className="min-h-screen grid place-items-center"><Loader2 className="w-7 h-7 animate-spin text-zinc-500" aria-label="Caricamento" /></main>;
 
   const { impresa: p, lavoro: w } = d;
   const pct = Math.round(w.avanzamento || 0);
@@ -56,7 +56,7 @@ export default function PublicWorksite() {
           <div className="mt-7 max-w-xl">
             <div className="flex items-baseline justify-between"><span className="text-sm text-zinc-300">Avanzamento dei lavori</span><span className="font-display text-4xl font-bold tabular-nums">{pct}%</span></div>
             <div className="h-2.5 rounded-full bg-white/10 mt-2 overflow-hidden"><div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundImage: "var(--metal-red)" }} /></div>
-            <p className="text-xs text-zinc-400 mt-2">Aggiornato il {fmt(w.aggiornato)}</p>
+            <p className="text-xs text-zinc-500 mt-2">Aggiornato il {fmt(w.aggiornato)}</p>
           </div>
         </div>
       </header>
@@ -102,7 +102,7 @@ export default function PublicWorksite() {
           <Section icon={FileText} title="Documenti">
             <ul className="divide-y divide-zinc-100">
               {d.documenti.map((doc, i) => (
-                <li key={i}><a href={doc.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 py-2.5 hover:text-brand-700"><FileText className="w-4 h-4 text-zinc-400" aria-hidden="true" /><span className="flex-1 text-sm">{doc.titolo}</span><Download className="w-4 h-4 text-zinc-400" aria-hidden="true" /></a></li>
+                <li key={i}><a href={doc.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 py-2.5 hover:text-brand-700"><FileText className="w-4 h-4 text-zinc-500" aria-hidden="true" /><span className="flex-1 text-sm">{doc.titolo}</span><Download className="w-4 h-4 text-zinc-500" aria-hidden="true" /></a></li>
               ))}
             </ul>
           </Section>

@@ -57,7 +57,7 @@ export const PAGAMENTI = [
 ];
 
 export const STATI = {
-  bozza: { label: "Bozza", className: "bg-slate-100 text-slate-700" },
+  bozza: { label: "Bozza", className: "bg-zinc-100 text-zinc-700" },
   emessa: { label: "Emessa", className: "bg-zinc-200 text-zinc-800" },
   inviata: { label: "Inviata allo SdI", className: "bg-indigo-100 text-indigo-800" },
   pagata: { label: "Pagata", className: "bg-emerald-100 text-emerald-800" },
@@ -85,6 +85,21 @@ export function computeInvoice(inv) {
   const totale = r2(imponibile + iva + (inv.bollo_addebitato === false ? 0 : bollo));
   const daPagare = r2(totale - (splitPayment ? iva : 0) - n(inv.ritenuta_importo));
   return { righe, riepilogo, imponibile, iva, bollo, totale, daPagare, splitPayment };
+}
+
+/**
+ * Crea una fattura con il primo numero libero, riletto dal database al momento della creazione.
+ * Se nel frattempo un collega ha usato lo stesso numero (indice univoco, errore 23505) riprova col successivo.
+ */
+export async function createNumbered(Invoice, data, anno, tipo = "TD01") {
+  for (let attempt = 0; ; attempt++) {
+    const existing = await Invoice.fields(["numero", "anno", "tipo_documento"]);
+    try {
+      return await Invoice.create({ ...data, anno: Number(anno), numero: nextNumber(existing, anno, tipo) });
+    } catch (e) {
+      if (e?.status !== 409 || attempt >= 4) throw e;
+    }
+  }
 }
 
 /** Numero successivo nell'anno: "1/2026", "2/2026"… (rispetta un eventuale prefisso). */

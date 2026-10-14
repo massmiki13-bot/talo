@@ -68,7 +68,7 @@ export default function ForgotPassword() {
       }
     >
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>
+        <div role="alert" className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>
       )}
       {sent ? (
         <form onSubmit={handleReset} className="space-y-4">

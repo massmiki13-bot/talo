@@ -158,7 +158,7 @@ export default function ActivityLog() {
       </div>
 
       {loading ? (
-        <div className="py-12 grid place-items-center"><Loader2 className="w-5 h-5 animate-spin text-zinc-400" /></div>
+        <div className="py-12 grid place-items-center"><Loader2 className="w-5 h-5 animate-spin text-zinc-500" /></div>
       ) : error ? (
         <p className="mt-6 text-sm text-red-700">{error}</p>
       ) : !rows.length ? (

@@ -1,3 +1,4 @@
+// @ts-nocheck — disegno di PDF/Excel con argomenti a ventaglio (jsPDF): escluso dal controllo dei tipi.
 // Fattura in PDF: copia di cortesia per il cliente (l'originale è l'XML trasmesso allo SdI).
 import { computeInvoice, aliquotaOf, lineTotal, TIPI_DOC, PAGAMENTI } from "@/lib/invoices";
 

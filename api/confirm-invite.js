@@ -6,7 +6,7 @@ const MAX_ATTEMPTS = 5;
 
 export default handler(async (req, body) => {
   const { user } = await requireUser(req);
-  rateLimit(`invite:${user.id}`, 10, 60_000);
+  await rateLimit(`invite:${user.id}`, 10, 60_000);
   const { inviteId, code } = body;
   if (!inviteId || !code) throw new HttpError(400, "Parametri mancanti: invito e codice sono obbligatori");
 

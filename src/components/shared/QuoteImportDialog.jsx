@@ -96,7 +96,7 @@ export default function QuoteImportDialog({ open, onOpenChange }) {
                 {busy ? (
                   <><Loader2 className="w-9 h-9 text-brand-600 mx-auto mb-2 animate-spin" /><p className="font-medium text-zinc-900">{busy === "upload" ? "Caricamento…" : "L'IA sta leggendo il preventivo…"}</p><p className="text-sm text-zinc-500 mt-1">{fileName}</p></>
                 ) : (
-                  <><Upload className="w-9 h-9 text-zinc-400 mx-auto mb-2" aria-hidden="true" /><p className="font-medium text-zinc-900">Scegli il documento o scatta una foto</p><p className="text-sm text-zinc-500 mt-1">PDF, Word, Excel, immagini</p></>
+                  <><Upload className="w-9 h-9 text-zinc-500 mx-auto mb-2" aria-hidden="true" /><p className="font-medium text-zinc-900">Scegli il documento o scatta una foto</p><p className="text-sm text-zinc-500 mt-1">PDF, Word, Excel, immagini</p></>
                 )}
               </div>
               <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ods,image/*" className="hidden" onChange={upload} disabled={!!busy} aria-label="Documento del preventivo" />
@@ -113,7 +113,7 @@ export default function QuoteImportDialog({ open, onOpenChange }) {
             {/* Cliente */}
             <div className="rounded-xl border border-zinc-200 p-3">
               {c.match ? (
-                <p className="text-sm flex items-center gap-2"><UserCheck className="w-4 h-4 text-emerald-600" aria-hidden="true" />Cliente già in rubrica: <b>{displayName(c.match)}</b></p>
+                <p className="text-sm flex items-center gap-2"><UserCheck className="w-4 h-4 text-emerald-700" aria-hidden="true" />Cliente già in rubrica: <b>{displayName(c.match)}</b></p>
               ) : c.nuovo ? (
                 <label htmlFor="imp-crea-cliente" className="flex items-start gap-2.5 text-sm cursor-pointer">
                   <Checkbox id="imp-crea-cliente" checked={createClient} onCheckedChange={(v) => setCreateClient(v === true)} className="mt-0.5" />
@@ -144,7 +144,7 @@ export default function QuoteImportDialog({ open, onOpenChange }) {
                 {righe.map((row, idx) => (
                   row.tipo !== "voce" ? (
                     <div key={idx} className="flex gap-1 items-center">
-                      {row.tipo === "capitolo" ? <Heading className="w-4 h-4 text-brand-600 shrink-0" aria-label="Capitolo" /> : <FileText className="w-4 h-4 text-zinc-400 shrink-0" aria-label="Testo" />}
+                      {row.tipo === "capitolo" ? <Heading className="w-4 h-4 text-brand-600 shrink-0" aria-label="Capitolo" /> : <FileText className="w-4 h-4 text-zinc-500 shrink-0" aria-label="Testo" />}
                       <Input value={row.descrizione} onChange={(e) => updateRow(idx, { descrizione: e.target.value })} className={`h-8 text-sm ${row.tipo === "capitolo" ? "font-semibold uppercase" : ""}`} aria-label={row.tipo === "capitolo" ? "Titolo capitolo" : "Testo"} />
                       <button type="button" onClick={() => setRighe((p) => p.filter((_, i) => i !== idx))} className="p-1 text-zinc-500 hover:text-red-600" aria-label="Elimina riga"><Trash2 className="w-4 h-4" /></button>
                     </div>

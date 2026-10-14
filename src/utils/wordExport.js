@@ -1,4 +1,3 @@
-import { formatEuro } from "@/utils/pdfUtils";
 
 function escapeHtml(text) {
   return String(text ?? "")

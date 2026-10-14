@@ -61,7 +61,7 @@ export default function DdtDialog({ open, onOpenChange, worksites, defaultWorksi
         {!d ? (
           <label className="block cursor-pointer">
             <div className="rounded-2xl border-2 border-dashed border-zinc-300 hover:border-brand-400 hover:bg-brand-50/40 p-8 text-center">
-              {busy ? <Loader2 className="w-9 h-9 text-brand-600 mx-auto mb-2 animate-spin" /> : <Camera className="w-9 h-9 text-zinc-400 mx-auto mb-2" aria-hidden="true" />}
+              {busy ? <Loader2 className="w-9 h-9 text-brand-600 mx-auto mb-2 animate-spin" /> : <Camera className="w-9 h-9 text-zinc-500 mx-auto mb-2" aria-hidden="true" />}
               <p className="font-medium text-zinc-900">{busy || "Scatta una foto o scegli il file"}</p>
             </div>
             <input type="file" accept="image/*,.pdf" capture="environment" className="hidden" disabled={!!busy} onChange={(e) => { upload(e.target.files[0]); e.target.value = ""; }} aria-label="Bolla" />

@@ -134,7 +134,7 @@ export function guessFromName(fileName) {
   const n = normName(String(fileName || "").replace(/\.[^.]+$/, ""));
   if (/attestat|corso|formazion/.test(n)) return { tipo: "certificazione", cartella: "Personale/Formazione" };
   if (/idoneit|visita medica|sorveglianza sanitaria/.test(n)) return { tipo: "altro", cartella: "Personale/Visite mediche" };
-  const hit = NAME_RULES.find(([re]) => re.test(n));
+  const hit = NAME_RULES.find(([re]) => /** @type {RegExp} */ (re).test(n));
   return hit ? { tipo: hit[1], cartella: TYPE_FOLDER[hit[1]] || "" } : null;
 }
 
@@ -152,7 +152,7 @@ export const formatSize = (n) => (!n ? "" : n < 1024 * 1024 ? `${Math.max(1, Mat
 const today0 = () => new Date(new Date().toDateString());
 export function expiryState(date) {
   if (!date) return null;
-  const d = Math.ceil((new Date(date) - today0()) / 86_400_000);
+  const d = Math.ceil((+new Date(date) - +today0()) / 86_400_000);
   if (d < 0) return { key: "scaduto", label: "Scaduto", days: d, className: "bg-red-100 text-red-700" };
   if (d <= 30) return { key: "in_scadenza", label: d === 0 ? "Scade oggi" : `Scade tra ${d} gg`, days: d, className: "bg-amber-100 text-amber-800" };
   return { key: "valido", label: `Valido fino al ${new Date(date).toLocaleDateString("it-IT")}`, days: d, className: "bg-emerald-50 text-emerald-800" };

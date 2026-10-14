@@ -42,7 +42,7 @@ export default function CreateReminderButton({ docTitle, scadenzaDate, docId, do
 
   if (created) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium px-2 py-1 bg-emerald-50 rounded-lg">
+      <span className="inline-flex items-center gap-1 text-xs text-emerald-700 font-medium px-2 py-1 bg-emerald-50 rounded-lg">
         <Check className="w-3.5 h-3.5" /> Promemoria creato
       </span>
     );

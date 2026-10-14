@@ -51,7 +51,9 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await api.auth.register({ email, password, consent: { terms_version: LEGAL_VERSION, terms_accepted_at: new Date().toISOString() } });
+      const res = await api.auth.register({ email, password, consent: { terms_version: LEGAL_VERSION, terms_accepted_at: new Date().toISOString() } });
+      // Se la conferma via email non è richiesta la sessione è già aperta: si entra subito.
+      if (!res.needsConfirmation) { window.location.href = from || "/"; return; }
       setShowOtp(true);
     } catch (err) {
       setError(err.message || "Registrazione non riuscita");
@@ -101,7 +103,7 @@ export default function Register() {
         subtitle={`Abbiamo inviato un codice a ${email}`}
       >
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+          <div role="alert" className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
             {error}
           </div>
         )}
@@ -217,7 +219,7 @@ export default function Register() {
       )}
 
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+        <div role="alert" className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
           {error}
         </div>
       )}

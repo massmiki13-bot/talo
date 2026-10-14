@@ -19,7 +19,7 @@ async function uploadMany(files) {
  * Invia al titolare (foto, bolla, segnalazione…). I file vanno caricati prima: `files` finiscono in data[field]
  * (stringa se field termina con "_url", altrimenti elenco). Senza rete l'invio resta sul telefono.
  */
-export async function sendWorker(kind, data, { files = [], field } = {}) {
+export async function sendWorker(kind, data, { files = [], field } = /** @type {any} */ ({})) {
   try {
     if (!navigator.onLine) throw new TypeError("Failed to fetch");
     const urls = files.length ? await uploadMany(files) : [];

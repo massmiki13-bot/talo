@@ -2,7 +2,6 @@
 // I campi già presenti nell'app (profilo ditta, dipendenti, mezzi, lavori) si compilano da soli;
 // quelli nei documenti li legge l'IA; il resto si completa a mano con la guida.
 import { api } from "@/lib/db";
-import { SOA_CATEGORIES } from "@/lib/qualifications";
 
 /** Documenti utili e cosa contengono (per la lista "cosa caricare"). */
 export const DOC_TYPES = {
@@ -136,7 +135,7 @@ export function mergeRows(p, anni = [], lavori = []) {
 }
 
 /** Campi che l'app conosce già: profilo ditta, dipendenti, mezzi, lavori finiti, certificati caricati. */
-export function fromApp(tipo, { profile = {}, employees = [], equipment = [], worksites = [], soa, iso } = {}) {
+export function fromApp(tipo, { profile = /** @type {any} */ ({}), employees = [], equipment = [], worksites = [], soa, iso } = /** @type {any} */ ({})) {
   const sede = [profile.indirizzo, [profile.cap, profile.citta].filter(Boolean).join(" "), profile.provincia && `(${profile.provincia})`].filter(Boolean).join(", ");
   const attivi = employees.filter((e) => !e.data_cessazione);
   const operai = attivi.filter((e) => /operai|murator|manoval|carpentier|elettric|idraul|autist|gruist/i.test(`${e.ruolo || ""} ${e.qualifica || ""} ${e.mansione || ""}`)).length;
@@ -217,7 +216,7 @@ ${isSoa ? `3) anni: una riga per OGNI esercizio presente nei bilanci o nelle dic
 
 /** Bozze dell'IA per i campi descrittivi ancora vuoti (solo quelli con ai: true), dai dati reali dell'impresa. */
 export async function draftDescriptiveFields(tipo, p, ctx) {
-  const todo = allFields(tipo).filter((f) => f.ai && String(p.campi?.[f.k]?.value ?? "").trim() === "");
+  const todo = /** @type {any[]} */ (allFields(tipo)).filter((f) => f.ai && String(p.campi?.[f.k]?.value ?? "").trim() === "");
   if (!todo.length) return {};
   const r = await api.integrations.Core.InvokeLLM({
     prompt: `Sei un consulente ISO 9001 per imprese edili italiane. Scrivi una bozza concreta e breve per ciascuno di questi campi del sistema qualità, adatta a QUESTA impresa (usa i dati sotto, niente frasi generiche, niente numeri inventati; dove serve un dato che non hai scrivi "[da completare]"):

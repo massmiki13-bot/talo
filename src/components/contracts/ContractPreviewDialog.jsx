@@ -51,15 +51,15 @@ export default function ContractPreviewDialog({
         <DialogHeader>
           <DialogTitle>{mode === "preview" ? "Anteprima Contratto" : (contract?.titolo || "Contratto")}</DialogTitle>
         </DialogHeader>
-        <div className="flex-1 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 min-h-0">
+        <div className="flex-1 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100 min-h-0">
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <div className="w-8 h-8 border-4 border-slate-200 border-t-brand-600 rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-zinc-200 border-t-brand-600 rounded-full animate-spin"></div>
             </div>
           ) : pdfUrl ? (
             <iframe src={pdfUrl} className="w-full h-full border-0" title="Anteprima Contratto" />
           ) : (
-            <div className="flex items-center justify-center h-full text-slate-500 text-sm">
+            <div className="flex items-center justify-center h-full text-zinc-500 text-sm">
               Nessuna anteprima disponibile
             </div>
           )}
@@ -67,7 +67,7 @@ export default function ContractPreviewDialog({
         <DialogFooter className="flex-shrink-0">
           {mode === "preview" ? (
             <>
-              <span className="text-xs text-slate-500 mr-auto hidden sm:inline">
+              <span className="text-xs text-zinc-500 mr-auto hidden sm:inline">
                 L'anteprima mostra il documento esattamente come sarà nel PDF finale.
               </span>
               <Button variant="outline" onClick={() => onOpenChange(false)}>

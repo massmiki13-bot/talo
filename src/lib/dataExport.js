@@ -39,7 +39,8 @@ async function listAll(entity) {
 }
 
 /** onProgress(testo) per mostrare l'avanzamento. Ritorna il Blob dello ZIP. */
-export async function buildExport({ includeFiles = true, onProgress } = {}) {
+export async function buildExport({ includeFiles = true, onProgress } = /** @type {any} */ ({})) {
+  /** @type {Record<string, Uint8Array>} */
   const zip = {};
   const summary = [];
   const urls = new Set();

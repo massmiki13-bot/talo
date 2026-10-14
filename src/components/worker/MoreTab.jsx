@@ -109,7 +109,7 @@ function Documenti({ home, t, lang }) {
     return (
       <li key={d.id}>
         <a href={d.file_url || "#"} className="py-3 flex items-center gap-3">
-          <FileText className="w-5 h-5 text-zinc-400 shrink-0" aria-hidden="true" />
+          <FileText className="w-5 h-5 text-zinc-500 shrink-0" aria-hidden="true" />
           <span className="flex-1 min-w-0"><span className="block text-sm font-medium text-zinc-900 truncate">{d.titolo}</span><span className="block text-xs text-zinc-500">{d.data_emissione ? fmtDay(d.data_emissione, lang) : ""}</span></span>
           {g !== null && <Pill tone={g < 0 ? "red" : g <= 30 ? "amber" : "green"}>{g < 0 ? t("scaduto") : `${t("scade")} ${fmtDay(d.data_scadenza, lang)}`}</Pill>}
         </a>
@@ -119,7 +119,7 @@ function Documenti({ home, t, lang }) {
   return (
     <div className="space-y-3">
       <BigButton onClick={badge} disabled={busy} className="bg-zinc-950 text-white">{busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <IdCard className="w-5 h-5" />}{t("tesserino")}</BigButton>
-      {docs === null ? <div className="py-8 grid place-items-center"><Loader2 className="w-6 h-6 animate-spin text-zinc-400" /></div> : (
+      {docs === null ? <div className="py-8 grid place-items-center"><Loader2 className="w-6 h-6 animate-spin text-zinc-500" /></div> : (
         <>
           <Card title={t("buste_paga")}>{buste.length ? <ul className="divide-y divide-zinc-100 -my-2">{buste.map(row)}</ul> : <p className="text-sm text-zinc-500">{t("nessun_documento")}</p>}</Card>
           <Card title={t("corsi_visite")}>{altri.length ? <ul className="divide-y divide-zinc-100 -my-2">{altri.map(row)}</ul> : <p className="text-sm text-zinc-500">{t("nessun_documento")}</p>}</Card>
@@ -238,7 +238,7 @@ export default function MoreTab({ home, t, lang, setLang, section, setSection, o
               <span className="grid place-items-center w-10 h-10 rounded-xl bg-zinc-100"><I className="w-5 h-5 text-zinc-700" aria-hidden="true" /></span>
               <span className="flex-1 font-semibold text-zinc-900">{label}</span>
               {n > 0 && <span className="min-w-[24px] h-6 rounded-full bg-brand-600 text-white text-xs font-bold grid place-items-center px-1.5">{n}</span>}
-              <ChevronRight className="w-5 h-5 text-zinc-400" aria-hidden="true" />
+              <ChevronRight className="w-5 h-5 text-zinc-500" aria-hidden="true" />
             </button></li>
           ))}
         </ul>

@@ -1,4 +1,4 @@
-import { formatEuro, formatNumber, hexToRgb, addImageSafe, getLogoPosition, addFooter } from "@/utils/pdfUtils";
+import { formatEuro, formatNumber, hexToRgb, addImageSafe, addFooter } from "@/utils/pdfUtils";
 
 const PAGE_W = 210;
 const PAGE_H = 297;

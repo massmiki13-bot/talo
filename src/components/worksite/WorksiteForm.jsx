@@ -201,14 +201,14 @@ export default function WorksiteForm({ open, onOpenChange, worksite = null, onSa
               {employees.length ? (
                 <div className="grid sm:grid-cols-2 gap-1.5 mt-1.5">
                   {employees.map((e) => (
-                    <label key={e.id} className={`flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer ${form.squadra_ids.includes(e.id) ? "border-brand-500 bg-brand-50" : "border-slate-200 hover:bg-slate-50"}`}>
+                    <label key={e.id} className={`flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer ${form.squadra_ids.includes(e.id) ? "border-brand-500 bg-brand-50" : "border-zinc-200 hover:bg-zinc-50"}`}>
                       <input type="checkbox" className="w-4 h-4" checked={form.squadra_ids.includes(e.id)} onChange={() => toggleTeam(e.id)} />
-                      <span className="text-sm text-slate-800">{fullName(e)}</span>
-                      {e.ruolo && <span className="text-xs text-slate-600 ml-auto">{e.ruolo}</span>}
+                      <span className="text-sm text-zinc-800">{fullName(e)}</span>
+                      {e.ruolo && <span className="text-xs text-zinc-600 ml-auto">{e.ruolo}</span>}
                     </label>
                   ))}
                 </div>
-              ) : <p className="text-sm text-slate-500 mt-1">Aggiungi prima i dipendenti.</p>}
+              ) : <p className="text-sm text-zinc-500 mt-1">Aggiungi prima i dipendenti.</p>}
             </div>
           </TabsContent>
 
@@ -229,19 +229,19 @@ export default function WorksiteForm({ open, onOpenChange, worksite = null, onSa
           </TabsContent>
 
           <TabsContent value="budget" className="pt-3 space-y-3">
-            <p className="text-sm text-slate-500">Quanto prevedi di spendere per categoria. Talo confronta il budget con i costi reali e ti avvisa se sfori.</p>
+            <p className="text-sm text-zinc-500">Quanto prevedi di spendere per categoria. Talo confronta il budget con i costi reali e ti avvisa se sfori.</p>
             <div className="grid sm:grid-cols-2 gap-3">
               {COST_CATEGORIES.map((c) => (
                 <Field key={c} label={`${c} €`}><Input type="number" inputMode="decimal" step="0.01" value={form.budget[c] ?? ""} onChange={(e) => set({ budget: { ...form.budget, [c]: e.target.value } })} /></Field>
               ))}
             </div>
-            <div className="rounded-lg bg-slate-50 p-3 text-sm flex flex-wrap gap-x-6 gap-y-1">
+            <div className="rounded-lg bg-zinc-50 p-3 text-sm flex flex-wrap gap-x-6 gap-y-1">
               <span>Budget costi: <strong className="tabular-nums">{fmtEur(budgetTot)}</strong></span>
               {importo > 0 && <span>Margine previsto: <strong className={`tabular-nums ${importo - budgetTot < 0 ? "text-red-700" : "text-emerald-700"}`}>{fmtEur(importo - budgetTot)}</strong>{budgetTot ? ` (${Math.round(((importo - budgetTot) / importo) * 100)}%)` : ""}</span>}
             </div>
           </TabsContent>
         </Tabs>
-        <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <div className="flex justify-end gap-2 pt-2 border-t border-zinc-100">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
           <Button onClick={save} disabled={saving}>{saving && <Loader2 className="w-4 h-4 animate-spin mr-1.5" />}{worksite?.id ? "Salva" : "Crea lavoro"}</Button>
         </div>

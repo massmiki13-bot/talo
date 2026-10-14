@@ -4,7 +4,7 @@ import { computeInvoice } from "@/lib/invoices";
 
 const n = (v) => Number(v) || 0;
 const dayMs = 86_400_000;
-const daysFrom = (iso, today) => Math.round((new Date(iso) - new Date(today)) / dayMs);
+const daysFrom = (iso, today) => Math.round((+new Date(iso) - +new Date(today)) / dayMs);
 
 /**
  * Tutte le somme da incassare. Le fatture già emesse per una rata di lavoro sostituiscono la rata

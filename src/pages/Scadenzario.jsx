@@ -97,11 +97,11 @@ export default function Scadenzario() {
                   <span className={`grid place-items-center w-9 h-9 rounded-lg shrink-0 ${r.kind === "fattura" ? "bg-zinc-950 text-white" : "bg-zinc-100 text-zinc-700"}`}>{r.kind === "fattura" ? <Receipt className="w-4 h-4" aria-hidden="true" /> : <HardHat className="w-4 h-4" aria-hidden="true" />}</span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-zinc-900 truncate">
-                      {r.cliente_id ? <Link to={`/contatti/${r.cliente_id}`} className="hover:underline">{r.cliente_nome || "Cliente"}</Link> : r.cliente_nome || "Cliente"}
+                      {r.cliente_id ? <Link to={`/contatti/${r.cliente_id}`} className="inline-block py-1 hover:underline">{r.cliente_nome || "Cliente"}</Link> : r.cliente_nome || "Cliente"}
                       <span className="font-normal text-zinc-600"> · {r.titolo}{r.parziale ? " (in parte pagata)" : ""}</span>
                     </p>
                     <p className="text-xs text-zinc-500 truncate">
-                      {r.worksite_id ? <Link to={`/lavori/${r.worksite_id}`} className="hover:underline">{r.worksite_nome}</Link> : r.descrizione}
+                      {r.worksite_id ? <Link to={`/lavori/${r.worksite_id}`} className="inline-block py-1 hover:underline">{r.worksite_nome}</Link> : r.descrizione}
                       {r.solleciti.length > 0 && <span className="text-amber-800"> · {r.solleciti.length} {r.solleciti.length === 1 ? "sollecito" : "solleciti"}, ultimo il {fmt(r.solleciti.at(-1))}</span>}
                     </p>
                   </div>

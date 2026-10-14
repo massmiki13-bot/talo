@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { Outlet, useLocation, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
@@ -11,6 +11,9 @@ import TaloLogo from "@/components/brand/TaloLogo";
 import CommandPalette from "./CommandPalette";
 import AppStatusBar from "./AppStatusBar";
 import { Search } from "lucide-react";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import StatusScreen, { primaryBtn, ghostBtn } from "@/components/shared/StatusScreen";
+import { PERMISSION_MODULES } from "@/lib/permissions";
 
 const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL || "demo@talo.app";
 const readCollapsed =() => { try { return localStorage.getItem("talo.sidebar") === "1"; } catch { return false; } };
@@ -18,7 +21,7 @@ const readCollapsed =() => { try { return localStorage.getItem("talo.sidebar") =
 export default function AppLayout() {
   const { user } = useAuth();
   const location = useLocation();
-  const { isHost, accessLevel, permissions, employeeId, canAccessPath, loading: collabLoading } = useCollaborator(user);
+  const { isHost, accessLevel, permissions, employeeId, canAccessPath, loading: collabLoading, error: collabError, retry: collabRetry } = useCollaborator(user);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [collapsed, setCollapsed] = useState(readCollapsed);
@@ -38,12 +41,45 @@ export default function AppLayout() {
   }, []);
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
+  // Menu su telefono: è un dialogo (focus all'interno, Esc per chiudere, Tab che non esce).
+  const drawerRef = useRef(null);
+  useEffect(() => { if (mobileOpen) drawerRef.current?.focus(); }, [mobileOpen]);
+  const onDrawerKey = (e) => {
+    if (e.key === "Escape") { setMobileOpen(false); return; }
+    if (e.key !== "Tab") return;
+    const items = drawerRef.current?.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+    if (!items?.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === drawerRef.current)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
+
   // I colori del Profilo ditta valgono per i documenti (PDF); l'interfaccia resta nel marchio Talo.
   useReminderNotifications();
 
   const toggle = () => setCollapsed((c) => { try { localStorage.setItem("talo.sidebar", c ? "0" : "1"); } catch { /* ignore */ } return !c; });
 
-  if (!collabLoading && !canAccessPath(location.pathname)) return <Navigate to="/" replace />;
+  if (collabError) {
+    return (
+      <StatusScreen title="Non riesco a caricare il tuo profilo" actions={<>
+        <button type="button" onClick={collabRetry} className={primaryBtn}>Riprova</button>
+        <button type="button" onClick={() => api.auth.logout("/login")} className={ghostBtn}>Esci</button>
+      </>}>
+        <p>Controlla la connessione e riprova: senza il tuo profilo non posso sapere a quali sezioni hai accesso.</p>
+      </StatusScreen>
+    );
+  }
+
+  if (!collabLoading && !canAccessPath(location.pathname)) {
+    // Prima pagina a cui la persona ha accesso (la Dashboard può non essere tra i suoi permessi).
+    const allowed = ["/", ...PERMISSION_MODULES.map((m) => m.path), "/posta"].find((p) => canAccessPath(p));
+    if (allowed && allowed !== location.pathname) return <Navigate to={allowed} replace />;
+    return (
+      <StatusScreen title="Nessuna sezione abilitata" actions={<button type="button" onClick={() => api.auth.logout("/login")} className={primaryBtn}>Esci</button>}>
+        <p>Il tuo account non ha ancora accesso a nessuna sezione: chiedi al titolare di abilitarti.</p>
+      </StatusScreen>
+    );
+  }
 
   const isOperaioNav = !isHost && accessLevel === "operaio";
   // Operai: app dedicata a tutto schermo (Dashboard → WorkerApp); le altre pagine rimandano lì.
@@ -51,7 +87,7 @@ export default function AppLayout() {
     if (location.pathname !== "/") return <Navigate to={location.pathname.startsWith("/presenze") ? "/?t=ore" : "/"} replace />;
     return (
       <div className="min-h-screen">
-        <main id="contenuto" tabIndex={-1} className="outline-none p-4"><Suspense fallback={<LoadingSpinner />}><Outlet /></Suspense></main>
+        <main id="contenuto" tabIndex={-1} className="outline-none p-4"><ErrorBoundary inline resetKey={location.pathname}><Suspense fallback={<LoadingSpinner />}><Outlet /></Suspense></ErrorBoundary></main>
         <AppStatusBar />
       </div>
     );
@@ -73,7 +109,8 @@ export default function AppLayout() {
         <Sidebar {...nav} collapsed={collapsed} onToggle={toggle} />
       </div>
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-y-0 left-0 z-50 w-72 animate-in slide-in-from-left duration-200">
+        <div ref={drawerRef} role="dialog" aria-modal="true" aria-label="Menu" tabIndex={-1} onKeyDown={onDrawerKey}
+          className="lg:hidden fixed inset-y-0 left-0 z-50 w-72 animate-in slide-in-from-left duration-200 outline-none">
           <Sidebar {...nav} onNavigate={() => setMobileOpen(false)} />
         </div>
       )}
@@ -86,9 +123,11 @@ export default function AppLayout() {
               <button type="button" onClick={() => api.auth.logout("/register")} className="rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-2">Crea il tuo account</button>
             </div>
           )}
-          <Suspense fallback={<LoadingSpinner />}>
-            <Outlet />
-          </Suspense>
+          <ErrorBoundary inline resetKey={location.pathname}>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Outlet />
+            </Suspense>
+          </ErrorBoundary>
         </div>
       </main>
 

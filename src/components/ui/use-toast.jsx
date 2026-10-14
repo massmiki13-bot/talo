@@ -124,8 +124,8 @@ function toast({ ...props }) {
     },
   });
 
-  // Auto-dismiss: 2s for success/default, 5s for destructive
-  const duration = props.duration || (props.variant === "destructive" ? 5000 : 2000);
+  // Chiusura automatica: 4 s per le conferme, 7 s per gli errori (tempo per leggerli).
+  const duration = props.duration || (props.variant === "destructive" ? 7000 : 4000);
   setTimeout(() => dismiss(), duration);
 
   return {

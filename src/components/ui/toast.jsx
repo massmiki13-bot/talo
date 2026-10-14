@@ -38,10 +38,16 @@ const toastVariants = cva(
   }
 );
 
-const Toast = React.forwardRef(({ className, variant, ...props }, ref) => {
+// role="alert" per gli errori (annuncio immediato), role="status" per le conferme.
+// `open`, `onOpenChange` e `duration` servono allo stato dei toast e non vanno passati al DOM.
+// eslint-disable-next-line no-unused-vars
+const Toast = React.forwardRef(({ className, variant, open, onOpenChange, duration, ...props }, ref) => {
   return (
     <div
       ref={ref}
+      role={variant === "destructive" ? "alert" : "status"}
+      aria-live={variant === "destructive" ? "assertive" : "polite"}
+      aria-atomic="true"
       className={cn(toastVariants({ variant }), className)}
       {...props}
     />

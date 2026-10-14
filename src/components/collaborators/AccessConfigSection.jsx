@@ -44,7 +44,7 @@ export default function AccessConfigSection({
             className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-colors ${
               isResponsabile
                 ? "border-brand-500 bg-brand-50 text-brand-700"
-                : "border-slate-200 text-slate-500 hover:border-slate-300"
+                : "border-zinc-200 text-zinc-500 hover:border-zinc-300"
             }`}
           >
             <ShieldCheck className="w-5 h-5" />
@@ -56,14 +56,14 @@ export default function AccessConfigSection({
             className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-colors ${
               !isResponsabile
                 ? "border-brand-500 bg-brand-50 text-brand-700"
-                : "border-slate-200 text-slate-500 hover:border-slate-300"
+                : "border-zinc-200 text-zinc-500 hover:border-zinc-300"
             }`}
           >
             <HardHat className="w-5 h-5" />
             <span className="text-sm font-medium">Operaio / Dipendente</span>
           </button>
         </div>
-        <p className="text-xs text-slate-500 mt-1.5">
+        <p className="text-xs text-zinc-500 mt-1.5">
           {isResponsabile
             ? "Vede e gestisce i dati dei moduli autorizzati."
             : "Vede solo i propri documenti, giornaliere e ore lavorate."}
@@ -79,12 +79,12 @@ export default function AccessConfigSection({
               {PRESETS.map((pr) => {
                 const keys = pr.perms || PERMISSION_MODULES.map((m) => m.key);
                 const on = keys.length === permissions.length && keys.every((k) => permissions.includes(k));
-                return <button key={pr.label} type="button" onClick={() => setPermissions(keys)} className={`text-xs px-2.5 py-1 rounded-full border ${on ? "border-brand-600 bg-brand-50 text-brand-800" : "border-slate-200 text-slate-600 hover:border-slate-300"}`}>{pr.label}</button>;
+                return <button key={pr.label} type="button" onClick={() => setPermissions(keys)} className={`text-xs px-2.5 py-1 rounded-full border ${on ? "border-brand-600 bg-brand-50 text-brand-800" : "border-zinc-200 text-zinc-600 hover:border-zinc-300"}`}>{pr.label}</button>;
               })}
             </div>
-            <div className="grid sm:grid-cols-2 gap-x-2 gap-y-0.5 max-h-56 overflow-y-auto rounded-lg border border-slate-200 p-1.5">
+            <div className="grid sm:grid-cols-2 gap-x-2 gap-y-0.5 max-h-56 overflow-y-auto rounded-lg border border-zinc-200 p-1.5">
               {PERMISSION_MODULES.map((mod) => (
-                <div key={mod.key} className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-slate-50">
+                <div key={mod.key} className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-zinc-50">
                   <Checkbox
                     id={`perm-${mod.key}`}
                     checked={permissions.includes(mod.key)}
@@ -103,7 +103,7 @@ export default function AccessConfigSection({
         <div>
           <Label className="mb-2 block">Collega Dipendente</Label>
           {employees.length === 0 ? (
-            <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-2">
+            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
               Nessun dipendente presente. Crea prima la scheda dipendente, poi collega l'account.
             </p>
           ) : (
@@ -118,7 +118,7 @@ export default function AccessConfigSection({
               </SelectContent>
             </Select>
           )}
-          <p className="text-xs text-slate-500 mt-1.5">
+          <p className="text-xs text-zinc-500 mt-1.5">
             L'operaio vedrà solo i propri documenti, le proprie presenze e le proprie ore.
           </p>
         </div>

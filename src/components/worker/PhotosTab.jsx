@@ -114,7 +114,7 @@ export default function PhotosTab({ home, t, onSent }) {
               </div>
             )}
             <label className="block">
-              <div className={`${files.length ? "h-14" : "h-36 flex-col"} rounded-2xl border-2 border-dashed border-zinc-300 flex items-center justify-center gap-2 font-semibold text-zinc-800`}><Camera className={files.length ? "w-5 h-5" : "w-8 h-8 text-zinc-400"} aria-hidden="true" />{t("scatta_foto")}</div>
+              <div className={`${files.length ? "h-14" : "h-36 flex-col"} rounded-2xl border-2 border-dashed border-zinc-300 flex items-center justify-center gap-2 font-semibold text-zinc-800`}><Camera className={files.length ? "w-5 h-5" : "w-8 h-8 text-zinc-500"} aria-hidden="true" />{t("scatta_foto")}</div>
               <input type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={(e) => { setFiles([...files, ...e.target.files]); e.target.value = ""; }} />
             </label>
             {files.length > 0 && (
@@ -139,7 +139,7 @@ export default function PhotosTab({ home, t, onSent }) {
         <Card>
           <label className="block">
             <div className="h-40 rounded-2xl border-2 border-dashed border-zinc-300 flex flex-col items-center justify-center gap-2 font-semibold text-zinc-800">
-              {busy === "ddt" ? <Loader2 className="w-8 h-8 animate-spin text-brand-600" /> : <FileText className="w-8 h-8 text-zinc-400" aria-hidden="true" />}
+              {busy === "ddt" ? <Loader2 className="w-8 h-8 animate-spin text-brand-600" /> : <FileText className="w-8 h-8 text-zinc-500" aria-hidden="true" />}
               {busy === "ddt" ? t("leggo_bolla") : t("carica_bolla")}
             </div>
             <input type="file" accept="image/*,.pdf" capture="environment" className="hidden" disabled={!!busy} onChange={(e) => { readBolla(e.target.files[0]); e.target.value = ""; }} />
@@ -163,7 +163,7 @@ export default function PhotosTab({ home, t, onSent }) {
                     <div className="flex gap-2">
                       <input value={r.quantita} onChange={(e) => setRiga(i, { quantita: e.target.value })} inputMode="decimal" aria-label={t("quantita")} className="w-24 h-10 rounded-lg border border-zinc-200 px-2.5 text-[15px] tabular-nums" />
                       <input value={r.unita} onChange={(e) => setRiga(i, { unita: e.target.value })} placeholder={t("unita")} aria-label={t("unita")} className="w-20 h-10 rounded-lg border border-zinc-200 px-2.5 text-[15px]" />
-                      <button type="button" onClick={() => setDdt({ ...ddt, righe: ddt.righe.filter((_, j) => j !== i) })} className="ml-auto w-10 h-10 grid place-items-center text-zinc-400" aria-label={t("annulla")}><Trash2 className="w-4 h-4" /></button>
+                      <button type="button" onClick={() => setDdt({ ...ddt, righe: ddt.righe.filter((_, j) => j !== i) })} className="ml-auto w-10 h-10 grid place-items-center text-zinc-500" aria-label={t("annulla")}><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </li>
                 ))}

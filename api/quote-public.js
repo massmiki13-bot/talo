@@ -4,7 +4,7 @@
 // Firma da telefono di contratti e POS (stesso endpoint, limite funzioni Vercel):
 // GET  ?f=<token>  → documento da firmare
 // POST { documento: true, token, nome, firma, hash, accetto, firmatario_id? }
-import { admin, HttpError, rateLimit, escapeHtml } from "./_lib/server.js";
+import { admin, HttpError, rateLimit, escapeHtml, updateRecordData, parseBody, publicMessage } from "./_lib/server.js";
 import { getSignable, postSignature } from "./_lib/sign.js";
 import { getClientArea } from "./_lib/clientArea.js";
 // Area cliente del lavoro: GET ?c=<token>
@@ -38,11 +38,7 @@ async function loadProfile(tenantId) {
   return data?.data || {};
 }
 
-async function saveQuote(row, patch) {
-  const { error } = await admin().from("entity_records")
-    .update({ data: { ...row.data, ...patch }, updated_date: new Date().toISOString() }).eq("id", row.id);
-  if (error) throw new HttpError(500, error.message);
-}
+const saveQuote = (row, patch) => updateRecordData(row.id, patch);
 
 async function notifyOwner(row, profile, subject, html) {
   try {
@@ -62,7 +58,7 @@ export default async function quotePublic(req, res) {
   const send = (status, body) => { res.status(status).json(body); };
   try {
     const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "anon";
-    rateLimit(`pub:${ip}`, 60, 60_000);
+    await rateLimit(`pub:${ip}`, 60, 60_000);
 
     const c = req.query?.c || new URL(req.url, "http://x").searchParams.get("c");
     if (req.method === "GET" && c) {
@@ -80,11 +76,6 @@ export default async function quotePublic(req, res) {
       const row = await loadByToken(token);
       const q = row.data;
       const profile = await loadProfile(row.tenant_id);
-      // Il primo accesso del cliente sposta il preventivo su "visto".
-      if (["in_attesa", "inviato"].includes(q.stato) && !q.visto_il) {
-        await saveQuote(row, { stato: "visto", visto_il: new Date().toISOString() });
-        q.stato = "visto";
-      }
       const righe = (q.righe || []).map(({ costo_unitario, listino_id, ...r }) => r);
       let cliente = null;
       if (q.cliente_id) {
@@ -96,11 +87,18 @@ export default async function quotePublic(req, res) {
     }
 
     if (req.method === "POST") {
-      const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
-      rateLimit(`pubpost:${ip}`, 10, 60_000);
+      const body = parseBody(req);
+      await rateLimit(`pubpost:${ip}`, 10, 60_000);
       if (body.documento === true) { send(200, await postSignature(req, body, ip)); return; }
       const row = await loadByToken(body.token);
       const q = row.data;
+      // "Visto" lo segnala la pagina dopo essersi aperta nel browser del cliente: le anteprime dei link
+      // (WhatsApp, filtri antispam) fanno solo una GET e non lo fanno più scattare.
+      if (body.visto === true) {
+        if (["in_attesa", "inviato"].includes(q.stato) && !q.visto_il) await saveQuote(row, { stato: "visto", visto_il: new Date().toISOString() });
+        send(200, { success: true });
+        return;
+      }
       if (["approvato", "rifiutato"].includes(q.stato)) throw new HttpError(409, "Hai già risposto a questo preventivo");
       const exp = q.data && q.validita_giorni ? new Date(new Date(q.data).getTime() + Number(q.validita_giorni) * 86_400_000) : null;
       if (exp && exp < new Date(new Date().toDateString())) throw new HttpError(410, "L'offerta è scaduta: contatta l'azienda per un aggiornamento");
@@ -136,7 +134,7 @@ export default async function quotePublic(req, res) {
   } catch (e) {
     const status = e instanceof HttpError ? e.status : 500;
     if (status >= 500) console.error(e);
-    send(status, { error: e.message || "Errore interno" });
+    send(status, { error: publicMessage(e) });
   }
 }
 

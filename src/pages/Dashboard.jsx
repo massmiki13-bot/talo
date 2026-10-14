@@ -273,7 +273,7 @@ function GoalCard({ profile, value, source, canEdit, onSaved }) {
   const R = 44, C = 2 * Math.PI * R;
   return (
     <Card title={<span className="flex items-center gap-2"><Target className="w-4 h-4 text-brand-600" />Obiettivo {now.getFullYear()}</span>}
-      action={canEdit && !edit ? <button onClick={() => { setDraft(goal ? String(goal) : ""); setEdit(true); }} className="p-1 rounded-md text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100" aria-label="Imposta obiettivo"><Pencil className="w-4 h-4" /></button> : null}>
+      action={canEdit && !edit ? <button onClick={() => { setDraft(goal ? String(goal) : ""); setEdit(true); }} className="p-1 rounded-md text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100" aria-label="Imposta obiettivo"><Pencil className="w-4 h-4" /></button> : null}>
       {edit ? (
         <div className="flex items-center gap-2">
           <input autoFocus inputMode="numeric" value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && save()} placeholder="es. 600000" className="flex-1 h-10 rounded-lg border border-zinc-300 px-3 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Obiettivo di fatturato in euro" />
@@ -300,7 +300,7 @@ function GoalCard({ profile, value, source, canEdit, onSaved }) {
             <p className={`text-xs mt-1.5 ${pct >= expectedPct ? "text-emerald-700" : "text-brand-700"}`}>
               {pct >= expectedPct ? "In linea con l'anno" : `Servono ${eurShort((goal - value) / Math.max(1, monthsLeft))} al mese`}
             </p>
-            <p className="text-[11px] text-zinc-400 mt-1 flex items-center gap-1"><span className="w-3 h-0.5 bg-zinc-900 inline-block" />dove dovresti essere oggi ({Math.round(expectedPct)}%)</p>
+            <p className="text-[11px] text-zinc-500 mt-1 flex items-center gap-1"><span className="w-3 h-0.5 bg-zinc-900 inline-block" />dove dovresti essere oggi ({Math.round(expectedPct)}%)</p>
           </div>
         </div>
       )}
@@ -381,14 +381,14 @@ function Agenda({ days }) {
               <ul className="mt-2 space-y-1">
                 {items.slice(0, 3).map((it, k) => (
                   <li key={k}>
-                    <Link to={it.to} className={`flex items-start gap-1.5 text-[11.5px] leading-snug rounded px-1 -mx-1 ${i === 0 ? "hover:bg-white/10" : "hover:bg-zinc-50"}`}>
+                    <Link to={it.to} className={`flex items-start gap-1.5 text-[11.5px] leading-snug rounded px-1 -mx-1 py-1 min-h-6 ${i === 0 ? "hover:bg-white/10" : "hover:bg-zinc-50"}`}>
                       <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${AGENDA_DOT[it.kind]}`} />
                       <span className="line-clamp-2">{it.time ? `${it.time} ` : ""}{it.text}</span>
                     </Link>
                   </li>
                 ))}
                 {items.length > 3 && <li className={`text-[11px] ${i === 0 ? "text-zinc-400" : "text-zinc-500"}`}>+{items.length - 3} altri</li>}
-                {items.length === 0 && <li className={`text-[11px] ${i === 0 ? "text-zinc-500" : "text-zinc-400"}`}>—</li>}
+                {items.length === 0 && <li className={`text-[11px] ${i === 0 ? "text-zinc-400" : "text-zinc-500"}`}>—</li>}
               </ul>
             </div>
           );

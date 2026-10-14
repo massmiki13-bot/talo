@@ -5,7 +5,7 @@ import { loadAccount, login, imapClient, friendlyMailError } from "./_lib/mailbo
 
 export default handler(async (req, body) => {
   const { user, tenantId } = await requireUser(req);
-  rateLimit(`verify:${user.id}`, 10, 60_000);
+  await rateLimit(`verify:${user.id}`, 10, 60_000);
   if (!body.account_id) throw new HttpError(400, "account_id mancante");
 
   const { account, password } = await loadAccount(tenantId, { id: body.account_id });

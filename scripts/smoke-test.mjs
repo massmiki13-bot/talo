@@ -238,7 +238,7 @@ await check("sola lettura", async () => {
   await expectError(O.e("Employee").update(dip1.id, { costo_orario: 99 }), "l'operaio modifica il dipendente");
 });
 await check("non invia email", async () => {
-  const r = await O.api("system-email", { to: "a@b.it", subject: "x", body: "x" });
+  const r = await O.api("send-email", { to: "a@b.it", subject: "x", body: "x" });
   assert(r.status === 403, JSON.stringify(r));
 });
 

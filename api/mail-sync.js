@@ -5,7 +5,7 @@ import { loadAccount, syncInbox, friendlyMailError } from "./_lib/mailbox.js";
 export default handler(async (req, body) => {
   const { user, tenantId, accessLevel } = await requireUser(req);
   if (accessLevel === "operaio") throw new HttpError(403, "Non autorizzato");
-  rateLimit(`sync:${user.id}`, 12, 60_000);
+  await rateLimit(`sync:${user.id}`, 12, 60_000);
 
   let accounts;
   if (body.account_id) {

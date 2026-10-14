@@ -36,7 +36,7 @@ const PSC_SCHEMA = {
 };
 
 /** Legge il PSC allegato (PDF o foto) e restituisce i dati da unire al POS con mergePsc. */
-export async function extractFromPsc(fileUrl, { impresa, lavorazioniNote } = {}) {
+export async function extractFromPsc(fileUrl, { impresa, lavorazioniNote } = /** @type {any} */ ({})) {
   return api.integrations.Core.InvokeLLM({
     prompt: `Sei un tecnico della sicurezza (RSPP/CSE) esperto di cantieri edili italiani. Il documento allegato è il PSC (Piano di Sicurezza e Coordinamento, D.Lgs. 81/2008 Allegato XV) di un cantiere.
 Estrai i dati necessari al POS dell'impresa esecutrice "${impresa || "impresa esecutrice"}".

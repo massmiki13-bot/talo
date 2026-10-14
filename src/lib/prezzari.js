@@ -131,7 +131,7 @@ export async function extractPdfVoci(file, from, to, onProgress, chunk = 3) {
     (await part.copyPages(src, idx)).forEach((pg) => part.addPage(pg));
     const bytes = await part.save();
     try {
-      const { file_url } = await api.integrations.Core.UploadFile({ file: new File([bytes], `prezzario-p${p}.pdf`, { type: "application/pdf" }) });
+      const { file_url } = await api.integrations.Core.UploadFile({ file: new File([/** @type {any} */ (bytes)], `prezzario-p${p}.pdf`, { type: "application/pdf" }) });
       const res = await api.integrations.Core.InvokeLLM({
         prompt: `Estrai TUTTE le voci con prezzo da queste pagine di un prezzario edile italiano.
 Per ogni voce: codice (così com'è scritto), descrizione completa (se la voce è un sotto-articolo, unisci la descrizione generale dell'articolo con quella specifica), unità di misura, prezzo unitario in euro (numero, NON percentuali di manodopera o sicurezza), capitolo se indicato.
