@@ -88,13 +88,17 @@ export function descendants(folderId, folders) {
   return out;
 }
 
+// Confronto tollerante dei nomi di cartella: maiuscole, accenti, spazi e simboli non contano.
+export const normName = (s) => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+
 // Trova (o crea) la cartella che corrisponde a "Personale/Formazione".
 export async function ensurePath(path, folders, db) {
-  const parts = String(path || "").split("/").map(cleanFolderName).filter(Boolean).slice(0, 4);
+  const parts = String(path || "").replace(/\s*[>›»]\s*/g, "/").replace(/^\s*archivio\s*\//i, "")
+    .split("/").map(cleanFolderName).filter(Boolean).slice(0, 4);
   let parent = null;
   let list = [...folders];
   for (const name of parts) {
-    let f = list.find((x) => (x.parent_id || null) === parent && x.nome.toLowerCase() === name.toLowerCase());
+    let f = list.find((x) => (x.parent_id || null) === parent && normName(x.nome) === normName(name));
     if (!f) {
       f = await db.DocumentFolder.create({ nome: name, parent_id: parent, ordine: list.filter((x) => (x.parent_id || null) === parent).length });
       list = [...list, f];
@@ -102,6 +106,36 @@ export async function ensurePath(path, folders, db) {
     parent = f.id;
   }
   return { folderId: parent, folders: list };
+}
+
+// Cartella standard per ogni tipo di documento (quando l'IA non indica un percorso valido).
+export const TYPE_FOLDER = {
+  fattura: "Amministrazione/Fatture fornitori", f24: "Amministrazione/F24 e tributi", estratto_conto: "Amministrazione/Banca",
+  bilancio: "Amministrazione/Bilanci e dichiarazioni", busta_paga: "Personale/Buste paga", contratto: "Clienti/Contratti clienti",
+  preventivo: "Clienti/Preventivi firmati", ordine: "Fornitori/Contratti e ordini", ddt: "Fornitori/DDT e bolle",
+  assicurazione: "Assicurazioni", durc: "Regolarità e qualità/DURC", visura: "Societari/Visure camerali", societario: "Societari/Atti e statuto",
+  certificazione: "Regolarità e qualità/Certificazioni (SOA, ISO)", dvr: "Sicurezza/DVR", pos: "Sicurezza/POS", psc: "Sicurezza/POS",
+  verbale: "Sicurezza/Verbali e sopralluoghi", permesso: "Cantieri", dico: "Cantieri", planimetria: "Cantieri",
+  mezzo: "Mezzi e attrezzature/Libretti e revisioni", scheda_tecnica: "Fornitori/Listini e schede tecniche",
+};
+
+// Ultima risorsa se l'IA non risponde: tipo e cartella dedotti dal nome del file.
+const NAME_RULES = [
+  [/durc/, "durc"], [/visura/, "visura"], [/\bf ?24\b/, "f24"], [/busta|cedolin|\blul\b|paga/, "busta_paga"],
+  [/fattur|\bft\b|invoice/, "fattura"], [/\bddt\b|bolla|documento di trasporto/, "ddt"], [/polizz|assicura|\brct\b|fideiuss/, "assicurazione"],
+  [/\bdvr\b|valutazione (dei )?rischi/, "dvr"], [/\bpos\b|piano operativo/, "pos"], [/\bpsc\b/, "psc"], [/preventiv|offert/, "preventivo"],
+  [/ordine|conferma d.?ordine/, "ordine"], [/contratt/, "contratto"], [/bilanci|dichiarazione dei redditi|\bunico\b/, "bilancio"],
+  [/estratto conto|banca|bonifico/, "estratto_conto"], [/statuto|atto costitutivo|verbale assemblea/, "societario"],
+  [/\bsoa\b|\biso ?9001\b|certificat/, "certificazione"], [/libretto|revisione|carta di circolazione/, "mezzo"],
+  [/verbale|collaudo/, "verbale"], [/\bscia\b|\bcila\b|permesso di costruire|titolo edilizio/, "permesso"], [/conformit|\bdico\b/, "dico"],
+  [/planimetr|progetto|tavola|\bdwg\b/, "planimetria"], [/scheda tecnica|manuale|datasheet/, "scheda_tecnica"],
+];
+export function guessFromName(fileName) {
+  const n = normName(String(fileName || "").replace(/\.[^.]+$/, ""));
+  if (/attestat|corso|formazion/.test(n)) return { tipo: "certificazione", cartella: "Personale/Formazione" };
+  if (/idoneit|visita medica|sorveglianza sanitaria/.test(n)) return { tipo: "altro", cartella: "Personale/Visite mediche" };
+  const hit = NAME_RULES.find(([re]) => re.test(n));
+  return hit ? { tipo: hit[1], cartella: TYPE_FOLDER[hit[1]] || "" } : null;
 }
 
 export const fileKind = (doc) => {

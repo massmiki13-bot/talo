@@ -18,7 +18,7 @@ import FolderTree from "@/components/documents/FolderTree";
 import DocumentDetailSheet from "@/components/documents/DocumentDetailSheet";
 import AiOrganizeDialog from "@/components/documents/AiOrganizeDialog";
 import {
-  DOC_TYPES, STANDARD_TREE, FOLDER_COLORS, typeLabel, cleanFolderName, buildTree, pathOf, pathLabel, descendants, ensurePath, fileKind, expiryState, formatSize,
+  DOC_TYPES, STANDARD_TREE, FOLDER_COLORS, typeLabel, cleanFolderName, buildTree, pathOf, pathLabel, descendants, ensurePath, fileKind, expiryState, formatSize, TYPE_FOLDER, guessFromName,
 } from "@/lib/documents";
 import { analyzeDocument } from "@/lib/documentsAi";
 import { useFileUrl } from "@/lib/privateFiles";
@@ -107,6 +107,7 @@ export default function CompanyDocuments() {
     const week = Date.now() - 7 * 86_400_000;
     for (const d of docs) {
       if (!d.cartella_id || !folders.some((f) => f.id === d.cartella_id)) c.unfiled++;
+      if (d.da_rileggere) c.toReread = (c.toReread || 0) + 1;
       const e = expiryState(d.data_scadenza);
       if (e?.key === "in_scadenza") c.expiring++;
       if (e?.key === "scaduto") c.expired++;
@@ -170,62 +171,101 @@ export default function CompanyDocuments() {
   // ─── Caricamento con IA ───
   const updateQ = (id, patch) => setQueue((qq) => qq.map((x) => (x.id === id ? { ...x, ...patch } : x)));
 
+  // Le cartelle si creano una alla volta: due file letti insieme non creano cartelle doppie.
+  const folderLock = useRef(Promise.resolve());
+  const ensureFolder = (path) => {
+    const run = folderLock.current.then(async () => {
+      const res = await ensurePath(path, foldersRef.current, db);
+      foldersRef.current = res.folders;
+      setFolders(res.folders);
+      return res.folderId;
+    });
+    folderLock.current = run.catch(() => null);
+    return run;
+  };
+
+  // L'IA gratuita a volte è occupata: si riprova con attese crescenti (non oltre il limite giornaliero).
+  const analyzeWithRetry = async (fileUrl, name) => {
+    const waits = [3000, 10000, 25000];
+    for (let attempt = 0; ; attempt++) {
+      try { return await analyzeDocument(fileUrl, name, { folders: foldersRef.current, employees, contacts, worksites }); }
+      catch (e) {
+        if (attempt >= waits.length || /giornaliero/i.test(e.message || "")) throw e;
+        await new Promise((r) => setTimeout(r, waits[attempt]));
+      }
+    }
+  };
+
+  /** Legge un documento già salvato e lo archivia (cartella, dati, smistamento). Ritorna l'esito per la coda. */
+  const fileDocument = async (doc, { fixedFolderId = "" } = {}) => {
+    const name = doc.nome_file || doc.titolo || "documento";
+    let r = null;
+    try { r = await analyzeWithRetry(doc.file_url, name); }
+    catch {
+      // L'IA non ha risposto: si archivia almeno in base al nome del file.
+      const g = guessFromName(name);
+      if (!g || fixedFolderId) return { doc, ok: false };
+      const folderId = await ensureFolder(g.cartella);
+      const upd = await db.CompanyDocument.update(doc.id, { tipo: g.tipo, cartella_id: folderId, cartella_nome: foldersRef.current.find((f) => f.id === folderId)?.nome || "", da_rileggere: true });
+      setDocs((d) => d.map((x) => (x.id === upd.id ? upd : x)));
+      return { doc: upd, ok: false, where: `${pathLabel(folderId, foldersRef.current)} (dal nome del file)` };
+    }
+    let folderId = fixedFolderId;
+    if (!folderId) {
+      const path = r.cartella && r.cartella.trim() ? r.cartella : TYPE_FOLDER[r.tipo] || "";
+      if (path) folderId = await ensureFolder(path);
+    }
+    const { cartella: _cartella, _smista, ...meta } = r;
+    let upd = await db.CompanyDocument.update(doc.id, {
+      ...meta, cartella_id: folderId || "", cartella_nome: foldersRef.current.find((f) => f.id === folderId)?.nome || "",
+      data_emissione: r.data_emissione || null, data_scadenza: r.data_scadenza || null, da_rileggere: false,
+    });
+    setDocs((d) => d.map((x) => (x.id === upd.id ? upd : x)));
+    if (upd.data_scadenza && new Date(upd.data_scadenza) >= new Date(new Date().toDateString())) {
+      await createDocumentReminder(upd.titolo, upd.data_scadenza, upd.id, "CompanyDocument", typeLabel(upd.tipo), upd.dipendente_nome || null).catch(() => null);
+    }
+    // Smistamento: documenti personali anche nella scheda del dipendente, fatture fornitore nei costi del lavoro.
+    const extra = [];
+    if (_smista?.dipendente && upd.dipendente_id && !upd.documento_dipendente_id) {
+      const ed = await db.EmployeeDocument.create({
+        dipendente_id: upd.dipendente_id, tipo: _smista.dipendente, titolo: upd.titolo, descrizione: upd.riassunto || "",
+        file_url: upd.file_url, data_emissione: upd.data_emissione || null, data_scadenza: upd.data_scadenza || null,
+        ...(_smista.corso_codice ? { corso_codice: _smista.corso_codice } : {}),
+      }).catch(() => null);
+      if (ed) { upd = await db.CompanyDocument.update(upd.id, { documento_dipendente_id: ed.id }).catch(() => upd); extra.push(`scheda di ${upd.dipendente_nome}`); }
+    }
+    if (_smista?.costo && upd.worksite_id && _smista.costo.importo > 0 && !upd.transazione_id) {
+      const tx = await db.WorksiteTransaction.create({
+        worksite_id: upd.worksite_id, worksite_nome: upd.worksite_nome, tipo: "uscita", categoria: _smista.costo.categoria,
+        descrizione: upd.titolo, importo: Math.round(_smista.costo.importo * 100) / 100, data: upd.data_emissione || new Date().toISOString().slice(0, 10),
+        fornitore: upd.emittente || upd.contatto_nome || "", file_url: upd.file_url,
+      }).catch(() => null);
+      if (tx) { upd = await db.CompanyDocument.update(upd.id, { transazione_id: tx.id }).catch(() => upd); extra.push(`costo di ${upd.worksite_nome}`); }
+    }
+    const where = folderId ? pathLabel(folderId, foldersRef.current) : "Da archiviare";
+    return { doc: upd, ok: true, where: extra.length ? `${where} · anche in ${extra.join(" e ")}` : where };
+  };
+
   const processFile = async (item, targetFolderId) => {
+    let doc = null;
     try {
       updateQ(item.id, { status: "upload" });
       const { file_url } = await api.integrations.Core.UploadFile({ file: item.file, private: true });
       const folder = foldersRef.current.find((f) => f.id === targetFolderId);
-      let doc = await db.CompanyDocument.create({
+      doc = await db.CompanyDocument.create({
         titolo: item.file.name.replace(/\.[^.]+$/, ""), tipo: "altro", file_url, nome_file: item.file.name, dimensione: item.file.size, mime: item.file.type,
         cartella_id: folder?.id || "", cartella_nome: folder?.nome || "",
       });
       setDocs((d) => [doc, ...d]);
-      if (!aiAuto) { updateQ(item.id, { status: "done", docId: doc.id, info: folder ? pathLabel(folder.id, foldersRef.current) : "Da archiviare" }); return; }
-
+      if (!aiAuto) { updateQ(item.id, { status: "done", docId: doc.id, info: folder ? pathLabel(folder.id, foldersRef.current) : "Da archiviare" }); return null; }
       updateQ(item.id, { status: "ai", docId: doc.id });
-      const r = await analyzeDocument(file_url, item.file.name, { folders: foldersRef.current, employees, contacts, worksites });
-      let folderId = folder?.id || "";
-      if (!folderId && r.cartella) {
-        const res = await ensurePath(r.cartella, foldersRef.current, db);
-        foldersRef.current = res.folders;
-        setFolders(res.folders);
-        folderId = res.folderId;
-      }
-      const { cartella, _smista, ...meta } = r; // eslint-disable-line no-unused-vars
-      doc = await db.CompanyDocument.update(doc.id, {
-        ...meta, cartella_id: folderId || "", cartella_nome: foldersRef.current.find((f) => f.id === folderId)?.nome || "",
-        data_emissione: r.data_emissione || null, data_scadenza: r.data_scadenza || null,
-      });
-      setDocs((d) => d.map((x) => (x.id === doc.id ? doc : x)));
-      if (doc.data_scadenza && new Date(doc.data_scadenza) >= new Date(new Date().toDateString())) {
-        await createDocumentReminder(doc.titolo, doc.data_scadenza, doc.id, "CompanyDocument", typeLabel(doc.tipo), doc.dipendente_nome || null).catch(() => null);
-      }
-      // Smistamento: documenti personali anche nella scheda del dipendente, fatture fornitore nei costi del lavoro.
-      const extra = [];
-      if (_smista?.dipendente && doc.dipendente_id) {
-        const ed = await db.EmployeeDocument.create({
-          dipendente_id: doc.dipendente_id, tipo: _smista.dipendente, titolo: doc.titolo, descrizione: doc.riassunto || "",
-          file_url, data_emissione: doc.data_emissione || null, data_scadenza: doc.data_scadenza || null,
-          ...(_smista.corso_codice ? { corso_codice: _smista.corso_codice } : {}),
-        }).catch(() => null);
-        if (ed) { await db.CompanyDocument.update(doc.id, { documento_dipendente_id: ed.id }).catch(() => null); extra.push(`scheda di ${doc.dipendente_nome}`); }
-      }
-      if (_smista?.costo && doc.worksite_id && _smista.costo.importo > 0) {
-        const tx = await db.WorksiteTransaction.create({
-          worksite_id: doc.worksite_id, worksite_nome: doc.worksite_nome, tipo: "uscita", categoria: _smista.costo.categoria,
-          descrizione: doc.titolo, importo: Math.round(_smista.costo.importo * 100) / 100, data: doc.data_emissione || new Date().toISOString().slice(0, 10),
-          fornitore: doc.emittente || doc.contatto_nome || "", file_url,
-        }).catch(() => null);
-        if (tx) { await db.CompanyDocument.update(doc.id, { transazione_id: tx.id }).catch(() => null); extra.push(`costo di ${doc.worksite_nome}`); }
-      }
-      const where = folderId ? pathLabel(folderId, foldersRef.current) : "Da archiviare";
-      updateQ(item.id, { status: "done", title: doc.titolo, info: extra.length ? `${where} · anche in ${extra.join(" e ")}` : where });
+      const res = await fileDocument(doc, { fixedFolderId: folder?.id || "" });
+      updateQ(item.id, res.ok ? { status: "done", title: res.doc.titolo, info: res.where } : { status: "partial", info: res.where ? `${res.where} · da rileggere` : "L'IA non ha risposto: riprovo tra poco" });
+      return res.ok ? null : { item, doc: res.doc, folderId: folder?.id || "" };
     } catch (e) {
       console.error(e);
-      // con docId il file è salvato ma l'IA non ha finito; senza, il caricamento è fallito
-      setQueue((qq) => qq.map((x) => (x.id !== item.id ? x : x.docId
-        ? { ...x, status: "partial", info: "L'IA non ha potuto leggerlo: completa a mano" }
-        : { ...x, status: "error", info: "Caricamento non riuscito" })));
+      updateQ(item.id, doc ? { status: "partial", docId: doc.id, info: "L'IA non ha risposto: riprovo tra poco" } : { status: "error", info: "Caricamento non riuscito" });
+      return doc ? { item, doc, folderId: targetFolderId || "" } : null;
     }
   };
 
@@ -238,9 +278,37 @@ export default function CompanyDocuments() {
     if (!items.length) return;
     setQueue((qq) => [...items, ...qq.filter((x) => x.status !== "done")]);
     const target = currentFolderId;
+    const failed = [];
     let i = 0;
-    const worker = async () => { while (i < items.length) { const it = items[i++]; await processFile(it, target); } };
-    await Promise.all([worker(), worker(), worker()]);
+    // Due alla volta: abbastanza veloce, senza saturare l'IA (con tre in parallelo molti file fallivano).
+    const worker = async () => { while (i < items.length) { const it = items[i++]; const f = await processFile(it, target); if (f) failed.push(f); } };
+    await Promise.all([worker(), worker()]);
+    // Secondo giro per i file non letti: uno alla volta, dopo una pausa.
+    if (failed.length && aiAuto) {
+      await new Promise((r) => setTimeout(r, 15000));
+      for (const f of failed) {
+        updateQ(f.item.id, { status: "ai", info: "" });
+        const res = await fileDocument(f.doc, { fixedFolderId: f.folderId }).catch(() => ({ ok: false }));
+        updateQ(f.item.id, res.ok ? { status: "done", title: res.doc.titolo, info: res.where } : { status: "partial", info: res.where ? `${res.where} · da rileggere` : "Non letto: usa «Archivia con l'IA» più tardi" });
+      }
+    }
+    load();
+  };
+
+  // Rilegge con l'IA i documenti non archiviati o archiviati solo dal nome del file.
+  const [refiling, setRefiling] = useState(null); // { done, tot }
+  const refileAll = async () => {
+    const list = docs.filter((d) => !d.cartella_id || !foldersRef.current.some((f) => f.id === d.cartella_id) || d.da_rileggere);
+    if (!list.length) return toast({ title: "Tutto archiviato", description: "Non ci sono documenti da sistemare." });
+    setRefiling({ done: 0, tot: list.length });
+    let ok = 0;
+    for (const [n, d] of list.entries()) {
+      const res = await fileDocument(d).catch(() => ({ ok: false }));
+      if (res.ok) ok++;
+      setRefiling({ done: n + 1, tot: list.length });
+    }
+    setRefiling(null);
+    toast({ title: `${ok} di ${list.length} documenti archiviati`, description: ok < list.length ? "Gli altri restano in «Da archiviare»: riprova più tardi o spostali a mano." : undefined });
     load();
   };
 
@@ -454,6 +522,12 @@ export default function CompanyDocuments() {
               <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer" title="Ogni file caricato viene letto, rinominato e archiviato dall'IA">
                 <Switch checked={aiAuto} onCheckedChange={(v) => { setAiAuto(v); savePref("ai", v ? "1" : "0"); }} /> Archiviazione IA
               </label>
+              {(viewCounts.unfiled > 0 || viewCounts.toReread > 0) && (
+                <Button size="sm" onClick={refileAll} disabled={!!refiling} className="gap-1.5 bg-zinc-950 hover:bg-zinc-800">
+                  {refiling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+                  {refiling ? `Archivio ${refiling.done}/${refiling.tot}…` : `Archivia con l'IA (${viewCounts.unfiled + (viewCounts.toReread || 0)})`}
+                </Button>
+              )}
               {(currentFolderId || (view.type === "view" && view.key === "all")) && (
                 <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setFolderDlg({ mode: "new", parentId: currentFolderId })}><FolderPlus className="w-4 h-4" /> Nuova cartella</Button>
               )}
@@ -509,17 +583,17 @@ export default function CompanyDocuments() {
               {visibleDocs.length > 0 && (layout === "grid" ? (
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
                   {visibleDocs.map((d) => (
-                    <DocCard key={d.id} d={d} selected={selected.has(d.id)} onSelect={() => toggleSel(d.id)} onOpen={() => setDetailId(d.id)} onDragStart={(e) => onDragDoc(e, d.id)} />
+                    <DocCard key={d.id} d={d} selected={selected.has(d.id)} onSelect={() => toggleSel(d.id)} onOpen={() => setDetailId(d.id)} onDelete={() => deleteDocs([d])} onDragStart={(e) => onDragDoc(e, d.id)} />
                   ))}
                 </div>
               ) : (
                 <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">
-                  <div className="hidden md:grid grid-cols-[28px_1fr_150px_170px_130px] gap-3 px-3 py-2 text-xs font-medium uppercase tracking-wide text-slate-500 bg-slate-50">
+                  <div className="hidden md:grid grid-cols-[28px_1fr_150px_170px_130px_36px] gap-3 px-3 py-2 text-xs font-medium uppercase tracking-wide text-slate-500 bg-slate-50">
                     <input type="checkbox" aria-label="Seleziona tutti" checked={visibleDocs.every((d) => selected.has(d.id))} onChange={(e) => setSelected(e.target.checked ? new Set(visibleDocs.map((d) => d.id)) : new Set())} />
-                    <span>Nome</span><span>Tipo</span><span>{searching || !currentFolderId ? "Cartella" : "Collegato a"}</span><span>Scadenza</span>
+                    <span>Nome</span><span>Tipo</span><span>{searching || !currentFolderId ? "Cartella" : "Collegato a"}</span><span>Scadenza</span><span />
                   </div>
                   {visibleDocs.map((d) => (
-                    <DocRow key={d.id} d={d} folders={folders} showFolder={searching || !currentFolderId} selected={selected.has(d.id)} onSelect={() => toggleSel(d.id)} onOpen={() => setDetailId(d.id)} onDragStart={(e) => onDragDoc(e, d.id)} query={searching ? q : ""} />
+                    <DocRow key={d.id} d={d} folders={folders} showFolder={searching || !currentFolderId} selected={selected.has(d.id)} onSelect={() => toggleSel(d.id)} onOpen={() => setDetailId(d.id)} onDelete={() => deleteDocs([d])} onDragStart={(e) => onDragDoc(e, d.id)} query={searching ? q : ""} />
                   ))}
                 </div>
               ))}
@@ -588,13 +662,13 @@ function snippet(d, q) {
   return "";
 }
 
-function DocRow({ d, folders, showFolder, selected, onSelect, onOpen, onDragStart, query }) {
+function DocRow({ d, folders, showFolder, selected, onSelect, onOpen, onDelete, onDragStart, query }) {
   const Icon = KIND_ICON[fileKind(d)];
   const exp = expiryState(d.data_scadenza);
   const snip = snippet(d, query);
   const linked = d.worksite_nome || d.contatto_nome || d.dipendente_nome;
   return (
-    <div draggable onDragStart={onDragStart} onClick={onOpen} className={`grid grid-cols-[28px_1fr] md:grid-cols-[28px_1fr_150px_170px_130px] gap-x-3 gap-y-1 px-3 py-2.5 items-center cursor-pointer ${selected ? "bg-brand-50" : "hover:bg-slate-50"}`}>
+    <div draggable onDragStart={onDragStart} onClick={onOpen} className={`group grid grid-cols-[28px_1fr_36px] md:grid-cols-[28px_1fr_150px_170px_130px_36px] gap-x-3 gap-y-1 px-3 py-2.5 items-center cursor-pointer ${selected ? "bg-brand-50" : "hover:bg-slate-50"}`}>
       <input type="checkbox" checked={selected} onClick={(e) => e.stopPropagation()} onChange={onSelect} aria-label={`Seleziona ${d.titolo}`} />
       <div className="min-w-0 flex items-center gap-2.5">
         <Icon className="w-5 h-5 text-slate-400 shrink-0" />
@@ -619,17 +693,25 @@ function DocRow({ d, folders, showFolder, selected, onSelect, onOpen, onDragStar
       <span className="hidden md:block">
         {exp ? <span className={`text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${exp.className}`}>{exp.key === "valido" ? new Date(d.data_scadenza).toLocaleDateString("it-IT") : exp.label}</span> : <span className="text-sm text-slate-400">—</span>}
       </span>
+      <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(); }} title="Elimina documento" aria-label={`Elimina ${d.titolo}`}
+        className="grid place-items-center w-9 h-9 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition-opacity">
+        <Trash2 className="w-4 h-4" />
+      </button>
     </div>
   );
 }
 
-function DocCard({ d, selected, onSelect, onOpen, onDragStart }) {
+function DocCard({ d, selected, onSelect, onOpen, onDelete, onDragStart }) {
   const kind = fileKind(d);
   const thumb = useFileUrl(kind === "image" ? d.file_url : null);
   const Icon = KIND_ICON[kind];
   const exp = expiryState(d.data_scadenza);
   return (
-    <div draggable onDragStart={onDragStart} onClick={onOpen} className={`relative bg-white rounded-xl border overflow-hidden cursor-pointer transition-shadow hover:shadow-md ${selected ? "border-brand-600 ring-1 ring-brand-600" : "border-slate-200"}`}>
+    <div draggable onDragStart={onDragStart} onClick={onOpen} className={`group relative bg-white rounded-xl border overflow-hidden cursor-pointer transition-shadow hover:shadow-md ${selected ? "border-brand-600 ring-1 ring-brand-600" : "border-slate-200"}`}>
+      <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(); }} title="Elimina documento" aria-label={`Elimina ${d.titolo}`}
+        className="absolute top-1.5 right-1.5 z-10 grid place-items-center w-8 h-8 rounded-lg bg-white/90 text-slate-500 hover:text-red-600 shadow-sm md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition-opacity">
+        <Trash2 className="w-4 h-4" />
+      </button>
       <input type="checkbox" checked={selected} onClick={(e) => e.stopPropagation()} onChange={onSelect} className="absolute top-2 left-2 z-10" aria-label={`Seleziona ${d.titolo}`} />
       <div className="h-28 bg-slate-50 grid place-items-center border-b border-slate-100 overflow-hidden">
         {kind === "image" && thumb ? <img src={thumb} alt="" loading="lazy" className="w-full h-full object-cover" /> : <Icon className="w-10 h-10 text-slate-300" />}

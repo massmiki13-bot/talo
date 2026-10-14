@@ -65,7 +65,13 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
       setQueue((q) => q.map((x) => (x.name === file.name && x.stato === "in coda" ? { ...x, stato: "lettura" } : x)));
       try {
         const { file_url } = await api.integrations.Core.UploadFile({ file });
-        const r = await readPracticeDocument(file_url, tipo, file.name);
+        // l'IA gratuita a volte è occupata: fino a 3 nuovi tentativi con attese crescenti
+        let r;
+        for (const wait of [0, 3000, 10000, 25000]) {
+          if (wait) await new Promise((res) => setTimeout(res, wait));
+          try { r = await readPracticeDocument(file_url, tipo, file.name); break; }
+          catch (e) { if (wait === 25000 || /giornaliero/i.test(e.message || "")) throw e; }
+        }
         let added = 0;
         setP((cur) => {
           const m = mergeFields(cur, r.campi, file.name);
@@ -90,6 +96,17 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
       toast({ title: `${m.n} campi scritti dall'IA`, description: "Sono bozze: rileggile e correggi dove serve." });
     } catch (e) { toast({ title: "Bozze non generate", description: e.message, variant: "destructive" }); }
     finally { setDrafting(false); }
+  };
+
+  const removeDoc = (nome) => {
+    if (!confirm(`Togliere «${nome}» dalla pratica? I dati letti solo da questo documento verranno cancellati.`)) return;
+    update((cur) => ({
+      ...cur,
+      documenti: (cur.documenti || []).filter((x) => x.nome !== nome),
+      campi: Object.fromEntries(Object.entries(cur.campi || {}).filter(([, v]) => v.fonte !== nome)),
+    }));
+    setQueue((q) => q.filter((x) => x.name !== nome));
+    toast({ title: "Documento tolto dalla pratica" });
   };
 
   const prog = progress(tipo, p);
@@ -213,12 +230,12 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
                 return (
                   <li key={d.k} className="flex gap-2.5">
                     {have.length ? <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" /> : <Circle className="w-4 h-4 text-zinc-300 mt-0.5 shrink-0" />}
-                    <span className="text-sm"><span className={`font-medium ${have.length ? "text-zinc-900" : "text-zinc-700"}`}>{d.label}</span><span className="block text-xs text-zinc-500">{have.length ? have.map((h) => h.nome).join(", ") : d.why}</span></span>
+                    <span className="text-sm"><span className={`font-medium ${have.length ? "text-zinc-900" : "text-zinc-700"}`}>{d.label}</span><span className="block text-xs text-zinc-500">{have.length ? have.map((h) => <DocChip key={h.nome} name={h.nome} onRemove={() => removeDoc(h.nome)} />) : d.why}</span></span>
                   </li>
                 );
               })}
             </ul>
-            {(p.documenti || []).some((x) => x.tipo_documento === "altro") && <p className="text-xs text-zinc-500 mt-3">Altri documenti: {(p.documenti || []).filter((x) => x.tipo_documento === "altro").map((x) => x.nome).join(", ")}</p>}
+            {(p.documenti || []).some((x) => x.tipo_documento === "altro") && <div className="text-xs text-zinc-500 mt-3">Altri documenti: {(p.documenti || []).filter((x) => x.tipo_documento === "altro").map((x) => <DocChip key={x.nome} name={x.nome} onRemove={() => removeDoc(x.nome)} />)}</div>}
           </DetailCard>
           {docsMissing.length > 0 && <p className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-900 flex gap-2"><AlertTriangle className="w-4 h-4 shrink-0" />Senza questi documenti alcuni campi restano da compilare a mano: puoi farlo con la guida a sinistra.</p>}
         </div>
@@ -243,5 +260,14 @@ function RowsTable({ cols, rows, onChange, onDelete }) {
         </tbody>
       </table>
     </div>
+  );
+}
+
+function DocChip({ name, onRemove }) {
+  return (
+    <span className="inline-flex items-center gap-1 max-w-full rounded-md bg-zinc-100 text-zinc-700 pl-1.5 pr-0.5 py-0.5 mr-1 mt-1">
+      <span className="truncate">{name}</span>
+      <button type="button" onClick={onRemove} className="grid place-items-center w-5 h-5 rounded text-zinc-500 hover:text-red-600 hover:bg-red-50" aria-label={`Togli ${name}`} title="Togli dalla pratica"><Trash2 className="w-3 h-3" /></button>
+    </span>
   );
 }

@@ -119,6 +119,9 @@ export default function DocumentDetailSheet({ doc, open, onOpenChange, folders, 
               <button onClick={toggleFav} className="p-1 rounded hover:bg-slate-100" aria-label={doc.preferito ? "Togli dai preferiti" : "Aggiungi ai preferiti"}>
                 <Star className={`w-5 h-5 ${doc.preferito ? "fill-amber-400 text-amber-500" : "text-slate-400"}`} />
               </button>
+              <button onClick={() => onDelete(doc)} className="p-1 rounded text-slate-400 hover:text-red-600 hover:bg-red-50" aria-label="Elimina documento" title="Elimina documento">
+                <Trash2 className="w-5 h-5" />
+              </button>
             </div>
             <p className="text-sm text-slate-500">
               {typeLabel(doc.tipo)} · {doc.cartella_id ? pathLabel(doc.cartella_id, folders) : "Senza cartella"}
