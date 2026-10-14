@@ -322,6 +322,10 @@ await check("il cliente vede il preventivo senza costi interni", async () => {
   const j = await r.json();
   assert(r.status === 200 && j.quote.numero === "PUB-1", JSON.stringify(j).slice(0, 200));
   assert(!JSON.stringify(j).includes("costo_unitario"), "costi interni esposti al cliente");
+  // l'anteprima del link (solo GET) non segna "visto"; lo segna la pagina aperta nel browser con una POST
+  const [q0] = await T.e("Quote").list({ numero: "PUB-1" });
+  assert(q0.stato !== "visto", "l'anteprima del link ha segnato il preventivo come visto");
+  await fetch(`${BASE}/api/quote-public`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, visto: true }) });
   const [q] = await T.e("Quote").list({ numero: "PUB-1" });
   assert(q.stato === "visto" && q.visto_il, "apertura del link non registrata");
   const post = (body) => fetch(`${BASE}/api/quote-public`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, ...body }) });
