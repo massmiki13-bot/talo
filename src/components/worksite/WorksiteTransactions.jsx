@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Trash2, Eye, Camera, Sparkles, AlertCircle, Wallet, Loader2, Download } from "lucide-react";
+import { Plus, Trash2, Eye, Sparkles, AlertCircle, Wallet, Loader2, Download } from "lucide-react";
 import { COST_CATEGORIES, INCOME_CATEGORIES, fmtDate } from "@/lib/worksites";
 import { fmtEur } from "@/lib/quotes";
 import { downloadCsv } from "@/lib/csv";
+import CameraOrGallery from "@/components/shared/CameraOrGallery";
 
 const EMPTY = () => ({ tipo: "uscita", categoria: "Materiali", descrizione: "", importo: "", data: new Date().toISOString().slice(0, 10), fornitore: "" });
 
@@ -147,11 +148,10 @@ Solo con corrispondenza chiara indica worksite_match_id; se incerto imposta need
             {form.tipo === "uscita" && (
               <div className="rounded-lg border-2 border-dashed border-zinc-300 p-3">
                 <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-                  <label className="flex-1 flex items-center gap-2 cursor-pointer text-sm text-zinc-700">
-                    {uploading ? <Loader2 className="w-5 h-5 animate-spin text-zinc-500" /> : <Camera className="w-5 h-5 text-zinc-500" />}
-                    {fileUrl ? "Documento caricato · tocca per cambiarlo" : "Fotografa o carica bolla, scontrino o fattura"}
-                    <input type="file" accept="image/*,application/pdf" capture="environment" className="hidden" onChange={(e) => upload(e.target.files[0])} />
-                  </label>
+                  <div className="flex-1 flex flex-wrap items-center gap-2">
+                    <CameraOrGallery variant="compact" accept="image/*,application/pdf" busy={uploading} tileClass="h-11" cameraLabel="Fotografa" galleryLabel="Galleria o PDF" onFiles={(files) => upload(files[0])} />
+                    <span className="text-xs text-zinc-600">{fileUrl ? "Documento caricato: puoi sostituirlo" : "Bolla, scontrino o fattura"}</span>
+                  </div>
                   {fileUrl && <Button type="button" size="sm" variant="outline" className="gap-1" onClick={readWithAi} disabled={aiLoading}>{aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Compila con l'AI</Button>}
                 </div>
               </div>

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { confirmDialog } from "@/components/shared/ConfirmHost";
 import { api, db } from "@/lib/db";
 import { useToast } from "@/components/ui/use-toast";
-import { Camera, Trash2, Loader2, CloudOff } from "lucide-react";
+import { Camera, Trash2, CloudOff } from "lucide-react";
 import { isNetworkError, onQueueChange } from "@/lib/offlineStore";
 import { queuePhoto, pendingFor } from "@/lib/offlineSync";
+import CameraOrGallery from "@/components/shared/CameraOrGallery";
 
 const FASI = [
   { value: "prima", label: "Prima", color: "bg-amber-100 text-amber-700 border-amber-200" },
@@ -98,13 +99,7 @@ export default function WorksitePhotos({ worksiteId }) {
           placeholder="Didascalia (opzionale)…"
           className="flex-1 min-w-0 border border-zinc-200 rounded-lg px-3 py-2 text-xs h-10"
         />
-        <label className="cursor-pointer flex-shrink-0">
-          <div className="flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors h-10">
-            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-            <span>Scatta foto</span>
-          </div>
-          <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleUpload} disabled={uploading} />
-        </label>
+        <CameraOrGallery className="flex-shrink-0" multiple busy={uploading} onFiles={async (files) => { for (const f of files) await handleUpload({ target: { files: [f], value: "" } }); }} />
       </div>
 
       {pending.length > 0 && (

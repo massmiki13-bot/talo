@@ -1,9 +1,10 @@
 import React, { useMemo, useRef, useState } from "react";
-import { Mic, Square, Loader2, Camera, X, Package, Wrench, ShieldAlert, Ambulance, MessageSquare, Phone, Sparkles } from "lucide-react";
+import { Mic, Square, Loader2, X, Package, Wrench, ShieldAlert, Ambulance, MessageSquare, Phone, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { sendWorker, createRecorder } from "@/lib/worker";
 import { REPORT_FIELDS, aiReport } from "@/lib/workerFields";
 import { Card, BigButton, Pill, Field, Choice, AiButton, inputCls, fmtDay } from "./ui";
+import CameraOrGallery from "@/components/shared/CameraOrGallery";
 
 const TIPI = [["materiale", "t_materiale", Package], ["guasto", "t_guasto", Wrench], ["sicurezza", "t_sicurezza", ShieldAlert], ["infortunio", "t_infortunio", Ambulance], ["altro", "t_altro", MessageSquare]];
 
@@ -152,7 +153,7 @@ export default function ReportTab({ home, t, lang, preset, onSent }) {
 
           <div className="flex flex-wrap gap-2 items-center">
             {files.map((f, i) => <span key={i} className="relative w-16 h-16 rounded-lg overflow-hidden bg-zinc-100"><img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover" /><button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))} className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 text-white grid place-items-center" aria-label={t("annulla")}><X className="w-3 h-3" /></button></span>)}
-            <label className="h-16 px-4 rounded-lg border-2 border-dashed border-zinc-300 flex items-center gap-2 text-sm font-medium text-zinc-700 cursor-pointer"><Camera className="w-4 h-4" aria-hidden="true" />{t("aggiungi_foto")}<input type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={(e) => { setFiles([...files, ...e.target.files]); e.target.value = ""; }} /></label>
+            <CameraOrGallery variant="compact" multiple cameraLabel={t("scatta_foto")} galleryLabel={t("galleria")} onFiles={(f) => setFiles([...files, ...f])} />
           </div>
           <label className="flex items-center gap-3 text-base font-medium"><input type="checkbox" checked={isUrgent} disabled={tipo === "infortunio"} onChange={(e) => setUrgente(e.target.checked)} className="w-5 h-5 accent-[#c3122a]" />{t("urgente")}</label>
           <BigButton onClick={send} disabled={busy || rec !== "idle" || aiBusy}>{busy && <Loader2 className="w-5 h-5 animate-spin" />}{t("invia")}</BigButton>

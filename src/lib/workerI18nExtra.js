@@ -1,6 +1,7 @@
 // App operai: testi dei moduli specifici e dell'assistente IA (italiano, rumeno, albanese).
 export const EXTRA = {
   it: {
+    galleria: "Dalla galleria", galleria_pdf: "Dalla galleria o PDF",
     ai_compila: "Compila con l'IA", ai_compilo: "L'IA sta compilando…", ai_fatto: "Campi compilati: controlla e invia", ai_descrivi: "Descrivi con l'IA", ai_descrivo: "Guardo la foto…",
     ai_parla_richiesta: "Dimmelo a voce", ai_hint_segnala: "Parla nella tua lingua: l'IA scrive, traduce per il capo e compila i campi.",
     oggi_data: "Oggi è", dettagli: "Dettagli", facoltativo: "facoltativo",
@@ -30,6 +31,7 @@ export const EXTRA = {
     ascolta: "Ascolta", ferma: "Ferma", testo_originale: "Testo originale", traduzione_auto: "Tradotto automaticamente",
   },
   ro: {
+    galleria: "Din galerie", galleria_pdf: "Din galerie sau PDF",
     ai_compila: "Completează cu IA", ai_compilo: "IA completează…", ai_fatto: "Câmpuri completate: verifică și trimite", ai_descrivi: "Descrie cu IA", ai_descrivo: "Mă uit la poză…",
     ai_parla_richiesta: "Spune-mi cu vocea", ai_hint_segnala: "Vorbește în limba ta: IA scrie, traduce pentru șef și completează câmpurile.",
     oggi_data: "Azi este", dettagli: "Detalii", facoltativo: "opțional",
@@ -50,6 +52,7 @@ export const EXTRA = {
     ascolta: "Ascultă", ferma: "Oprește", testo_originale: "Textul original", traduzione_auto: "Tradus automat",
   },
   sq: {
+    galleria: "Nga galeria", galleria_pdf: "Nga galeria ose PDF",
     ai_compila: "Plotëso me IA", ai_compilo: "IA po plotëson…", ai_fatto: "Fushat u plotësuan: kontrollo dhe dërgo", ai_descrivi: "Përshkruaj me IA", ai_descrivo: "Po shoh foton…",
     ai_parla_richiesta: "Ma thuaj me zë", ai_hint_segnala: "Fol në gjuhën tënde: IA shkruan, përkthen për shefin dhe plotëson fushat.",
     oggi_data: "Sot është", dettagli: "Detaje", facoltativo: "opsionale",

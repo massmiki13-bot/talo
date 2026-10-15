@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { Camera, X, Loader2, FileText, Trash2, Plus } from "lucide-react";
+import { X, Loader2, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/lib/db";
 import { readDdt } from "@/lib/ddt";
 import { sendWorker } from "@/lib/worker";
 import { PHOTO_CATEGORIES, aiPhoto } from "@/lib/workerFields";
 import { Card, BigButton, Field, Choice, AiButton, inputCls } from "./ui";
+import CameraOrGallery from "@/components/shared/CameraOrGallery";
 
 function SitePicker({ home, value, onChange, t }) {
   const sites = useMemo(() => {
@@ -113,10 +114,7 @@ export default function PhotosTab({ home, t, onSent }) {
                 ))}
               </div>
             )}
-            <label className="block">
-              <div className={`${files.length ? "h-14" : "h-36 flex-col"} rounded-2xl border-2 border-dashed border-zinc-300 flex items-center justify-center gap-2 font-semibold text-zinc-800`}><Camera className={files.length ? "w-5 h-5" : "w-8 h-8 text-zinc-500"} aria-hidden="true" />{t("scatta_foto")}</div>
-              <input type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={(e) => { setFiles([...files, ...e.target.files]); e.target.value = ""; }} />
-            </label>
+            <CameraOrGallery variant="tiles" multiple tileClass={files.length ? "h-20" : "h-36"} cameraLabel={t("scatta_foto")} galleryLabel={t("galleria")} onFiles={(f) => setFiles([...files, ...f])} />
             {files.length > 0 && (
               <>
                 <AiButton busy={busy === "ai"} onClick={describe} className="w-full">{busy === "ai" ? t("ai_descrivo") : t("ai_descrivi")}</AiButton>
@@ -137,13 +135,7 @@ export default function PhotosTab({ home, t, onSent }) {
         </Card>
       ) : !ddt ? (
         <Card>
-          <label className="block">
-            <div className="h-40 rounded-2xl border-2 border-dashed border-zinc-300 flex flex-col items-center justify-center gap-2 font-semibold text-zinc-800">
-              {busy === "ddt" ? <Loader2 className="w-8 h-8 animate-spin text-brand-600" /> : <FileText className="w-8 h-8 text-zinc-500" aria-hidden="true" />}
-              {busy === "ddt" ? t("leggo_bolla") : t("carica_bolla")}
-            </div>
-            <input type="file" accept="image/*,.pdf" capture="environment" className="hidden" disabled={!!busy} onChange={(e) => { readBolla(e.target.files[0]); e.target.value = ""; }} />
-          </label>
+          <CameraOrGallery variant="tiles" accept="image/*,.pdf" busy={busy === "ddt"} disabled={!!busy} tileClass="h-40" cameraLabel={busy === "ddt" ? t("leggo_bolla") : t("carica_bolla")} galleryLabel={t("galleria_pdf")} onFiles={(f) => readBolla(f[0])} />
         </Card>
       ) : (
         <Card>

@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { BookOpen, Plus, Loader2, Camera, X, Pencil, Trash2, Users, CloudSun, AlertTriangle, Truck } from "lucide-react";
+import { BookOpen, Plus, Loader2, X, Pencil, Trash2, Users, CloudSun, AlertTriangle, Truck } from "lucide-react";
 import { METEO, fmtDate } from "@/lib/worksites";
 import { fullName } from "@/lib/employees";
 import { useAuth } from "@/lib/AuthContext";
+import CameraOrGallery from "@/components/shared/CameraOrGallery";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -152,10 +153,7 @@ function LogDialog({ open, entry, onOpenChange, onSave, presentOn }) {
                   <button type="button" aria-label="Rimuovi foto" onClick={() => setForm({ ...form, foto: form.foto.filter((_, j) => j !== i) })} className="absolute -top-2 -right-2 bg-white border rounded-full p-0.5"><X className="w-3 h-3" /></button>
                 </div>
               ))}
-              <label className="w-20 h-16 rounded border-2 border-dashed border-zinc-300 flex items-center justify-center cursor-pointer text-zinc-500">
-                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-5 h-5" />}
-                <input type="file" accept="image/*" multiple capture="environment" className="hidden" onChange={(e) => { upload([...e.target.files]); e.target.value = ""; }} />
-              </label>
+              <CameraOrGallery variant="compact" multiple busy={uploading} cameraLabel="Scatta" galleryLabel="Galleria" onFiles={(files) => upload(files)} />
             </div>
           </div>
           <div className="flex justify-end gap-2">

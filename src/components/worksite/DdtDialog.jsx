@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Camera, Loader2, Trash2, Plus, Sparkles } from "lucide-react";
+import { Loader2, Trash2, Plus, Sparkles } from "lucide-react";
 import Field from "@/components/shared/FormField";
 import { readDdt, ddtTransaction } from "@/lib/ddt";
+import CameraOrGallery from "@/components/shared/CameraOrGallery";
 
 // Carica una bolla: l'IA la legge, propone il cantiere e le righe dei materiali; tu controlli e salvi.
 export default function DdtDialog({ open, onOpenChange, worksites, defaultWorksiteId = "", onSaved }) {
@@ -59,13 +60,10 @@ export default function DdtDialog({ open, onOpenChange, worksites, defaultWorksi
           <DialogDescription>Fotografa la bolla o carica il PDF: l'IA legge fornitore, materiali e cantiere.</DialogDescription>
         </DialogHeader>
         {!d ? (
-          <label className="block cursor-pointer">
-            <div className="rounded-2xl border-2 border-dashed border-zinc-300 hover:border-brand-400 hover:bg-brand-50/40 p-8 text-center">
-              {busy ? <Loader2 className="w-9 h-9 text-brand-600 mx-auto mb-2 animate-spin" /> : <Camera className="w-9 h-9 text-zinc-500 mx-auto mb-2" aria-hidden="true" />}
-              <p className="font-medium text-zinc-900">{busy || "Scatta una foto o scegli il file"}</p>
-            </div>
-            <input type="file" accept="image/*,.pdf" capture="environment" className="hidden" disabled={!!busy} onChange={(e) => { upload(e.target.files[0]); e.target.value = ""; }} aria-label="Bolla" />
-          </label>
+          <div>
+            <CameraOrGallery variant="tiles" accept="image/*,.pdf" busy={!!busy} tileClass="h-36" cameraLabel="Fotografa la bolla" galleryLabel="Dalla galleria o PDF" onFiles={(files) => upload(files[0])} />
+            {busy && <p className="text-sm text-zinc-600 mt-2 text-center">{busy}</p>}
+          </div>
         ) : (
           <div className="space-y-3">
             <div className="grid sm:grid-cols-2 gap-3">

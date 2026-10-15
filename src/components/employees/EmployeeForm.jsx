@@ -7,10 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Camera, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { isValidCodiceFiscale, isValidIban, isValidEmail, formatIban } from "@/lib/validators";
 import { TIPI_CONTRATTO, CCNL, PATENTI, fullName, initials } from "@/lib/employees";
 import Field from "@/components/shared/FormField";
+import CameraOrGallery from "@/components/shared/CameraOrGallery";
 
 export const EMPTY_EMPLOYEE = {
   nome: "", cognome: "", codice_fiscale: "", data_nascita: "", luogo_nascita: "", nazionalita: "Italiana", indirizzo: "",
@@ -121,10 +122,7 @@ export default function EmployeeForm({ open, onOpenChange, employee = null, onSa
                   : <div className="w-20 h-20 rounded-full bg-zinc-100 flex items-center justify-center text-xl font-semibold text-zinc-600">{initials(form)}</div>}
                 {form.foto_url && <button type="button" aria-label="Rimuovi foto" onClick={() => set({ foto_url: "" })} className="absolute -top-1 -right-1 rounded-full bg-white border border-zinc-200 p-0.5"><X className="w-3.5 h-3.5" /></button>}
               </div>
-              <label className="inline-flex items-center gap-1.5 text-sm text-brand-700 cursor-pointer hover:underline">
-                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />} {form.foto_url ? "Cambia foto" : "Aggiungi foto"}
-                <input type="file" accept="image/*" capture="user" className="hidden" onChange={(e) => { uploadPhoto(e.target.files[0]); e.target.value = ""; }} />
-              </label>
+              <CameraOrGallery variant="compact" facing="user" busy={uploading} tileClass="h-10" cameraLabel={form.foto_url ? "Nuova foto" : "Scatta foto"} galleryLabel="Dalla galleria" onFiles={(files) => uploadPhoto(files[0])} />
               <p className="text-xs text-zinc-500 flex-1">Serve per il tesserino di riconoscimento di cantiere.</p>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
