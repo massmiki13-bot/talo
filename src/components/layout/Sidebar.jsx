@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/db";
 import TaloLogo, { TaloMark } from "@/components/brand/TaloLogo";
+import { useNavBadges } from "@/hooks/useNavBadges";
 import { setUiLang, uiLang, onUiLang } from "@/lib/uiI18n";
 import { LANGS } from "@/lib/workerI18n";
 
@@ -76,6 +77,7 @@ export default function Sidebar({ onNavigate, isHost = true, accessLevel = "resp
     : GROUPS.map((g) => ({ ...g, items: g.items.filter(allowed) })).filter((g) => g.items.length);
 
   const isActive = (path) => location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
+  const badges = useNavBadges(!isOperaio, location.pathname);
 
   return (
     <aside className={`fixed left-0 top-0 h-screen brushed text-zinc-300 flex flex-col z-50 transition-[width] duration-300 w-72 border-r border-white/[0.06] ${collapsed ? "lg:w-[72px]" : "lg:w-64"}`}>
@@ -122,7 +124,12 @@ export default function Sidebar({ onNavigate, isHost = true, accessLevel = "resp
                       <span className={`grid place-items-center w-8 h-8 rounded-md shrink-0 transition-colors ${active ? "text-white glow-red" : "text-zinc-500 group-hover:text-zinc-200"}`} style={active ? { backgroundImage: "var(--metal-red)" } : undefined}>
                         <item.icon className="w-[18px] h-[18px]" />
                       </span>
-                      <span className={`truncate ${collapsed ? "lg:hidden" : ""}`}>{item.label}</span>
+                      <span className={`truncate flex-1 ${collapsed ? "lg:hidden" : ""}`}>{item.label}</span>
+                      {badges[item.path] > 0 && (
+                        <span aria-label={`${badges[item.path]} novità`} title={`${badges[item.path]} da guardare`}
+                          className={`grid place-items-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold text-white tabular-nums ${collapsed ? "lg:absolute lg:top-0.5 lg:right-2 lg:min-w-[16px] lg:h-4 lg:text-[10px] lg:px-1" : ""}`}
+                          style={{ backgroundImage: "var(--metal-red)" }}>{badges[item.path] > 99 ? "99+" : badges[item.path]}</span>
+                      )}
                     </Link>
                   </li>
                 );

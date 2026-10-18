@@ -27,6 +27,7 @@ import { getAccessContext } from "@/lib/accessScope";
 import { WORKSITE_STATES, COST_CATEGORIES, laborFromAttendance, economics, installments, incomeOf, fmtDate, daysBetween } from "@/lib/worksites";
 import { fmtEur } from "@/lib/quotes";
 import WorksiteCashFlow from "@/components/worksite/WorksiteCashFlow";
+import { WorksiteLots, ParentLink } from "@/components/worksite/WorksiteLots";
 import { fullName } from "@/lib/employees";
 import { exportWorksiteFolder } from "@/utils/worksiteExport";
 import { generateWorksiteReport } from "@/utils/worksiteReport";
@@ -207,6 +208,8 @@ export default function WorksiteDetail() {
       />
 
       {!readOnly && <Alerts items={alerts.map((a) => ({ ...a, icon: AlertTriangle }))} />}
+      <ParentLink worksite={worksite} />
+      {worksite.progetto && <WorksiteLots worksite={worksite} readOnly={readOnly} />}
 
       <DetailTabs tabs={TABS} value={tab} onChange={setTab} />
 

@@ -3,7 +3,9 @@
 // generati da scripts/i18n-build.mjs. Dati inseriti dall'utente, campi di testo e documenti non vengono toccati.
 import { savedLang, saveLang } from "@/lib/workerI18n";
 
-const LOADERS = { ro: () => import("@/i18n/ro.json"), sq: () => import("@/i18n/sq.json") };
+const LOADERS = { ro: () => import("@/i18n/ro.json"), sq: () => import("@/i18n/sq.json"), de: () => import("@/i18n/de.json"), bs: () => import("@/i18n/bs.json") };
+// bosniaco: i browser non hanno i formati "bs", "sr-Latn-BA" dà gli stessi nomi dei mesi (oktobar…)
+const LOCALES = { ro: "ro-RO", sq: "sq-AL", de: "de-DE", bs: "sr-Latn-BA" };
 const ATTRS = ["placeholder", "title", "aria-label"];
 // Dove non tradurre: campi modificabili, codice, anteprime di documenti e app operai (ha le sue traduzioni).
 const SKIP_SELECTOR = "input, textarea, script, style, code, pre, [contenteditable=''], [contenteditable='true'], [data-no-translate], .notranslate";
@@ -18,7 +20,7 @@ const attrState = new WeakMap(); // elemento → { [attr]: { orig, tr } }
 // Date scritte in italiano (es. "mercoledì 30 settembre", "12 ott", "lun"): nomi di mesi e giorni dalla lingua scelta.
 let dateWords = null; // { mesi: Map, giorni: Map }
 function buildDateWords(l) {
-  const loc = l === "ro" ? "ro-RO" : "sq-AL";
+  const loc = LOCALES[l] || "it-IT";
   const names = (locale, opts, list) => list.map((d) => new Intl.DateTimeFormat(locale, opts).format(d).replace(/\.$/, ""));
   const months = Array.from({ length: 12 }, (_, i) => new Date(2026, i, 15));
   const days = Array.from({ length: 7 }, (_, i) => new Date(2026, 0, 5 + i)); // da lunedì
@@ -137,7 +139,7 @@ export const onUiLang = (fn) => { listeners.add(fn); return () => listeners.dele
 
 /** Imposta la lingua dell'interfaccia (it | ro | sq) e la ricorda su questo dispositivo. */
 export async function setUiLang(next, { remember = true } = {}) {
-  if (!["it", "ro", "sq"].includes(next)) next = "it";
+  if (!["it", ...Object.keys(LOADERS)].includes(next)) next = "it";
   if (remember) saveLang(next);
   if (next === "it") {
     lang = "it"; dict = null; dateWords = null;

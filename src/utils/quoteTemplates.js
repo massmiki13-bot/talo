@@ -15,6 +15,31 @@ const COLS = [
   { key: "totale", label: "Totale", w: 28, align: "right" },
 ];
 
+// ─── Impaginazione sicura (tutte le grafiche) ───
+const BOTTOM = 22; // spazio riservato al piè di pagina
+const rowHeight = (doc, r, descW, pad) => Math.max(7, doc.splitTextToSize(r?.descrizione || "", descW - 2).length * 3.5 + pad);
+/** Va a pagina nuova prima della riga se non ci sta; un titolo di capitolo non resta mai da solo in fondo. */
+function rowBreak(doc, righe, idx, y, cols, pad = 2) {
+  const descW = cols.find((c) => c.key === "descrizione").w;
+  let need = rowHeight(doc, righe[idx], descW, pad);
+  if (righe[idx].tipo === "capitolo" && righe[idx + 1]) need += rowHeight(doc, righe[idx + 1], descW, pad);
+  return y + need > PAGE_H - BOTTOM;
+}
+/** Spazio per un blocco (totali, note): se non c'è si continua su una pagina nuova. */
+function ensureSpace(doc, y, h, top = 20) {
+  if (y + h > PAGE_H - BOTTOM) { doc.addPage(); return top; }
+  return y;
+}
+/** Righe di testo lungo che proseguono sulle pagine successive. */
+function drawLines(doc, lines, x, y, lh, opts) {
+  for (const l of lines) {
+    if (y + lh > PAGE_H - BOTTOM) { doc.addPage(); y = 20; }
+    doc.text(l, x, y, opts);
+    y += lh;
+  }
+  return y;
+}
+
 function getColPositions(margin) {
   let x = margin;
   return COLS.map((col) => {
@@ -103,8 +128,9 @@ function renderClassica(doc, ctx) {
     doc.setFontSize(8); doc.setFont(undefined, "normal");
     doc.text(`Oggetto: `, MARGIN, y);
     doc.setFont(undefined, "bold");
-    doc.text(quote.oggetto, MARGIN + 16, y);
-    y += 8;
+    const ogg = doc.splitTextToSize(quote.oggetto, CONTENT_W - 16);
+    doc.text(ogg, MARGIN + 16, y);
+    y += ogg.length * 4 + 4;
   }
 
   // Table — horizontal lines only, no fills, no vertical lines
@@ -131,8 +157,8 @@ function renderClassica(doc, ctx) {
     return yy + 2;
   };
 
-  righe.forEach((r) => {
-    if (y > PAGE_H - 60) { doc.addPage(); y = 20; y = drawTableTop(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); }
+  righe.forEach((r, idx) => {
+    if (rowBreak(doc, righe, idx, y, cols)) { doc.addPage(); y = 20; y = drawTableTop(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); }
     const descCol = cols.find((c) => c.key === "descrizione");
     const descLines = doc.splitTextToSize(r.descrizione || "", descCol.w - 2);
     const rh = Math.max(7, descLines.length * 3.5 + 2);
@@ -148,6 +174,7 @@ function renderClassica(doc, ctx) {
   });
   y += 6;
 
+  y = ensureSpace(doc, y, 42);
   // Totals — simple right-aligned text block, no box fill
   doc.setFontSize(8); doc.setFont(undefined, "normal"); doc.setTextColor(80, 80, 80);
   doc.text("Imponibile", PAGE_W - MARGIN - 60, y); doc.text(formatEuro(totals.imponibile), PAGE_W - MARGIN, y, { align: "right" }); y += 5;
@@ -159,11 +186,12 @@ function renderClassica(doc, ctx) {
   y += 15;
 
   if (quote.note) {
+    y = ensureSpace(doc, y, 16);
     doc.setFontSize(7); doc.setFont(undefined, "bold"); doc.setTextColor(color.r, color.g, color.b);
     doc.text("NOTE", MARGIN, y); doc.setTextColor(0, 0, 0);
     doc.setFontSize(7); doc.setFont(undefined, "normal"); doc.setTextColor(80, 80, 80);
     const nl = doc.splitTextToSize(quote.note, CONTENT_W);
-    doc.text(nl, MARGIN, y + 4); y += nl.length * 4 + 8; doc.setTextColor(0, 0, 0);
+    y = drawLines(doc, nl, MARGIN, y + 4, 4) + 4; doc.setTextColor(0, 0, 0);
   }
   drawSignatures(doc, y, profile, clienteFirma);
 }
@@ -235,7 +263,7 @@ function renderModerna(doc, ctx) {
   }
   y += 6;
 
-  if (quote.oggetto) { doc.setFontSize(8); doc.setFont(undefined, "normal"); doc.setTextColor(60, 60, 60); doc.text(quote.oggetto, MARGIN, y); y += 7; }
+  if (quote.oggetto) { doc.setFontSize(8); doc.setFont(undefined, "normal"); doc.setTextColor(60, 60, 60); const ogg = doc.splitTextToSize(quote.oggetto, CONTENT_W); doc.text(ogg, MARGIN, y); y += ogg.length * 4 + 3; }
 
   // Table header — text labels, thick colored underline, no fill
   const drawHeader = (yy) => {
@@ -253,7 +281,7 @@ function renderModerna(doc, ctx) {
   doc.setFontSize(7); doc.setFont(undefined, "normal");
 
   righe.forEach((r, idx) => {
-    if (y > PAGE_H - 60) { doc.addPage(); y = 20; y = drawHeader(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); }
+    if (rowBreak(doc, righe, idx, y, cols)) { doc.addPage(); y = 20; y = drawHeader(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); }
     const descCol = cols.find((c) => c.key === "descrizione");
     const descLines = doc.splitTextToSize(r.descrizione || "", descCol.w - 2);
     const rh = Math.max(7, descLines.length * 3.5 + 2);
@@ -272,6 +300,7 @@ function renderModerna(doc, ctx) {
   });
   y += 6;
 
+  y = ensureSpace(doc, y, 42);
   // Full-width colored total bar
   const barH = 12;
   doc.setFillColor(color.r, color.g, color.b);
@@ -289,9 +318,10 @@ function renderModerna(doc, ctx) {
   y += barH + 10;
 
   if (quote.note) {
+    y = ensureSpace(doc, y, 16);
     doc.setFontSize(7); doc.setFont(undefined, "normal"); doc.setTextColor(100, 100, 100);
     const nl = doc.splitTextToSize(quote.note, CONTENT_W);
-    doc.text(nl, MARGIN, y); y += nl.length * 4 + 8; doc.setTextColor(0, 0, 0);
+    y = drawLines(doc, nl, MARGIN, y, 4) + 4; doc.setTextColor(0, 0, 0);
   }
   drawSignatures(doc, y, profile, clienteFirma);
 }
@@ -349,7 +379,7 @@ function renderMinimal(doc, ctx) {
 
   if (quote.oggetto) {
     doc.setFontSize(8); doc.setFont(undefined, "normal"); doc.setTextColor(DARK, DARK, DARK);
-    doc.text(quote.oggetto, MARGIN, y); y += 10;
+    const ogg = doc.splitTextToSize(quote.oggetto, CONTENT_W); doc.text(ogg, MARGIN, y); y += ogg.length * 4 + 6;
   }
 
   // Table — no header fill, tiny gray labels, only thin bottom lines
@@ -367,8 +397,8 @@ function renderMinimal(doc, ctx) {
   y = drawHeader(y);
   doc.setFontSize(7); doc.setFont(undefined, "normal"); doc.setTextColor(DARK, DARK, DARK);
 
-  righe.forEach((r) => {
-    if (y > PAGE_H - 65) { doc.addPage(); y = 25; y = drawHeader(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); doc.setTextColor(DARK, DARK, DARK); }
+  righe.forEach((r, idx) => {
+    if (rowBreak(doc, righe, idx, y, cols, 3)) { doc.addPage(); y = 25; y = drawHeader(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); doc.setTextColor(DARK, DARK, DARK); }
     const descCol = cols.find((c) => c.key === "descrizione");
     const descLines = doc.splitTextToSize(r.descrizione || "", descCol.w - 2);
     const rh = Math.max(7, descLines.length * 3.5 + 3);
@@ -384,6 +414,7 @@ function renderMinimal(doc, ctx) {
   });
   y += 15;
 
+  y = ensureSpace(doc, y, 42);
   // Totals — sparse text, right-aligned, lots of line spacing
   doc.setFontSize(7); doc.setFont(undefined, "normal"); doc.setTextColor(GRAY, GRAY, GRAY);
   doc.text("Imponibile", PAGE_W - MARGIN - 55, y); doc.text(formatEuro(totals.imponibile), PAGE_W - MARGIN, y, { align: "right" }); y += 6;
@@ -394,9 +425,10 @@ function renderMinimal(doc, ctx) {
   y += 20;
 
   if (quote.note) {
+    y = ensureSpace(doc, y, 16);
     doc.setFontSize(6); doc.setFont(undefined, "normal"); doc.setTextColor(GRAY, GRAY, GRAY);
     const nl = doc.splitTextToSize(quote.note, CONTENT_W - 20);
-    doc.text(nl, MARGIN, y); y += nl.length * 3.5 + 10;
+    y = drawLines(doc, nl, MARGIN, y, 3.5) + 6.5;
   }
   drawSignatures(doc, y, profile, clienteFirma);
 }
@@ -462,7 +494,7 @@ function renderProfessionale(doc, ctx) {
 
   if (quote.oggetto) {
     doc.setFontSize(8); doc.setFont(undefined, "normal");
-    doc.text(`Oggetto: ${quote.oggetto}`, MARGIN, y); y += 6;
+    const ogg = doc.splitTextToSize(`Oggetto: ${quote.oggetto}`, CONTENT_W); doc.text(ogg, MARGIN, y); y += ogg.length * 4 + 2;
   }
 
   // Table — full grid with colored header and vertical separators
@@ -482,7 +514,7 @@ function renderProfessionale(doc, ctx) {
   doc.setFontSize(7); doc.setFont(undefined, "normal");
 
   righe.forEach((r, idx) => {
-    if (y > PAGE_H - 65) { doc.addPage(); y = 20; y = drawHeader(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); }
+    if (rowBreak(doc, righe, idx, y, cols)) { doc.addPage(); y = 20; y = drawHeader(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); }
     const descCol = cols.find((c) => c.key === "descrizione");
     const descLines = doc.splitTextToSize(r.descrizione || "", descCol.w - 2);
     const rh = Math.max(7, descLines.length * 3.5 + 2);
@@ -501,6 +533,7 @@ function renderProfessionale(doc, ctx) {
   });
   y += 6;
 
+  y = ensureSpace(doc, y, 42);
   // Totals box — bordered with colored header strip
   const boxW = 90, boxX = PAGE_W - MARGIN - boxW;
   doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.3);
@@ -520,15 +553,18 @@ function renderProfessionale(doc, ctx) {
 
   // Notes in bordered box
   if (quote.note) {
+    y = ensureSpace(doc, y, 16);
     doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.3);
     const nl = doc.splitTextToSize(quote.note, CONTENT_W - 8);
     const nh = nl.length * 4 + 8;
-    doc.rect(MARGIN, y, CONTENT_W, nh);
+    if (nh <= PAGE_H - BOTTOM - 20) {
+      y = ensureSpace(doc, y, nh);
+      doc.rect(MARGIN, y, CONTENT_W, nh);
+    }
     doc.setFontSize(6); doc.setFont(undefined, "bold"); doc.setTextColor(color.r, color.g, color.b);
     doc.text("NOTE", MARGIN + 4, y + 5); doc.setTextColor(0, 0, 0);
     doc.setFontSize(7); doc.setFont(undefined, "normal");
-    doc.text(nl, MARGIN + 4, y + 9);
-    y += nh + 5;
+    y = drawLines(doc, nl, MARGIN + 4, y + 9, 4) + 5;
   }
   drawSignatures(doc, y, profile, clienteFirma);
 }
@@ -619,9 +655,10 @@ function renderElegante(doc, ctx) {
 
   if (quote.oggetto) {
     doc.setFontSize(8); doc.setFont(undefined, "italic"); doc.setTextColor(80, 80, 80);
-    doc.text(quote.oggetto, CX, y, { align: "center" });
+    const ogg = doc.splitTextToSize(quote.oggetto, CONTENT_W - 20);
+    doc.text(ogg, CX, y, { align: "center" });
     doc.setTextColor(0, 0, 0);
-    y += 7;
+    y += ogg.length * 4 + 3;
   }
 
   // Table — rounded header, no zebra, thin colored separators
@@ -638,7 +675,7 @@ function renderElegante(doc, ctx) {
   doc.setFontSize(7); doc.setFont(undefined, "normal");
 
   righe.forEach((r, idx) => {
-    if (y > PAGE_H - 65) { doc.addPage(); y = 20; y = drawHeader(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); }
+    if (rowBreak(doc, righe, idx, y, cols)) { doc.addPage(); y = 20; y = drawHeader(y); doc.setFontSize(7); doc.setFont(undefined, "normal"); }
     const descCol = cols.find((c) => c.key === "descrizione");
     const descLines = doc.splitTextToSize(r.descrizione || "", descCol.w - 2);
     const rh = Math.max(7, descLines.length * 3.5 + 2);
@@ -655,6 +692,7 @@ function renderElegante(doc, ctx) {
   });
   y += 6;
 
+  y = ensureSpace(doc, y, 42);
   // Totals — centered framed box with double border
   const boxW = 85, boxX = CX - boxW / 2;
   doc.setDrawColor(color.r, color.g, color.b); doc.setLineWidth(0.5);
@@ -677,16 +715,17 @@ function renderElegante(doc, ctx) {
   y += 6;
 
   if (quote.note) {
+    y = ensureSpace(doc, y, 16);
     doc.setFontSize(7); doc.setFont(undefined, "italic"); doc.setTextColor(100, 100, 100);
     const nl = doc.splitTextToSize(quote.note, CONTENT_W - 10);
-    doc.text(nl, CX, y, { align: "center" }); y += nl.length * 4 + 8; doc.setTextColor(0, 0, 0);
+    y = drawLines(doc, nl, CX, y, 4, { align: "center" }) + 4; doc.setTextColor(0, 0, 0);
   }
   drawSignatures(doc, y, profile, clienteFirma);
 }
 
 // Shared signature block
 function drawSignatures(doc, y, profile, clienteFirma) {
-  if (y > PAGE_H - 40) { doc.addPage(); y = 20; }
+  if (y + 32 > PAGE_H - 14) { doc.addPage(); y = 20; } // le firme stanno sopra il piè di pagina
   y += 10;
   doc.setDrawColor(200, 200, 200);
   doc.setLineWidth(0.3);

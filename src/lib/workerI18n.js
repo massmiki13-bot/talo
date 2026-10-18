@@ -1,10 +1,13 @@
 import { EXTRA } from "./workerI18nExtra";
+import { MORE } from "./workerI18nMore";
 
 // Testi dell'app operai in italiano, rumeno e albanese.
 export const LANGS = [
   { code: "it", label: "Italiano", short: "IT" },
   { code: "ro", label: "Română", short: "RO" },
   { code: "sq", label: "Shqip", short: "SQ" },
+  { code: "de", label: "Deutsch", short: "DE" },
+  { code: "bs", label: "Bosanski", short: "BS" },
 ];
 
 export const T = {
@@ -74,9 +77,11 @@ export const T = {
 };
 
 for (const l of Object.keys(EXTRA)) Object.assign(T[l], EXTRA[l]);
+// Tedesco e bosniaco: generati da scripts/worker-i18n-build.mjs
+for (const l of Object.keys(MORE)) T[l] = { ...(T[l] || {}), ...MORE[l] };
 
 const KEY = "talo.operaio.lingua";
 export const savedLang = () => { try { return localStorage.getItem(KEY) || ""; } catch { return ""; } };
 export const saveLang = (l) => { try { localStorage.setItem(KEY, l); } catch { /* ignore */ } };
 export const translator = (lang) => (k) => T[lang]?.[k] ?? T.it[k] ?? k;
-export const LANG_NAMES = { it: "italiano", ro: "rumeno", sq: "albanese" };
+export const LANG_NAMES = { it: "italiano", ro: "rumeno", sq: "albanese", de: "tedesco", bs: "bosniaco" };

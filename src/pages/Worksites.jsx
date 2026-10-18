@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { FolderOpen, Plus, Search, X, Download, Upload, Camera, MoreHorizontal, Trash2, MapPin, CalendarDays, AlertTriangle, HardHat, ArrowUpDown } from "lucide-react";
+import { FolderOpen, Plus, Search, X, Download, Upload, Camera, MoreHorizontal, Trash2, MapPin, CalendarDays, AlertTriangle, HardHat, ArrowUpDown, Layers } from "lucide-react";
 import EmptyState from "@/components/shared/EmptyState";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
@@ -66,7 +66,7 @@ export default function Worksites() {
     const txBy = group(raw.txs, "worksite_id");
     const payBy = group(raw.pays, "worksite_id");
     const quoteById = new Map(raw.quotes.map((q) => [q.id, q]));
-    return raw.sites.map((w) => {
+    const list = raw.sites.map((w) => {
       const q = quoteById.get(w.preventivo_id);
       const labor = laborFromAttendance(raw.att, raw.emps, w.id);
       const econ = economics({ worksite: w, transactions: txBy.get(w.id) || [], labor, quoteTotal: q?.totale });
@@ -84,13 +84,39 @@ export default function Worksites() {
         _capo: raw.emps.find((e) => e.id === w.responsabile_id),
       };
     });
+    // Progetti a lotti: il progetto mostra i totali dei suoi lotti (più eventuali importi propri).
+    const byParent = new Map();
+    for (const r of list) if (r.parent_id) { if (!byParent.has(r.parent_id)) byParent.set(r.parent_id, []); byParent.get(r.parent_id).push(r); }
+    return list.map((w) => {
+      const lots = byParent.get(w.id);
+      if (!w.progetto || !lots?.length) return w;
+      const all = [w, ...lots];
+      const sum = (f) => all.reduce((t, x) => t + (Number(f(x)) || 0), 0);
+      const ricavo = sum((x) => x._econ.ricavo);
+      // avanzamento medio dei lotti, pesato sull'importo di ciascuno (se gli importi ci sono)
+      const lotRic = lots.reduce((t, x) => t + (x._econ.ricavo || 0), 0);
+      const avanz = lotRic ? lots.reduce((t, x) => t + (Number(x.avanzamento) || 0) * (x._econ.ricavo || 0), 0) / lotRic : lots.reduce((t, x) => t + (Number(x.avanzamento) || 0), 0) / lots.length;
+      return {
+        ...w,
+        _lots: lots,
+        avanzamento: Math.round(avanz || 0),
+        _econ: { ...w._econ, ricavo, costi: sum((x) => x._econ.costi), margineReale: sum((x) => x._econ.margineReale), sforamenti: all.flatMap((x) => x._econ.sforamenti) },
+        _incassato: sum((x) => x._incassato),
+        _residuo: sum((x) => x._residuo),
+        _rateScadute: sum((x) => x._rateScadute),
+        _late: all.some((x) => x._late),
+      };
+    });
   }, [raw]);
 
   const capi = useMemo(() => [...new Map(rows.filter((r) => r._capo).map((r) => [r._capo.id, r._capo])).values()], [rows]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const ids = new Set(rows.map((r) => r.id));
     return rows
+      // i lotti si vedono dentro il loro progetto (nella ricerca compaiono anche da soli)
+      .filter((w) => q || !w.parent_id || !ids.has(w.parent_id))
       .filter((w) => state === "tutti" || (state === "attivi" ? w.stato !== "finito" : state === "perdita" ? w._econ.margineReale < 0 && w._econ.costi > 0 : state === "ritardo" ? w._late : w.stato === state))
       .filter((w) => capo === "tutti" || w.responsabile_id === capo)
       .filter((w) => !q || [w.nome, w.cliente_nome, w.indirizzo, w.tipo_intervento].join(" ").toLowerCase().includes(q))
@@ -205,6 +231,8 @@ export default function Worksites() {
                   <div className="min-w-0 flex-1">
                     <h3 className="font-semibold text-zinc-900 truncate">{w.nome}</h3>
                     <p className="text-xs text-zinc-500 truncate">{w.cliente_nome || "Senza cliente"}{w.tipo_intervento ? ` · ${w.tipo_intervento}` : ""}</p>
+                    {w.progetto && <p className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold rounded-full bg-zinc-950 text-white px-2 py-0.5"><Layers className="w-3 h-3" aria-hidden="true" />Progetto · {w._lots?.length || 0} {w._lots?.length === 1 ? "lotto" : "lotti"}</p>}
+                    {w.parent_id && w.parent_nome && <p className="mt-1 text-[11px] text-zinc-500 truncate">Lotto di {w.parent_nome}</p>}
                   </div>
                   <span className={`text-[11px] font-semibold rounded-full border px-2 py-0.5 shrink-0 ${st.className}`}>{st.label}</span>
                   <DropdownMenu>

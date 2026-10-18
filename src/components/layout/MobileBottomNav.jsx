@@ -1,10 +1,13 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Briefcase, FileText, CalendarClock, Menu, User } from "lucide-react";
+import { useNavBadges } from "@/hooks/useNavBadges";
 
 export default function MobileBottomNav({ onMore, isHost = true, accessLevel = "responsabile", permissions = [], employeeId = null }) {
   const location = useLocation();
   const isOperaio = !isHost && accessLevel === "operaio";
+  const badges = useNavBadges(!isOperaio, location.pathname);
+  const total = Object.values(badges).reduce((a, b) => a + b, 0);
 
   const operaioItems = [
     { label: "Home", icon: LayoutDashboard, path: "/" },
@@ -44,9 +47,11 @@ export default function MobileBottomNav({ onMore, isHost = true, accessLevel = "
       {!isOperaio && (
         <button
           onClick={onMore}
-          className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-lg transition-colors min-w-[56px] text-zinc-500"
+          className="relative flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-lg transition-colors min-w-[56px] text-zinc-500"
+          aria-label={total ? `Altro, ${total} novità` : "Altro"}
         >
           <Menu className="w-5 h-5" />
+          {total > 0 && <span className="absolute top-1 right-[calc(50%-20px)] grid place-items-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-white" style={{ backgroundImage: "var(--metal-red)" }}>{total > 99 ? "99+" : total}</span>}
           <span className="text-[10px] font-medium">Altro</span>
         </button>
       )}

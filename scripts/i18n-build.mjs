@@ -11,7 +11,7 @@ const SRC = path.join(ROOT, "src");
 const OUT = path.join(SRC, "i18n");
 // Esclusi: app operai (ha già le sue traduzioni), testi legali (valgono in italiano), generatori di documenti.
 const SKIP = [/components[\\/]worker/, /i18n/i, /workerFields/, /templates/i, /documentAi|documentsAi|Ai\.js$/,/lib[\\/]legal/, /pages[\\/]Legal/, /Pdf\.js$/, /pdf/i, /xml/i, /\.test\./];
-const LANGS = { ro: "rumeno", sq: "albanese" };
+const LANGS = { ro: "rumeno", sq: "albanese", de: "tedesco", bs: "bosniaco (alfabeto latino)" };
 
 function walk(dir, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {

@@ -95,3 +95,18 @@ describe("mezzi", () => {
     expect(busyOn(m, "2026-10-11")).toBe(false);
   });
 });
+
+describe("badge del menu", async () => {
+  const { countBadges } = await import("@/hooks/useNavBadges");
+  it("conta le novità di ogni sezione", () => {
+    const c = countBadges({
+      email: [{ direzione: "in", letto: false }, { direzione: "in", letto: true }],
+      reminders: [{ data: "2026-10-01" }, { data: "2026-12-01" }, { data: "2026-10-01", completato: true }],
+      segnalazioni: [{ stato: "aperta" }, { stato: "chiusa" }], richieste: [{ stato: "in_attesa" }, {}],
+      invoices: [{ stato: "inviata", scadenza: "2026-09-01" }, { stato: "pagata", scadenza: "2026-09-01" }],
+      docs: [{ data_scadenza: "2026-10-20" }, { data_scadenza: "2027-10-20" }],
+      equipment: [{ scadenze: { revisione: "2026-10-30", bollo: "2027-05-01" } }],
+    }, new Date("2026-10-18"));
+    expect(c).toMatchObject({ "/posta": 1, "/promemoria": 1, "/squadra": 3, "/scadenzario": 1, "/documenti-ditta": 1, "/mezzi": 1 });
+  });
+});

@@ -97,7 +97,8 @@ export function addFooter(doc, profile, pageWidth, pageHeight, margin) {
     }
     doc.setFontSize(7);
     doc.setTextColor(150, 150, 150);
-    doc.text(`Pagina ${i} di ${pageCount}`, pageWidth - margin - 15, pageHeight - 8, { align: "right" });
+    const withLogo = profile?.logo_url && profile?.logo_su_ogni_pagina !== false;
+    doc.text(`Pagina ${i} di ${pageCount}`, pageWidth - margin - (withLogo ? 15 : 0), pageHeight - 8, { align: "right" });
     if (profile) doc.text(profile.ragione_sociale || "", margin, pageHeight - 8);
     doc.setTextColor(0, 0, 0);
   }

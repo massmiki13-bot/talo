@@ -56,21 +56,30 @@ describe("app operai: moduli specifici", async () => {
     expect(hoursBetween("08:00", "11:30")).toBe(3.5);
     expect(hoursBetween("12:00", "08:00")).toBe(0);
   });
+  it("app operai in tedesco e bosniaco: tutti i testi tradotti", async () => {
+    const { MORE } = await import("@/lib/workerI18nMore.js");
+    const { T } = await import("@/lib/workerI18n.js");
+    for (const l of ["de", "bs"]) for (const k of Object.keys(T.it)) expect(T[l]?.[k] || MORE[l]?.[k], `${l}:${k}`).toBeTruthy();
+  });
 });
 
 describe("lingua dell'interfaccia titolare", async () => {
   const { extract } = await import("../scripts/i18n-build.mjs");
   const ro = (await import("@/i18n/ro.json")).default;
   const sq = (await import("@/i18n/sq.json")).default;
+  const de = (await import("@/i18n/de.json")).default;
+  const bs = (await import("@/i18n/bs.json")).default;
   it("estrae i testi dell'interfaccia e ignora codice e classi", () => {
     const got = [...extract(`<Button className="w-full h-12 bg-brand-600" title="Salva il preventivo">Nuovo preventivo</Button>
       <p>Ciao, {nome}. Hai {n} avvisi da leggere</p>{x > 0 && y < 2 ? "a" : "b"}`)];
     expect(got).toEqual(expect.arrayContaining(["Salva il preventivo", "Nuovo preventivo", "Hai", "avvisi da leggere"]));
     expect(got.some((s) => s.includes("w-full") || s.includes("&&"))).toBe(false);
   });
-  it("dizionari rumeno e albanese completi e con i segnaposto numerici intatti", () => {
+  it("dizionari rumeno, albanese, tedesco e bosniaco completi e con i segnaposto numerici intatti", () => {
     expect(Object.keys(ro).length).toBeGreaterThan(3000);
     expect(Object.keys(sq).sort()).toEqual(Object.keys(ro).sort());
-    for (const d of [ro, sq]) for (const [k, v] of Object.entries(d)) if (k.includes("{n}")) expect(v.split("{n}").length, k).toBe(k.split("{n}").length);
+    expect(Object.keys(de).sort()).toEqual(Object.keys(ro).sort());
+    expect(Object.keys(bs).sort()).toEqual(Object.keys(ro).sort());
+    for (const d of [ro, sq, de, bs]) for (const [k, v] of Object.entries(d)) if (k.includes("{n}")) expect(v.split("{n}").length, k).toBe(k.split("{n}").length);
   });
 });

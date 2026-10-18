@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { UserCheck, Search, Plus, Download, Upload, X, Phone, ChevronRight, Archive, AlertTriangle } from "lucide-react";
+import { UserCheck, Search, Plus, Download, Upload, X, Phone, ChevronRight, Archive, AlertTriangle, Banknote } from "lucide-react";
 import EmptyState from "@/components/shared/EmptyState";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import EmployeeForm from "@/components/employees/EmployeeForm";
+import PayslipSplitDialog from "@/components/employees/PayslipSplitDialog";
 import { compliance, COMPLIANCE_STYLE, fullName, initials, seniority } from "@/lib/employees";
 import { phoneHref } from "@/lib/contacts";
 import { downloadCsv } from "@/lib/csv";
@@ -27,6 +28,7 @@ export default function Employees() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
+  const [payOpen, setPayOpen] = useState(false);
   const [docs, setDocs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -94,6 +96,7 @@ export default function Employees() {
           <p className="text-zinc-500 mt-1 text-sm">Anagrafiche, contratti, formazione, visite mediche e DPI</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setPayOpen(true)} disabled={!employees.length}><Banknote className="w-4 h-4" /> Buste paga</Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setImportOpen(true)}><Upload className="w-4 h-4" /> Importa</Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportCsv} disabled={!filtered.length}><Download className="w-4 h-4" /> Esporta</Button>
           <Button size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700" onClick={() => setFormOpen(true)}><Plus className="w-4 h-4" /> Nuovo dipendente</Button>
@@ -206,6 +209,7 @@ export default function Employees() {
 
       <EmployeeForm open={formOpen} onOpenChange={setFormOpen} onSaved={(e) => { load(); if (e?.id) navigate(`/dipendenti/${e.id}`); }} />
       <ExcelImportDialog kind="dipendenti" open={importOpen} onOpenChange={setImportOpen} existing={employees} onDone={load} />
+      <PayslipSplitDialog open={payOpen} onOpenChange={setPayOpen} employees={employees.filter((e) => e.stato !== "cessato")} onDone={load} />
     </div>
   );
 }

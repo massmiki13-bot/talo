@@ -20,22 +20,26 @@ const EMPTY = {
   nome: "", indirizzo: "", stato: "da_iniziare", tipo_intervento: "", cliente_id: "", cliente_nome: "", importo_totale: "",
   data_inizio: "", data_fine_prevista: "", data_fine_effettiva: "", responsabile_id: "", squadra_ids: [],
   direttore_lavori: "", coordinatore_sicurezza: "", titolo_edilizio: {}, budget: {}, note: "",
+  progetto: false, parent_id: "", parent_nome: "",
 };
 
 
-export default function WorksiteForm({ open, onOpenChange, worksite = null, onSaved, quoteTotal }) {
+/** defaults: valori iniziali per un lavoro nuovo (es. un lotto creato dentro un progetto). */
+export default function WorksiteForm({ open, onOpenChange, worksite = null, onSaved, quoteTotal, defaults = null }) {
   const { toast } = useToast();
   const [form, setForm] = useState(EMPTY);
   const [tab, setTab] = useState("dati");
   const [contacts, setContacts] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    setForm({ ...EMPTY, ...(worksite || {}), squadra_ids: [...(worksite?.squadra_ids || [])], titolo_edilizio: { ...(worksite?.titolo_edilizio || {}) }, budget: { ...(worksite?.budget || {}) }, importo_totale: worksite?.importo_totale ?? "" });
+    setForm({ ...EMPTY, ...(worksite ? {} : defaults || {}), ...(worksite || {}), squadra_ids: [...(worksite?.squadra_ids || [])], titolo_edilizio: { ...(worksite?.titolo_edilizio || {}) }, budget: { ...(worksite?.budget || {}) }, importo_totale: worksite?.importo_totale ?? "" });
     setTab("dati");
     setAltro(false);
+    db.Worksite.filter({ progetto: true }, "nome", 500).then((l) => setProjects(l.filter((x) => x.id !== worksite?.id))).catch(() => setProjects([]));
     Promise.all([db.Contact.list("nome", 5000), db.Employee.list("cognome", 2000)]).then(([c, e]) => {
       setContacts(c.filter((x) => x.tipo !== "fornitore" && !x.archiviato));
       setEmployees(e.filter((x) => x.stato !== "cessato"));
@@ -154,7 +158,22 @@ export default function WorksiteForm({ open, onOpenChange, worksite = null, onSa
               <button type="button" onClick={() => setAi({ ...ai, open: true })} className="mb-3 text-sm font-medium text-brand-700 hover:underline inline-flex items-center gap-1.5"><Sparkles className="w-4 h-4" aria-hidden="true" />Compila con l'IA</button>
             )}
             <div className="grid sm:grid-cols-2 gap-4">
-              <Field label="Nome del lavoro" className="sm:col-span-2"><Input value={form.nome} onChange={(e) => set({ nome: e.target.value })} placeholder="Es. Ristrutturazione bagno – Via Roma 12" /></Field>
+              <Field label={form.progetto ? "Nome del progetto" : form.parent_id ? "Nome del lotto" : "Nome del lavoro"} className="sm:col-span-2"><Input value={form.nome} onChange={(e) => set({ nome: e.target.value })} placeholder={form.progetto ? "Es. Riqualificazione complesso Via Roma" : form.parent_id ? "Es. Lotto 2 – Palazzina B" : "Es. Ristrutturazione bagno – Via Roma 12"} /></Field>
+              <div className="sm:col-span-2 rounded-lg border border-zinc-200 bg-zinc-50/60 p-3 space-y-2">
+                <label className="flex items-start gap-2.5 text-sm cursor-pointer">
+                  <input type="checkbox" checked={!!form.progetto} onChange={(e) => set({ progetto: e.target.checked, ...(e.target.checked ? { parent_id: "", parent_nome: "" } : {}) })} className="mt-0.5 w-4 h-4 accent-[#c3122a]" />
+                  <span><b className="font-medium text-zinc-900">Progetto con più lotti</b><span className="block text-xs text-zinc-500">Nell'elenco vedi solo il progetto, con i totali; aprendolo trovi i lotti separati.</span></span>
+                </label>
+                {!form.progetto && projects.length > 0 && (
+                  <div>
+                    <Label htmlFor="ws-parent" className="text-xs text-zinc-600">Fa parte del progetto</Label>
+                    <Select value={form.parent_id || "none"} onValueChange={(v) => { const p = projects.find((x) => x.id === v); set({ parent_id: p ? p.id : "", parent_nome: p ? p.nome : "" }); }}>
+                      <SelectTrigger id="ws-parent" className="mt-1 bg-white"><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="none">Nessuno (lavoro singolo)</SelectItem>{projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
               <Field label="Cliente">
                 <Select value={form.cliente_id || "none"} onValueChange={(v) => { const c = contacts.find((x) => x.id === v); set({ cliente_id: c?.id || "", cliente_nome: c ? displayName(c) : "", indirizzo: form.indirizzo || (c ? [c.indirizzo, [c.cap, c.citta, c.provincia].filter(Boolean).join(" ")].filter(Boolean).join(", ") : "") }); }}>
                   <SelectTrigger><SelectValue /></SelectTrigger>

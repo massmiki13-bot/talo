@@ -64,5 +64,5 @@ export function AiButton({ busy, children, className = "", ...props }) {
   );
 }
 
-export const locale = (lang) => (lang === "sq" ? "sq-AL" : lang === "ro" ? "ro-RO" : "it-IT");
+export const locale = (lang) => ({ sq: "sq-AL", ro: "ro-RO", de: "de-DE", bs: "sr-Latn-BA" })[lang] || "it-IT";
 export const fmtDay = (d, lang = "it") => new Date(d).toLocaleDateString(locale(lang), { day: "numeric", month: "short" });

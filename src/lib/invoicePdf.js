@@ -50,7 +50,9 @@ export async function buildInvoicePdf(inv, profile, client) {
   // cliente e oggetto
   doc.setFontSize(7.5); doc.setTextColor(120, 120, 120); doc.text("SPETTABILE", W / 2 + 4, y);
   doc.setFontSize(10); doc.setTextColor(20, 20, 20); doc.setFont(undefined, "bold");
-  doc.text(doc.splitTextToSize(client?.nome || client?.nome_privato || "", CW / 2 - 4), W / 2 + 4, y + 5);
+  const nomeCl = doc.splitTextToSize(client?.nome || client?.nome_privato || "", CW / 2 - 4);
+  doc.text(nomeCl, W / 2 + 4, y + 5);
+  const yCl = y + 10 + (nomeCl.length - 1) * 4.5; // l'indirizzo scende se il nome va a capo
   doc.setFont(undefined, "normal"); doc.setFontSize(8.5);
   const cl = [
     client?.indirizzo,
@@ -60,13 +62,15 @@ export async function buildInvoicePdf(inv, profile, client) {
     client?.codice_sdi && `Codice SDI ${client.codice_sdi}`,
     client?.pec && `PEC ${client.pec}`,
   ].filter(Boolean);
-  cl.forEach((l, i) => doc.text(l, W / 2 + 4, y + 10 + i * 4));
+  cl.forEach((l, i) => doc.text(l, W / 2 + 4, yCl + i * 4));
+  let oggL = [];
   if (inv.oggetto) {
     doc.setFontSize(7.5); doc.setTextColor(120, 120, 120); doc.text("OGGETTO", M, y);
     doc.setFontSize(9); doc.setTextColor(20, 20, 20);
-    doc.text(doc.splitTextToSize(inv.oggetto, CW / 2 - 8), M, y + 5);
+    oggL = doc.splitTextToSize(inv.oggetto, CW / 2 - 8);
+    doc.text(oggL, M, y + 5);
   }
-  y += 14 + cl.length * 4;
+  y = Math.max(yCl + cl.length * 4, y + 5 + oggL.length * 4) + 4;
 
   // righe
   const cols = [{ l: "Descrizione", w: 0.46 }, { l: "Q.tà", w: 0.08, r: true }, { l: "U.M.", w: 0.07 }, { l: "Prezzo", w: 0.13, r: true }, { l: "Sc.%", w: 0.07, r: true }, { l: "IVA", w: 0.07, r: true }, { l: "Importo", w: 0.12, r: true }];
