@@ -7,16 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Send, Sparkles, Loader2, Languages, Paperclip, FolderOpen, Upload, X, Eye, Save,
-  ShieldCheck, FileText, Link2, Star, AlertTriangle, Settings,
+  ShieldCheck, FileText, Link2, Star, AlertTriangle, Settings, Mic,
 } from "lucide-react";
 import RecipientInput, { loadAddressBook } from "./RecipientInput";
 import RichTextEditor from "./RichTextEditor";
 import DocumentPickerDialog from "./DocumentPickerDialog";
 import AiWarning from "@/components/shared/AiWarning";
+import EmailAiPanel from "./EmailAiPanel";
+import { describeLinks } from "@/lib/emailAi";
 import {
   buildSignatureHtml, wrapEmailHtml, htmlToText, textToHtml, fillTemplate,
   DEFAULT_TEMPLATES, formatBytes, MAX_ATTACHMENTS_BYTES, isEmail,
@@ -67,8 +68,8 @@ export default function ComposeDialog({
   const [linkOptions, setLinkOptions] = useState({ contacts: [], worksites: [], quotes: [] });
   const [showLinks, setShowLinks] = useState(false);
   const [draftId, setDraftId] = useState(null);
-  const [aiPrompt, setAiPrompt] = useState("");
-  const [aiLoading, setAiLoading] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [book, setBook] = useState([]);
   const [language, setLanguage] = useState("it");
   const [translating, setTranslating] = useState(false);
   const [sending, setSending] = useState(false);
@@ -103,7 +104,8 @@ export default function ComposeDialog({
     const l = { contact_id: draft?.contact_id || links.contact_id || "", worksite_id: draft?.worksite_id || links.worksite_id || "", quote_id: draft?.quote_id || links.quote_id || "" };
     setLinkState(l);
     setShowLinks(false);
-    setAiPrompt("");
+    setAiOpen(false);
+    loadAddressBook().then(setBook).catch(() => setBook([]));
     setLanguage("it");
     setWithSignature(true);
     loadData(draft?.account_id || preferredAccountId);
@@ -155,27 +157,20 @@ export default function ComposeDialog({
     setBody(fillTemplate(looksHtml(t.corpo) ? t.corpo : textToHtml(t.corpo), v));
   };
 
-  const handleAi = async () => {
-    if (!aiPrompt.trim()) return;
-    setAiLoading(true);
-    try {
-      const lang = LANGUAGES.find((l) => l.value === language)?.label.toLowerCase();
-      const result = await api.integrations.Core.InvokeLLM({
-        prompt: `Scrivi il corpo di un'email ${isPec ? "formale inviata via PEC" : "professionale"} per un'impresa edile/impiantistica.
-Contesto: ${context || "nessuno"}
-Destinatari: ${to.join(", ") || "non indicati"}
-Oggetto: ${subject || "non indicato"}
-Richiesta dell'utente: "${aiPrompt}"
-${language !== "it" ? `Scrivi in ${lang}.` : "Scrivi in italiano."}
-Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il testo pronto da inviare, paragrafi brevi separati da una riga vuota.`,
-      });
-      setBody(textToHtml(result));
-    } catch (e) {
-      toast({ title: e.message || "Errore dell'assistente AI", variant: "destructive" });
-    } finally {
-      setAiLoading(false);
-    }
-  };
+  // Dati per l'assistente IA: destinatari con il nome dalla rubrica, cliente/lavoro/preventivo collegati, allegati.
+  const aiCtx = useMemo(() => ({
+    isPec,
+    company: profile || {},
+    recipients: to.map((email) => ({ email, name: book.find((b) => b.email === email)?.name || "" })),
+    context,
+    linksText: describeLinks({
+      contact: linkOptions.contacts.find((c) => c.id === linkState.contact_id),
+      worksite: linkOptions.worksites.find((w) => w.id === linkState.worksite_id),
+      quote: linkOptions.quotes.find((q) => q.id === linkState.quote_id),
+    }),
+    attachments: files.map((f) => f.name),
+    language: (LANGUAGES.find((l) => l.value === language)?.label || "Italiano").toLowerCase(),
+  }), [isPec, profile, to, book, context, linkOptions, linkState, files, language]);
 
   const handleTranslate = async () => {
     const text = htmlToText(body);
@@ -388,25 +383,9 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
                   </SelectContent>
                 </Select>
 
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button type="button" variant="outline" size="sm" className="h-9 gap-1.5"><Sparkles className="w-4 h-4 text-brand-600" /> Scrivi con l'AI</Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 space-y-2" align="start">
-                    <p className="text-sm font-medium">Cosa vuoi comunicare?</p>
-                    <textarea
-                      value={aiPrompt}
-                      onChange={(e) => setAiPrompt(e.target.value)}
-                      rows={3}
-                      className="w-full rounded-md border border-input p-2 text-sm"
-                      placeholder="Es. invio il preventivo per il bagno, chiedo conferma entro venerdì"
-                    />
-                    <Button size="sm" className="w-full gap-1.5" onClick={handleAi} disabled={aiLoading || !aiPrompt.trim()}>
-                      {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Genera testo
-                    </Button>
-                    <AiWarning className="!py-1.5" />
-                  </PopoverContent>
-                </Popover>
+                <Button type="button" variant={aiOpen ? "default" : "outline"} size="sm" className={`h-9 gap-1.5 ${aiOpen ? "bg-zinc-950 hover:bg-zinc-800" : ""}`} onClick={() => setAiOpen((v) => !v)} aria-expanded={aiOpen}>
+                  <Sparkles className={`w-4 h-4 ${aiOpen ? "text-amber-300" : "text-brand-600"}`} /> Scrivi con l'IA <Mic className="w-3.5 h-3.5 opacity-70" />
+                </Button>
 
                 <div className="flex items-center gap-1.5">
                   <Select value={language} onValueChange={setLanguage}>
@@ -421,6 +400,12 @@ Regole: niente firma (viene aggiunta in automatico), niente oggetto, solo il tes
                 </div>
               </div>
 
+              {aiOpen && (
+                <div className="space-y-1.5">
+                  <EmailAiPanel body={body} setBody={setBody} subject={subject} setSubject={setSubject} ctx={aiCtx} onClose={() => setAiOpen(false)} />
+                  <AiWarning className="!py-1.5" />
+                </div>
+              )}
               <RichTextEditor value={body} onChange={setBody} placeholder="Scrivi il messaggio…" />
 
               {/* Firma */}
