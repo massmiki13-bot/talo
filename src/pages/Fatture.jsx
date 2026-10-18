@@ -17,6 +17,7 @@ import {
 import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import ComposeDialog from "@/components/email/ComposeDialog";
+import ClientPicker from "@/components/invoices/ClientPicker";
 import { UNIT_OPTIONS, fmtEur, isVoce } from "@/lib/quotes";
 import { TIPI_DOC, REGIMI, ALIQUOTE, ALIQUOTE_GROUPS, PAGAMENTI, STATI, aliquotaOf, lineTotal, computeInvoice, createNumbered, validateInvoice, buildFatturaXml, aiSuggestVat } from "@/lib/invoices";
 import { buildInvoicePdf } from "@/lib/invoicePdf";
@@ -146,7 +147,7 @@ export default function Fatture() {
 
   if (loading) return <LoadingSpinner />;
   const current = list.find((i) => i.id === openId);
-  if (current) return <Editor inv={current} all={list} ctx={ctx} onBack={() => { open(null); load(); }} onChange={(u) => setList((l) => l.map((x) => (x.id === u.id ? u : x)))} onCreated={(x) => { setList((l) => [x, ...l]); open(x.id); }} onDeleted={(id) => { setList((l) => l.filter((x) => x.id !== id)); open(null); }} />;
+  if (current) return <Editor inv={current} all={list} ctx={ctx} onBack={() => { open(null); load(); }} onChange={(u) => setList((l) => l.map((x) => (x.id === u.id ? u : x)))} onCreated={(x) => { setList((l) => [x, ...l]); open(x.id); }} onDeleted={(id) => { setList((l) => l.filter((x) => x.id !== id)); open(null); }} onContact={(c) => setCtx((x) => ({ ...x, contacts: [...x.contacts, c] }))} />;
 
   const accepted = ctx.quotes.filter((x) => x.stato === "approvato" && !list.some((i) => i.preventivo_id === x.id));
 
@@ -273,7 +274,7 @@ function Kpi({ icon: Icon, label, value, tone, onClick }) {
 
 /* ───────────────────────── Editor ───────────────────────── */
 
-function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
+function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted, onContact }) {
   const { toast } = useToast();
   const [f, setF] = useState(inv);
   const [save, setSave] = useState("saved");
@@ -403,10 +404,9 @@ function Editor({ inv, all, ctx, onBack, onChange, onCreated, onDeleted }) {
             <div className="grid sm:grid-cols-2 gap-3 mt-3">
               <div>
                 <Label htmlFor="fatture-cliente" className="text-xs text-zinc-600">Cliente</Label>
-                <Select value={f.cliente_id || undefined} onValueChange={(v) => { const x = ctx.contacts.find((k) => k.id === v); setF((p) => ({ ...p, cliente_id: v, cliente_nome: clientName(x) })); }} disabled={locked}>
-                  <SelectTrigger id="fatture-cliente" className="mt-1"><SelectValue placeholder="Scegli il cliente" /></SelectTrigger>
-                  <SelectContent>{clients.map((k) => <SelectItem key={k.id} value={k.id}>{clientName(k)}</SelectItem>)}</SelectContent>
-                </Select>
+                <ClientPicker id="fatture-cliente" contacts={clients} value={f.cliente_id} disabled={locked}
+                  onPick={(x) => setF((p) => ({ ...p, cliente_id: x.id, cliente_nome: clientName(x) }))}
+                  onContactCreated={onContact} />
                 {client && (
                   <p className="text-xs text-zinc-500 mt-1.5 leading-relaxed">
                     {[client.partita_iva ? `P.IVA ${client.partita_iva}` : client.codice_fiscale ? `C.F. ${client.codice_fiscale}` : null, client.codice_sdi ? `SDI ${client.codice_sdi}` : client.pec ? `PEC ${client.pec}` : null, [client.cap, client.citta].filter(Boolean).join(" ")].filter(Boolean).join(" · ") || "Dati fiscali mancanti"}

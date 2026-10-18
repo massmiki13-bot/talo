@@ -125,7 +125,8 @@ function toast({ ...props }) {
   });
 
   // Chiusura automatica: 4 s per le conferme, 7 s per gli errori (tempo per leggerli).
-  const duration = props.duration || (props.variant === "destructive" ? 7000 : 4000);
+  // Le conferme spariscono in fretta (non coprono il lavoro); gli errori restano di più.
+  const duration = props.duration || (props.variant === "destructive" ? 7000 : 2200);
   setTimeout(() => dismiss(), duration);
 
   return {

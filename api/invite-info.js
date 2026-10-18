@@ -1,7 +1,7 @@
 // Dati pubblici di un invito (senza il codice di conferma).
 import { handler, requireUser, admin, HttpError, getRecord, toDoc } from "./_lib/server.js";
 
-export const INVITE_TTL_DAYS = 14;
+export const INVITE_TTL_DAYS = 30;
 
 export function isExpired(invite) {
   const created = new Date(invite.created_date).getTime();

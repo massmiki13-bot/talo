@@ -15,7 +15,14 @@ export default handler(async (req, body) => {
   const invite = toDoc(row);
   const hostId = row.tenant_id; // il titolare è chi ha creato l'invito, non un campo modificabile
 
-  if (hostId === user.id) throw new HttpError(400, "Non puoi accettare un invito della tua stessa azienda");
+  if (hostId === user.id) throw new HttpError(409, "Stai aprendo l'invito con l'account del titolare. Aprilo dal telefono della persona invitata, oppure esci e accedi con il suo account.", { code: "own_company" });
+  // Link aperto di nuovo da chi l'ha già usato: è già dentro, nessun errore.
+  if (invite.status === "used") {
+    const { data: mine } = await admin().from("entity_records").select("id")
+      .eq("entity", "Collaborator").eq("tenant_id", hostId).eq("data->>collaborator_user_id", user.id).eq("data->>status", "active").limit(1);
+    if (mine?.length) return { success: true, already: true };
+  }
+  if (invite.status === "revoked") throw new HttpError(410, "Questo invito è stato annullato dal titolare: chiedine uno nuovo.", { code: "revoked" });
   if (invite.status === "used" || invite.status === "expired") {
     throw new HttpError(400, "Questo invito è già stato utilizzato o è scaduto.");
   }

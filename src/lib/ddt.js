@@ -7,6 +7,7 @@ const num = { type: "number" };
 export async function readDdt(fileUrl, worksites = []) {
   const r = await api.integrations.Core.InvokeLLM({
     prompt: `Leggi questo documento di trasporto (DDT/bolla) o fattura di materiali edili.
+Il documento può avere più pagine: leggi TUTTE le pagine fino all'ultima e riporta OGNI riga di materiale, senza riassumere né saltarne.
 Estrai: fornitore, numero del documento, data (AAAA-MM-GG), luogo di destinazione della merce, e TUTTE le righe con descrizione, quantità, unità di misura (pz, kg, mq, mc, ml, sacchi, bancali, lt, t…) e, se presenti, prezzo unitario e importo di riga (euro, IVA esclusa); totale_imponibile se indicato.
 Poi confronta destinazione, riferimenti e note con questi cantieri: ${JSON.stringify(worksites.map((w) => ({ id: w.id, nome: w.nome, indirizzo: w.indirizzo, cliente: w.cliente_nome })))}.
 Indica worksite_id solo se la corrispondenza è chiara, altrimenti lascialo vuoto. Non inventare quantità o prezzi.`,

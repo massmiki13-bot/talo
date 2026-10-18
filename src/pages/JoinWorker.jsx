@@ -7,9 +7,9 @@ import { LANGS, savedLang, saveLang } from "@/lib/workerI18n";
 
 // Testi di questa pagina (l'operaio non ha ancora un account: la lingua si sceglie qui).
 const TXT = {
-  it: { titolo: "Benvenuto nella squadra", sotto: "Il tuo datore di lavoro ti ha invitato su Talo: da qui timbri, mandi foto e segnalazioni, vedi ore, documenti e avvisi.", nuovo: "Sono nuovo: crea il mio account", ho: "Ho già un account: accedi", collego: "Ti collego alla tua impresa…", fatto: "Fatto! Apro la tua app…", errore: "Invito non valido o scaduto: chiedi al tuo capo un nuovo QR." },
-  ro: { titolo: "Bine ai venit în echipă", sotto: "Angajatorul tău te-a invitat pe Talo: de aici te pontezi, trimiți poze și rapoarte, vezi orele, documentele și anunțurile.", nuovo: "Sunt nou: creează-mi contul", ho: "Am deja cont: intră", collego: "Te conectez la firma ta…", fatto: "Gata! Deschid aplicația…", errore: "Invitație invalidă sau expirată: cere-i șefului un cod QR nou." },
-  sq: { titolo: "Mirë se vjen në ekip", sotto: "Punëdhënësi yt të ka ftuar në Talo: nga këtu regjistron orarin, dërgon foto dhe sinjalizime, sheh orët, dokumentet dhe njoftimet.", nuovo: "Jam i ri: krijo llogarinë time", ho: "Kam llogari: hyr", collego: "Po të lidh me firmën tënde…", fatto: "U krye! Po hap aplikacionin…", errore: "Ftesë e pavlefshme ose e skaduar: kërkoji shefit një kod QR të ri." },
+  it: { titolo: "Benvenuto nella squadra", sotto: "Il tuo datore di lavoro ti ha invitato su Talo: da qui timbri, mandi foto e segnalazioni, vedi ore, documenti e avvisi.", nuovo: "Sono nuovo: crea il mio account", ho: "Ho già un account: accedi", collego: "Ti collego alla tua impresa…", fatto: "Fatto! Apro la tua app…", errore: "Invito non valido o scaduto: chiedi al tuo capo un nuovo QR.", titolare: "Questo telefono è collegato all'account del titolare: l'invito va aperto con l'account dell'operaio.", esci: "Esci e usa un altro account" },
+  ro: { titolo: "Bine ai venit în echipă", sotto: "Angajatorul tău te-a invitat pe Talo: de aici te pontezi, trimiți poze și rapoarte, vezi orele, documentele și anunțurile.", nuovo: "Sunt nou: creează-mi contul", ho: "Am deja cont: intră", collego: "Te conectez la firma ta…", fatto: "Gata! Deschid aplicația…", errore: "Invitație invalidă sau expirată: cere-i șefului un cod QR nou.", titolare: "Acest telefon este conectat la contul patronului: invitația trebuie deschisă cu contul muncitorului.", esci: "Ieși și folosește alt cont" },
+  sq: { titolo: "Mirë se vjen në ekip", sotto: "Punëdhënësi yt të ka ftuar në Talo: nga këtu regjistron orarin, dërgon foto dhe sinjalizime, sheh orët, dokumentet dhe njoftimet.", nuovo: "Jam i ri: krijo llogarinë time", ho: "Kam llogari: hyr", collego: "Po të lidh me firmën tënde…", fatto: "U krye! Po hap aplikacionin…", errore: "Ftesë e pavlefshme ose e skaduar: kërkoji shefit një kod QR të ri.", titolare: "Ky telefon është i lidhur me llogarinë e pronarit: ftesa duhet hapur me llogarinë e punëtorit.", esci: "Dil dhe përdor një llogari tjetër" },
 };
 
 export default function JoinWorker() {
@@ -18,6 +18,7 @@ export default function JoinWorker() {
   const [lang, setLang] = useState(savedLang() || "it");
   const [state, setState] = useState("check"); // check | anon | joining | done | error
   const [msg, setMsg] = useState("");
+  const [errCode, setErrCode] = useState("");
   const tx = TXT[lang] || TXT.it;
   const back = `/entra/${inviteId}?c=${encodeURIComponent(code)}`;
 
@@ -28,7 +29,7 @@ export default function JoinWorker() {
       setState("joining");
       try {
         const res = await api.functions.invoke("confirmCollaboratorInvite", { inviteId, code });
-        if (res.data?.error) throw new Error(res.data.error);
+        if (res.data?.error) { setErrCode(res.data.code || (res.status === 409 ? "own_company" : "")); throw new Error(res.data.error); }
         setState("done");
         setTimeout(() => { window.location.href = "/"; }, 1200);
       } catch (e) { setMsg(e.message); setState("error"); }
@@ -61,9 +62,12 @@ export default function JoinWorker() {
           {(state === "check" || state === "joining") && <p className="mt-6 flex items-center gap-2 text-zinc-300"><Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />{tx.collego}</p>}
           {state === "done" && <p className="mt-6 flex items-center gap-2 text-emerald-400 font-semibold"><CheckCircle2 className="w-5 h-5" aria-hidden="true" />{tx.fatto}</p>}
           {state === "error" && (
-            <div className="mt-6 rounded-xl bg-white/10 p-4">
-              <p className="flex items-center gap-2 font-semibold text-amber-300"><AlertTriangle className="w-5 h-5" aria-hidden="true" />{tx.errore}</p>
-              {msg && <p className="text-sm text-zinc-400 mt-1">{msg}</p>}
+            <div className="mt-6 rounded-xl bg-white/10 p-4 space-y-3">
+              <p className="flex items-start gap-2 font-semibold text-amber-300"><AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />{errCode === "own_company" ? tx.titolare : /scadut|expired/i.test(msg) || !msg ? tx.errore : msg}</p>
+              {errCode !== "own_company" && msg && /scadut|expired/i.test(msg) && <p className="text-sm text-zinc-400">{msg}</p>}
+              {errCode === "own_company" && (
+                <button type="button" onClick={async () => { await supabase.auth.signOut(); setErrCode(""); setMsg(""); setState("anon"); }} className="w-full h-12 rounded-xl bg-white text-zinc-950 font-semibold">{tx.esci}</button>
+              )}
             </div>
           )}
         </div>

@@ -15,7 +15,7 @@ export function Toaster() {
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
-          <Toast key={id} {...props}>
+          <Toast key={id} {...props} onClick={() => props.onOpenChange?.(false)} className={`cursor-pointer ${props.className || ""}`} title="Tocca per chiudere">
             <div className="flex items-center gap-2">
               {props.variant !== "destructive" && (
                 <svg className="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">

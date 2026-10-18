@@ -22,6 +22,7 @@ import {
   DOC_TYPES, STANDARD_TREE, FOLDER_COLORS, typeLabel, cleanFolderName, buildTree, pathOf, pathLabel, descendants, ensurePath, fileKind, expiryState, formatSize, TYPE_FOLDER, guessFromName,
 } from "@/lib/documents";
 import { analyzeDocument } from "@/lib/documentsAi";
+import { filesFromDrop, filesFromInput, folderOf } from "@/lib/dropFiles";
 import { useFileUrl } from "@/lib/privateFiles";
 import { createDocumentReminder, deleteRemindersForDoc } from "@/utils/expirationReminders";
 
@@ -61,8 +62,16 @@ export default function CompanyDocuments() {
   const [moveDlg, setMoveDlg] = useState(null); // { docIds } | { folder }
   const [aiAuto, setAiAuto] = useState(pref("ai", "1") === "1");
   const [queue, setQueue] = useState([]);
+  // A caricamento finito la coda sparisce da sola; restano solo i file da guardare (non letti o con errore).
+  const queueBusy = queue.some((x) => ["wait", "upload", "ai"].includes(x.status));
+  useEffect(() => {
+    if (queueBusy || !queue.length || queue.every((x) => ["partial", "error"].includes(x.status))) return;
+    const t = setTimeout(() => setQueue((qq) => qq.filter((x) => ["partial", "error"].includes(x.status))), 2500);
+    return () => clearTimeout(t);
+  }, [queueBusy, queue]);
   const [dragging, setDragging] = useState(false);
   const fileInput = useRef(null);
+  const folderInput = useRef(null);
   const foldersRef = useRef([]);
   foldersRef.current = folders;
 
@@ -199,7 +208,7 @@ export default function CompanyDocuments() {
 
   /** Legge un documento già salvato e lo archivia (cartella, dati, smistamento). Ritorna l'esito per la coda. */
   const fileDocument = async (doc, { fixedFolderId = "" } = {}) => {
-    const name = doc.nome_file || doc.titolo || "documento";
+    const name = doc.cartella_origine ? `${doc.cartella_origine}/${doc.nome_file || doc.titolo}` : doc.nome_file || doc.titolo || "documento";
     let r = null;
     try { r = await analyzeWithRetry(doc.file_url, name); }
     catch {
@@ -255,6 +264,7 @@ export default function CompanyDocuments() {
       const folder = foldersRef.current.find((f) => f.id === targetFolderId);
       doc = await db.CompanyDocument.create({
         titolo: item.file.name.replace(/\.[^.]+$/, ""), tipo: "altro", file_url, nome_file: item.file.name, dimensione: item.file.size, mime: item.file.type,
+        ...(folderOf(item.file) ? { cartella_origine: folderOf(item.file).slice(0, 300) } : {}),
         cartella_id: folder?.id || "", cartella_nome: folder?.nome || "",
       });
       setDocs((d) => [doc, ...d]);
@@ -275,7 +285,7 @@ export default function CompanyDocuments() {
     if (!files.length) return;
     const tooBig = files.filter((f) => f.size > 25 * 1024 * 1024);
     if (tooBig.length) toast({ title: `${tooBig.length} file oltre 25 MB ignorati`, variant: "destructive" });
-    const items = files.filter((f) => f.size <= 25 * 1024 * 1024).map((file) => ({ id: crypto.randomUUID(), file, name: file.name, status: "wait" }));
+    const items = files.filter((f) => f.size <= 25 * 1024 * 1024).map((file) => ({ id: crypto.randomUUID(), file, name: file.relPath || file.name, status: "wait" }));
     if (!items.length) return;
     setQueue((qq) => [...items, ...qq.filter((x) => x.status !== "done")]);
     const target = currentFolderId;
@@ -464,13 +474,19 @@ export default function CompanyDocuments() {
     <div
       onDragOver={(e) => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); setDragging(true); } }}
       onDragLeave={(e) => { if (e.currentTarget === e.target || !e.currentTarget.contains(e.relatedTarget)) setDragging(false); }}
-      onDrop={(e) => { if (e.dataTransfer.files?.length) { e.preventDefault(); setDragging(false); handleFiles(e.dataTransfer.files); } }}
+      onDrop={(e) => {
+        if (!e.dataTransfer.types.includes("Files")) return;
+        e.preventDefault(); setDragging(false);
+        filesFromDrop(e.dataTransfer).then((list) => { if (list.length) handleFiles(list); else toast({ title: "Nessun file da caricare in quello che hai trascinato" }); });
+      }}
       className="relative"
     >
       <PageHeader title="Documenti ditta" subtitle="L'archivio dell'impresa: carica qualsiasi file, l'IA lo legge, lo rinomina e lo mette nella cartella giusta." actionLabel="Carica file" onAction={() => fileInput.current?.click()} actionIcon={Upload}>
+        <Button variant="outline" onClick={() => folderInput.current?.click()} className="gap-2"><FolderPlus className="w-4 h-4" /> Carica cartella</Button>
         <Button variant="outline" onClick={() => setOrganizeOpen(true)} className="gap-2" disabled={!docs.length}><Sparkles className="w-4 h-4" /> Organizza con IA</Button>
       </PageHeader>
-      <input ref={fileInput} type="file" multiple className="hidden" onChange={(e) => { handleFiles(e.target.files); e.target.value = ""; }} />
+      <input ref={fileInput} type="file" multiple className="hidden" onChange={(e) => { handleFiles(filesFromInput(e.target.files)); e.target.value = ""; }} />
+      <input ref={folderInput} type="file" multiple className="hidden" {...{ webkitdirectory: "", directory: "" }} onChange={(e) => { handleFiles(filesFromInput(e.target.files)); e.target.value = ""; }} />
 
       <div className="grid lg:grid-cols-[250px_1fr] gap-4 items-start">
         <aside className="hidden lg:block bg-white rounded-xl border border-zinc-200 p-3 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">{sidebar}</aside>

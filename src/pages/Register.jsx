@@ -24,7 +24,8 @@ export default function Register() {
   const params = new URLSearchParams(window.location.search);
   const from = safeFrom();
   const invitedWorker = params.get("ruolo") === "operaio" && from.startsWith("/entra/");
-  const [role, setRole] = useState(invitedWorker ? "operaio" : "");
+  const invitedCollab = params.get("ruolo") === "collaboratore" && from.startsWith("/collaboratori/invito/");
+  const [role, setRole] = useState(invitedWorker ? "operaio" : invitedCollab ? "titolare" : "");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -186,7 +187,7 @@ export default function Register() {
     <AuthLayout
       icon={UserPlus}
       title={invitedWorker ? "Il tuo account" : "Crea il tuo account"}
-      subtitle={invitedWorker ? "Email e password: le userai per entrare nell'app della tua impresa" : "Registra la tua azienda su Talo"}
+      subtitle={invitedWorker ? "Email e password: le userai per entrare nell'app della tua impresa" : invitedCollab ? "Crea il tuo accesso: poi inserisci il codice dell'invito" : "Registra la tua azienda su Talo"}
       footer={
         <>
           Hai già un account?{" "}

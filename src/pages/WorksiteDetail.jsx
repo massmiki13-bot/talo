@@ -26,6 +26,7 @@ import { randomToken } from "@/lib/quotes";
 import { getAccessContext } from "@/lib/accessScope";
 import { WORKSITE_STATES, COST_CATEGORIES, laborFromAttendance, economics, installments, incomeOf, fmtDate, daysBetween } from "@/lib/worksites";
 import { fmtEur } from "@/lib/quotes";
+import WorksiteCashFlow from "@/components/worksite/WorksiteCashFlow";
 import { fullName } from "@/lib/employees";
 import { exportWorksiteFolder } from "@/utils/worksiteExport";
 import { generateWorksiteReport } from "@/utils/worksiteReport";
@@ -152,7 +153,7 @@ export default function WorksiteDetail() {
 
   const TABS = [
     ["panoramica", "Panoramica"],
-    ...(readOnly ? [] : [["economia", "Costi e margine", econ.sforamenti.length], ["incassi", "Incassi", overdueRates.length]]),
+    ...(readOnly ? [] : [["economia", "Costi e margine", econ.sforamenti.length], ["incassi", "Entrate e uscite", overdueRates.length]]),
     ...(readOnly ? [] : [["materiali", "Materiali e DDT"]]),
     ["giornale", "Giornale"],
     ["foto", "Foto e documenti"],
@@ -213,6 +214,7 @@ export default function WorksiteDetail() {
         <div className="grid lg:grid-cols-2 gap-4 items-start">
           <WorksitePhases worksite={worksite} contractAmount={contractAmount} readOnly={readOnly} onSaved={(s) => s && setWorksite(s)} />
           <div className="space-y-4">
+            {!readOnly && <WorksiteCashFlow compact income={income} transactions={transactions} onOpenAll={() => setTab("incassi")} />}
             <Card icon={Users} title="Squadra">
               {team.length ? (
                 <ul className="divide-y divide-zinc-100">
@@ -297,7 +299,10 @@ export default function WorksiteDetail() {
       {tab === "materiali" && !readOnly && <WorksiteMaterials worksite={worksite} transactions={transactions} allWorksites={allWorksites} onChanged={load} />}
 
       {tab === "incassi" && !readOnly && (
-        <WorksiteMoney worksite={worksite} contractAmount={contractAmount} extraIncome={income.filter((x) => x.da_movimenti)} onSaved={(s) => s && setWorksite(s)} onPaymentsChange={setPayments} />
+        <div className="space-y-4">
+          <WorksiteMoney worksite={worksite} contractAmount={contractAmount} extraIncome={income.filter((x) => x.da_movimenti)} onSaved={(s) => s && setWorksite(s)} onPaymentsChange={setPayments} />
+          <WorksiteCashFlow income={income} transactions={transactions} />
+        </div>
       )}
 
       {tab === "giornale" && (

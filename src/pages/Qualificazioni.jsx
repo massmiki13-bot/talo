@@ -58,6 +58,16 @@ function TenderCheck({ soa }) {
   const [bando, setBando] = useState(null);
   const [busy, setBusy] = useState(false);
   const manual = imp ? canBid(soa, cat, Number(String(imp).replace(/\./g, "").replace(",", "."))) : null;
+  // Categoria scritta a mano: "os7", "OS 7", "s7" → OS7 (se esiste)
+  const [typed, setTyped] = useState("");
+  const normCat = (v) => {
+    const t = String(v || "").toUpperCase().replace(/\s+/g, "");
+    if (SOA_CATEGORIES.some((c) => c.codice === t)) return t;
+    const fix = t.replace(/^S(?=\d)/, "OS").replace(/^G(?=\d)/, "OG");
+    return SOA_CATEGORIES.find((c) => c.codice === fix || c.codice.replace("-", "") === fix)?.codice || "";
+  };
+  const onType = (v) => { setTyped(v); const c = normCat(v); if (c) setCat(c); };
+  const mine = soa?.categorie?.find((c) => c.codice === cat);
 
   const read = async (file) => {
     setBusy(true);
@@ -91,14 +101,23 @@ function TenderCheck({ soa }) {
         </div>
         <div className="space-y-3">
           <p className="text-sm text-zinc-600">Oppure verifica a mano una categoria e un importo:</p>
-          <div className="grid grid-cols-2 gap-2">
-            <Select value={cat} onValueChange={setCat}><SelectTrigger aria-label="Categoria"><SelectValue /></SelectTrigger><SelectContent>{SOA_CATEGORIES.map((c) => <SelectItem key={c.codice} value={c.codice}>{c.codice} · {c.nome}</SelectItem>)}</SelectContent></Select>
+          <div className="grid grid-cols-[110px_1fr] gap-2">
+            <Input value={typed} onChange={(e) => onType(e.target.value)} placeholder="Es. OS7" aria-label="Scrivi la categoria" className="uppercase" />
+            <Select value={cat} onValueChange={(v) => { setCat(v); setTyped(v); }}><SelectTrigger aria-label="Categoria"><SelectValue /></SelectTrigger><SelectContent>{SOA_CATEGORIES.map((c) => <SelectItem key={c.codice} value={c.codice}>{c.codice} · {c.nome}</SelectItem>)}</SelectContent></Select>
+          </div>
+          <div className={`rounded-xl p-3 text-sm ${mine ? "bg-zinc-950 text-white" : "bg-amber-50 text-amber-950"}`} aria-live="polite">
+            <p className="font-semibold">{cat} · {categoryName(cat)}</p>
+            {mine
+              ? <p className="mt-0.5">La tua classifica: <b>{mine.classifica}</b> · lavori fino a {eur(classLimit(mine.classifica))}{classLimit(mine.classifica) !== Infinity ? `, con l'aumento di un quinto fino a ${eur(classLimit(mine.classifica) * 1.2)}` : ""}</p>
+              : <p className="mt-0.5">{soa ? "Non hai questa categoria nell'attestazione SOA." : "Carica l'attestazione SOA in Panoramica per vedere la tua classifica."}</p>}
+          </div>
+          <div>
             <Input value={imp} onChange={(e) => setImp(e.target.value)} inputMode="decimal" placeholder="Importo lavori €" aria-label="Importo" />
           </div>
           {manual && <p className={`rounded-xl p-3 text-sm flex gap-2 ${manual.ok ? "bg-emerald-50 text-emerald-900" : "bg-red-50 text-red-900"}`}>{manual.ok ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" /> : <XCircle className="w-4 h-4 mt-0.5 shrink-0" />}{manual.motivo}</p>}
           <div className="rounded-xl bg-zinc-50 p-3 text-xs text-zinc-600 leading-relaxed">
             <p className="font-semibold text-zinc-800 mb-1">Classifiche SOA</p>
-            <div className="grid grid-cols-2 gap-x-4">{CLASSIFICHE.map((c) => <span key={c.codice} className="flex justify-between"><span>{c.codice}</span><span className="tabular-nums">{c.importo === Infinity ? "oltre 15.494.000 €" : `fino a ${eur(c.importo)}`}</span></span>)}</div>
+            <div className="grid grid-cols-2 gap-x-4">{CLASSIFICHE.map((c) => <span key={c.codice} className={`flex justify-between rounded px-1 ${mine?.classifica === c.codice ? "bg-brand-600 text-white font-semibold" : ""}`}><span>{c.codice}{mine?.classifica === c.codice ? " ← tua" : ""}</span><span className="tabular-nums">{c.importo === Infinity ? "oltre 15.494.000 €" : `fino a ${eur(c.importo)}`}</span></span>)}</div>
           </div>
         </div>
       </div>

@@ -8,7 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { BookOpenCheck, Upload, Search, Star, Trash2, Loader2, FileSpreadsheet, FileText, Sparkles, Plus, CheckCircle2, AlertTriangle, Percent } from "lucide-react";
+import { ToastAction } from "@/components/ui/toast";
+import { BookOpenCheck, Upload, Search, Star, Trash2, Loader2, FileSpreadsheet, FileText, Sparkles, Plus, CheckCircle2, AlertTriangle, Percent, X } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { REGIONI, TIPI, readSheet, detectColumns, detectColumnsAi, rowsToVoci, pdfPageCount, extractPdfVoci, savePrezzario, deletePrezzario, searchVoci } from "@/lib/prezzari";
@@ -149,7 +150,10 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
   const [pages, setPages] = useState({ total: 0, from: 1, to: 30 });
   const [progress, setProgress] = useState(null);
   const [err, setErr] = useState("");
+  const [over, setOver] = useState(false);
+  const stopRef = useRef(false);
   const input = useRef(null);
+  const resetFile = () => { stopRef.current = true; setFile(null); setPhase("pick"); setVoci([]); setProgress(null); setErr(""); };
 
   useEffect(() => {
     if (open) { setFile(null); setPhase("pick"); setVoci([]); setProgress(null); setErr(""); setMeta({ nome: "", tipo: "regionale", ente: "", anno: new Date().getFullYear() }); }
@@ -161,7 +165,7 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
     setMeta((m) => ({ ...m, nome: m.nome || f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ") }));
     if (/\.pdf$/i.test(f.name) || f.type === "application/pdf") {
       setPhase("analyzing");
-      try { const n = await pdfPageCount(f); setPages({ total: n, from: 1, to: Math.min(n, 30) }); setPhase("pdf"); }
+      try { const n = await pdfPageCount(f); setPages({ total: n, from: 1, to: n }); setPhase("pdf"); }
       catch { setErr("Non riesco ad aprire questo PDF (forse protetto)."); setPhase("pick"); }
       return;
     }
@@ -184,8 +188,11 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
   const readPdf = async () => {
     setPhase("analyzing");
     setProgress({ done: 0, total: 1, found: 0 });
-    const { voci: v, failed } = await extractPdfVoci(file, pages.from, pages.to, (done, total, found) => setProgress({ done, total, found }));
-    if (!v.length) { setErr("L'IA non ha trovato voci con prezzo in queste pagine."); setPhase("pdf"); return; }
+    stopRef.current = false;
+    const { voci: v, failed, stopped } = await extractPdfVoci(file, pages.from, pages.to, (done, total, found) => setProgress({ done, total, found }), { shouldStop: () => stopRef.current });
+    if (!file && stopped) return; // file tolto durante la lettura
+    if (!v.length) { setErr(stopped ? "Lettura interrotta prima di trovare voci." : "L'IA non ha trovato voci con prezzo in queste pagine."); setPhase("pdf"); return; }
+    if (stopped) toast({ title: "Lettura interrotta", description: `Tengo le ${v.length.toLocaleString("it-IT")} voci già lette.` });
     if (failed) toast({ title: `${failed} gruppi di pagine non letti`, description: "Puoi reimportarli dopo con un intervallo più piccolo." });
     setVoci(v); setPhase("preview");
   };
@@ -195,8 +202,11 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
     try {
       let file_url = "";
       if (file.size < 20 * 1024 * 1024) file_url = (await api.integrations.Core.UploadFile({ file }).catch(() => ({}))).file_url || "";
-      await savePrezzario({ ...meta, anno: Number(meta.anno) || null, file_url, nome_file: file.name, predefinito: !hasDefault }, voci, (s, t) => setProgress({ done: s, total: t }));
-      toast({ title: "Prezzario importato", description: `${voci.length.toLocaleString("it-IT")} voci pronte per i preventivi.` });
+      const saved = await savePrezzario({ ...meta, anno: Number(meta.anno) || null, file_url, nome_file: file.name, predefinito: !hasDefault }, voci, (s, t) => setProgress({ done: s, total: t }));
+      toast({
+        title: "Prezzario importato", description: `${voci.length.toLocaleString("it-IT")} voci pronte per i preventivi.`, duration: 8000,
+        action: <ToastAction altText="Annulla l'importazione" onClick={async (e) => { e.stopPropagation(); await deletePrezzario(saved).catch(() => null); toast({ title: "Importazione annullata" }); onDone(); }}>Annulla</ToastAction>,
+      });
       onDone();
     } catch (e) {
       console.error(e);
@@ -238,12 +248,22 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
         </div>
 
         {phase === "pick" && (
-          <button onClick={() => input.current?.click()} className="w-full mt-2 rounded-xl border-2 border-dashed border-zinc-300 hover:border-brand-500 hover:bg-brand-50/40 py-10 text-center transition-colors">
+          <button onClick={() => input.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)}
+            onDrop={(e) => { e.preventDefault(); setOver(false); choose(e.dataTransfer.files?.[0]); }}
+            className={`w-full mt-2 rounded-xl border-2 border-dashed py-10 text-center transition-colors ${over ? "border-brand-500 bg-brand-50/60" : "border-zinc-300 hover:border-brand-500 hover:bg-brand-50/40"}`}>
             <div className="flex justify-center gap-3 text-zinc-500"><FileSpreadsheet className="w-8 h-8" /><FileText className="w-8 h-8" /></div>
-            <p className="mt-2 text-sm font-medium text-zinc-800">Scegli il file del prezzario</p>
+            <p className="mt-2 text-sm font-medium text-zinc-800">Trascina qui il file del prezzario o tocca per sceglierlo</p>
             <p className="text-xs text-zinc-500">.xlsx .xls .csv .ods .pdf</p>
             <input ref={input} type="file" className="hidden" accept=".xlsx,.xls,.csv,.ods,.pdf" onChange={(e) => { choose(e.target.files?.[0]); e.target.value = ""; }} />
           </button>
+        )}
+        {file && phase !== "pick" && (
+          <div className="flex items-center gap-2 rounded-lg bg-zinc-50 border border-zinc-200 px-3 py-2 text-sm">
+            <FileText className="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true" />
+            <span className="flex-1 truncate text-zinc-800">{file.name}</span>
+            <button type="button" onClick={resetFile} disabled={phase === "saving"} className="inline-flex items-center gap-1 text-zinc-600 hover:text-red-700 disabled:opacity-50"><X className="w-4 h-4" /> Togli e scegli un altro file</button>
+          </div>
         )}
         {err && <p className="text-sm text-red-700 flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" />{err}</p>}
 
@@ -255,7 +275,7 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
               <div><Label htmlFor="prezzari-alla-pagina">Alla pagina</Label><Input id="prezzari-alla-pagina" type="number" min={1} max={pages.total} value={pages.to} onChange={(e) => setPages({ ...pages, to: Math.min(pages.total, Number(e.target.value) || 1) })} className="mt-1 w-24" /></div>
               <Button onClick={readPdf} disabled={pages.to < pages.from} className="bg-brand-600 hover:bg-brand-700 gap-1.5"><Sparkles className="w-4 h-4" /> Leggi con l'IA</Button>
             </div>
-            <p className="text-xs text-zinc-500">Circa 10 secondi ogni 3 pagine. Per prezzari molto lunghi importa i capitoli che usi davvero, oppure cerca la versione Excel sul sito della regione: è più veloce e precisa.</p>
+            <p className="text-xs text-zinc-500">Legge 15 pagine alla volta: circa {Math.max(1, Math.round(((pages.to - pages.from + 1) / 15) * 0.4))} minuti per {pages.to - pages.from + 1} pagine. Puoi interrompere quando vuoi tenendo le voci già lette. Se esiste la versione Excel del prezzario è ancora più veloce e precisa.</p>
           </div>
         )}
 
@@ -264,6 +284,7 @@ function ImportDialog({ open, onOpenChange, onDone, hasDefault }) {
             <Loader2 className="w-7 h-7 animate-spin text-brand-600 mx-auto" />
             <p className="text-sm text-zinc-600 mt-2">{progress ? `Pagine lette: gruppo ${progress.done} di ${progress.total} · ${progress.found} voci trovate` : "Sto leggendo il file…"}</p>
             {progress && <div className="h-1.5 rounded-full bg-zinc-100 max-w-sm mx-auto mt-3 overflow-hidden"><div className="h-full bg-brand-600" style={{ width: `${(progress.done / progress.total) * 100}%` }} /></div>}
+            {progress && phase === "analyzing" && progress.total > 1 && <Button type="button" variant="outline" size="sm" className="mt-4" onClick={() => { stopRef.current = true; }}>Interrompi e tieni le voci lette</Button>}
           </div>
         )}
 

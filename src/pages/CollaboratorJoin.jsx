@@ -49,6 +49,7 @@ export default function CollaboratorJoin() {
       if (response.data?.error) {
         throw new Error(response.data.error);
       }
+      if (response.data?.already) { window.location.href = "/"; return; }
       setSuccess(true);
       setTimeout(() => {
         window.location.href = "/";

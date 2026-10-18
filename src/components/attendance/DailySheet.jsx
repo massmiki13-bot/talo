@@ -113,7 +113,7 @@ export default function DailySheet({ date, setDate, records, employees, worksite
       const entries = rows.filter((r) => r.stato).map((r) => ({ ...r, cantieri: r.cantieri.filter((c) => c.ore > 0 || c.cantiere_id) }));
       await saveDay(db, date, entries, records);
       setInitial(JSON.stringify(rows));
-      toast({ title: "Giornata salvata", description: `${entries.length} dipendenti registrati` });
+      toast({ title: "Giornata salvata", description: `${entries.length} dipendenti registrati`, duration: 1400 });
       onSaved?.();
     } catch (e) {
       if (isNetworkError(e)) {

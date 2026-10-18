@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { Upload, Loader2, Sparkles, CheckCircle2, Circle, FileText, Download, ArrowRight, Plus, Trash2, AlertTriangle, Wand2, XCircle } from "lucide-react";
+import { Upload, Loader2, Sparkles, CheckCircle2, Circle, FileText, Download, ArrowRight, Plus, Trash2, AlertTriangle, Wand2, XCircle, FolderUp } from "lucide-react";
 import { DetailCard } from "@/components/shared/DetailLayout";
 import { confirmDialog } from "@/components/shared/ConfirmHost";
+import { filesFromDrop, filesFromInput } from "@/lib/dropFiles";
 import { downloadWordDoc } from "@/utils/wordExport";
 import {
   DOC_TYPES, SOA_SECTIONS, ISO_SECTIONS, ANNO_FIELDS, LAVORO_FIELDS, progress, missingFields, mergeFields, mergeRows,
@@ -31,6 +32,13 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
   const [drafting, setDrafting] = useState(false);
   const [skip, setSkip] = useState([]);
   const [guided, setGuided] = useState("");
+  const [dragOver, setDragOver] = useState(false);
+  // finito il caricamento l'elenco sparisce da solo; restano solo i file non letti
+  useEffect(() => {
+    if (!queue.length || queue.some((x) => ["in coda", "lettura"].includes(x.stato)) || queue.every((x) => x.stato === "errore")) return;
+    const t = setTimeout(() => setQueue((q) => q.filter((x) => x.stato === "errore")), 3000);
+    return () => clearTimeout(t);
+  }, [queue]);
   const saveTimer = useRef(null);
   const latest = useRef(p);
   latest.current = p;
@@ -133,7 +141,9 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
   return (
     <div className="space-y-5">
       {/* Avanzamento e azioni */}
-      <div className="rounded-2xl bg-zinc-950 text-white p-5 sm:p-6">
+      <div className={`rounded-2xl bg-zinc-950 text-white p-5 sm:p-6 ${dragOver ? "ring-4 ring-brand-500" : ""}`}
+        onDragOver={(e) => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); setDragOver(true); } }} onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => { if (!e.dataTransfer.types.includes("Files")) return; e.preventDefault(); setDragOver(false); filesFromDrop(e.dataTransfer).then((l) => { const ok = l.filter((f) => /pdf|image/.test(f.type) || /\.(pdf|jpe?g|png|heic|webp)$/i.test(f.name)); if (ok.length) upload(ok); }); }}>
         <div className="flex flex-wrap items-end gap-4">
           <div className="flex-1 min-w-[220px]">
             <p className="text-[11px] uppercase tracking-[0.18em] text-brand-300">{tipo === "soa" ? "Pratica SOA" : "Pratica ISO 9001"}</p>
@@ -145,11 +155,15 @@ export default function Pratica({ tipo, record, ctx, onSaved }) {
               <Upload className="w-4 h-4" />Carica documenti
               <input type="file" multiple accept="application/pdf,image/*" className="hidden" onChange={(e) => { const f = [...e.target.files]; e.target.value = ""; if (f.length) upload(f); }} />
             </label>
+            <label className="inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-white/10 hover:bg-white/15 font-semibold text-sm cursor-pointer">
+              <FolderUp className="w-4 h-4" />Carica cartella
+              <input type="file" multiple className="hidden" {...{ webkitdirectory: "", directory: "" }} onChange={(e) => { const f = filesFromInput(e.target.files).filter((x) => /pdf|image/.test(x.type) || /\.(pdf|jpe?g|png|heic|webp)$/i.test(x.name)); e.target.value = ""; if (f.length) upload(f); }} />
+            </label>
             {hasAiFields && <Button onClick={draft} disabled={drafting} variant="secondary" className="gap-2">{drafting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}Scrivi le parti descrittive con l'IA</Button>}
             <Button onClick={exportDoc} variant="secondary" className="gap-2"><Download className="w-4 h-4" />Scarica dossier</Button>
           </div>
         </div>
-        <p className="text-sm text-zinc-500 mt-4">Carica tutti i documenti che hai, anche insieme: l'IA riconosce di cosa si tratta e compila i campi. I dati già presenti in Talo (profilo ditta, dipendenti, mezzi, lavori) sono già inseriti. Non sovrascrive mai quello che hai scritto tu.</p>
+        <p className="text-sm text-zinc-500 mt-4">Carica o trascina qui tutti i documenti che hai, anche intere cartelle: l'IA riconosce di cosa si tratta e compila i campi. I dati già presenti in Talo (profilo ditta, dipendenti, mezzi, lavori) sono già inseriti. Non sovrascrive mai quello che hai scritto tu.</p>
         {queue.length > 0 && (
           <ul className="mt-4 grid sm:grid-cols-2 gap-2">
             {queue.map((q, i) => (

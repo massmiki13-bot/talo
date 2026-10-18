@@ -9,6 +9,13 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
+
+// Senza accesso si va al login ricordando la pagina richiesta (es. il link d'invito), per tornarci dopo.
+function LoginRedirect() {
+  const { pathname, search } = useLocation();
+  const from = pathname + search;
+  return <Navigate to={from && from !== '/' ? `/login?from=${encodeURIComponent(from)}` : '/login'} replace />;
+}
 import AppLayout from '@/components/layout/AppLayout';
 
 import { lazy, Suspense, useEffect } from "react";
@@ -93,7 +100,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+      <Route element={<ProtectedRoute unauthenticatedElement={<LoginRedirect />} />}>
         <Route path="/collaboratori/invito/:inviteId" element={<CollaboratorJoin />} />
         <Route element={<AppLayout />}>
           <Route path="/" element={<Dashboard />} />

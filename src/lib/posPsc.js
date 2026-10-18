@@ -47,6 +47,7 @@ Estrai i dati necessari al POS dell'impresa esecutrice "${impresa || "impresa es
 - emergenze: procedure, pronto soccorso o ospedale più vicino con indirizzo, punto di raccolta, presidi antincendio.
 - procedure_psc: le prescrizioni del PSC da rispettare e le procedure complementari e di dettaglio richieste al POS.
 - misure_integrative: eventuali misure integrative richieste dal CSE.
+Il PSC può avere oltre 100 pagine: scorri TUTTO il documento, comprese schede e allegati in fondo, e riporta ogni lavorazione e impresa trovata (una voce per ciascuna fase distinta, senza raggruppare fasi diverse); sii sintetico nelle frasi ma completo negli elenchi.
 Riporta i contenuti del documento; non inventare nomi, date o indirizzi. Se un dato non c'è lascialo vuoto.`,
     file_urls: [fileUrl],
     response_json_schema: PSC_SCHEMA,

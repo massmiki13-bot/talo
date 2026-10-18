@@ -19,6 +19,7 @@ export function parsePrice(v) {
   if (s.includes(",") && s.includes(".")) s = s.lastIndexOf(",") > s.lastIndexOf(".") ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "");
   else if (s.includes(",")) s = s.replace(",", ".");
   else if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, ""); // "1.234.567": punti delle migliaia
+  else if (/^\d{1,3}\.\d{3}$/.test(s)) s = s.replace(".", ""); // "1.234": un solo punto con tre cifre = migliaia
   const n = Number(s.replace(/[^\d.-]/g, ""));
   return isFinite(n) ? n : null;
 }
@@ -109,7 +110,7 @@ export function rowsToVoci(rows, cols) {
   return out;
 }
 
-// ─── PDF: l'IA legge poche pagine alla volta ───
+// ─── PDF: l'IA legge gruppi di pagine, più gruppi in parallelo ───
 
 export async function pdfPageCount(file) {
   const { PDFDocument } = await import("pdf-lib");
@@ -117,47 +118,84 @@ export async function pdfPageCount(file) {
   return doc.getPageCount();
 }
 
-export async function extractPdfVoci(file, from, to, onProgress, chunk = 3) {
+const PDF_PROMPT = `Estrai TUTTE le voci con prezzo da queste pagine di un prezzario edile italiano (opere edili, impianti, noli, materiali).
+Per ogni voce:
+- codice: esattamente come scritto (es. "B.10.20.30.a", "01.A04.B05.005");
+- descrizione: completa; se la voce è un sotto-articolo (a, b, c… o una riga con solo misura/variante), unisci la descrizione generale dell'articolo con la parte specifica, così che si capisca da sola;
+- unita_misura: come scritta (m², m³, kg, cad, h, ml…);
+- prezzo: il prezzo unitario in euro, COPIATO come stringa così com'è scritto (es. "1.234,56"); NON usare percentuali di manodopera, incidenze o costi della sicurezza;
+- capitolo: il titolo del capitolo o della categoria, se visibile.
+Ignora intestazioni di pagina, note, avvertenze e totali. Non inventare voci. Leggi fino in fondo a ogni pagina.`;
+
+/**
+ * Legge le pagine from..to del PDF. chunk = pagine per richiesta, parallel = richieste contemporanee.
+ * shouldStop() permette di interrompere tenendo le voci già lette.
+ */
+export async function extractPdfVoci(file, from, to, onProgress, { chunk = 5, parallel = 3, shouldStop = () => false } = {}) {
   const { PDFDocument } = await import("pdf-lib");
   const src = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
-  const voci = [];
-  const total = Math.ceil((to - from + 1) / chunk);
+  const groups = [];
+  for (let p = from; p <= to; p += chunk) groups.push([p, Math.min(p + chunk - 1, to)]);
+  const results = new Array(groups.length);
   let done = 0;
   let failed = 0;
-  for (let p = from; p <= to; p += chunk) {
+  let found = 0;
+  let next = 0;
+
+  const readGroup = async ([a, b]) => {
     const part = await PDFDocument.create();
     const idx = [];
-    for (let k = p; k < Math.min(p + chunk, to + 1); k++) idx.push(k - 1);
+    for (let k = a; k <= b; k++) idx.push(k - 1);
     (await part.copyPages(src, idx)).forEach((pg) => part.addPage(pg));
     const bytes = await part.save();
-    try {
-      const { file_url } = await api.integrations.Core.UploadFile({ file: new File([/** @type {any} */ (bytes)], `prezzario-p${p}.pdf`, { type: "application/pdf" }) });
-      const res = await api.integrations.Core.InvokeLLM({
-        prompt: `Estrai TUTTE le voci con prezzo da queste pagine di un prezzario edile italiano.
-Per ogni voce: codice (così com'è scritto), descrizione completa (se la voce è un sotto-articolo, unisci la descrizione generale dell'articolo con quella specifica), unità di misura, prezzo unitario in euro (numero, NON percentuali di manodopera o sicurezza), capitolo se indicato.
-Ignora intestazioni, note, totali. Non inventare voci.`,
-        file_urls: [file_url],
-        response_json_schema: {
-          type: "object",
-          properties: {
-            voci: { type: "array", items: { type: "object", properties: { codice: { type: "string" }, descrizione: { type: "string" }, unita_misura: { type: "string" }, prezzo: { type: "number" }, capitolo: { type: "string" } }, required: ["descrizione", "prezzo"] } },
-          },
-          required: ["voci"],
+    const { file_url } = await api.integrations.Core.UploadFile({ file: new File([/** @type {any} */ (bytes)], `prezzario-p${a}-${b}.pdf`, { type: "application/pdf" }) });
+    const res = await api.integrations.Core.InvokeLLM({
+      prompt: PDF_PROMPT,
+      file_urls: [file_url],
+      response_json_schema: {
+        type: "object",
+        properties: {
+          voci: { type: "array", items: { type: "object", properties: { codice: { type: "string" }, descrizione: { type: "string" }, unita_misura: { type: "string" }, prezzo: { type: "string" }, capitolo: { type: "string" } }, required: ["descrizione", "prezzo"] } },
         },
-      });
-      for (const v of res?.voci || []) {
-        const prezzo = parsePrice(v.prezzo);
-        if (!v.descrizione || !prezzo) continue;
-        voci.push({ codice: clean(v.codice), capitolo: clean(v.capitolo).slice(0, 200), descrizione: clean(v.descrizione).slice(0, 2000), unita_misura: clean(v.unita_misura).slice(0, 20), prezzo: Math.round(prezzo * 100) / 100 });
-      }
-    } catch (e) {
-      console.error(e);
-      failed++;
+        required: ["voci"],
+      },
+    });
+    const out = [];
+    for (const v of res?.voci || []) {
+      const prezzo = parsePrice(v.prezzo);
+      if (!v.descrizione || !prezzo) continue;
+      out.push({ codice: clean(v.codice), capitolo: clean(v.capitolo).slice(0, 200), descrizione: clean(v.descrizione).slice(0, 2000), unita_misura: clean(v.unita_misura).slice(0, 20), prezzo: Math.round(prezzo * 100) / 100 });
     }
-    done++;
-    onProgress?.(done, total, voci.length, failed);
+    return out;
+  };
+
+  const worker = async () => {
+    while (next < groups.length && !shouldStop()) {
+      const i = next++;
+      let out = null;
+      // un nuovo tentativo se l'IA è occupata
+      for (let attempt = 0; attempt < 2 && out === null && !shouldStop(); attempt++) {
+        try { out = await readGroup(groups[i]); }
+        catch (e) { console.error(e); if (attempt === 0) await new Promise((r) => setTimeout(r, 4000)); }
+      }
+      if (out === null) failed++;
+      else { results[i] = out; found += out.length; }
+      done++;
+      onProgress?.(done, groups.length, found, failed);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(parallel, groups.length) }, worker));
+
+  // In ordine di pagina, senza doppioni (voci a cavallo tra due gruppi)
+  const seen = new Set();
+  const voci = [];
+  for (const list of results) for (const v of list || []) {
+    const key = `${v.codice}|${v.descrizione.slice(0, 80).toLowerCase()}|${v.prezzo}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    voci.push(v);
   }
-  return { voci, failed };
+  return { voci, failed, stopped: shouldStop() };
 }
 
 // ─── Salvataggio ───
