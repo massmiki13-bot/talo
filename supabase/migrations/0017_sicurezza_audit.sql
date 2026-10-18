@@ -218,7 +218,7 @@ begin
     if r.id is null then raise exception 'Mezzo non assegnato a te' using errcode = '42501'; end if;
 
   elsif p_kind = 'lingua' then
-    if clean->>'lingua' not in ('it', 'ro', 'sq') then raise exception 'Lingua non disponibile' using errcode = '22023'; end if;
+    if clean->>'lingua' not in ('it', 'ro', 'sq', 'de', 'bs') then raise exception 'Lingua non disponibile' using errcode = '22023'; end if;
     update public.entity_records set data = data || jsonb_build_object('lingua', clean->>'lingua'), updated_date = now()
      where tenant_id = c.tenant and entity = 'Employee' and id::text = c.employee_id returning * into r;
 
